@@ -7,6 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos", "Shaos\Shaos.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Repository", "Shaos.Repository\Shaos.Repository.csproj", "{6C9757CB-9D5E-4B7E-AFA8-3A9786817112}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiRequests", "ApiRequests", "{057AF7FB-A4B5-43BB-B3C8-44FC5C3FF61E}"
+	ProjectSection(SolutionItems) = preProject
+		Authorisation.http = Authorisation.http
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Api.Model", "Shaos.Api.Model\Shaos.Api.Model.csproj", "{58F1F543-5D67-47D9-A620-0256A8FFE866}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +28,10 @@ Global
 		{6C9757CB-9D5E-4B7E-AFA8-3A9786817112}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C9757CB-9D5E-4B7E-AFA8-3A9786817112}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C9757CB-9D5E-4B7E-AFA8-3A9786817112}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58F1F543-5D67-47D9-A620-0256A8FFE866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58F1F543-5D67-47D9-A620-0256A8FFE866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58F1F543-5D67-47D9-A620-0256A8FFE866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58F1F543-5D67-47D9-A620-0256A8FFE866}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

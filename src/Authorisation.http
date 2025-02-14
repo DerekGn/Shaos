@@ -1,0 +1,8 @@
+@HostAddress = https://localhost:7000
+@email = test@x.z
+@badPassword = password
+@password = P455w0rd!
+
+# This should return 401 - unauthorized
+GET {{HostAddress}}/api/
+Accept: application/json
