@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Shaos.Data;
 using Shaos.Repository;
+using System.Reflection;
 
 namespace Shaos
 {
@@ -19,15 +21,48 @@ namespace Shaos
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<IdentityUser>(
+                options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddDbContext<ShaosDbContext>(options =>
                 options.UseSqlite(connectionString));
 
             builder.Services.AddRazorPages();
+            builder.Services.AddControllers();
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Shaos API",
+                    Description = "",
+                    //TermsOfService = new Uri("https://example.com/terms"),
+                    //Contact = new OpenApiContact
+                    //{
+                    //    Name = "Example Contact",
+                    //    Url = new Uri("https://example.com/contact")
+                    //},
+                    //License = new OpenApiLicense
+                    //{
+                    //    Name = "Example License",
+                    //    Url = new Uri("https://example.com/license")
+                    //}
+                });
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+            });
 
             var app = builder.Build();
+
+            app.MapIdentityApi<IdentityUser>();
+
+            //app.MapControllers();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspNetCoreApi v1"));
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

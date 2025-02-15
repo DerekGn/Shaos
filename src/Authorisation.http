@@ -1,8 +1,22 @@
+# Update configuration to match application configuration
 @HostAddress = https://localhost:7000
-@email = test@x.z
+@email = me@here.com
 @badPassword = password
-@password = P455w0rd!
+@password = j+8KPrmgMiWi^+N
 
-# This should return 401 - unauthorized
-GET {{HostAddress}}/api/
+###
+
+GET {{HostAddress}}/api/System
 Accept: application/json
+
+###
+
+POST {{HostAddress}}/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
