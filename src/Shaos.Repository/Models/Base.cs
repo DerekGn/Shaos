@@ -1,7 +1,7 @@
 ﻿/*
 * MIT License
 *
-* Copyright (c) 2024 Derek Goslin https://github.com/DerekGn
+* Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal

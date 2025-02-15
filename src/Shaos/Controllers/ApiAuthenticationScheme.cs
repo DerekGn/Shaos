@@ -22,16 +22,10 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc;
-
 namespace Shaos.Controllers
 {
-    public class SystemController : CoreController
+    internal static class ApiAuthenticationScheme
     {
-        [HttpGet]
-        public string GetVersion()
-        {
-            return "1.0.0";
-        }
+        public const string AuthenticationSchemes = "Identity.Bearer";
     }
 }

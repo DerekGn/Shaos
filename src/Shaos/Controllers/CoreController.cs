@@ -22,16 +22,18 @@
 * SOFTWARE.
 */
 
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Shaos.Controllers
 {
-    public class SystemController : CoreController
+    [ApiController]
+    [Route("/api/[controller]")]
+    [Produces("application/json")]
+    [ApiVersion(ApiContractVersions.VersionOne)]
+    [Authorize(AuthenticationSchemes = ApiAuthenticationScheme.AuthenticationSchemes)]
+    public abstract class CoreController : ControllerBase
     {
-        [HttpGet]
-        public string GetVersion()
-        {
-            return "1.0.0";
-        }
     }
 }

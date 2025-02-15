@@ -6,10 +6,13 @@
 
 ###
 
+# This will fail
 GET {{HostAddress}}/api/System
 Accept: application/json
 
 ###
+
+# This will generate a bearer token and refresh token
 
 POST {{HostAddress}}/login
 Content-Type: application/json
@@ -18,5 +21,14 @@ Content-Type: application/json
   "email": "{{email}}",
   "password": "{{password}}"
 }
+
+###
+
+# This value come from the previous response
+@accessToken = <paste access token without quotes>
+
+GET {{HostAddress}}/api/system
+Authorization: Bearer {{accessToken}}
+Accept: application/json
 
 ###

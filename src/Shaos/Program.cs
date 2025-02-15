@@ -25,6 +25,10 @@ namespace Shaos
                 options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            builder.Services
+                .AddAuthentication()
+                .AddBearerToken(IdentityConstants.BearerScheme);
+
             builder.Services.AddDbContext<ShaosDbContext>(options =>
                 options.UseSqlite(connectionString));
 
@@ -59,7 +63,7 @@ namespace Shaos
 
             app.MapIdentityApi<IdentityUser>();
 
-            //app.MapControllers();
+            app.MapControllers();
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspNetCoreApi v1"));

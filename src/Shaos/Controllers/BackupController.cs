@@ -1,15 +1,7 @@
-﻿using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
+﻿
 namespace Shaos.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [ApiVersion(ApiContractVersions.VersionOne)]
-    [Route("/api/[controller]")]
-    [Produces("application/json")]
-    public class BackupController : ControllerBase
+    public class BackupController : CoreController
     {
     }
 }
