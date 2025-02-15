@@ -11,5 +11,10 @@ namespace Shaos.Controllers
     [Produces("application/json")]
     public class SystemController : ControllerBase
     {
+        [HttpGet]
+        public string GetVersion()
+        {
+            return "1.0.0";
+        }
     }
 }
