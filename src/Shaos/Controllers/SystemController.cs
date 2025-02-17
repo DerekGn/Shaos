@@ -28,6 +28,10 @@ namespace Shaos.Controllers
 {
     public class SystemController : CoreController
     {
+        public SystemController(ILogger<CoreController> logger) : base(logger)
+        {
+        }
+
         [HttpGet]
         public string GetVersion()
         {

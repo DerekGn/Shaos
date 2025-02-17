@@ -22,26 +22,34 @@
 * SOFTWARE.
 */
 
-using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
-namespace Shaos.Controllers
+namespace Shaos.Api.Model.v1
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    [Produces("application/json")]
-    [ApiVersion(ApiContractVersions.VersionOne)]
-    //[Authorize(AuthenticationSchemes = ApiAuthenticationScheme.AuthenticationSchemes)]
-    public abstract class CoreController : ControllerBase
+    /// <summary>
+    /// Create a PlugIn instance
+    /// </summary>
+    public record PlugInCreate
     {
-        internal const string Status401UnauthorizedText = "The bear token is invalid";
-        internal const string Status500InternalServerErrorText = "Indicates that the server was unable to process the request";
-        internal readonly ILogger<CoreController> Logger;
+        /// <summary>
+        /// The name of this <see cref="PlugIn"/>
+        /// </summary>
+        [Required]
+        [StringLength(PlugInConstants.MaxLengthName)]
+        public string Name { get; init; } = string.Empty;
 
-        protected CoreController(ILogger<CoreController> logger)
-        {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        /// <summary>
+        /// The description of this <see cref="PlugIn"/>
+        /// </summary>
+        [Required]
+        [StringLength(PlugInConstants.MaxLengthDescription)]
+        public string? Description { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The code of this <see cref="PlugIn"/>
+        /// </summary>
+        [Required]
+        [StringLength(PlugInConstants.MaxLengthCode)]
+        public string Code {  get; init; } = string.Empty;
     }
 }

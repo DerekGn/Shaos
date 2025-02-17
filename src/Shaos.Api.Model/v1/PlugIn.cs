@@ -22,26 +22,41 @@
 * SOFTWARE.
 */
 
-using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Shaos.Controllers
+namespace Shaos.Api.Model.v1
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    [Produces("application/json")]
-    [ApiVersion(ApiContractVersions.VersionOne)]
-    //[Authorize(AuthenticationSchemes = ApiAuthenticationScheme.AuthenticationSchemes)]
-    public abstract class CoreController : ControllerBase
+    /// <summary>
+    /// Represents a PlugIn
+    /// </summary>
+    public record PlugIn
     {
-        internal const string Status401UnauthorizedText = "The bear token is invalid";
-        internal const string Status500InternalServerErrorText = "Indicates that the server was unable to process the request";
-        internal readonly ILogger<CoreController> Logger;
+        /// <summary>
+        /// The identifier of the <see cref="PlugIn"/> instance
+        /// </summary>
+        public Guid Id { get; init; }
 
-        protected CoreController(ILogger<CoreController> logger)
-        {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        /// <summary>
+        /// The name of this <see cref="PlugIn"/>
+        /// </summary>
+        public string Name { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The description of this <see cref="PlugIn"/>
+        /// </summary>
+        public string? Description { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The status of the <see cref="PlugIn"/>
+        /// </summary>
+        public PlugInStatus Status { get; init; }
+
+        /// <summary>
+        /// Indicates if the <see cref="PlugIn"/> is enabled
+        /// </summary>
+        public bool IsEnabled { get; init; }
+
+        /// <summary>
+        /// The code of this <see cref="PlugIn"/>
+        /// </summary>
+        public string Code { get; init; } = string.Empty;
     }
 }

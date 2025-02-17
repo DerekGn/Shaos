@@ -1,0 +1,31 @@
+# Update configuration to match application configuration
+# Use the Autorisation.http script to generate an access token
+@HostAddress = https://localhost:7000
+@id = 00000000-0000-0000-0000-000000000000
+@accessToken = <paste access token without quotes>
+
+###
+
+GET {{HostAddress}}/api/plugin
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+GET {{HostAddress}}/api/plugin/{{id}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/api/plugin
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Test.Plugin",
+  "description": "A simple test plugIn",
+  "code": "class plugin {}"
+}
+###

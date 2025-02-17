@@ -1,7 +1,6 @@
 # Update configuration to match application configuration
 @HostAddress = https://localhost:7000
 @email = me@here.com
-@badPassword = password
 @password = j+8KPrmgMiWi^+N
 
 ###
@@ -13,6 +12,7 @@ Accept: application/json
 ###
 
 # This will generate a bearer token and refresh token
+# Used to generate access token for API access
 
 POST {{HostAddress}}/login
 Content-Type: application/json

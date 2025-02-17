@@ -22,26 +22,9 @@
 * SOFTWARE.
 */
 
-using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Shaos.Controllers
+namespace Shaos.Services
 {
-    [ApiController]
-    [Route("/api/[controller]")]
-    [Produces("application/json")]
-    [ApiVersion(ApiContractVersions.VersionOne)]
-    //[Authorize(AuthenticationSchemes = ApiAuthenticationScheme.AuthenticationSchemes)]
-    public abstract class CoreController : ControllerBase
+    public interface IPlugInService
     {
-        internal const string Status401UnauthorizedText = "The bear token is invalid";
-        internal const string Status500InternalServerErrorText = "Indicates that the server was unable to process the request";
-        internal readonly ILogger<CoreController> Logger;
-
-        protected CoreController(ILogger<CoreController> logger)
-        {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
     }
 }

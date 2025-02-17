@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
 using Shaos.Repository;
+using Shaos.Services;
 using System.Reflection;
 
 namespace Shaos
@@ -21,7 +22,7 @@ namespace Shaos
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(connectionString));
 
@@ -61,9 +62,15 @@ namespace Shaos
                     //}
                 });
 
-                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+                options.EnableAnnotations();
+
+                var rootDocFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var modelDocFile = $"Shaos.Api.Model.xml";
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, rootDocFile));
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, modelDocFile));
             });
+
+            builder.Services.AddSingleton<IPlugInService, PlugInService>();
 
             var app = builder.Build();
 
