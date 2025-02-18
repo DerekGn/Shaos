@@ -2,18 +2,16 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
 using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
-using System.Reflection;
 
 namespace Shaos
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -89,10 +87,7 @@ namespace Shaos
 
                 options.EnableAnnotations();
 
-                var rootDocFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var modelDocFile = $"Shaos.Api.Model.xml";
-                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, rootDocFile));
-                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, modelDocFile));
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Shaos.Api.Model.xml"));
             });
 
             // Application defined services

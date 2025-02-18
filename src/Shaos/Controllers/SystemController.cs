@@ -26,7 +26,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Shaos.Controllers
 {
-    [Route("system")]
+    [Route("api/v{version:apiVersion}/system")]
     public class SystemController : CoreController
     {
         public SystemController(ILogger<CoreController> logger) : base(logger)

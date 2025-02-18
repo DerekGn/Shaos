@@ -37,5 +37,7 @@ namespace Shaos.Services
         Task<ApiPlugIn?> GetPlugInByNameAsync(string name, CancellationToken cancellationToken);
 
         IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync();
+
+        Task<ApiPlugIn?> UpdatePlugInAsync(int id, string name, string? description, string code, CancellationToken cancellationToken);
     }
 }

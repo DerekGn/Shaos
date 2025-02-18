@@ -26,7 +26,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Shaos.Controllers
 {
-    [Route("backup")]
+    [Route("api/v{version:apiVersion}/backup")]
     public class BackupController : CoreController
     {
         public BackupController(ILogger<CoreController> logger) : base(logger)

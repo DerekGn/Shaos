@@ -84,6 +84,7 @@ namespace Shaos.Services
             return plugin?.ToApiModel();
         }
 
+        /// <inheritdoc/>
         public async IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync()
         {
 #warning map state
@@ -97,6 +98,30 @@ namespace Shaos.Services
         public async Task<bool> PlugInWithNameExistsAsync(string name, CancellationToken cancellationToken)
         {
             return await _context.PlugIns.AnyAsync(_ => _.Name == name, cancellationToken: cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<ApiPlugIn?> UpdatePlugInAsync(
+            int id,
+            string name,
+            string? description,
+            string code,
+            CancellationToken cancellationToken)
+        {
+            var plugIn = await _context
+                .PlugIns
+                .FirstOrDefaultAsync(
+                    _ => _.Id == id,
+                    cancellationToken);
+
+            if(plugIn != null)
+            {
+                plugIn.Code = code;
+                plugIn.Description = description;
+                plugIn.Name = name;
+            }
+
+            return plugIn?.ToApiModel();
         }
     }
 }
