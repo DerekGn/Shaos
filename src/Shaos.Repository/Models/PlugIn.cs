@@ -32,21 +32,21 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The name of this <see cref="PlugIn"/>
         /// </summary>
-        public string Name { get; init; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
-        public string? Description { get; init; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Indicates if the <see cref="PlugIn"/> is enabled
         /// </summary>
-        public bool IsEnabled { get; init; }
+        public bool IsEnabled { get; set; }
 
         /// <summary>
         /// The code of this <see cref="PlugIn"/>
         /// </summary>
-        public string Code { get; init; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
     }
 }
