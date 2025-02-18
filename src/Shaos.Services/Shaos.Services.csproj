@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shaos.Api.Model\Shaos.Api.Model.csproj" />
     <ProjectReference Include="..\Shaos.Repository\Shaos.Repository.csproj" />
   </ItemGroup>
 

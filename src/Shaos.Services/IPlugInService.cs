@@ -22,9 +22,20 @@
 * SOFTWARE.
 */
 
+using Shaos.Api.Model.v1;
+
+using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
+
 namespace Shaos.Services
 {
     public interface IPlugInService
     {
+        Task<int> CreatePlugInAsync(string name, string? description, string code);
+
+        Task<ApiPlugIn?> GetPlugInByIdAsync(int id, CancellationToken cancellationToken);
+
+        Task<ApiPlugIn?> GetPlugInByNameAsync(string name, CancellationToken cancellationToken);
+
+        IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync();
     }
 }

@@ -41,5 +41,35 @@ namespace Shaos.Repository
         /// The <see cref="PlugIn"/> database set
         /// </summary>
         public DbSet<PlugIn> PlugIns { get; set; }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            ChangeTracker.Entries<Base>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
+            {
+                _.Entity.CreatedDate = DateTime.UtcNow;
+            });
+
+            ChangeTracker.Entries<Base>().Where(_ => _.State == EntityState.Modified).ToList().ForEach(_ =>
+            {
+                _.Entity.UpdatedDate = DateTime.UtcNow;
+            });
+
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PlugIn>()
+                .Property(_ => _.Name)
+                .IsRequired();
+
+            modelBuilder.Entity<PlugIn>()
+                .Property(_ => _.Code)
+                .IsRequired();
+
+            modelBuilder.Entity<PlugIn>()
+                .HasIndex(_ => _.Name )
+                .HasDatabaseName("IX_Name_Ascending");
+        }
     }
 }

@@ -1,8 +1,12 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
+using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
 using System.Reflection;
@@ -43,8 +47,25 @@ namespace Shaos
             builder.Services.AddDbContext<ShaosDbContext>(options =>
                 options.UseSqlite(connectionString));
 
+            builder.Services.AddApiVersioning(_ =>
+            {
+                _.DefaultApiVersion = new ApiVersion(1, 0);
+                _.AssumeDefaultVersionWhenUnspecified = true;
+                _.ReportApiVersions = true;
+                _.ApiVersionReader = new UrlSegmentApiVersionReader();
+            })
+            .AddApiExplorer(_ =>
+            {
+                _.GroupNameFormat = "'v'VVV";
+                _.SubstituteApiVersionInUrl = true;
+            });
+
             builder.Services.AddRazorPages();
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(_ =>
+                {
+                    JsonSerializerOptionsDefault.Configure(_.JsonSerializerOptions);
+                });
 
             builder.Services.AddSwaggerGen(options =>
             {
@@ -78,13 +99,20 @@ namespace Shaos
             builder.Services.AddScoped<IPlugInService, PlugInService>();
 
             var app = builder.Build();
+            var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
             app.MapIdentityApi<IdentityUser>();
 
             app.MapControllers();
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AspNetCoreApi v1"));
+            app.UseSwaggerUI(_ =>
+            {
+                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
+                {
+                    _.SwaggerEndpoint($"{description.GroupName}/swagger.json", description.GroupName);
+                }
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

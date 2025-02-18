@@ -22,36 +22,25 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
+using ModelPlugIn = Shaos.Repository.Models.PlugIn;
+
+namespace Shaos.Services.Extensions
 {
-    /// <summary>
-    /// Represents a PlugIn
-    /// </summary>
-    public record PlugIn : Base
+    internal static class PluginExtensions
     {
-        /// <summary>
-        /// The name of this <see cref="PlugIn"/>
-        /// </summary>
-        public string Name { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The description of this <see cref="PlugIn"/>
-        /// </summary>
-        public string? Description { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The status of the <see cref="PlugIn"/>
-        /// </summary>
-        public PlugInStatus Status { get; init; }
-
-        /// <summary>
-        /// Indicates if the <see cref="PlugIn"/> is enabled
-        /// </summary>
-        public bool IsEnabled { get; init; }
-
-        /// <summary>
-        /// The code of this <see cref="PlugIn"/>
-        /// </summary>
-        public string Code { get; init; } = string.Empty;
+        public static ApiPlugIn ToApiModel(this ModelPlugIn plugIn)
+        {
+            return new ApiPlugIn()
+            {
+                CreatedDate = plugIn.CreatedDate,
+                Code = plugIn.Code,
+                Description = plugIn.Description,
+                Id = plugIn.Id,
+                IsEnabled = plugIn.IsEnabled,
+                Name = plugIn.Name,
+                UpdatedDate = plugIn.UpdatedDate,
+            };
+        }
     }
 }

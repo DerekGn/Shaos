@@ -22,17 +22,81 @@
 * SOFTWARE.
 */
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Shaos.Repository;
+using Shaos.Services.Extensions;
+
+using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
+using ModelPlugIn = Shaos.Repository.Models.PlugIn;
 
 namespace Shaos.Services
 {
     public class PlugInService : IPlugInService
     {
         private readonly ShaosDbContext _context;
+        private readonly ILogger<PlugInService> _logger;
 
-        public PlugInService(ShaosDbContext context)
+        public PlugInService(ILogger<PlugInService> logger, ShaosDbContext context)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        /// <inheritdoc/>
+        public async Task<int> CreatePlugInAsync(string name, string? description, string code)
+        {
+            var plugin = new ModelPlugIn()
+            {
+                Code = code,
+                Name = name,
+                Description = description,
+                IsEnabled = false
+            };
+
+            await _context.PlugIns.AddAsync(plugin);
+
+            await _context.SaveChangesAsync();
+
+            return plugin.Id;
+        }
+
+        /// <inheritdoc/>
+        public async Task<ApiPlugIn?> GetPlugInByIdAsync(int id, CancellationToken cancellationToken)
+        {
+#warning map plugin state
+            var plugin = await _context
+                .PlugIns
+            .AsNoTracking()
+                .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
+
+            return plugin?.ToApiModel();
+        }
+
+        /// <inheritdoc/>
+        public async Task<ApiPlugIn?> GetPlugInByNameAsync(string name, CancellationToken cancellationToken)
+        {
+            var plugin = await _context
+                .PlugIns
+                .AsNoTracking()
+                .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
+
+            return plugin?.ToApiModel();
+        }
+
+        public async IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync()
+        {
+#warning map state
+            await foreach (var item in _context.PlugIns.AsNoTracking().AsAsyncEnumerable())
+            {
+                yield return item.ToApiModel();
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> PlugInWithNameExistsAsync(string name, CancellationToken cancellationToken)
+        {
+            return await _context.PlugIns.AnyAsync(_ => _.Name == name, cancellationToken: cancellationToken);
         }
     }
 }
