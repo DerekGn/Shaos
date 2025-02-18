@@ -26,6 +26,10 @@ namespace Shaos
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(connectionString));
 
+            builder.Services.AddDbContext<ShaosDbContext>(options =>
+                options.UseSqlite(connectionString,
+                _ => _.MigrationsAssembly(typeof(ShaosDbContext).Assembly.GetName().Name)));
+
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(
@@ -70,7 +74,8 @@ namespace Shaos
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, modelDocFile));
             });
 
-            builder.Services.AddSingleton<IPlugInService, PlugInService>();
+            // Application defined services
+            builder.Services.AddScoped<IPlugInService, PlugInService>();
 
             var app = builder.Build();
 

@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Api.Model.v1

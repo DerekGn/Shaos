@@ -32,7 +32,7 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The identifier of the <see cref="PlugIn"/> instance
         /// </summary>
-        public Guid Id { get; init; }
+        public int Id { get; init; }
 
         /// <summary>
         /// The name of this <see cref="PlugIn"/>

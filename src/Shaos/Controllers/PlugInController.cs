@@ -29,6 +29,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Shaos.Controllers
 {
+    [Route("plugins")]
     public class PlugInController : CoreController
     {
         private readonly IPlugInService _plugInService;
@@ -39,10 +40,11 @@ namespace Shaos.Controllers
         }
 
         [HttpPost]
-        [SwaggerResponse(StatusCodes.Status201Created, "The plugin was created", Type = typeof(Guid))]
-        [SwaggerResponse(StatusCodes.Status409Conflict, "A plugin with the same name exists")]
+        [SwaggerResponse(StatusCodes.Status201Created, "The PlugIn was created", Type = typeof(Guid))]
+        [SwaggerResponse(StatusCodes.Status409Conflict, "A PlugIn with the same name exists")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(Summary = "Create a new PlugIn", Description = "", OperationId = "CreatePlugIn")]
         public ActionResult<Guid> CreatePlugInAsync(
             PlugInCreate plugInCreate,
             CancellationToken cancellationToken)
@@ -52,10 +54,10 @@ namespace Shaos.Controllers
 
         [HttpGet("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, "", Type = typeof(PlugIn))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The plugin could not be found")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugIn could not be found")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "", Description = "", OperationId = "GetPlugin")]
+        [SwaggerOperation(Summary = "Get an existing PlugIn by Identifier", Description = "", OperationId = "GetPlugIn")]
         public ActionResult<PlugIn> GetPlugInAsync(
             [FromRoute, SwaggerParameter("The plug in identifier to retrieve", Required = true)] Guid id,
             CancellationToken cancellationToken)
@@ -71,6 +73,7 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "", Type = typeof(IList<PlugIn>))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(Summary = "Get a list of all configured PlugIns", Description = "", OperationId = "GetPlugIns")]
         public ActionResult<IList<PlugIn>> GetPlugInsAsync(CancellationToken cancellationToken)
         {
             return new OkObjectResult(new List<PlugIn>()
@@ -83,15 +86,30 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("{id}")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The plugin was updated successfully")]
-        [SwaggerResponse(StatusCodes.Status409Conflict, "A plugin with the same name exists")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn was updated successfully")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "A PlugIn with identifier was not found")]
+        [SwaggerResponse(StatusCodes.Status409Conflict, "A PlugIn with the same name exists")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        public void UpdatePluginAsync(
-            [FromRoute, SwaggerParameter("The plugin identifier to update", Required = true)] Guid id,
-            [FromBody, SwaggerParameter("The plugin update")] PlugInUpdate plugInUpdate,
+        [SwaggerOperation(Summary = "Update a PlugIn", Description = "", OperationId = "UpdatePlugIn")]
+        public ActionResult UpdatePlugInAsync(
+            [FromRoute, SwaggerParameter("The PlugIn identifier to update", Required = true)] int id,
+            [FromBody, SwaggerParameter("The PlugIn update")] PlugInUpdate plugInUpdate,
             CancellationToken cancellationToken)
         {
+            return new OkResult();
+        }
+
+        [HttpPut("start/{id}")]
+        public ActionResult StartPlugIn()
+        {
+            return new OkResult();
+        }
+
+        [HttpPut("stop/{id}")]
+        public ActionResult StopPlugIn()
+        {
+            return new OkResult();
         }
     }
 }

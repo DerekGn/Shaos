@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Api.Model.v1
@@ -35,21 +36,21 @@ namespace Shaos.Api.Model.v1
         /// The name of this <see cref="PlugIn"/>
         /// </summary>
         [Required]
-        [StringLength(40)]
+        [StringLength(PlugInConstants.MaxLengthName)]
         public string Name { get; init; } = string.Empty;
 
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
         [Required]
-        [StringLength(100)]
+        [StringLength(PlugInConstants.MaxLengthDescription)]
         public string? Description { get; init; } = string.Empty;
 
         /// <summary>
         /// The code of this <see cref="PlugIn"/>
         /// </summary>
         [Required]
-        [StringLength(100)]
+        [StringLength(PlugInConstants.MaxLengthCode)]
         public string Code {  get; init; } = string.Empty;
     }
 }

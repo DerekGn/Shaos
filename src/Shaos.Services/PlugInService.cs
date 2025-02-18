@@ -22,9 +22,17 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository;
+
 namespace Shaos.Services
 {
     public class PlugInService : IPlugInService
     {
+        private readonly ShaosDbContext _context;
+
+        public PlugInService(ShaosDbContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
     }
 }

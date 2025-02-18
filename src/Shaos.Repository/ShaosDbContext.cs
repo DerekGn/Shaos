@@ -23,14 +23,23 @@
 */
 
 using Microsoft.EntityFrameworkCore;
+using Shaos.Repository.Models;
 
 namespace Shaos.Repository
 {
+    /// <summary>
+    /// The application store database context
+    /// </summary>
     public class ShaosDbContext : DbContext
     {
         public ShaosDbContext(DbContextOptions<ShaosDbContext> options)
             : base(options)
         {
         }
+
+        /// <summary>
+        /// The <see cref="PlugIn"/> database set
+        /// </summary>
+        public DbSet<PlugIn> PlugIns { get; set; }
     }
 }

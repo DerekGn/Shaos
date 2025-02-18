@@ -29,7 +29,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Shaos.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
     [Produces("application/json")]
     [ApiVersion(ApiContractVersions.VersionOne)]
     //[Authorize(AuthenticationSchemes = ApiAuthenticationScheme.AuthenticationSchemes)]
