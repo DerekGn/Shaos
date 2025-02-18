@@ -61,11 +61,17 @@ namespace Shaos.Repository
         {
             modelBuilder.Entity<PlugIn>()
                 .Property(_ => _.Name)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(PlugInConstants.MaxLengthName);
 
             modelBuilder.Entity<PlugIn>()
                 .Property(_ => _.Code)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(PlugInConstants.MaxLengthCode);
+
+            modelBuilder.Entity<PlugIn>()
+                .Property(_ => _.Description)
+                .HasMaxLength(PlugInConstants.MaxLengthDescription);
 
             modelBuilder.Entity<PlugIn>()
                 .HasIndex(_ => _.Name )
