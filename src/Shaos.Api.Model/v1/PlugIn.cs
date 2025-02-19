@@ -42,7 +42,7 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The status of the <see cref="PlugIn"/>
         /// </summary>
-        public PlugInStatus Status { get; init; }
+        public PlugInState Status { get; init; }
 
         /// <summary>
         /// Indicates if the <see cref="PlugIn"/> is enabled

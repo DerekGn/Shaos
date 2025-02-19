@@ -22,8 +22,7 @@
 * SOFTWARE.
 */
 
-using Shaos.Api.Model.v1;
-
+using System.Runtime.CompilerServices;
 using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
 
 namespace Shaos.Services
@@ -32,11 +31,15 @@ namespace Shaos.Services
     {
         Task<int> CreatePlugInAsync(string name, string? description, string code);
 
+        Task DeletePlugInAsync(int id, CancellationToken cancellationToken);
+
         Task<ApiPlugIn?> GetPlugInByIdAsync(int id, CancellationToken cancellationToken);
 
         Task<ApiPlugIn?> GetPlugInByNameAsync(string name, CancellationToken cancellationToken);
 
-        IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync();
+        IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync(CancellationToken cancellationToken);
+        object GetPlugInStatusAsync(int id, CancellationToken cancellationToken);
+        Task SetPluginEnabledAsync(int id, bool state, CancellationToken cancellationToken);
 
         Task<ApiPlugIn?> UpdatePlugInAsync(int id, string name, string? description, string code, CancellationToken cancellationToken);
     }

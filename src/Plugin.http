@@ -6,18 +6,6 @@
 
 ###
 
-GET {{HostAddress}}/api/v1/plugins
-#Authorization: Bearer {{accessToken}}
-Accept: application/json
-
-###
-
-GET {{HostAddress}}/api/v1/plugins/{{id}}
-#Authorization: Bearer {{accessToken}}
-Accept: application/json
-
-###
-
 POST {{HostAddress}}/api/v1/plugins
 #Authorization: Bearer {{accessToken}}
 Accept: application/json
@@ -28,4 +16,17 @@ Content-Type: application/json
   "description": "A simple test plugIn",
   "code": "class plugin {}"
 }
+
+###
+
+GET {{HostAddress}}/api/v1/plugins
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+GET {{HostAddress}}/api/v1/plugins/{{id}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
 ###

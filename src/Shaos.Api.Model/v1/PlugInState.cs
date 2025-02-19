@@ -22,10 +22,32 @@
 * SOFTWARE.
 */
 
+using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
+
 namespace Shaos.Api.Model.v1
 {
-    public class PlugInStatus
+    /// <summary>
+    /// The state of a <see cref="PlugIn"/>
+    /// </summary>
+    public enum PlugInState
     {
-
+        /// <summary>
+        /// The default <see cref="ApiPlugIn"/> status
+        /// </summary>
+        InActive,
+        Starting,
+        /// <summary>
+        /// The <see cref="ApiPlugIn"/> has been started
+        /// </summary>
+        Started,
+        Stopping,
+        /// <summary>
+        /// The <see cref="ApiPlugIn"/> is stopped
+        /// </summary>
+        Stopped,
+        /// <summary>
+        /// <see cref="ApiPlugIn"/> has faulted
+        /// </summary>
+        Faulted
     }
 }

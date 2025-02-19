@@ -26,7 +26,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Services.Extensions;
-
+using System.Runtime.CompilerServices;
 using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
 using ModelPlugIn = Shaos.Repository.Models.PlugIn;
 
@@ -62,6 +62,14 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public async Task DeletePlugInAsync(int id, CancellationToken cancellationToken)
+        {
+            // this is EF COre 7 enhancement performs select and delete in one operation
+            await _context.PlugIns.Where(_ => _.Id == id)
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task<ApiPlugIn?> GetPlugInByIdAsync(int id, CancellationToken cancellationToken)
         {
 #warning map plugin state
@@ -85,10 +93,10 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync()
+        public async IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
         {
 #warning map state
-            await foreach (var item in _context.PlugIns.AsNoTracking().AsAsyncEnumerable())
+            await foreach (var item in _context.PlugIns.AsNoTracking().AsAsyncEnumerable().WithCancellation(cancellationToken))
             {
                 yield return item.ToApiModel();
             }
@@ -98,6 +106,11 @@ namespace Shaos.Services
         public async Task<bool> PlugInWithNameExistsAsync(string name, CancellationToken cancellationToken)
         {
             return await _context.PlugIns.AnyAsync(_ => _.Name == name, cancellationToken: cancellationToken);
+        }
+
+        public Task SetPluginEnabledAsync(int id, bool state, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
