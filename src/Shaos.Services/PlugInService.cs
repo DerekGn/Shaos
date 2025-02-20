@@ -128,7 +128,6 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async IAsyncEnumerable<PlugInStatus> GetPlugInStatusesAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken)
- 
         {
             List<PlugInStatus> plugInStatuses = new List<PlugInStatus>();
 
