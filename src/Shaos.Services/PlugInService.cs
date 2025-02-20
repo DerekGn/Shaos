@@ -24,6 +24,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shaos.Api.Model.v1;
 using Shaos.Repository;
 using Shaos.Services.Extensions;
 using System.Runtime.CompilerServices;
@@ -44,7 +45,11 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInAsync(string name, string? description, string code)
+        public async Task<int> CreatePlugInAsync(
+            string name,
+            string? description,
+            string code,
+            CancellationToken cancellationToken)
         {
             var plugin = new ModelPlugIn()
             {
@@ -56,13 +61,15 @@ namespace Shaos.Services
 
             await _context.PlugIns.AddAsync(plugin);
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return plugin.Id;
         }
 
         /// <inheritdoc/>
-        public async Task DeletePlugInAsync(int id, CancellationToken cancellationToken)
+        public async Task DeletePlugInAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
             // this is EF COre 7 enhancement performs select and delete in one operation
             await _context.PlugIns.Where(_ => _.Id == id)
@@ -70,7 +77,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<ApiPlugIn?> GetPlugInByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<ApiPlugIn?> GetPlugInByIdAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
 #warning map plugin state
             var plugin = await _context
@@ -82,7 +91,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<ApiPlugIn?> GetPlugInByNameAsync(string name, CancellationToken cancellationToken)
+        public async Task<ApiPlugIn?> GetPlugInByNameAsync(
+            string name,
+            CancellationToken cancellationToken)
         {
             var plugin = await _context
                 .PlugIns
@@ -93,24 +104,64 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-#warning map state
-            await foreach (var item in _context.PlugIns.AsNoTracking().AsAsyncEnumerable().WithCancellation(cancellationToken))
+            await foreach (var item in _context.PlugIns
+                .AsNoTracking()
+                .AsAsyncEnumerable()
+                .WithCancellation(cancellationToken))
             {
                 yield return item.ToApiModel();
             }
         }
 
         /// <inheritdoc/>
-        public async Task<bool> PlugInWithNameExistsAsync(string name, CancellationToken cancellationToken)
+        public async Task<PlugInStatus> GetPlugInStatusAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
-            return await _context.PlugIns.AnyAsync(_ => _.Name == name, cancellationToken: cancellationToken);
+#warning implement
+            return new PlugInStatus();
         }
 
-        public Task SetPluginEnabledAsync(int id, bool state, CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        public async IAsyncEnumerable<PlugInStatus> GetPlugInStatusesAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+ 
         {
-            throw new NotImplementedException();
+            List<PlugInStatus> plugInStatuses = new List<PlugInStatus>();
+
+            foreach(var p in plugInStatuses)
+            {
+                yield return p;
+            } 
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> PlugInWithNameExistsAsync(
+            string name,
+            CancellationToken cancellationToken)
+        {
+            return await _context.PlugIns
+                .AnyAsync(_ => _.Name == name, cancellationToken: cancellationToken);
+        }
+
+        public async Task SetPlugInIsEnabledStateAsync(
+            int id,
+            bool isEnabled,
+            CancellationToken cancellationToken)
+        {
+            await UpdatePlugInAsync(
+                id,
+                (plugIn) =>
+                {
+                    if (plugIn != null)
+                    {
+                        plugIn.IsEnabled = isEnabled;
+                    }
+                },
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -121,18 +172,32 @@ namespace Shaos.Services
             string code,
             CancellationToken cancellationToken)
         {
-            var plugIn = await _context
-                .PlugIns
-                .FirstOrDefaultAsync(
-                    _ => _.Id == id,
-                    cancellationToken);
+            return await UpdatePlugInAsync(
+                id,
+                (plugIn) =>
+                {
+                    if (plugIn != null)
+                    {
+                        plugIn.Code = code;
+                        plugIn.Description = description;
+                        plugIn.Name = name;
+                    }
+                },
+                cancellationToken);
+        }
 
-            if(plugIn != null)
-            {
-                plugIn.Code = code;
-                plugIn.Description = description;
-                plugIn.Name = name;
-            }
+        private async Task<ApiPlugIn?> UpdatePlugInAsync(
+            int id, 
+            Action<ModelPlugIn?> modify,
+            CancellationToken cancellationToken)
+        {
+            var plugIn = await _context
+                            .PlugIns
+                            .FirstOrDefaultAsync(
+                                _ => _.Id == id,
+                                cancellationToken);
+
+            modify(plugIn);
 
             return plugIn?.ToApiModel();
         }

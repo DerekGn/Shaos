@@ -22,25 +22,51 @@
 * SOFTWARE.
 */
 
-using System.Runtime.CompilerServices;
+using Shaos.Api.Model.v1;
 using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
 
 namespace Shaos.Services
 {
     public interface IPlugInService
     {
-        Task<int> CreatePlugInAsync(string name, string? description, string code);
+        Task<int> CreatePlugInAsync(
+            string name,
+            string? description,
+            string code,
+            CancellationToken cancellationToken);
 
-        Task DeletePlugInAsync(int id, CancellationToken cancellationToken);
+        Task DeletePlugInAsync(
+            int id,
+            CancellationToken cancellationToken);
 
-        Task<ApiPlugIn?> GetPlugInByIdAsync(int id, CancellationToken cancellationToken);
+        Task<ApiPlugIn?> GetPlugInByIdAsync(
+            int id,
+            CancellationToken cancellationToken);
 
-        Task<ApiPlugIn?> GetPlugInByNameAsync(string name, CancellationToken cancellationToken);
+        Task<ApiPlugIn?> GetPlugInByNameAsync(
+            string name,
+            CancellationToken cancellationToken);
 
-        IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync(CancellationToken cancellationToken);
-        object GetPlugInStatusAsync(int id, CancellationToken cancellationToken);
-        Task SetPluginEnabledAsync(int id, bool state, CancellationToken cancellationToken);
+        IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync(
+            CancellationToken cancellationToken);
+        
+        Task<PlugInStatus> GetPlugInStatusAsync(
+            int id,
+            CancellationToken cancellationToken);
+        
+        IAsyncEnumerable<PlugInStatus> GetPlugInStatusesAsync(
+            CancellationToken cancellationToken);
 
-        Task<ApiPlugIn?> UpdatePlugInAsync(int id, string name, string? description, string code, CancellationToken cancellationToken);
+        Task SetPlugInIsEnabledStateAsync(
+            int id,
+            bool isEnabled,
+            CancellationToken cancellationToken);
+
+        Task<ApiPlugIn?> UpdatePlugInAsync(
+            int id, 
+            string name,
+            string? description,
+            string code,
+            CancellationToken cancellationToken);
     }
 }

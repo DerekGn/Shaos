@@ -40,11 +40,6 @@ namespace Shaos.Api.Model.v1
         public string? Description { get; init; } = string.Empty;
 
         /// <summary>
-        /// The status of the <see cref="PlugIn"/>
-        /// </summary>
-        public PlugInState Status { get; init; }
-
-        /// <summary>
         /// Indicates if the <see cref="PlugIn"/> is enabled
         /// </summary>
         public bool IsEnabled { get; init; }
