@@ -36,11 +36,16 @@ namespace Shaos.Services
     public class PlugInService : IPlugInService
     {
         private readonly ShaosDbContext _context;
+        private readonly IPlugInManager _manager;
         private readonly ILogger<PlugInService> _logger;
 
-        public PlugInService(ILogger<PlugInService> logger, ShaosDbContext context)
+        public PlugInService(
+            ILogger<PlugInService> logger,
+            IPlugInManager manager,
+            ShaosDbContext context)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
@@ -81,13 +86,19 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken)
         {
-#warning map plugin state
-            var plugin = await _context
-                .PlugIns
-            .AsNoTracking()
-                .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
+            ModelPlugIn? plugin = await GetPlugInByIdFromContextAsync(id, cancellationToken);
 
             return plugin?.ToApiModel();
+        }
+
+        private async Task<ModelPlugIn?> GetPlugInByIdFromContextAsync(
+            int id,
+            CancellationToken cancellationToken)
+        {
+            return await _context
+                .PlugIns
+                .AsNoTracking()
+                .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -146,6 +157,7 @@ namespace Shaos.Services
                 .AnyAsync(_ => _.Name == name, cancellationToken: cancellationToken);
         }
 
+        /// <inheritdoc/>
         public async Task SetPlugInIsEnabledStateAsync(
             int id,
             bool isEnabled,
@@ -161,6 +173,31 @@ namespace Shaos.Services
                     }
                 },
                 cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task StartPlugInAsync(
+            int id,
+            CancellationToken cancellationToken)
+        {
+            var plugIn = await GetPlugInByIdFromContextAsync(
+                id,
+                cancellationToken);
+            
+            if(plugIn != null)
+            {
+                await _manager.StartPlugInAsync(
+                    plugIn,
+                    cancellationToken);
+            }
+        }
+
+        /// <inheritdoc/>
+        public Task StopPlugInAsync(
+            int id,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
@@ -185,6 +222,7 @@ namespace Shaos.Services
                 cancellationToken);
         }
 
+        /// <inheritdoc/>
         private async Task<ApiPlugIn?> UpdatePlugInAsync(
             int id, 
             Action<ModelPlugIn?> modify,

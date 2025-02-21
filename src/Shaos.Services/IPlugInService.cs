@@ -61,7 +61,14 @@ namespace Shaos.Services
             int id,
             bool isEnabled,
             CancellationToken cancellationToken);
-
+        Task StartPlugInAsync(
+            int id,
+            CancellationToken cancellationToken);
+        
+        Task StopPlugInAsync(
+            int id,
+            CancellationToken cancellationToken);
+        
         Task<ApiPlugIn?> UpdatePlugInAsync(
             int id, 
             string name,
