@@ -56,7 +56,7 @@ namespace Shaos.Services
             string code,
             CancellationToken cancellationToken)
         {
-            var plugin = new ModelPlugIn()
+            var plugIn = new ModelPlugIn()
             {
                 Code = code,
                 Name = name,
@@ -64,11 +64,13 @@ namespace Shaos.Services
                 IsEnabled = false
             };
 
-            await _context.PlugIns.AddAsync(plugin);
+            await _context.PlugIns.AddAsync(plugIn);
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return plugin.Id;
+            _logger.LogInformation("PlugIn [{id}] [{name}] Created", plugIn.Id, plugIn.Name);
+
+            return plugIn.Id;
         }
 
         /// <inheritdoc/>
@@ -76,6 +78,8 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken)
         {
+            _logger.LogInformation("PlugIn [{id}] Deleting", id);
+
             // this is EF COre 7 enhancement performs select and delete in one operation
             await _context.PlugIns.Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
@@ -149,20 +153,13 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<bool> PlugInWithNameExistsAsync(
-            string name,
-            CancellationToken cancellationToken)
-        {
-            return await _context.PlugIns
-                .AnyAsync(_ => _.Name == name, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public async Task SetPlugInIsEnabledStateAsync(
+        public async Task SetPlugInEnabledStateAsync(
             int id,
             bool isEnabled,
             CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Setting PlugIn [{id}] State To [{isEnabled}]", id, isEnabled);
+
             await UpdatePlugInAsync(
                 id,
                 (plugIn) =>
@@ -186,6 +183,10 @@ namespace Shaos.Services
             
             if(plugIn != null)
             {
+                _logger.LogInformation("Starting PlugIn [{id}] [{name}]",
+                    plugIn.Id,
+                    plugIn.Name);
+                
                 await _manager.StartPlugInAsync(
                     plugIn,
                     cancellationToken);
@@ -193,11 +194,24 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public Task StopPlugInAsync(
+        public async Task StopPlugInAsync(
             int id,
             CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var plugIn = await GetPlugInByIdFromContextAsync(
+                id,
+                cancellationToken);
+            
+            if(plugIn != null)
+            {
+                _logger.LogInformation("Stopping PlugIn [{id}] [{name}]",
+                    plugIn.Id,
+                    plugIn.Name);
+
+                await _manager.StopPlugInAsync(
+                    plugIn,
+                    cancellationToken);
+            }
         }
 
         /// <inheritdoc/>

@@ -166,7 +166,7 @@ namespace Shaos.Controllers
             }
             else
             {
-                await _plugInService.SetPlugInIsEnabledStateAsync(
+                await _plugInService.SetPlugInEnabledStateAsync(
                     id,
                     state,
                     cancellationToken);

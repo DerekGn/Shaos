@@ -29,5 +29,7 @@ namespace Shaos.Services
     public interface IPlugInManager
     {
         Task StartPlugInAsync(PlugIn plugIn, CancellationToken cancellationToken);
+
+        Task StopPlugInAsync(PlugIn plugIn, CancellationToken cancellationToken);
     }
 }

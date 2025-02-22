@@ -57,7 +57,7 @@ namespace Shaos.Services
         IAsyncEnumerable<PlugInStatus> GetPlugInStatusesAsync(
             CancellationToken cancellationToken);
 
-        Task SetPlugInIsEnabledStateAsync(
+        Task SetPlugInEnabledStateAsync(
             int id,
             bool isEnabled,
             CancellationToken cancellationToken);

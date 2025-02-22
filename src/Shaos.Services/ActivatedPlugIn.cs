@@ -22,42 +22,21 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
-
 namespace Shaos.Services
 {
-    public class PlugInManager : IPlugInManager
+    internal class ActivatedPlugIn()
     {
-        private List<ActivatedPlugIn> _activatedPlugIns;
+        // public ActivatedPlugIn(int id, Task task, CancellationToken token)
+        // {
+        //     Id = id;
+        //     Task = task ?? throw new ArgumentNullException(nameof(task));
+        //     Token = token;
+        // }
 
-        public PlugInManager()
-        {
-            _activatedPlugIns = new List<ActivatedPlugIn>();
-        }
+        public int Id { get; init; }
 
-        /// </inheritdoc>
-        public async Task StartPlugInAsync(
-            PlugIn plugIn,
-            CancellationToken cancellationToken)
-        {
-            var activatedPlugIn = _activatedPlugIns.FirstOrDefault();
+        public Task Task { get; init;}
 
-            if(activatedPlugIn != null)
-            {
-
-            }            
-        }
-
-        /// </inheritdoc>
-        public async Task StopPlugInAsync(
-            PlugIn plugIn,
-            CancellationToken cancellationToken)
-        {
-            var activatedPlugIn = _activatedPlugIns.FirstOrDefault();
-
-            if(activatedPlugIn != null)
-            {
-            }
-        }
+        public CancellationToken Token { get; init; }
     }
 }
