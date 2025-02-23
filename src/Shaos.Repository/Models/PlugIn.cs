@@ -43,5 +43,10 @@ namespace Shaos.Repository.Models
         /// Indicates if the <see cref="PlugIn"/> is enabled
         /// </summary>
         public bool IsEnabled { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="CodeFile"/> associated with this PlugIn
+        /// </summary>
+        public ICollection<CodeFile> Files { get; }
     }
 }

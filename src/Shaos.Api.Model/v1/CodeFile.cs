@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -24,29 +24,8 @@
 
 namespace Shaos.Api.Model.v1
 {
-    /// <summary>
-    /// Represents a PlugIn
-    /// </summary>
-    public record PlugIn : Base
+    public record CodeFile : Base
     {
-        /// <summary>
-        /// The name of this <see cref="PlugIn"/>
-        /// </summary>
-        public string Name { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The description of this <see cref="PlugIn"/>
-        /// </summary>
-        public string? Description { get; init; } = string.Empty;
-
-        /// <summary>
-        /// Indicates if the <see cref="PlugIn"/> is enabled
-        /// </summary>
-        public bool IsEnabled { get; init; }
-
-        /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this PlugIn
-        /// </summary>
-        public ICollection<CodeFile> Files { get; }
-    }
+        public string Name { get; set; }    
+    }    
 }
