@@ -24,8 +24,19 @@
 
 namespace Shaos.Repository.Models
 {
+    /// <summary>
+    /// A <see cref="CodeFile"/> for a <see cref="PlugIn"/>
+    /// </summary>
     public class CodeFile : Base
     {
+        /// <summary>
+        /// The <see cref="CodeFile"/> name
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// The associated <see cref="PlugIn"/>
+        /// </summary>
+        public PlugIn PlugIn { get; set; }
     }
 }
