@@ -272,37 +272,18 @@ namespace Shaos.Controllers
             }
         }
 
-        [HttpPut("{id}/files/{fileId}")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn code file updated was accepted")]
-        [SwaggerResponse(StatusCodes.Status404NotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Update a PlugIn code file", Description = "Update a PlugIn code file", OperationId = "UpdatePlugInCodeFile")]
-        public async Task<ActionResult> UpdatePlugInCodeFileAsync(
-            [FromRoute, SwaggerParameter("The PlugIn identifier to update", Required = true)] int id,
-            [FromRoute, SwaggerParameter("The PlugIn file identifier to update", Required = true)] int fileId,
-            IFormFile file,
-            CancellationToken cancellationToken)
-        {
-            var plugIn = await _plugInService.GetPlugInByIdAsync(id, cancellationToken);
-
-            if(plugIn == null)
-            {
-                return NotFound();
-            }
-
-            return Ok();
-        }
-
-        [HttpPost("{id}/files")]
+        [HttpPut("{id}/files")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn code file updated was accepted")]
         [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Create a PlugIn code file", Description = "Create a PlugIn code file", OperationId = "CreatePlugInCodeFile")]
-        public async Task<ActionResult> CreatePlugInCodeFileAsync(
-            [FromRoute, SwaggerParameter("The PlugIn identifier to create a code file", Required = true)] int id,
-            IFormFile file,
+        [SwaggerOperation(
+            Summary = "Upload a set of PlugIn code files",
+            Description = "Upload a set of PlugIn code files. Existing files will be over written, new files will be created",
+            OperationId = "UploadPlugInCodeFiles")]
+        public async Task<ActionResult> CreatePlugInCodesFileAsync(
+            [FromRoute, SwaggerParameter("The PlugIn identifier to upload code files", Required = true)] int id,
+            List<IFormFile> file,
             CancellationToken cancellationToken)
         {
             var plugIn = await _plugInService.GetPlugInByIdAsync(id, cancellationToken);

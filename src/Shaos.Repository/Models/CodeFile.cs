@@ -32,11 +32,11 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The <see cref="CodeFile"/> name
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The associated <see cref="PlugIn"/>
         /// </summary>
-        public PlugIn PlugIn { get; set; }
+        public PlugIn PlugIn { get; set; } = default;
     }
 }
