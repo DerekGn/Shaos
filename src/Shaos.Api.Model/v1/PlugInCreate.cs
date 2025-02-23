@@ -45,12 +45,5 @@ namespace Shaos.Api.Model.v1
         [Required]
         [StringLength(PlugInConstants.MaxLengthDescription)]
         public string? Description { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The code of this <see cref="PlugIn"/>
-        /// </summary>
-        [Required]
-        [StringLength(PlugInConstants.MaxLengthCode)]
-        public string Code {  get; init; } = string.Empty;
     }
 }

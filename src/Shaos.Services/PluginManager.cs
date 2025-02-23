@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
 
 namespace Shaos.Services
@@ -29,9 +30,13 @@ namespace Shaos.Services
     public class PlugInManager : IPlugInManager
     {
         private List<ActivatedPlugIn> _activatedPlugIns;
+        private IAssemblyCache _assembleCache;
+        private ILogger<PlugInManager> _logger; 
 
-        public PlugInManager()
+        public PlugInManager(ILogger<PlugInManager> logger, IAssemblyCache assemblyCache)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _assembleCache = assemblyCache ?? throw new ArgumentNullException(nameof(assemblyCache));
             _activatedPlugIns = new List<ActivatedPlugIn>();
         }
 
@@ -42,10 +47,27 @@ namespace Shaos.Services
         {
             var activatedPlugIn = _activatedPlugIns.FirstOrDefault();
 
-            if(activatedPlugIn != null)
+            if(activatedPlugIn == null)
             {
-
+                await ActivatePlugInAsync(plugIn);                
+            }
+            else
+            {
+                await ActivatePlugInAsync(activatedPlugIn);
             }            
+        }
+
+        private async Task ActivatePlugInAsync(PlugIn plugIn)
+        {
+            _logger.LogInformation("Activating PlugIn [{id}] [{name}]", plugIn.Id, plugIn.Name);
+
+            
+            throw new NotImplementedException();
+        }
+
+        private async Task ActivatePlugInAsync(ActivatedPlugIn activatedPlugIn)
+        {
+            throw new NotImplementedException();
         }
 
         /// </inheritdoc>
@@ -57,7 +79,13 @@ namespace Shaos.Services
 
             if(activatedPlugIn != null)
             {
+                await StopActivatedPlugInAsync(activatedPlugIn);
             }
+        }
+
+        private async Task StopActivatedPlugInAsync(ActivatedPlugIn activatedPlugIn)
+        {
+            throw new NotImplementedException();
         }
     }
 }

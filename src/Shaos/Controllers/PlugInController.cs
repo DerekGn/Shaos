@@ -74,7 +74,6 @@ namespace Shaos.Controllers
                 return Ok(await _plugInService.CreatePlugInAsync(
                     create.Name,
                     create.Description,
-                    create.Code,
                     cancellationToken));
             }
         }
@@ -258,7 +257,6 @@ namespace Shaos.Controllers
                     id,
                     update.Name,
                     update.Description,
-                    update.Code,
                     cancellationToken);
 
                 if (updated == null)

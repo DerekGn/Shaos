@@ -38,5 +38,7 @@ namespace Shaos.Services
         public Task Task { get; init;}
 
         public CancellationToken Token { get; init; }
+
+        public string? CodeHash { get; set; } 
     }
 }

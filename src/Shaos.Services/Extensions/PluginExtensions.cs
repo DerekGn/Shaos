@@ -34,7 +34,6 @@ namespace Shaos.Services.Extensions
             return new ApiPlugIn()
             {
                 CreatedDate = plugIn.CreatedDate,
-                Code = plugIn.Code,
                 Description = plugIn.Description,
                 Id = plugIn.Id,
                 IsEnabled = plugIn.IsEnabled,

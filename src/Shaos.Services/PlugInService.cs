@@ -53,12 +53,10 @@ namespace Shaos.Services
         public async Task<int> CreatePlugInAsync(
             string name,
             string? description,
-            string code,
             CancellationToken cancellationToken)
         {
             var plugIn = new ModelPlugIn()
             {
-                Code = code,
                 Name = name,
                 Description = description,
                 IsEnabled = false
@@ -219,7 +217,6 @@ namespace Shaos.Services
             int id,
             string name,
             string? description,
-            string code,
             CancellationToken cancellationToken)
         {
             return await UpdatePlugInAsync(
@@ -228,7 +225,6 @@ namespace Shaos.Services
                 {
                     if (plugIn != null)
                     {
-                        plugIn.Code = code;
                         plugIn.Description = description;
                         plugIn.Name = name;
                     }

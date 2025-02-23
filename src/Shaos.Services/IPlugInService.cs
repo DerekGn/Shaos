@@ -32,7 +32,6 @@ namespace Shaos.Services
         Task<int> CreatePlugInAsync(
             string name,
             string? description,
-            string code,
             CancellationToken cancellationToken);
 
         Task DeletePlugInAsync(
@@ -73,7 +72,6 @@ namespace Shaos.Services
             int id, 
             string name,
             string? description,
-            string code,
             CancellationToken cancellationToken);
     }
 }
