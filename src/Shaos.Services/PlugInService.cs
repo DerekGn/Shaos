@@ -31,8 +31,8 @@ using System.Runtime.CompilerServices;
 using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
 using ModelPlugIn = Shaos.Repository.Models.PlugIn;
 
-using ApiPlugInCodeFile = Shaos.Api.Model.v1.CodeFile;
-using ModelPlugInCodeFile = Shaos.Repository.Models.CodeFile;
+using ApiCodeFile = Shaos.Api.Model.v1.CodeFile;
+using ModelCodeFile = Shaos.Repository.Models.CodeFile;
 
 namespace Shaos.Services
 {
@@ -248,13 +248,13 @@ namespace Shaos.Services
 
                 if(!plugIn.CodeFiles.Any(_ => string.Compare(_.Name, fileName, true) == 0))
                 {
-                    plugIn.CodeFiles.Add(new ModelPlugInCodeFile()
+                    plugIn.CodeFiles.Add(new ModelCodeFile()
                     {
                         Name = fileName,
                         FileName = fileName
                     });
 
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(cancellationToken);
                 }
             }
         }
@@ -265,6 +265,7 @@ namespace Shaos.Services
         {
             return await _context
                 .PlugIns
+                .Include(_ => _.CodeFiles)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
         }

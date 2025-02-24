@@ -357,7 +357,9 @@ namespace Shaos.Controllers
             Func<PlugIn, Task<ActionResult>> operation,
             CancellationToken cancellationToken)
         {
-            var plugIn = await _plugInService.GetPlugInByIdAsync(id, cancellationToken);
+            var plugIn = await _plugInService.GetPlugInByIdAsync(
+                id,
+                cancellationToken);
 
             if (plugIn == null)
             {

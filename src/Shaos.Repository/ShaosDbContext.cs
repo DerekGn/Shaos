@@ -61,6 +61,13 @@ namespace Shaos.Repository
         {
             modelBuilder
                 .Entity<PlugIn>()
+                .HasMany(_ => _.CodeFiles)
+                .WithOne(_ => _.PlugIn)
+                .HasForeignKey(_ => _.PlugInId)
+                .IsRequired(false);
+
+            modelBuilder
+                .Entity<PlugIn>()
                 .Property(_ => _.Name)
                 .IsRequired()
                 .HasMaxLength(PlugInConstants.MaxLengthName);
@@ -74,13 +81,6 @@ namespace Shaos.Repository
                 .Entity<PlugIn>()
                 .HasIndex(_ => _.Name )
                 .HasDatabaseName("IX_Name_Ascending");
-
-            modelBuilder
-                .Entity<PlugIn>()
-                .HasMany(_ => _.CodeFiles)
-                .WithOne(_ => _.PlugIn)
-                .HasForeignKey(e => e.PlugInId)
-                .IsRequired();
 
             modelBuilder
                 .Entity<CodeFile>()

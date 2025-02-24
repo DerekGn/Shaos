@@ -42,11 +42,11 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The associated <see cref="PlugIn"/>
         /// </summary>
-        public PlugIn? PlugIn { get; set; } = default;
+        public PlugIn? PlugIn { get; set; }
 
         /// <summary>
         /// The identifier of the associated <see cref="PlugIn"/>
         /// </summary>
-        public int PlugInId { get; set; }
+        public int? PlugInId { get; set; }
     }
 }
