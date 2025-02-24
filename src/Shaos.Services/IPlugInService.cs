@@ -48,11 +48,11 @@ namespace Shaos.Services
 
         IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync(
             CancellationToken cancellationToken);
-        
+
         Task<PlugInStatus> GetPlugInStatusAsync(
             int id,
             CancellationToken cancellationToken);
-        
+
         IAsyncEnumerable<PlugInStatus> GetPlugInStatusesAsync(
             CancellationToken cancellationToken);
 
@@ -60,18 +60,25 @@ namespace Shaos.Services
             int id,
             bool isEnabled,
             CancellationToken cancellationToken);
+
         Task StartPlugInAsync(
             int id,
             CancellationToken cancellationToken);
-        
+
         Task StopPlugInAsync(
             int id,
             CancellationToken cancellationToken);
-        
+
         Task<ApiPlugIn?> UpdatePlugInAsync(
-            int id, 
+            int id,
             string name,
             string? description,
+            CancellationToken cancellationToken);
+
+        Task UploadPlugInCodeFileAsync(
+            int id,
+            string fileName,
+            Stream stream,
             CancellationToken cancellationToken);
     }
 }

@@ -24,8 +24,14 @@
 
 namespace Shaos.Api.Model.v1
 {
+    /// <summary>
+    /// Represents a code file that implements a <see cref="PlugIn"/> functionality
+    /// </summary>
     public record CodeFile : Base
     {
-        public string Name { get; set; }    
-    }    
+        /// <summary>
+        /// The name of the <see cref="CodeFile"/>
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+    }
 }

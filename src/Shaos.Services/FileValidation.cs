@@ -22,26 +22,14 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+namespace Shaos.Services
 {
-    /// <summary>
-    /// A common base class for API models
-    /// </summary>
-    public abstract record Base
+    public enum FileValidationResult
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public int Id { get; init; }
-
-        /// <summary>
-        /// The created date
-        /// </summary>
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// The updated date
-        /// </summary>
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+        Success,
+        FileNameEmpty,
+        InvalidContentType,
+        InvalidFileName,
+        InvalidFileLength,
     }
 }

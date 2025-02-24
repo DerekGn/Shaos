@@ -22,26 +22,17 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+
+namespace Shaos.Services
 {
     /// <summary>
-    /// A common base class for API models
+    /// The file store options
     /// </summary>
-    public abstract record Base
+    public record FileStoreOptions
     {
         /// <summary>
-        /// The identifier
+        /// The store path where files will be stored
         /// </summary>
-        public int Id { get; init; }
-
-        /// <summary>
-        /// The created date
-        /// </summary>
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// The updated date
-        /// </summary>
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+        public required string StorePath { get; init; }
     }
 }

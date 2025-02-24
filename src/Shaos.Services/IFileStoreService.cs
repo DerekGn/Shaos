@@ -22,26 +22,15 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+
+namespace Shaos.Services
 {
-    /// <summary>
-    /// A common base class for API models
-    /// </summary>
-    public abstract record Base
+    public interface IFileStoreService
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public int Id { get; init; }
-
-        /// <summary>
-        /// The created date
-        /// </summary>
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// The updated date
-        /// </summary>
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+        Task<string?> WriteFileStreamAsync(
+            string folder,
+            string fileName,
+            Stream stream,
+            CancellationToken cancellationToken);
     }
 }

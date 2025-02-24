@@ -45,8 +45,8 @@ namespace Shaos.Repository.Models
         public bool IsEnabled { get; set; }
 
         /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this PlugIn
+        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
         /// </summary>
-        public ICollection<CodeFile> Files { get; }
+        public ICollection<CodeFile> CodeFiles { get; } = new List<CodeFile>();
     }
 }

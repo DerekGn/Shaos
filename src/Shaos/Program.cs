@@ -92,8 +92,12 @@ namespace Shaos
 
             // Application defined services
             builder.Services.AddScoped<IPlugInService, PlugInService>();
-            builder.Services.AddSingleton<IPlugInManager, PlugInManager>();
             builder.Services.AddSingleton<IAssemblyCache, AssemblyCache>();
+            builder.Services.AddSingleton<IPlugInManager, PlugInManager>();
+            builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
+            builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
+
+            builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
 
             var app = builder.Build();
             var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();

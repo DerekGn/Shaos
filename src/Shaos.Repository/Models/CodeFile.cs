@@ -30,6 +30,11 @@ namespace Shaos.Repository.Models
     public class CodeFile : Base
     {
         /// <summary>
+        /// The disk file name
+        /// </summary>
+        public string FileName { get; set; } = string.Empty;
+
+        /// <summary>
         /// The <see cref="CodeFile"/> name
         /// </summary>
         public string Name { get; set; } = string.Empty;
@@ -37,6 +42,11 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The associated <see cref="PlugIn"/>
         /// </summary>
-        public PlugIn PlugIn { get; set; } = default;
+        public PlugIn? PlugIn { get; set; } = default;
+
+        /// <summary>
+        /// The identifier of the associated <see cref="PlugIn"/>
+        /// </summary>
+        public int PlugInId { get; set; }
     }
 }

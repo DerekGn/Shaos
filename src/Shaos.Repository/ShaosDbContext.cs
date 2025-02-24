@@ -59,23 +59,38 @@ namespace Shaos.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PlugIn>()
+            modelBuilder
+                .Entity<PlugIn>()
                 .Property(_ => _.Name)
                 .IsRequired()
                 .HasMaxLength(PlugInConstants.MaxLengthName);
 
-            modelBuilder.Entity<PlugIn>()
-                .Property(_ => _.Code)
-                .IsRequired()
-                .HasMaxLength(PlugInConstants.MaxLengthCode);
-
-            modelBuilder.Entity<PlugIn>()
+            modelBuilder
+                .Entity<PlugIn>()
                 .Property(_ => _.Description)
                 .HasMaxLength(PlugInConstants.MaxLengthDescription);
 
-            modelBuilder.Entity<PlugIn>()
+            modelBuilder
+                .Entity<PlugIn>()
                 .HasIndex(_ => _.Name )
                 .HasDatabaseName("IX_Name_Ascending");
+
+            modelBuilder
+                .Entity<PlugIn>()
+                .HasMany(_ => _.CodeFiles)
+                .WithOne(_ => _.PlugIn)
+                .HasForeignKey(e => e.PlugInId)
+                .IsRequired();
+
+            modelBuilder
+                .Entity<CodeFile>()
+                .Property(_ => _.Name)
+                .IsRequired();
+
+            modelBuilder
+                .Entity<CodeFile>()
+                .Property(_ => _.FileName)
+                .IsRequired();
         }
     }
 }

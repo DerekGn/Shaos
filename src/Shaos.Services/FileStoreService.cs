@@ -22,26 +22,39 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+using Microsoft.Extensions.Options;
+
+namespace Shaos.Services
 {
-    /// <summary>
-    /// A common base class for API models
-    /// </summary>
-    public abstract record Base
+    public class FileStoreService : IFileStoreService
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public int Id { get; init; }
+        private readonly IOptions<FileStoreOptions> _options;
 
-        /// <summary>
-        /// The created date
-        /// </summary>
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public FileStoreService(IOptions<FileStoreOptions> options)
+        {
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+        }
 
-        /// <summary>
-        /// The updated date
-        /// </summary>
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+        public async Task<string?> WriteFileStreamAsync(
+            string folder,
+            string fileName,
+            Stream stream,
+            CancellationToken cancellationToken)
+        {
+            var storeFolder = Path.Combine(_options.Value.StorePath, folder);
+
+            if (!Directory.Exists(storeFolder))
+            {
+                Directory.CreateDirectory(storeFolder);
+            }
+
+            var filePath = Path.Combine(storeFolder, fileName);
+
+            using var outputStream = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+
+            await stream.CopyToAsync(outputStream, cancellationToken);
+
+            return filePath;
+        }
     }
 }
