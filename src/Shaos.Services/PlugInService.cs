@@ -29,10 +29,8 @@ using Shaos.Repository;
 using Shaos.Services.Extensions;
 using System.Runtime.CompilerServices;
 using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
-using ModelPlugIn = Shaos.Repository.Models.PlugIn;
-
-using ApiCodeFile = Shaos.Api.Model.v1.CodeFile;
 using ModelCodeFile = Shaos.Repository.Models.CodeFile;
+using ModelPlugIn = Shaos.Repository.Models.PlugIn;
 
 namespace Shaos.Services
 {
@@ -84,9 +82,37 @@ namespace Shaos.Services
         {
             _logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
+            _fileStoreService.DeleteFolder(id.ToString());
+
             // this is EF COre 7 enhancement performs select and delete in one operation
             await _context.PlugIns.Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task DeletePlugInCodeFileAsync(
+            int id,
+            int codeFileId,
+            CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("PlugIn [{Id}] CodeFile [{CodeFileId}] Deleting", id, codeFileId);
+
+            var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
+
+            if (plugIn != null)
+            {
+                var codeFile = plugIn.CodeFiles.FirstOrDefault(_ => _.Id == codeFileId);
+
+                if (codeFile != null)
+                {
+                    plugIn.CodeFiles.Remove(codeFile);
+                    _context.Remove(codeFile);
+
+                    _fileStoreService.DeleteFile(codeFile.FilePath);
+
+                    await _context.SaveChangesAsync();
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -251,7 +277,7 @@ namespace Shaos.Services
                     stream,
                     cancellationToken);
 
-                if(!plugIn.CodeFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
+                if (!plugIn.CodeFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
                 {
                     plugIn.CodeFiles.Add(new ModelCodeFile()
                     {
@@ -271,7 +297,7 @@ namespace Shaos.Services
         {
             var query = _context.PlugIns.Include(_ => _.CodeFiles).AsQueryable();
 
-            if(withNoTracking)
+            if (withNoTracking)
             {
                 query = query.AsNoTracking();
             }

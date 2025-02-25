@@ -97,6 +97,24 @@ namespace Shaos.Controllers
             return Accepted();
         }
 
+        [HttpDelete("{id}/codefiles/{codefileId}")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn CodeFile will be deleted")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Delete a PlugIn CodeFile",
+            Description = "Delete a CodeFile from a PlugIn",
+            OperationId = "DletePlugInCodeFile")]
+        public async Task<ActionResult> DeletePlugInCodeFileAsync(
+            [FromRoute, SwaggerParameter("The PlugIn identifier to delete", Required = true)] int id,
+            [FromRoute, SwaggerParameter("The PlugIn CodeFile identifier to delete", Required = true)] int codeFileId,
+            CancellationToken cancellationToken)
+        {
+            await _plugInService.DeletePlugInCodeFileAsync(id, codeFileId, cancellationToken);
+
+            return Accepted();
+        }
+
         [HttpGet("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn details in the response", Type = typeof(PlugIn))]
         [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
@@ -112,23 +130,6 @@ namespace Shaos.Controllers
                 return Ok(plugIn);
             },
              cancellationToken);
-        }
-
-        [HttpGet("{id}/codefiles")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The set of PlugIn code files in the response", Type = typeof(PlugIn))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Get an existing PlugIn's code files", Description = "", OperationId = "GetPlugInCodeFiles")]
-        public async Task<ActionResult<IAsyncEnumerator<CodeFile>>> GetPlugInCodeFilesAsync(
-            [FromRoute, SwaggerParameter("The PlugIn identifier to get its code files", Required = true)] int id,
-            CancellationToken cancellationToken)
-        {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
-            {
-                return Ok(plugIn);
-            },
-            cancellationToken);
         }
 
         [HttpGet]

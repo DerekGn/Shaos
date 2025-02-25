@@ -27,6 +27,10 @@ namespace Shaos.Services
 {
     public interface IFileStoreService
     {
+        void DeleteFile(string filePath);
+
+        void DeleteFolder(string folder);
+
         Task<string?> WriteFileStreamAsync(
             string folder,
             string fileName,

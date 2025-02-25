@@ -37,6 +37,11 @@ namespace Shaos.Services
         Task DeletePlugInAsync(
             int id,
             CancellationToken cancellationToken);
+        
+        Task DeletePlugInCodeFileAsync(
+            int id,
+            int codeFileId,
+            CancellationToken cancellationToken);
 
         Task<ApiPlugIn?> GetPlugInByIdAsync(
             int id,

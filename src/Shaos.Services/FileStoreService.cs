@@ -35,6 +35,27 @@ namespace Shaos.Services
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
+        public void DeleteFile(string filePath)
+        {
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
+        public void DeleteFolder(string folder)
+        {
+            if(!string.IsNullOrEmpty(folder))
+            {
+                var storeFolder = Path.Combine(_options.Value.StorePath, folder);
+
+                if (!Directory.Exists(storeFolder))
+                {
+                    Directory.Delete(storeFolder);
+                }
+            }
+        }
+
         public async Task<string?> WriteFileStreamAsync(
             string folder,
             string fileName,
