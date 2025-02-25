@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
 
 namespace Shaos.Services
@@ -33,6 +36,39 @@ namespace Shaos.Services
         public CSharpCompilerService(ILogger<CSharpCompilerService> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        public async Task CompileAsync(IEnumerable<string> files, CancellationToken cancellationToken)
+        {
+            var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp13);
+            var syntaxTrees = new List<SyntaxTree>();
+            var references = new List<MetadataReference>();
+            var compilerOptions = new CSharpCompilationOptions(
+                OutputKind.DynamicallyLinkedLibrary,
+                optimizationLevel: OptimizationLevel.Release,
+                assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
+
+            foreach (var file in files)
+            {
+                if(File.Exists(file))
+                {
+                    _logger.LogDebug("Loading file [{File}]", file);
+
+                    syntaxTrees.Add(
+                        SyntaxFactory.ParseSyntaxTree(
+                            SourceText.From(
+                                await File.ReadAllTextAsync(file,cancellationToken)),
+                                options: options, 
+                                cancellationToken: cancellationToken));
+                }
+            }
+
+            var result = CSharpCompilation.Create(
+                "assembly.dll",
+                syntaxTrees,
+                references,
+                compilerOptions
+            );
         }
     }
 }

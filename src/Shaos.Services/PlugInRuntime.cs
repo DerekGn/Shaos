@@ -78,6 +78,9 @@ namespace Shaos.Services
                     Id = plugIn.Id,
                     State = ExecutionState.InActive
                 });
+
+                var files = plugIn.CodeFiles.Select(_ => _.FilePath);
+                _compilerService.CompileAsync(files);
             }
         }
 

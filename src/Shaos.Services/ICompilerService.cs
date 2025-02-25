@@ -22,9 +22,13 @@
 * SOFTWARE.
 */
 
+
 namespace Shaos.Services
 {
     public interface ICompilerService
     {
+        Task CompileAsync(
+            IEnumerable<string> files,
+            CancellationToken cancellationToken);
     }
 }
