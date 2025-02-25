@@ -42,6 +42,11 @@ namespace Shaos.Repository
         /// </summary>
         public DbSet<PlugIn> PlugIns { get; set; }
 
+        /// <summary>
+        /// The <see cref="CodeFile"/> database set
+        /// </summary>
+        public DbSet<CodeFile> CodeFiles { get; set; }
+
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             ChangeTracker.Entries<Base>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
