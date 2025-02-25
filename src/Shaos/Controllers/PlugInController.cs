@@ -29,31 +29,29 @@ using Shaos.Extensions;
 using Shaos.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
+using System.Runtime.CompilerServices;
 
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/plugins")]
-    public class PlugInController : CoreController
+    public class PlugInController : BasePlugInController
     {
-        private const string CreateDescription = "Create a new PlugIn instance in the default states of disabled and inactive";
+        private const string CreateDescription = "Create a new PlugIn instance in the default state of disabled and inactive";
         private const string DeleteDescription = "Delete a PlugIn instance, the PlugIn is stopped if its currently running";
         private const string EnableDescription = "Set the state of a PlugIn, setting enabled to false prevents a PlugIn from being started at start up";
         private const string GetDescription = "Get the details of a PlugIn by its identifier";
         private const string GetListDescription = "Get a list of all PlugIns";
         private const string IdentifierNotFound = "A PlugIn with identifier was not found";
         private const string PluginNameExists = "A PlugIn with the same name exists";
-        private const string PluginNotFound = "The PlugIn could not be found";
         private const string PlugInRetrieve = "The PlugIn identifier to retrieve";
 
         private readonly ICodeFileValidationService _codeFileValidationService;
-        private readonly IPlugInService _plugInService;
 
         public PlugInController(
             ILogger<PlugInController> logger,
             IPlugInService plugInService,
-            ICodeFileValidationService codeFileValidationService) : base(logger)
+            ICodeFileValidationService codeFileValidationService) : base(logger, plugInService)
         {
-            _plugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
             _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
         }
 
@@ -63,12 +61,15 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status409Conflict, PluginNameExists, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Create a new PlugIn", Description = CreateDescription, OperationId = "CreatePlugIn")]
+        [SwaggerOperation(
+            Summary = "Create a new PlugIn",
+            Description = CreateDescription,
+            OperationId = "CreatePlugIn")]
         public async Task<ActionResult<int>> CreatePlugInAsync(
             PlugInCreate create,
             CancellationToken cancellationToken)
         {
-            if (await _plugInService.GetPlugInByNameAsync(create.Name, cancellationToken) != null)
+            if (await PlugInService.GetPlugInByNameAsync(create.Name, cancellationToken) != null)
             {
                 return base.Conflict(CreateProblemDetails(
                     HttpStatusCode.Conflict,
@@ -76,7 +77,7 @@ namespace Shaos.Controllers
             }
             else
             {
-                return Ok(await _plugInService.CreatePlugInAsync(
+                return Ok(await PlugInService.CreatePlugInAsync(
                     create.Name,
                     create.Description,
                     cancellationToken));
@@ -87,12 +88,15 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn will be deleted")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Delete an existing PlugIn", Description = DeleteDescription, OperationId = "DeletePlugIn")]
+        [SwaggerOperation(
+            Summary = "Delete an existing PlugIn",
+            Description = DeleteDescription,
+            OperationId = "DeletePlugIn")]
         public async Task<ActionResult> DeletePlugInAsync(
             [FromRoute, SwaggerParameter("The PlugIn identifier to delete", Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            await _plugInService.DeletePlugInAsync(id, cancellationToken);
+            await PlugInService.DeletePlugInAsync(id, cancellationToken);
 
             return Accepted();
         }
@@ -110,7 +114,7 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter("The PlugIn CodeFile identifier to delete", Required = true)] int codeFileId,
             CancellationToken cancellationToken)
         {
-            await _plugInService.DeletePlugInCodeFileAsync(id, codeFileId, cancellationToken);
+            await PlugInService.DeletePlugInCodeFileAsync(id, codeFileId, cancellationToken);
 
             return Accepted();
         }
@@ -120,14 +124,17 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Get an existing PlugIn by Identifier", Description = GetDescription, OperationId = "GetPlugIn")]
+        [SwaggerOperation(
+            Summary = "Get an existing PlugIn by Identifier",
+            Description = GetDescription,
+            OperationId = "GetPlugIn")]
         public async Task<ActionResult<PlugIn>> GetPlugInAsync(
             [FromRoute, SwaggerParameter(PlugInRetrieve, Required = true)] int id,
             CancellationToken cancellationToken)
         {
             return await GetPlugInOperationAsync(id, async (plugIn) =>
             {
-                return Ok(plugIn);
+                return Ok(plugIn.ToApiModel());
             },
              cancellationToken);
         }
@@ -136,42 +143,17 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "The list of PlugIns in the response", Type = typeof(IList<PlugIn>))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Get a list of PlugIns", Description = GetListDescription, OperationId = "GetPlugIns")]
-        public IAsyncEnumerable<PlugIn> GetPlugInsAsync(CancellationToken cancellationToken)
+        [SwaggerOperation(
+            Summary = "Get a list of PlugIns",
+            Description = GetListDescription,
+            OperationId = "GetPlugIns")]
+        public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            return _plugInService.GetPlugInsAsync(cancellationToken);
-        }
-
-        [HttpGet("{id}/status")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn status", Type = typeof(PlugInStatus))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Get a PlugIn status", Description = GetListDescription, OperationId = "GetPlugInStatus")]
-        public async Task<ActionResult<PlugInStatus>> GetPlugInStatusAsync(
-            [FromRoute, SwaggerParameter(PlugInRetrieve, Required = true)] int id,
-            CancellationToken cancellationToken)
-        {
-            var pluginStatus = await _plugInService.GetPlugInStatusAsync(id, cancellationToken);
-
-            if (pluginStatus == null)
+            await foreach (var item in PlugInService.GetPlugInsAsync(cancellationToken))
             {
-                return NotFound();
+                yield return item.ToApiModel();
             }
-            else
-            {
-                return new OkObjectResult(pluginStatus);
-            }
-        }
-
-        [HttpGet("statuses")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The list of PlugInStatuses for loaded PlugIns", Type = typeof(IList<PlugInStatus>))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "The list of PlugInStatus for all loaded and running PlugIn", Description = EnableDescription, OperationId = "SetPlugInState")]
-        public IAsyncEnumerable<PlugInStatus> GetPlugInStatuses(CancellationToken cancellationToken)
-        {
-            return _plugInService.GetPlugInStatusesAsync(cancellationToken);
         }
 
         [HttpPut("{id}/enable/{state}")]
@@ -179,7 +161,10 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Set the state of an existing PlugIn by identifier", Description = EnableDescription, OperationId = "SetPlugInState")]
+        [SwaggerOperation(
+            Summary = "Set the state of an existing PlugIn by identifier",
+            Description = EnableDescription,
+            OperationId = "SetPlugInState")]
         public async Task<ActionResult> SetEnablePlugInAsync(
             [FromRoute, SwaggerParameter("The PlugIn identifier to set its state", Required = true)] int id,
             [FromRoute, SwaggerParameter("The PlugIn state", Required = true)] bool state,
@@ -187,50 +172,12 @@ namespace Shaos.Controllers
         {
             return await GetPlugInOperationAsync(id, async (plugIn) =>
             {
-                await _plugInService.SetPlugInEnabledStateAsync(
+                await PlugInService.SetPlugInEnabledStateAsync(
                     id,
                     state,
                     cancellationToken);
 
-                return Ok(plugIn);
-            },
-            cancellationToken);
-        }
-
-        [HttpPut("{id}/start")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn will be started", Type = typeof(PlugIn))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Start a PlugIn", Description = "Start a PlugIn running", OperationId = "StartPlugIn")]
-        public async Task<ActionResult> StartPlugIn(
-            [FromRoute, SwaggerParameter("The PlugIn identifier to start", Required = true)] int id,
-            CancellationToken cancellationToken)
-        {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
-            {
-                await _plugInService.StartPlugInAsync(id, cancellationToken);
-
-                return Accepted();
-            },
-            cancellationToken);
-        }
-
-        [HttpPut("{id}/stop")]
-        [SwaggerResponse(StatusCodes.Status200OK, "A PlugIn will be stopped")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Stop a PlugIn", Description = "Stop a PlugIn running", OperationId = "StopPlugIn")]
-        public async Task<ActionResult> StopPlugIn(
-            [FromRoute, SwaggerParameter("The PlugIn identifier to stop", Required = true)] int id,
-            CancellationToken cancellationToken)
-        {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
-            {
-                await _plugInService.StopPlugInAsync(id, cancellationToken);
-
-                return Accepted();
+                return Ok(plugIn.ToApiModel());
             },
             cancellationToken);
         }
@@ -242,13 +189,16 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status409Conflict, PluginNameExists, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Update a PlugIn", Description = "Update the properties of a PlugIn", OperationId = "UpdatePlugIn")]
+        [SwaggerOperation(
+            Summary = "Update a PlugIn",
+            Description = "Update the properties of a PlugIn",
+            OperationId = "UpdatePlugIn")]
         public async Task<ActionResult<PlugIn>> UpdatePlugInAsync(
             [FromRoute, SwaggerParameter("The PlugIn identifier to update", Required = true)] int id,
             [FromBody, SwaggerParameter("The PlugIn update")] PlugInUpdate update,
             CancellationToken cancellationToken)
         {
-            var plugIn = await _plugInService.GetPlugInByNameAsync(update.Name, cancellationToken);
+            var plugIn = await PlugInService.GetPlugInByNameAsync(update.Name, cancellationToken);
 
             if ((plugIn != null) && plugIn.Id != id)
             {
@@ -256,7 +206,7 @@ namespace Shaos.Controllers
             }
             else
             {
-                var updated = await _plugInService.UpdatePlugInAsync(
+                var updated = await PlugInService.UpdatePlugInAsync(
                     id,
                     update.Name,
                     update.Description,
@@ -320,7 +270,7 @@ namespace Shaos.Controllers
 
                         Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                        await _plugInService.UploadPlugInCodeFileAsync(
+                        await PlugInService.UploadPlugInCodeFileAsync(
                             plugIn.Id,
                             fileName,
                             formFile.OpenReadStream(),
@@ -351,25 +301,6 @@ namespace Shaos.Controllers
                 Status = (int?)statusCode,
                 Type = statusCode.MapToType()
             };
-        }
-
-        private async Task<ActionResult> GetPlugInOperationAsync(
-            int id,
-            Func<PlugIn, Task<ActionResult>> operation,
-            CancellationToken cancellationToken)
-        {
-            var plugIn = await _plugInService.GetPlugInByIdAsync(
-                id,
-                cancellationToken);
-
-            if (plugIn == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return await operation(plugIn);
-            }
         }
     }
 }

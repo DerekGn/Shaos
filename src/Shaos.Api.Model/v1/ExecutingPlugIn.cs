@@ -25,13 +25,18 @@
 namespace Shaos.Api.Model.v1
 {
     /// <summary>
-    /// Represents the current execution status of a <see cref="PlugIn"/>
+    /// Represents the currently executing <see cref="PlugIn"/>
     /// </summary> 
-    public class PlugInStatus
-    {        
+    public class ExecutingPlugIn
+    {
+        /// <summary>
+        /// The associated <see cref="PlugIn"/> identifier
+        /// </summary>
+        public int PlugInId { get; set; }
+
         /// <summary>
         /// The state of the <see cref="PlugIn"/>
         /// </summary>
-        public PlugInState Status { get; set; }
+        public ExecutingState Status { get; set; }
     }
 }

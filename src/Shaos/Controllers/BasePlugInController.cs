@@ -22,32 +22,42 @@
 * SOFTWARE.
 */
 
-using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
+using Microsoft.AspNetCore.Mvc;
+using Shaos.Repository.Models;
+using Shaos.Services;
 
-namespace Shaos.Api.Model.v1
+namespace Shaos.Controllers
 {
-    /// <summary>
-    /// The state of a <see cref="PlugIn"/>
-    /// </summary>
-    public enum PlugInState
+    public abstract class BasePlugInController : CoreController
     {
-        /// <summary>
-        /// The default <see cref="ApiPlugIn"/> status
-        /// </summary>
-        InActive,
-        Starting,
-        /// <summary>
-        /// The <see cref="ApiPlugIn"/> has been started
-        /// </summary>
-        Started,
-        Stopping,
-        /// <summary>
-        /// The <see cref="ApiPlugIn"/> is stopped
-        /// </summary>
-        Stopped,
-        /// <summary>
-        /// <see cref="ApiPlugIn"/> has faulted
-        /// </summary>
-        Faulted
+        internal const string PluginNotFound = "The PlugIn could not be found";
+
+        internal readonly IPlugInService PlugInService;
+
+        protected BasePlugInController(
+            ILogger<BasePlugInController> logger,
+            IPlugInService plugInService) : base(logger)
+        {
+            PlugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
+        }
+
+        internal async Task<ActionResult> GetPlugInOperationAsync(
+            int id,
+            Func<PlugIn, Task<ActionResult>> operation,
+            CancellationToken cancellationToken)
+        {
+            var plugIn = await PlugInService.GetPlugInByIdAsync(
+                id,
+                cancellationToken);
+
+            if (plugIn == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return await operation(plugIn);
+            }
+        }
     }
 }

@@ -93,7 +93,7 @@ namespace Shaos
             // Application defined services
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddSingleton<IAssemblyCache, AssemblyCache>();
-            builder.Services.AddSingleton<IPlugInManager, PlugInManager>();
+            builder.Services.AddSingleton<IPlugInRuntime, PlugInRuntime>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
 

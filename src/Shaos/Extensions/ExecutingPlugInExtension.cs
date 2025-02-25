@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,23 +22,18 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+using ExecutingPlugInApi = Shaos.Api.Model.v1.ExecutingPlugIn;
+using ExecutingPlugInService = Shaos.Services.ExecutingPlugIn;
+
+namespace Shaos.Extensions
 {
-    internal class ActivatedPlugIn()
+    internal static class ExecutingPlugInExtension
     {
-        // public ActivatedPlugIn(int id, Task task, CancellationToken token)
-        // {
-        //     Id = id;
-        //     Task = task ?? throw new ArgumentNullException(nameof(task));
-        //     Token = token;
-        // }
-
-        public int Id { get; init; }
-
-        public Task Task { get; init;}
-
-        public CancellationToken Token { get; init; }
-
-        public string? CodeHash { get; set; } 
+        public static ExecutingPlugInApi ToApiModel(this ExecutingPlugInService executingPlugIn)
+        {
+            return new ExecutingPlugInApi()
+            {
+            };
+        }
     }
 }

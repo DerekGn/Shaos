@@ -24,13 +24,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Shaos.Api.Model.v1;
 using Shaos.Repository;
-using Shaos.Services.Extensions;
+using Shaos.Repository.Models;
 using System.Runtime.CompilerServices;
-using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
-using ModelCodeFile = Shaos.Repository.Models.CodeFile;
-using ModelPlugIn = Shaos.Repository.Models.PlugIn;
 
 namespace Shaos.Services
 {
@@ -39,11 +35,11 @@ namespace Shaos.Services
         private readonly ShaosDbContext _context;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<PlugInService> _logger;
-        private readonly IPlugInManager _manager;
+        private readonly IPlugInRuntime _manager;
 
         public PlugInService(
             ILogger<PlugInService> logger,
-            IPlugInManager manager,
+            IPlugInRuntime manager,
             IFileStoreService fileStoreService,
             ShaosDbContext context)
         {
@@ -59,7 +55,7 @@ namespace Shaos.Services
             string? description,
             CancellationToken cancellationToken)
         {
-            var plugIn = new ModelPlugIn()
+            var plugIn = new PlugIn()
             {
                 Name = name,
                 Description = description,
@@ -116,19 +112,19 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<ApiPlugIn?> GetPlugInByIdAsync(
+        public async Task<PlugIn?> GetPlugInByIdAsync(
             int id,
             CancellationToken cancellationToken)
         {
-            ModelPlugIn? plugin = await GetPlugInByIdFromContextAsync(
+            PlugIn? plugin = await GetPlugInByIdFromContextAsync(
                 id,
                 cancellationToken: cancellationToken);
 
-            return plugin?.ToApiModel();
+            return plugin;
         }
 
         /// <inheritdoc/>
-        public async Task<ApiPlugIn?> GetPlugInByNameAsync(
+        public async Task<PlugIn?> GetPlugInByNameAsync(
             string name,
             CancellationToken cancellationToken)
         {
@@ -137,11 +133,11 @@ namespace Shaos.Services
                 .AsNoTracking()
                 .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
 
-            return plugin?.ToApiModel();
+            return plugin;
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync(
+        public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             await foreach (var item in _context.PlugIns
@@ -150,28 +146,7 @@ namespace Shaos.Services
                 .AsAsyncEnumerable()
                 .WithCancellation(cancellationToken))
             {
-                yield return item.ToApiModel();
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<PlugInStatus> GetPlugInStatusAsync(
-            int id,
-            CancellationToken cancellationToken)
-        {
-#warning implement
-            return new PlugInStatus();
-        }
-
-        /// <inheritdoc/>
-        public async IAsyncEnumerable<PlugInStatus> GetPlugInStatusesAsync(
-            [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            List<PlugInStatus> plugInStatuses = new List<PlugInStatus>();
-
-            foreach (var p in plugInStatuses)
-            {
-                yield return p;
+                yield return item;
             }
         }
 
@@ -195,50 +170,12 @@ namespace Shaos.Services
                 cancellationToken);
         }
 
-        /// <inheritdoc/>
-        public async Task StartPlugInAsync(
-            int id,
-            CancellationToken cancellationToken)
-        {
-            var plugIn = await GetPlugInByIdFromContextAsync(
-                id,
-                cancellationToken: cancellationToken);
 
-            if (plugIn != null)
-            {
-                _logger.LogInformation("Starting PlugIn [{Id}] [{Name}]",
-                    plugIn.Id,
-                    plugIn.Name);
 
-                await _manager.StartPlugInAsync(
-                    plugIn,
-                    cancellationToken);
-            }
-        }
+        
 
         /// <inheritdoc/>
-        public async Task StopPlugInAsync(
-            int id,
-            CancellationToken cancellationToken)
-        {
-            var plugIn = await GetPlugInByIdFromContextAsync(
-                id,
-                cancellationToken: cancellationToken);
-
-            if (plugIn != null)
-            {
-                _logger.LogInformation("Stopping PlugIn [{Id}] [{Name}]",
-                    plugIn.Id,
-                    plugIn.Name);
-
-                await _manager.StopPlugInAsync(
-                    plugIn,
-                    cancellationToken);
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<ApiPlugIn?> UpdatePlugInAsync(
+        public async Task<PlugIn?> UpdatePlugInAsync(
             int id,
             string name,
             string? description,
@@ -279,7 +216,7 @@ namespace Shaos.Services
 
                 if (!plugIn.CodeFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
                 {
-                    plugIn.CodeFiles.Add(new ModelCodeFile()
+                    plugIn.CodeFiles.Add(new CodeFile()
                     {
                         FileName = fileName,
                         FilePath = filePath!
@@ -290,7 +227,7 @@ namespace Shaos.Services
             }
         }
 
-        private async Task<ModelPlugIn?> GetPlugInByIdFromContextAsync(
+        private async Task<PlugIn?> GetPlugInByIdFromContextAsync(
             int id,
             bool withNoTracking = true,
             CancellationToken cancellationToken = default)
@@ -306,9 +243,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        private async Task<ApiPlugIn?> UpdatePlugInAsync(
+        private async Task<PlugIn?> UpdatePlugInAsync(
             int id,
-            Action<ModelPlugIn?> modify,
+            Action<PlugIn?> modify,
             CancellationToken cancellationToken)
         {
             var plugIn = await _context
@@ -319,7 +256,7 @@ namespace Shaos.Services
 
             modify(plugIn);
 
-            return plugIn?.ToApiModel();
+            return plugIn;
         }
     }
 }

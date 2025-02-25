@@ -22,8 +22,7 @@
 * SOFTWARE.
 */
 
-using Shaos.Api.Model.v1;
-using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
+using Shaos.Repository.Models;
 
 namespace Shaos.Services
 {
@@ -37,28 +36,21 @@ namespace Shaos.Services
         Task DeletePlugInAsync(
             int id,
             CancellationToken cancellationToken);
-        
+
         Task DeletePlugInCodeFileAsync(
             int id,
             int codeFileId,
             CancellationToken cancellationToken);
 
-        Task<ApiPlugIn?> GetPlugInByIdAsync(
+        Task<PlugIn?> GetPlugInByIdAsync(
             int id,
             CancellationToken cancellationToken);
 
-        Task<ApiPlugIn?> GetPlugInByNameAsync(
+        Task<PlugIn?> GetPlugInByNameAsync(
             string name,
             CancellationToken cancellationToken);
 
-        IAsyncEnumerable<ApiPlugIn> GetPlugInsAsync(
-            CancellationToken cancellationToken);
-
-        Task<PlugInStatus> GetPlugInStatusAsync(
-            int id,
-            CancellationToken cancellationToken);
-
-        IAsyncEnumerable<PlugInStatus> GetPlugInStatusesAsync(
+        IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             CancellationToken cancellationToken);
 
         Task SetPlugInEnabledStateAsync(
@@ -66,15 +58,7 @@ namespace Shaos.Services
             bool isEnabled,
             CancellationToken cancellationToken);
 
-        Task StartPlugInAsync(
-            int id,
-            CancellationToken cancellationToken);
-
-        Task StopPlugInAsync(
-            int id,
-            CancellationToken cancellationToken);
-
-        Task<ApiPlugIn?> UpdatePlugInAsync(
+        Task<PlugIn?> UpdatePlugInAsync(
             int id,
             string name,
             string? description,

@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,14 +22,25 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
+using PlugInApi = Shaos.Api.Model.v1.PlugIn;
+using ModelPlugIn = Shaos.Repository.Models.PlugIn;
 
-namespace Shaos.Services
+namespace Shaos.Extensions
 {
-    public interface IPlugInManager
+    internal static class PluginExtensions
     {
-        Task StartPlugInAsync(PlugIn plugIn, CancellationToken cancellationToken);
-
-        Task StopPlugInAsync(PlugIn plugIn, CancellationToken cancellationToken);
+        public static PlugInApi ToApiModel(this ModelPlugIn plugIn)
+        {
+            return new PlugInApi()
+            {
+                CreatedDate = plugIn.CreatedDate,
+                Description = plugIn.Description,
+                Id = plugIn.Id,
+                IsEnabled = plugIn.IsEnabled,
+                Name = plugIn.Name,
+                UpdatedDate = plugIn.UpdatedDate,
+                CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),
+            };
+        }
     }
 }

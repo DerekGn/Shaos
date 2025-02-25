@@ -22,24 +22,22 @@
 * SOFTWARE.
 */
 
-using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
-using ModelPlugIn = Shaos.Repository.Models.PlugIn;
+using CodeFileApi = Shaos.Api.Model.v1.CodeFile;
+using ModelCodeFile = Shaos.Repository.Models.CodeFile;
 
-namespace Shaos.Services.Extensions
+namespace Shaos.Extensions
 {
-    internal static class PluginExtensions
+    internal static class CodeFileExtensions
     {
-        public static ApiPlugIn ToApiModel(this ModelPlugIn plugIn)
+        public static CodeFileApi ToApiModel(this ModelCodeFile codeFile)
         {
-            return new ApiPlugIn()
+            return new CodeFileApi()
             {
-                CreatedDate = plugIn.CreatedDate,
-                Description = plugIn.Description,
-                Id = plugIn.Id,
-                IsEnabled = plugIn.IsEnabled,
-                Name = plugIn.Name,
-                UpdatedDate = plugIn.UpdatedDate,
-                CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),
+                CreatedDate = codeFile.CreatedDate,
+                FileName = codeFile.FileName,
+                FilePath = codeFile.FilePath,
+                Id = codeFile.Id,
+                UpdatedDate = codeFile.UpdatedDate
             };
         }
     }

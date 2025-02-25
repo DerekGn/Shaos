@@ -24,20 +24,38 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
+using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
 {
-    public class PlugInManager : IPlugInManager
+    public class PlugInRuntime : IPlugInRuntime
     {
-        private List<ActivatedPlugIn> _activatedPlugIns;
         private IAssemblyCache _assembleCache;
-        private ILogger<PlugInManager> _logger; 
+        private List<ExecutingPlugIn> _executingPlugIns;
+        private ILogger<PlugInRuntime> _logger; 
 
-        public PlugInManager(ILogger<PlugInManager> logger, IAssemblyCache assemblyCache)
+        public PlugInRuntime(
+            ILogger<PlugInRuntime> logger,
+            IAssemblyCache assemblyCache)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _assembleCache = assemblyCache ?? throw new ArgumentNullException(nameof(assemblyCache));
-            _activatedPlugIns = new List<ActivatedPlugIn>();
+            _executingPlugIns = new List<ExecutingPlugIn>();
+        }
+
+        /// </inheritdoc>
+        public ExecutingPlugIn? GetExecutingPlugIn(int id)
+        {
+            return _executingPlugIns.FirstOrDefault(_ => _.PlugInId == id);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<ExecutingPlugIn> GetExecutingPlugIns()
+        {
+            foreach (var executingPlugIn in _executingPlugIns)
+            {
+                yield return executingPlugIn;
+            }
         }
 
         /// </inheritdoc>
@@ -45,29 +63,19 @@ namespace Shaos.Services
             PlugIn plugIn,
             CancellationToken cancellationToken)
         {
-            var activatedPlugIn = _activatedPlugIns.FirstOrDefault();
+            var executingPlugIn = _executingPlugIns
+                .FirstOrDefault(_ => _.PlugInId == plugIn.Id);
 
-            if(activatedPlugIn == null)
+            if(executingPlugIn == null)
             {
-                await ActivatePlugInAsync(plugIn);                
+                _logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}]",
+                    plugIn.Id, plugIn.Name);
+
+                _executingPlugIns.Add(new ExecutingPlugIn()
+                {
+                    PlugInId = plugIn.Id
+                });
             }
-            else
-            {
-                await ActivatePlugInAsync(activatedPlugIn);
-            }            
-        }
-
-        private async Task ActivatePlugInAsync(PlugIn plugIn)
-        {
-            _logger.LogInformation("Activating PlugIn [{id}] [{name}]", plugIn.Id, plugIn.Name);
-
-            
-            throw new NotImplementedException();
-        }
-
-        private async Task ActivatePlugInAsync(ActivatedPlugIn activatedPlugIn)
-        {
-            throw new NotImplementedException();
         }
 
         /// </inheritdoc>
@@ -75,17 +83,19 @@ namespace Shaos.Services
             PlugIn plugIn,
             CancellationToken cancellationToken)
         {
-            var activatedPlugIn = _activatedPlugIns.FirstOrDefault();
+            var executingPlugIn = _executingPlugIns
+                .FirstOrDefault(_ => _.PlugInId == plugIn.Id);
 
-            if(activatedPlugIn != null)
+            if (executingPlugIn == null)
             {
-                await StopActivatedPlugInAsync(activatedPlugIn);
-            }
-        }
+                _logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}]",
+                    plugIn.Id, plugIn.Name);
 
-        private async Task StopActivatedPlugInAsync(ActivatedPlugIn activatedPlugIn)
-        {
-            throw new NotImplementedException();
+                _executingPlugIns.Add(new ExecutingPlugIn()
+                {
+                    PlugInId = plugIn.Id
+                });
+            }
         }
     }
 }
