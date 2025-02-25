@@ -94,7 +94,9 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken)
         {
-            ModelPlugIn? plugin = await GetPlugInByIdFromContextAsync(id, cancellationToken);
+            ModelPlugIn? plugin = await GetPlugInByIdFromContextAsync(
+                id,
+                cancellationToken: cancellationToken);
 
             return plugin?.ToApiModel();
         }
@@ -174,7 +176,7 @@ namespace Shaos.Services
         {
             var plugIn = await GetPlugInByIdFromContextAsync(
                 id,
-                cancellationToken);
+                cancellationToken: cancellationToken);
 
             if (plugIn != null)
             {
@@ -195,7 +197,7 @@ namespace Shaos.Services
         {
             var plugIn = await GetPlugInByIdFromContextAsync(
                 id,
-                cancellationToken);
+                cancellationToken: cancellationToken);
 
             if (plugIn != null)
             {
@@ -236,7 +238,10 @@ namespace Shaos.Services
             Stream stream,
             CancellationToken cancellationToken)
         {
-            var plugIn = await GetPlugInByIdFromContextAsync(id, cancellationToken);
+            var plugIn = await GetPlugInByIdFromContextAsync(
+                id,
+                true,
+                cancellationToken: cancellationToken);
 
             if (plugIn != null)
             {
@@ -261,13 +266,17 @@ namespace Shaos.Services
 
         private async Task<ModelPlugIn?> GetPlugInByIdFromContextAsync(
             int id,
-            CancellationToken cancellationToken)
+            bool withTracking = false,
+            CancellationToken cancellationToken = default)
         {
-            return await _context
-                .PlugIns
-                .Include(_ => _.CodeFiles)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
+            var query = _context.PlugIns.Include(_ => _.CodeFiles).AsQueryable();
+
+            if(!withTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
         }
 
         /// <inheritdoc/>
