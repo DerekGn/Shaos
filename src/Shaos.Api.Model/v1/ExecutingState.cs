@@ -29,7 +29,7 @@ namespace Shaos.Api.Model.v1
     /// <summary>
     /// The execution state of a <see cref="PlugIn"/>
     /// </summary>
-    public enum ExecutingState
+    public enum ExecutionState
     {
         /// <summary>
         /// The default <see cref="ApiPlugIn"/> status

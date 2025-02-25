@@ -22,20 +22,16 @@
 * SOFTWARE.
 */
 
-using ExecutingPlugInApi = Shaos.Api.Model.v1.ExecutingPlugIn;
-using ExecutingPlugInService = Shaos.Services.ExecutingPlugIn;
-
-namespace Shaos.Extensions
+namespace Shaos.Services
 {
-    internal static class ExecutingPlugInExtension
+    /// <summary>
+    /// The execution state of a <see cref="PlugIn"/>
+    /// </summary>
+    public enum ExecutionState
     {
-        public static ExecutingPlugInApi ToApiModel(this ExecutingPlugInService executingPlugIn)
-        {
-            return new ExecutingPlugInApi()
-            {
-                Id = executingPlugIn.Id,
-                Status = (Api.Model.v1.ExecutionState)executingPlugIn.State
-            };
-        }
+        /// <summary>
+        /// The default <see cref="PlugIn"/> execution state
+        /// </summary>
+        InActive
     }
 }

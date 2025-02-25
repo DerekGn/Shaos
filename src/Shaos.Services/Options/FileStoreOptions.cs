@@ -22,20 +22,16 @@
 * SOFTWARE.
 */
 
-using ExecutingPlugInApi = Shaos.Api.Model.v1.ExecutingPlugIn;
-using ExecutingPlugInService = Shaos.Services.ExecutingPlugIn;
-
-namespace Shaos.Extensions
+namespace Shaos.Services.Options
 {
-    internal static class ExecutingPlugInExtension
+    /// <summary>
+    /// The file store options
+    /// </summary>
+    public record FileStoreOptions
     {
-        public static ExecutingPlugInApi ToApiModel(this ExecutingPlugInService executingPlugIn)
-        {
-            return new ExecutingPlugInApi()
-            {
-                Id = executingPlugIn.Id,
-                Status = (Api.Model.v1.ExecutionState)executingPlugIn.State
-            };
-        }
+        /// <summary>
+        /// The store path where files will be stored
+        /// </summary>
+        public required string StorePath { get; init; }
     }
 }

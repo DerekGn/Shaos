@@ -8,6 +8,7 @@ using Shaos.Data;
 using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
+using Shaos.Services.Options;
 
 namespace Shaos
 {
@@ -92,10 +93,12 @@ namespace Shaos
 
             // Application defined services
             builder.Services.AddScoped<IPlugInService, PlugInService>();
+
             builder.Services.AddSingleton<IAssemblyCache, AssemblyCache>();
-            builder.Services.AddSingleton<IPlugInRuntime, PlugInRuntime>();
-            builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
+            builder.Services.AddSingleton<ICompilerService, CSharpCompilerService>();
+            builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
+            builder.Services.AddSingleton<IPlugInRuntime, PlugInRuntime>();
 
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
 

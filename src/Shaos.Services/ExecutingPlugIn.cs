@@ -26,17 +26,21 @@ namespace Shaos.Services
 {
     public class ExecutingPlugIn()
     {
-        // public ActivatedPlugIn(int id, Task task, CancellationToken token)
-        // {
-        //     Id = id;
-        //     Task = task ?? throw new ArgumentNullException(nameof(task));
-        //     Token = token;
-        // }
+        /// <summary>
+        /// The <see cref="PlugIn"/> identifier
+        /// </summary>
+        public int Id { get; init; }
 
-        public int PlugInId { get; init; }
-
+        /// <summary>
+        /// The <see cref="Task"/> that is executing the <see cref="PlugIn"/>
+        /// </summary>
         public Task? Task { get; init;}
 
+        /// <summary>
+        /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="PlugIn"/>
+        /// </summary>
         public CancellationToken? Token { get; init; }
+
+        public ExecutionState State { get; init; }
     }
 }

@@ -52,7 +52,7 @@ namespace Shaos.Controllers
             Description = "Returns an executing PlugIn",
             OperationId = "GetExecutingPlugIn")]
         public ActionResult<Api.Model.v1.ExecutingPlugIn> GetExecutingPlugIn(
-            [FromRoute, SwaggerParameter("", Required = true)] int id)
+            [FromRoute, SwaggerParameter("The PlugIn identifier of the PlugIn", Required = true)] int id)
         {
             var executingPlugIn = _plugInRuntime.GetExecutingPlugIn(id);
 
@@ -105,7 +105,7 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("{id}/stop")]
-        [SwaggerResponse(StatusCodes.Status200OK, "A PlugIn will be stopped")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "A PlugIn will be stopped")]
         [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugIn is not currently executing")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]

@@ -30,13 +30,13 @@ namespace Shaos.Api.Model.v1
     public class ExecutingPlugIn
     {
         /// <summary>
-        /// The associated <see cref="PlugIn"/> identifier
+        /// The <see cref="PlugIn"/> identifier
         /// </summary>
-        public int PlugInId { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// The state of the <see cref="PlugIn"/>
         /// </summary>
-        public ExecutingState Status { get; set; }
+        public ExecutionState Status { get; set; }
     }
 }

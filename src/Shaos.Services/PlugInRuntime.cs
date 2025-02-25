@@ -24,29 +24,31 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
-using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
 {
     public class PlugInRuntime : IPlugInRuntime
     {
+        private readonly ICompilerService _compilerService;
         private IAssemblyCache _assembleCache;
         private List<ExecutingPlugIn> _executingPlugIns;
         private ILogger<PlugInRuntime> _logger; 
 
         public PlugInRuntime(
             ILogger<PlugInRuntime> logger,
-            IAssemblyCache assemblyCache)
+            IAssemblyCache assemblyCache,
+            ICompilerService compilerService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _assembleCache = assemblyCache ?? throw new ArgumentNullException(nameof(assemblyCache));
+            _compilerService = compilerService ?? throw new ArgumentNullException(nameof(compilerService));
             _executingPlugIns = new List<ExecutingPlugIn>();
         }
 
         /// </inheritdoc>
         public ExecutingPlugIn? GetExecutingPlugIn(int id)
         {
-            return _executingPlugIns.FirstOrDefault(_ => _.PlugInId == id);
+            return _executingPlugIns.FirstOrDefault(_ => _.Id == id);
         }
 
         /// <inheritdoc/>
@@ -64,7 +66,7 @@ namespace Shaos.Services
             CancellationToken cancellationToken)
         {
             var executingPlugIn = _executingPlugIns
-                .FirstOrDefault(_ => _.PlugInId == plugIn.Id);
+                .FirstOrDefault(_ => _.Id == plugIn.Id);
 
             if(executingPlugIn == null)
             {
@@ -73,7 +75,8 @@ namespace Shaos.Services
 
                 _executingPlugIns.Add(new ExecutingPlugIn()
                 {
-                    PlugInId = plugIn.Id
+                    Id = plugIn.Id,
+                    State = ExecutionState.InActive
                 });
             }
         }
@@ -84,17 +87,12 @@ namespace Shaos.Services
             CancellationToken cancellationToken)
         {
             var executingPlugIn = _executingPlugIns
-                .FirstOrDefault(_ => _.PlugInId == plugIn.Id);
+                .FirstOrDefault(_ => _.Id == plugIn.Id);
 
-            if (executingPlugIn == null)
+            if (executingPlugIn != null)
             {
-                _logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}]",
+                _logger.LogInformation("Stopping PlugIn: [{Id}] Name: [{Name}]",
                     plugIn.Id, plugIn.Name);
-
-                _executingPlugIns.Add(new ExecutingPlugIn()
-                {
-                    PlugInId = plugIn.Id
-                });
             }
         }
     }

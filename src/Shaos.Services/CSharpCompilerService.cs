@@ -22,17 +22,17 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
 
 namespace Shaos.Services
 {
-    /// <summary>
-    /// The file store options
-    /// </summary>
-    public record FileStoreOptions
+    public class CSharpCompilerService : ICompilerService
     {
-        /// <summary>
-        /// The store path where files will be stored
-        /// </summary>
-        public required string StorePath { get; init; }
+        private readonly ILogger<CSharpCompilerService> _logger;
+        
+        public CSharpCompilerService(ILogger<CSharpCompilerService> logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
     }
 }

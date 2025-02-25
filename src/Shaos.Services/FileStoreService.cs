@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Options;
+using Shaos.Services.Options;
 
 namespace Shaos.Services
 {
