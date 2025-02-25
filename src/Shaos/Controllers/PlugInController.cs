@@ -97,7 +97,7 @@ namespace Shaos.Controllers
             return Accepted();
         }
 
-        [HttpDelete("{id}/codefiles/{codefileId}")]
+        [HttpDelete("{id}/codefiles/{codeFileId}")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn CodeFile will be deleted")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
