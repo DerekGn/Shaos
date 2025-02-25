@@ -89,12 +89,12 @@ namespace Shaos.Repository
 
             modelBuilder
                 .Entity<CodeFile>()
-                .Property(_ => _.Name)
+                .Property(_ => _.FileName)
                 .IsRequired();
 
             modelBuilder
                 .Entity<CodeFile>()
-                .Property(_ => _.FileName)
+                .Property(_ => _.FilePath)
                 .IsRequired();
         }
     }

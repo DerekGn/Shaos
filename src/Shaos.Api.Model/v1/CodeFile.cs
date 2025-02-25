@@ -30,8 +30,13 @@ namespace Shaos.Api.Model.v1
     public record CodeFile : Base
     {
         /// <summary>
-        /// The name of the <see cref="CodeFile"/>
+        /// The file name of the <see cref="CodeFile"/>
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string FileName { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The file path of the <see cref="CodeFile"/>
+        /// </summary>
+        public string FilePath { get; init; } = string.Empty;
     }
 }

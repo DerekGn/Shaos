@@ -47,6 +47,6 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
         /// </summary>
-        public ICollection<CodeFile> CodeFiles { get; } = new List<CodeFile>();
+        public ICollection<CodeFile> CodeFiles { get; init; } = new List<CodeFile>();
     }
 }

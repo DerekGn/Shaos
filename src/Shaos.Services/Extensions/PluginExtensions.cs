@@ -39,6 +39,7 @@ namespace Shaos.Services.Extensions
                 IsEnabled = plugIn.IsEnabled,
                 Name = plugIn.Name,
                 UpdatedDate = plugIn.UpdatedDate,
+                CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),
             };
         }
     }

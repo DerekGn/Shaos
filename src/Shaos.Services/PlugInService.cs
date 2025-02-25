@@ -240,23 +240,23 @@ namespace Shaos.Services
         {
             var plugIn = await GetPlugInByIdFromContextAsync(
                 id,
-                true,
+                false,
                 cancellationToken: cancellationToken);
 
             if (plugIn != null)
             {
-                await _fileStoreService.WriteFileStreamAsync(
+                var filePath = await _fileStoreService.WriteFileStreamAsync(
                     plugIn.Id.ToString(),
                     fileName,
                     stream,
                     cancellationToken);
 
-                if(!plugIn.CodeFiles.Any(_ => string.Compare(_.Name, fileName, true) == 0))
+                if(!plugIn.CodeFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
                 {
                     plugIn.CodeFiles.Add(new ModelCodeFile()
                     {
-                        Name = fileName,
-                        FileName = fileName
+                        FileName = fileName,
+                        FilePath = filePath!
                     });
 
                     await _context.SaveChangesAsync(cancellationToken);
@@ -266,12 +266,12 @@ namespace Shaos.Services
 
         private async Task<ModelPlugIn?> GetPlugInByIdFromContextAsync(
             int id,
-            bool withTracking = false,
+            bool withNoTracking = true,
             CancellationToken cancellationToken = default)
         {
             var query = _context.PlugIns.Include(_ => _.CodeFiles).AsQueryable();
 
-            if(!withTracking)
+            if(withNoTracking)
             {
                 query = query.AsNoTracking();
             }

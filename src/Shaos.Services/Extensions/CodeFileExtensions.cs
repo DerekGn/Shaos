@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,31 +22,23 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models
+using ApiCodeFile = Shaos.Api.Model.v1.CodeFile;
+using ModelCodeFile = Shaos.Repository.Models.CodeFile;
+
+namespace Shaos.Services.Extensions
 {
-    /// <summary>
-    /// A <see cref="CodeFile"/> for a <see cref="PlugIn"/>
-    /// </summary>
-    public class CodeFile : Base
+    internal static class CodeFileExtensions
     {
-        /// <summary>
-        /// The file name of the <see cref="CodeFile"/>
-        /// </summary>
-        public string FileName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The file path of the <see cref="CodeFile"/>
-        /// </summary>
-        public string FilePath { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The associated <see cref="PlugIn"/>
-        /// </summary>
-        public PlugIn? PlugIn { get; set; }
-
-        /// <summary>
-        /// The identifier of the associated <see cref="PlugIn"/>
-        /// </summary>
-        public int? PlugInId { get; set; }
+        public static ApiCodeFile ToApiModel(this ModelCodeFile codeFile)
+        {
+            return new ApiCodeFile()
+            {
+                CreatedDate = codeFile.CreatedDate,
+                FileName = codeFile.FileName,
+                FilePath = codeFile.FilePath,
+                Id = codeFile.Id,
+                UpdatedDate = codeFile.UpdatedDate
+            };
+        }
     }
 }
