@@ -24,19 +24,34 @@
 
 using Microsoft.AspNetCore.Mvc;
 
+#warning resolve assembly version
+
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/system")]
     public class SystemController : CoreController
     {
-        public SystemController(ILogger<CoreController> logger) : base(logger)
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+
+        public SystemController(
+            ILogger<SystemController> logger,
+            IHostApplicationLifetime hostApplicationLifetime) : base(logger)
         {
+            _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
         }
 
         [HttpGet]
         public string GetVersion()
         {
             return "1.0.0";
+        }
+
+        [HttpPost("stop")]
+        public ActionResult Stop()
+        {
+            _hostApplicationLifetime.StopApplication();
+
+            return Ok();
         }
     }
 }
