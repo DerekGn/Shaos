@@ -22,8 +22,6 @@
 * SOFTWARE.
 */
 
-using ApiPlugIn = Shaos.Api.Model.v1.PlugIn;
-
 namespace Shaos.Api.Model.v1
 {
     /// <summary>
@@ -32,22 +30,16 @@ namespace Shaos.Api.Model.v1
     public enum ExecutionState
     {
         /// <summary>
-        /// The default <see cref="ApiPlugIn"/> status
+        /// The default <see cref="PlugIn"/> execution state
         /// </summary>
         InActive,
-        Starting,
         /// <summary>
-        /// The <see cref="ApiPlugIn"/> has been started
+        /// The <see cref="PlugIn"/> code has been compiled successfully
         /// </summary>
-        Started,
-        Stopping,
+        Compiled,
         /// <summary>
-        /// The <see cref="ApiPlugIn"/> is stopped
+        /// The <see cref="PlugIn"/> code has been compiled with errors
         /// </summary>
-        Stopped,
-        /// <summary>
-        /// <see cref="ApiPlugIn"/> has faulted
-        /// </summary>
-        Faulted
+        CompileFailed
     }
 }

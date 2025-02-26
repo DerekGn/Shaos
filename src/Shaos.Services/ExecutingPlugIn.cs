@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+
 namespace Shaos.Services
 {
     public class ExecutingPlugIn()
@@ -41,6 +42,14 @@ namespace Shaos.Services
         /// </summary>
         public CancellationToken? Token { get; init; }
 
-        public ExecutionState State { get; init; }
+        /// <summary>
+        /// The <see cref="ExecutingState"/> of the <see cref="PlugIn"/>
+        /// </summary>
+        public ExecutionState State { get; set; }
+
+        /// <summary>
+        /// The set of compilation results
+        /// </summary>
+        public IEnumerable<string> CompileResults { get; set; } = Enumerable.Empty<string>();
     }
 }

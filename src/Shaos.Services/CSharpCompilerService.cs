@@ -24,8 +24,10 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Shaos.Services
 {
@@ -38,9 +40,14 @@ namespace Shaos.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task CompileAsync(IEnumerable<string> files, CancellationToken cancellationToken)
+        public async Task<EmitResult> CompileAsync(
+            string assemblyName,
+            Stream outputStream,
+            IEnumerable<string> files,
+            CancellationToken cancellationToken)
         {
-            var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp13);
+#warning compiler settings from configuration
+            var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp11);
             var syntaxTrees = new List<SyntaxTree>();
             var references = new List<MetadataReference>();
             var compilerOptions = new CSharpCompilationOptions(
@@ -48,27 +55,27 @@ namespace Shaos.Services
                 optimizationLevel: OptimizationLevel.Release,
                 assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
 
-            foreach (var file in files)
-            {
-                if(File.Exists(file))
-                {
-                    _logger.LogDebug("Loading file [{File}]", file);
+            references.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
 
-                    syntaxTrees.Add(
-                        SyntaxFactory.ParseSyntaxTree(
-                            SourceText.From(
-                                await File.ReadAllTextAsync(file,cancellationToken)),
-                                options: options, 
-                                cancellationToken: cancellationToken));
-                }
+            foreach (var file in files.Where(file => File.Exists(file)))
+            {
+                _logger.LogDebug("Loading file [{File}]", file);
+                syntaxTrees.Add(
+                    SyntaxFactory.ParseSyntaxTree(
+                        SourceText.From(
+                            await File.ReadAllTextAsync(file, cancellationToken)),
+                            options: options,
+                            cancellationToken: cancellationToken));
             }
 
-            var result = CSharpCompilation.Create(
-                "assembly.dll",
+            var compilation = CSharpCompilation.Create(
+                assemblyName,
                 syntaxTrees,
                 references,
                 compilerOptions
             );
+
+            return compilation.Emit(outputStream, cancellationToken: cancellationToken);
         }
     }
 }

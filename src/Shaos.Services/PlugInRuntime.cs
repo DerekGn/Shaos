@@ -73,14 +73,24 @@ namespace Shaos.Services
                 _logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}]",
                     plugIn.Id, plugIn.Name);
 
-                _executingPlugIns.Add(new ExecutingPlugIn()
+                var executingPlugin = new ExecutingPlugIn()
                 {
                     Id = plugIn.Id,
                     State = ExecutionState.InActive
-                });
+                };
+
+                _executingPlugIns.Add(executingPlugin);
 
                 var files = plugIn.CodeFiles.Select(_ => _.FilePath);
-                _compilerService.CompileAsync(files);
+
+#warning TODO store assembly to specific folder
+#warning TODO async compile
+                using Stream stream = File.Create("f:\\Temp\\assembly.dll");
+                var result = await _compilerService.CompileAsync("assembly.dll", stream, files, cancellationToken);
+
+                executingPlugin.State = result.Success ? ExecutionState.Compiled : ExecutionState.CompileFailed;
+
+                executingPlugin.CompileResults = result.Diagnostics.Select(_ => _.ToString());
             }
         }
 

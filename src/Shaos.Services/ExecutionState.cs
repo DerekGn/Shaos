@@ -32,6 +32,14 @@ namespace Shaos.Services
         /// <summary>
         /// The default <see cref="PlugIn"/> execution state
         /// </summary>
-        InActive
+        InActive,
+        /// <summary>
+        /// The <see cref="PlugIn"/> code has been compiled successfully
+        /// </summary>
+        Compiled,
+        /// <summary>
+        /// The <see cref="PlugIn"/> code has been compiled with errors
+        /// </summary>
+        CompileFailed
     }
 }

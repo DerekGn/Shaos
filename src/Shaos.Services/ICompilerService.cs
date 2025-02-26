@@ -23,11 +23,15 @@
 */
 
 
+using Microsoft.CodeAnalysis.Emit;
+
 namespace Shaos.Services
 {
     public interface ICompilerService
     {
-        Task CompileAsync(
+        Task<EmitResult> CompileAsync(
+            string assemblyName,
+            Stream outputStream,
             IEnumerable<string> files,
             CancellationToken cancellationToken);
     }

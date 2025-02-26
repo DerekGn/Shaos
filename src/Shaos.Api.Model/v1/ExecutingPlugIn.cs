@@ -38,5 +38,10 @@ namespace Shaos.Api.Model.v1
         /// The state of the <see cref="PlugIn"/>
         /// </summary>
         public ExecutionState Status { get; set; }
+
+        /// <summary>
+        /// The set of compilation results
+        /// </summary>
+        public IEnumerable<string> CompilationResults { get; set; } = Enumerable.Empty<string>();
     }
 }

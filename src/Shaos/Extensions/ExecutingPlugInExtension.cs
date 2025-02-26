@@ -34,7 +34,8 @@ namespace Shaos.Extensions
             return new ExecutingPlugInApi()
             {
                 Id = executingPlugIn.Id,
-                Status = (Api.Model.v1.ExecutionState)executingPlugIn.State
+                Status = (Api.Model.v1.ExecutionState)executingPlugIn.State,
+                CompilationResults = executingPlugIn.CompileResults
             };
         }
     }
