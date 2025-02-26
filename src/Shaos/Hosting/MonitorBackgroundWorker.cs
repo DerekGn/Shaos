@@ -1,6 +1,6 @@
 namespace Shaos.Hosting
 {
-    public class MonitorBackgroundWorker : BackgroundWorker
+    public class MonitorBackgroundWorker : BackgroundService
     {
     }    
 }
