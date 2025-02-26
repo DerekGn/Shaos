@@ -36,47 +36,67 @@ namespace Shaos.Services
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public void DeleteFile(string filePath)
+        public Stream CreateAssemblyFileStream(
+            string folder,
+            string assemblyFileName,
+            out string? assemblyFilePath)
         {
-            if (!string.IsNullOrEmpty(filePath))
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(folder);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFileName);
+
+            var assemblyStoreFolder = Path.Combine(_options.Value.AssemblyFilesPath, folder);
+
+            if (!Directory.Exists(assemblyStoreFolder))
+            {
+                Directory.CreateDirectory(assemblyStoreFolder);
+            }
+
+            assemblyFilePath = Path.Combine(assemblyStoreFolder, assemblyFileName);
+
+            return File.OpenWrite(assemblyFilePath);
+        }
+
+        public void DeleteCodeFile(string filePath)
+        {
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
         }
 
-        public void DeleteFolder(string folder)
+        public void DeleteCodeFolder(string folder)
         {
             if(!string.IsNullOrEmpty(folder))
             {
-                var storeFolder = Path.Combine(_options.Value.StorePath, folder);
+                var codeStoreFolder = Path.Combine(_options.Value.CodeFilesPath, folder);
 
-                if (!Directory.Exists(storeFolder))
+                if (Directory.Exists(codeStoreFolder))
                 {
-                    Directory.Delete(storeFolder);
+                    Directory.Delete(codeStoreFolder);
                 }
             }
         }
 
-        public async Task<string?> WriteFileStreamAsync(
+        public async Task<string?> WriteCodeFileStreamAsync(
             string folder,
             string fileName,
             Stream stream,
             CancellationToken cancellationToken)
         {
-            var storeFolder = Path.Combine(_options.Value.StorePath, folder);
+            var codeStoreFolder = Path.Combine(_options.Value.CodeFilesPath, folder);
 
-            if (!Directory.Exists(storeFolder))
+            if (!Directory.Exists(codeStoreFolder))
             {
-                Directory.CreateDirectory(storeFolder);
+                Directory.CreateDirectory(codeStoreFolder);
             }
 
-            var filePath = Path.Combine(storeFolder, fileName);
+            var codeFilePath = Path.Combine(codeStoreFolder, fileName);
 
-            using var outputStream = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var outputStream = File.Open(codeFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 
             await stream.CopyToAsync(outputStream, cancellationToken);
 
-            return filePath;
+            return codeFilePath;
         }
     }
 }

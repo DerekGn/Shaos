@@ -33,6 +33,7 @@ namespace Shaos.Extensions
         {
             return new ExecutingPlugInApi()
             {
+                AssemblyFilePath = executingPlugIn.AssemblyFilePath,
                 Id = executingPlugIn.Id,
                 Status = (Api.Model.v1.ExecutionState)executingPlugIn.State,
                 CompilationResults = executingPlugIn.CompileResults

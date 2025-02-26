@@ -30,18 +30,19 @@ namespace Shaos.Services
     public class PlugInRuntime : IPlugInRuntime
     {
         private readonly ICompilerService _compilerService;
-        private IAssemblyCache _assembleCache;
-        private List<ExecutingPlugIn> _executingPlugIns;
-        private ILogger<PlugInRuntime> _logger; 
+        private readonly IFileStoreService _fileStoreService;
+        private readonly List<ExecutingPlugIn> _executingPlugIns;
+        private readonly ILogger<PlugInRuntime> _logger; 
 
         public PlugInRuntime(
             ILogger<PlugInRuntime> logger,
-            IAssemblyCache assemblyCache,
-            ICompilerService compilerService)
+            ICompilerService compilerService,
+            IFileStoreService fileStoreService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _assembleCache = assemblyCache ?? throw new ArgumentNullException(nameof(assemblyCache));
             _compilerService = compilerService ?? throw new ArgumentNullException(nameof(compilerService));
+            _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
+
             _executingPlugIns = new List<ExecutingPlugIn>();
         }
 
@@ -68,30 +69,39 @@ namespace Shaos.Services
             var executingPlugIn = _executingPlugIns
                 .FirstOrDefault(_ => _.Id == plugIn.Id);
 
-            if(executingPlugIn == null)
+            if (executingPlugIn == null)
             {
-                _logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}]",
+                _logger.LogInformation("Creating Executing PlugIn: [{Id}] Name: [{Name}]",
                     plugIn.Id, plugIn.Name);
 
-                var executingPlugin = new ExecutingPlugIn()
+                executingPlugIn = new ExecutingPlugIn()
                 {
                     Id = plugIn.Id,
                     State = ExecutionState.InActive
                 };
 
-                _executingPlugIns.Add(executingPlugin);
-
-                var files = plugIn.CodeFiles.Select(_ => _.FilePath);
-
-#warning TODO store assembly to specific folder
-#warning TODO async compile
-                using Stream stream = File.Create("f:\\Temp\\assembly.dll");
-                var result = await _compilerService.CompileAsync("assembly.dll", stream, files, cancellationToken);
-
-                executingPlugin.State = result.Success ? ExecutionState.Compiled : ExecutionState.CompileFailed;
-
-                executingPlugin.CompileResults = result.Diagnostics.Select(_ => _.ToString());
+                _executingPlugIns.Add(executingPlugIn);
             }
+
+            //if(executingPlugIn.State == ExecutionState.)
+
+            using var assemblyFileStream = _fileStoreService
+                .CreateAssemblyFileStream(
+                    plugIn.Id.ToString(),
+                    Path.GetRandomFileName(),
+                    out string? assemblyFilePath);
+
+            executingPlugIn.AssemblyFilePath = assemblyFilePath;
+
+            var files = plugIn.CodeFiles.Select(_ => _.FilePath);
+
+            //#warning TODO async compile
+            var result = await _compilerService.CompileAsync("assembly.dll", assemblyFileStream, files, cancellationToken);
+
+            executingPlugIn.State = result.Success ? ExecutionState.Compiled : ExecutionState.CompileFailed;
+            executingPlugIn.CompileResults = result.Diagnostics.Select(_ => _.ToString());
+
+            _logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}]", plugIn.Id, plugIn.Name);
         }
 
         /// </inheritdoc>

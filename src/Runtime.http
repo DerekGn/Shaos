@@ -1,0 +1,31 @@
+# Update configuration to match application configuration
+# Use the Autorisation.http script to generate an access token
+@HostAddress = https://localhost:7000
+@id = 1
+@accessToken = <paste access token without quotes>
+
+###
+
+GET {{HostAddress}}/api/v1/runtime/{{id}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+GET {{HostAddress}}/api/v1/runtime
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+PUT {{HostAddress}}/api/v1/runtime/{{id}}/start
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+PUT {{HostAddress}}/api/v1/runtime/{{id}}/stop
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###

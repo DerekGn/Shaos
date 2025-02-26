@@ -30,18 +30,23 @@ namespace Shaos.Api.Model.v1
     public class ExecutingPlugIn
     {
         /// <summary>
+        /// The compiled assembly path
+        /// </summary>
+        public string? AssemblyFilePath { get; init; }
+
+        /// <summary>
         /// The <see cref="PlugIn"/> identifier
         /// </summary>
-        public int Id { get; set; }
+        public int Id { get; init; }
 
         /// <summary>
         /// The state of the <see cref="PlugIn"/>
         /// </summary>
-        public ExecutionState Status { get; set; }
+        public ExecutionState Status { get; init; }
 
         /// <summary>
         /// The set of compilation results
         /// </summary>
-        public IEnumerable<string> CompilationResults { get; set; } = Enumerable.Empty<string>();
+        public IEnumerable<string> CompilationResults { get; init; } = Enumerable.Empty<string>();
     }
 }

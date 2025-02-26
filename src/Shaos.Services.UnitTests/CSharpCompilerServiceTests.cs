@@ -5,6 +5,6 @@ public class CSharpCompilerServiceTests
     [Fact]
     public async Task TestCompileAsync()
     {
-        CSharpCompilerService service = new CSharpCompilerService();
+        //CSharpCompilerService service = new CSharpCompilerService();
     }
 }

@@ -27,11 +27,16 @@ namespace Shaos.Services
 {
     public interface IFileStoreService
     {
-        void DeleteFile(string filePath);
+        Stream CreateAssemblyFileStream(
+            string folder,
+            string assemblyFileName,
+            out string? assemblyFilePath);
 
-        void DeleteFolder(string folder);
+        void DeleteCodeFile(string filePath);
 
-        Task<string?> WriteFileStreamAsync(
+        void DeleteCodeFolder(string folder);
+
+        Task<string?> WriteCodeFileStreamAsync(
             string folder,
             string fileName,
             Stream stream,

@@ -25,12 +25,30 @@
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// An Executing PlugIn
+    /// </summary>
     public class ExecutingPlugIn()
     {
+        /// <summary>
+        /// The compiled assembly path
+        /// </summary>
+        public string? AssemblyFilePath { get; set; }
+
+        /// <summary>
+        /// The set of compilation results
+        /// </summary>
+        public IEnumerable<string> CompileResults { get; set; } = Enumerable.Empty<string>();
+
         /// <summary>
         /// The <see cref="PlugIn"/> identifier
         /// </summary>
         public int Id { get; init; }
+
+        /// <summary>
+        /// The <see cref="ExecutingState"/> of the <see cref="PlugIn"/>
+        /// </summary>
+        public ExecutionState State { get; set; }
 
         /// <summary>
         /// The <see cref="Task"/> that is executing the <see cref="PlugIn"/>
@@ -41,15 +59,5 @@ namespace Shaos.Services
         /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="PlugIn"/>
         /// </summary>
         public CancellationToken? Token { get; init; }
-
-        /// <summary>
-        /// The <see cref="ExecutingState"/> of the <see cref="PlugIn"/>
-        /// </summary>
-        public ExecutionState State { get; set; }
-
-        /// <summary>
-        /// The set of compilation results
-        /// </summary>
-        public IEnumerable<string> CompileResults { get; set; } = Enumerable.Empty<string>();
     }
 }

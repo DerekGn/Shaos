@@ -11,11 +11,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiRequests", "ApiRequests"
 	ProjectSection(SolutionItems) = preProject
 		Authorisation.http = Authorisation.http
 		Plugin.http = Plugin.http
+		Runtime.http = Runtime.http
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Api.Model", "Shaos.Api.Model\Shaos.Api.Model.csproj", "{58F1F543-5D67-47D9-A620-0256A8FFE866}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Services", "Shaos.Services\Shaos.Services.csproj", "{AD59B631-2875-4952-81C5-CB13C6514774}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Services.UnitTests", "Shaos.Services.UnitTests\Shaos.Services.UnitTests.csproj", "{193445F3-5710-4A75-BFA4-2FC90A611F26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +42,10 @@ Global
 		{AD59B631-2875-4952-81C5-CB13C6514774}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD59B631-2875-4952-81C5-CB13C6514774}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD59B631-2875-4952-81C5-CB13C6514774}.Release|Any CPU.Build.0 = Release|Any CPU
+		{193445F3-5710-4A75-BFA4-2FC90A611F26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{193445F3-5710-4A75-BFA4-2FC90A611F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{193445F3-5710-4A75-BFA4-2FC90A611F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{193445F3-5710-4A75-BFA4-2FC90A611F26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

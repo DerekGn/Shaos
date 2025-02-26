@@ -78,7 +78,7 @@ namespace Shaos.Services
         {
             _logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
-            _fileStoreService.DeleteFolder(id.ToString());
+            _fileStoreService.DeleteCodeFolder(id.ToString());
 
             // this is EF COre 7 enhancement performs select and delete in one operation
             await _context.PlugIns.Where(_ => _.Id == id)
@@ -104,7 +104,7 @@ namespace Shaos.Services
                     plugIn.CodeFiles.Remove(codeFile);
                     _context.Remove(codeFile);
 
-                    _fileStoreService.DeleteFile(codeFile.FilePath);
+                    _fileStoreService.DeleteCodeFile(codeFile.FilePath);
 
                     await _context.SaveChangesAsync();
                 }
@@ -208,7 +208,7 @@ namespace Shaos.Services
 
             if (plugIn != null)
             {
-                var filePath = await _fileStoreService.WriteFileStreamAsync(
+                var filePath = await _fileStoreService.WriteCodeFileStreamAsync(
                     plugIn.Id.ToString(),
                     fileName,
                     stream,
