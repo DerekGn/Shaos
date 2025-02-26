@@ -34,10 +34,10 @@ namespace Shaos.Services
 
         Task StartPlugInAsync(
             PlugIn plugIn,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
 
         Task StopPlugInAsync(
             PlugIn plugIn,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }

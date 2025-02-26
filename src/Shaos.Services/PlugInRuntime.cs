@@ -25,14 +25,17 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
 
+#warning Limit number of executing plugins
+#warning Support multi-instancing of plugins
+
 namespace Shaos.Services
 {
     public class PlugInRuntime : IPlugInRuntime
     {
         private readonly ICompilerService _compilerService;
-        private readonly IFileStoreService _fileStoreService;
         private readonly List<ExecutingPlugIn> _executingPlugIns;
-        private readonly ILogger<PlugInRuntime> _logger; 
+        private readonly IFileStoreService _fileStoreService;
+        private readonly ILogger<PlugInRuntime> _logger;
 
         public PlugInRuntime(
             ILogger<PlugInRuntime> logger,
@@ -64,7 +67,7 @@ namespace Shaos.Services
         /// </inheritdoc>
         public async Task StartPlugInAsync(
             PlugIn plugIn,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var executingPlugIn = _executingPlugIns
                 .FirstOrDefault(_ => _.Id == plugIn.Id);
@@ -83,40 +86,99 @@ namespace Shaos.Services
                 _executingPlugIns.Add(executingPlugIn);
             }
 
-            //if(executingPlugIn.State == ExecutionState.)
-
-            using var assemblyFileStream = _fileStoreService
-                .CreateAssemblyFileStream(
-                    plugIn.Id.ToString(),
-                    Path.GetRandomFileName(),
-                    out string? assemblyFilePath);
-
-            executingPlugIn.AssemblyFilePath = assemblyFilePath;
-
-            var files = plugIn.CodeFiles.Select(_ => _.FilePath);
-
-            //#warning TODO async compile
-            var result = await _compilerService.CompileAsync("assembly.dll", assemblyFileStream, files, cancellationToken);
-
-            executingPlugIn.State = result.Success ? ExecutionState.Compiled : ExecutionState.CompileFailed;
-            executingPlugIn.CompileResults = result.Diagnostics.Select(_ => _.ToString());
-
-            _logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}]", plugIn.Id, plugIn.Name);
+            if (executingPlugIn.State == ExecutionState.InActive)
+            {
+                _ = Task
+                    .Run(async () => await CompilePlugInCodeAsync(plugIn, executingPlugIn, cancellationToken), cancellationToken)
+                    .ContinueWith(async (_) =>
+                    {
+                        if (TaskComplete(nameof(CompilePlugInCodeAsync), _))
+                        {
+                            await ExecutePlugInAsync(plugIn, executingPlugIn, cancellationToken);
+                        }
+                    },
+                    cancellationToken);
+            }
+            else
+            {
+                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", plugIn.Id, plugIn.Name);
+            }
         }
 
         /// </inheritdoc>
         public async Task StopPlugInAsync(
             PlugIn plugIn,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var executingPlugIn = _executingPlugIns
                 .FirstOrDefault(_ => _.Id == plugIn.Id);
 
             if (executingPlugIn != null)
             {
-                _logger.LogInformation("Stopping PlugIn: [{Id}] Name: [{Name}]",
+                _ = Task
+                    .Run(async () => await StopExecutingPlugInAsync(plugIn, executingPlugIn, cancellationToken), cancellationToken);
+            }
+            else
+            {
+                _logger.LogInformation("Executing PlugIn: [{Id}] Name: [{Name}] Not Found",
                     plugIn.Id, plugIn.Name);
             }
+        }
+
+        private async Task CompilePlugInCodeAsync(
+            PlugIn plugIn,
+            ExecutingPlugIn executingPlugIn,
+            CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Compiling PlugIn: [{Id}] Name: [{Name}]",
+                plugIn.Id,
+                plugIn.Name);
+
+            var assemblyFileName = Path.GetRandomFileName();
+
+            using var assemblyFileStream = _fileStoreService
+                .CreateAssemblyFileStream(
+                    plugIn.Id.ToString(),
+                    assemblyFileName,
+                    out string? assemblyFilePath);
+
+            executingPlugIn.AssemblyFilePath = assemblyFilePath;
+
+            var files = plugIn.CodeFiles.Select(_ => _.FilePath);
+
+            var result = await _compilerService.CompileAsync(assemblyFileName, assemblyFileStream, files, cancellationToken);
+
+            executingPlugIn.State = result.Success ? ExecutionState.Compiled : ExecutionState.CompileFailed;
+            executingPlugIn.CompileResults = result.Diagnostics.Select(_ => _.ToString());
+        }
+
+        private async Task ExecutePlugInAsync(
+            PlugIn plugIn,
+            ExecutingPlugIn executingPlugIn,
+            CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Executing PlugIn: [{Id}] Name: [{Name}]",
+                plugIn.Id,
+                plugIn.Name);
+        }
+
+        private async Task StopExecutingPlugInAsync(
+            PlugIn plugIn,
+            ExecutingPlugIn executingPlugIn,
+            CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Stopping Executing PlugIn: [{Id}] Name: [{Name}]",
+                    plugIn.Id, plugIn.Name);
+        }
+
+        private bool TaskComplete(string name, Task task)
+        {
+            if (task != null && !task.IsCompletedSuccessfully)
+            {
+                _logger.LogError(task.Exception, "Exception occurred in Task [{Name}]", name);
+            }
+
+            return task != null && task.IsCompletedSuccessfully;
         }
     }
 }

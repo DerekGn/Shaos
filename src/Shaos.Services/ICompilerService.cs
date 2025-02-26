@@ -33,6 +33,6 @@ namespace Shaos.Services
             string assemblyName,
             Stream outputStream,
             IEnumerable<string> files,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }

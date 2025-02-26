@@ -40,6 +40,6 @@ namespace Shaos.Services
             string folder,
             string fileName,
             Stream stream,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }

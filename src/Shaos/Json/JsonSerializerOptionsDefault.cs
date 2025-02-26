@@ -5,7 +5,7 @@ namespace Shaos.Json
 {
     internal static class JsonSerializerOptionsDefault
     {
-        private static Lazy<JsonSerializerOptions> _options = new Lazy<JsonSerializerOptions>(() =>
+        private static readonly Lazy<JsonSerializerOptions> _options = new Lazy<JsonSerializerOptions>(() =>
         {
             JsonSerializerOptions options = new()
             {

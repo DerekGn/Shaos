@@ -53,7 +53,7 @@ namespace Shaos.Services
         public async Task<int> CreatePlugInAsync(
             string name,
             string? description,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var plugIn = new PlugIn()
             {
@@ -62,7 +62,7 @@ namespace Shaos.Services
                 IsEnabled = false
             };
 
-            await _context.PlugIns.AddAsync(plugIn);
+            await _context.PlugIns.AddAsync(plugIn, cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
 
@@ -74,7 +74,7 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task DeletePlugInAsync(
             int id,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
@@ -89,7 +89,7 @@ namespace Shaos.Services
         public async Task DeletePlugInCodeFileAsync(
             int id,
             int codeFileId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("PlugIn [{Id}] CodeFile [{CodeFileId}] Deleting", id, codeFileId);
 
@@ -106,7 +106,7 @@ namespace Shaos.Services
 
                     _fileStoreService.DeleteCodeFile(codeFile.FilePath);
 
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(cancellationToken);
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task<PlugIn?> GetPlugInByIdAsync(
             int id,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             PlugIn? plugin = await GetPlugInByIdFromContextAsync(
                 id,
@@ -126,7 +126,7 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task<PlugIn?> GetPlugInByNameAsync(
             string name,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var plugin = await _context
                 .PlugIns
@@ -138,7 +138,7 @@ namespace Shaos.Services
 
         /// <inheritdoc/>
         public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
-            [EnumeratorCancellation] CancellationToken cancellationToken)
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in _context.PlugIns
                 .Include(_ => _.CodeFiles)
@@ -154,7 +154,7 @@ namespace Shaos.Services
         public async Task SetPlugInEnabledStateAsync(
             int id,
             bool isEnabled,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Setting PlugIn [{Id}] State To [{IsEnabled}]", id, isEnabled);
 
@@ -179,7 +179,7 @@ namespace Shaos.Services
             int id,
             string name,
             string? description,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             return await UpdatePlugInAsync(
                 id,
@@ -199,7 +199,7 @@ namespace Shaos.Services
             int id,
             string fileName,
             Stream stream,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var plugIn = await GetPlugInByIdFromContextAsync(
                 id,
