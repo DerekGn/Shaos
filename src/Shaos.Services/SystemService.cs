@@ -26,7 +26,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 #warning resolve assembly version
 
@@ -88,8 +87,8 @@ namespace Shaos.Services
             {
                 BasePriority = process.BasePriority,
                 HandleCount = process.HandleCount,
-                MaxWorkingSet = process.MaxWorkingSet,
-                MinWorkingSet = process.MinWorkingSet,
+                MaxWorkingSet = process.MaxWorkingSet.ToInt64(),
+                MinWorkingSet = process.MinWorkingSet.ToInt64(),
                 NonpagedSystemMemorySize = process.NonpagedSystemMemorySize64,
                 PagedMemorySize = process.PagedMemorySize64,
                 PagedSystemMemorySize = process.PagedSystemMemorySize64,
@@ -99,7 +98,7 @@ namespace Shaos.Services
                 PrivateMemorySize = process.PrivateMemorySize64,
                 PrivilegedProcessorTime = process.PrivilegedProcessorTime,
                 ProcessName = process.ProcessName,
-                ProcessorAffinity = process.ProcessorAffinity,
+                ProcessorAffinity = process.ProcessorAffinity.ToInt64(),
                 StartTime = process.StartTime,
                 ThreadsCount = process.Threads.Count,
                 TotalProcessorTime = process.TotalProcessorTime,

@@ -19,12 +19,12 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The maximum allowable working set size, in bytes, for the associated process.
         /// </summary>
-        public nint MaxWorkingSet { get; init; }
+        public long MaxWorkingSet { get; init; }
 
         /// <summary>
         /// The minimum allowable working set size, in bytes, for the associated process.
         /// </summary>
-        public nint MinWorkingSet { get; init; }
+        public long MinWorkingSet { get; init; }
 
         /// <summary>
         /// The amount of nonpaged system memory, in bytes, allocated for the associated process.
@@ -74,7 +74,7 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The processors on which the threads in this process can be scheduled to run.
         /// </summary>
-        public nint ProcessorAffinity { get; init; }
+        public long ProcessorAffinity { get; init; }
 
         /// <summary>
         /// The time that the associated process was started.
