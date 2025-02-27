@@ -24,6 +24,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models;
+using System.Reflection.Metadata;
 
 namespace Shaos.Repository
 {
@@ -47,6 +48,11 @@ namespace Shaos.Repository
         /// </summary>
         public DbSet<CodeFile> CodeFiles { get; set; }
 
+        /// <summary>
+        /// The <see cref="PlugInInstance"/> database set
+        /// </summary>
+        public DbSet<PlugInInstance> PlugInInstances { get; set; }
+
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             ChangeTracker.Entries<Base>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
@@ -64,6 +70,10 @@ namespace Shaos.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<PlugIn>()
+                .HasKey(_ => _.Id)
+                .HasName("PrimaryKey_PlugInId");
+
             modelBuilder
                 .Entity<PlugIn>()
                 .HasMany(_ => _.CodeFiles)
@@ -75,27 +85,44 @@ namespace Shaos.Repository
                 .Entity<PlugIn>()
                 .Property(_ => _.Name)
                 .IsRequired()
-                .HasMaxLength(PlugInConstants.MaxLengthName);
+                .HasMaxLength(ModelConstants.MaxNameLength);
 
             modelBuilder
                 .Entity<PlugIn>()
                 .Property(_ => _.Description)
-                .HasMaxLength(PlugInConstants.MaxLengthDescription);
+                .HasMaxLength(ModelConstants.MaxDescriptionLength);
 
             modelBuilder
                 .Entity<PlugIn>()
                 .HasIndex(_ => _.Name )
                 .HasDatabaseName("IX_Name_Ascending");
 
+            modelBuilder.Entity<CodeFile>()
+                .HasKey(_ => _.Id)
+                .HasName("PrimaryKey_CodeId");
+
             modelBuilder
                 .Entity<CodeFile>()
                 .Property(_ => _.FileName)
+                .HasMaxLength(ModelConstants.MaxFileNameLength)
                 .IsRequired();
 
             modelBuilder
                 .Entity<CodeFile>()
                 .Property(_ => _.FilePath)
+                .HasMaxLength(ModelConstants.MaxFilePathLength)
                 .IsRequired();
+
+            modelBuilder.Entity<PlugInInstance>()
+                .HasKey(_ => _.Id)
+                .HasName("PrimaryKey_PlugInInstanceId");
+
+            modelBuilder
+               .Entity<PlugIn>()
+               .HasMany(_ => _.PlugInInstances)
+               .WithOne(_ => _.PlugIn)
+               .HasForeignKey(_ => _.PlugInId)
+               .IsRequired(false);
         }
     }
 }
