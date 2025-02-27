@@ -19,27 +19,31 @@ namespace Shaos.Hosting
 
         private void OnStopping()
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Application Stopping");
         }
 
         private void OnStopped()
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Application Stopped");
         }
 
         private void OnStarted()
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Application Started");
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Background Worker [{nameof(MonitorBackgroundWorker)}] Starting");
+
+            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation($"Background Worker [{nameof(MonitorBackgroundWorker)}] Stopping");
+
+            return Task.CompletedTask;
         }
     }
 }

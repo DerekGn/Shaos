@@ -22,15 +22,28 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Components;
+using SystemEnvironmentApi = Shaos.Api.Model.v1.SystemEnvironment;
+using SystemEnvironmentModel = Shaos.Services.SystemEnvironment;
 
-namespace Shaos.Controllers
+namespace Shaos.Extensions
 {
-    [Route("api/v{version:apiVersion}/backup")]
-    public class BackupController : CoreController
+    public static class SystemEnvironmentExtensions
     {
-        public BackupController(ILogger<BackupController> logger) : base(logger)
+        public static SystemEnvironmentApi ToApiModel(this SystemEnvironmentModel systemEnvironment)
         {
+            return new SystemEnvironmentApi()
+            {
+                Is64BitOperatingSystem = systemEnvironment.Is64BitOperatingSystem,
+                Is64BitProcess = systemEnvironment.Is64BitProcess,
+                IsPrivilegedProcess = systemEnvironment.IsPrivilegedProcess,
+                MachineName = systemEnvironment.MachineName,
+                OSVersion = systemEnvironment.OSVersion,
+                ProcessId = systemEnvironment.ProcessId,
+                ProcessorCount = systemEnvironment.ProcessorCount,
+                SystemPageSize = systemEnvironment.SystemPageSize,
+                Version = systemEnvironment.Version,
+                WorkingSet = systemEnvironment.WorkingSet
+            };
         }
     }
 }

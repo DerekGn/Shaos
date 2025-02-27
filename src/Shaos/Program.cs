@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
+using Shaos.Hosting;
 using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
@@ -99,6 +100,9 @@ namespace Shaos
             builder.Services.AddSingleton<ICompilerService, CSharpCompilerService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IPlugInRuntime, PlugInRuntime>();
+            builder.Services.AddSingleton<ISystemService, SystemService>();
+
+            builder.Services.AddHostedService<MonitorBackgroundWorker>();
 
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
 

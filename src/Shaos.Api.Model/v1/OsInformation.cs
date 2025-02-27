@@ -22,15 +22,32 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Components;
-
-namespace Shaos.Controllers
+namespace Shaos.Api.Model.v1
 {
-    [Route("api/v{version:apiVersion}/backup")]
-    public class BackupController : CoreController
+    /// <summary>
+    /// The operating system information
+    /// </summary>
+    public record OsInformation
     {
-        public BackupController(ILogger<BackupController> logger) : base(logger)
-        {
-        }
+        /// <summary>
+        /// Gets the name of the .NET installation on which an app is running.
+        /// </summary>
+        public string? FrameworkDescription { get; init; }
+        /// <summary>
+        /// The platform architecture on which the current app is running.
+        /// </summary>
+        public string? OsArchitecture { get; init; }
+        /// <summary>
+        /// The operating system on which the app is running.
+        /// </summary>
+        public string? OsDescription { get; init; }
+        /// <summary>
+        /// The process architecture of the currently running app.
+        /// </summary>
+        public string? ProcessArchitecture { get; init; }
+        /// <summary>
+        ///The platform for which the runtime was built (or on which an app is running).
+        /// </summary>
+        public string? RuntimeIdentifier { get; init; }
     }
 }

@@ -23,6 +23,9 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
+using Shaos.Extensions;
+using Shaos.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 #warning resolve assembly version
 
@@ -31,27 +34,77 @@ namespace Shaos.Controllers
     [Route("api/v{version:apiVersion}/system")]
     public class SystemController : CoreController
     {
-        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+        private readonly ISystemService _systemService;
 
         public SystemController(
             ILogger<SystemController> logger,
-            IHostApplicationLifetime hostApplicationLifetime) : base(logger)
+            ISystemService systemService) : base(logger)
         {
-            _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
+            _systemService = systemService?? throw new ArgumentNullException(nameof(systemService));
         }
 
-        [HttpGet]
-        public string GetVersion()
+        [HttpGet("version")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Returns the application version")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Get the application version number",
+            Description = "Get the application version number",
+            OperationId = "GetVersion")]
+        public ActionResult GetVersion()
         {
-            return "1.0.0";
+            return Ok(_systemService.GetVersion());
         }
 
         [HttpPost("stop")]
-        public ActionResult Stop()
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Stop the application host",
+            Description = "Stops the application host. The process terminates",
+            OperationId = "StopApplication")]
+        public void StopApplication()
         {
-            _hostApplicationLifetime.StopApplication();
+            _systemService.StopApplication();
+        }
 
-            return Ok();
+        [HttpGet("os")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Get the operating system information")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Get the Os information",
+            Description = "The Os information details",
+            OperationId = "GetOsInformation")]
+        public ActionResult GetOsInformation()
+        {
+            return Ok(_systemService.GetOsInformation().ToApiModel());
+        }
+
+        [HttpGet("environment")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Get the operating system environment information")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Get the application environment",
+            Description = "The application environment",
+            OperationId = "GetEnvironment")]
+        public ActionResult GetEnvironment()
+        {
+            return Ok(_systemService.GetEnvironment().ToApiModel());
+        }
+
+        [HttpGet("process")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Get the application process information")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Get the application process information",
+            Description = "The application process information",
+            OperationId = "GetProcessInformation")]
+        public ActionResult GetProcessInformation()
+        {
+            return Ok(_systemService.GetProcessInformation().ToApiModel());
         }
     }
 }

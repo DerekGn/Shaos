@@ -22,15 +22,14 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Components;
-
-namespace Shaos.Controllers
+namespace Shaos.Services
 {
-    [Route("api/v{version:apiVersion}/backup")]
-    public class BackupController : CoreController
+    public record OsInformation
     {
-        public BackupController(ILogger<BackupController> logger) : base(logger)
-        {
-        }
+        public string FrameworkDescription { get; init; }
+        public string OsArchitecture { get; init; }
+        public string OsDescription { get; init; }
+        public string ProcessArchitecture { get; init; }
+        public string RuntimeIdentifier { get; internal set; }
     }
 }

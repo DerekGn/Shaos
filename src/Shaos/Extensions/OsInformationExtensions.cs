@@ -22,15 +22,23 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Components;
+using OsInformationApi = Shaos.Api.Model.v1.OsInformation;
+using OsInformationModel = Shaos.Services.OsInformation;
 
-namespace Shaos.Controllers
+namespace Shaos.Extensions
 {
-    [Route("api/v{version:apiVersion}/backup")]
-    public class BackupController : CoreController
+    public static class OsInformationExtensions
     {
-        public BackupController(ILogger<BackupController> logger) : base(logger)
+        public static OsInformationApi ToApiModel(this OsInformationModel osInformation)
         {
+            return new OsInformationApi()
+            {
+                FrameworkDescription = osInformation.FrameworkDescription,
+                OsArchitecture = osInformation.OsArchitecture,
+                OsDescription = osInformation.OsDescription,
+                ProcessArchitecture = osInformation.ProcessArchitecture,
+                RuntimeIdentifier = osInformation.RuntimeIdentifier
+            };
         }
     }
 }
