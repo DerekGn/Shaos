@@ -24,9 +24,19 @@
 
 namespace Shaos.Repository.Models
 {
-    public static class PlugInConstants
+    /// <summary>
+    /// A base class for classes associated with a <see cref="PlugIn"/>
+    /// </summary>
+    public abstract class PlugInChildBase : Base
     {
-        public const int MaxLengthDescription = 100;
-        public const int MaxLengthName = 40;
+        /// <summary>
+        /// The associated <see cref="PlugIn"/>
+        /// </summary>
+        public PlugIn? PlugIn { get; set; }
+
+        /// <summary>
+        /// The identifier of the associated <see cref="PlugIn"/>
+        /// </summary>
+        public int? PlugInId { get; set; }
     }
 }

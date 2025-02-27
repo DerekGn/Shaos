@@ -156,31 +156,31 @@ namespace Shaos.Controllers
             }
         }
 
-        [HttpPut("{id}/enable/{state}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn enabled state will be set to state", Type = typeof(PlugIn))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Set the state of an existing PlugIn by identifier",
-            Description = EnableDescription,
-            OperationId = "SetPlugInState")]
-        public async Task<ActionResult> SetEnablePlugInAsync(
-            [FromRoute, SwaggerParameter("The PlugIn identifier to set its state", Required = true)] int id,
-            [FromRoute, SwaggerParameter("The PlugIn state", Required = true)] bool state,
-            CancellationToken cancellationToken)
-        {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
-            {
-                await PlugInService.SetPlugInEnabledStateAsync(
-                    id,
-                    state,
-                    cancellationToken);
+        //[HttpPut("{id}/enable/{state}")]
+        //[SwaggerResponse(StatusCodes.Status200OK, "The PlugIn enabled state will be set to state", Type = typeof(PlugIn))]
+        //[SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
+        //[SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        //[SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        //[SwaggerOperation(
+        //    Summary = "Set the state of an existing PlugIn by identifier",
+        //    Description = EnableDescription,
+        //    OperationId = "SetPlugInState")]
+        //public async Task<ActionResult> SetEnablePlugInAsync(
+        //    [FromRoute, SwaggerParameter("The PlugIn identifier to set its state", Required = true)] int id,
+        //    [FromRoute, SwaggerParameter("The PlugIn state", Required = true)] bool state,
+        //    CancellationToken cancellationToken)
+        //{
+        //    return await GetPlugInOperationAsync(id, async (plugIn) =>
+        //    {
+        //        await PlugInService.SetPlugInEnabledStateAsync(
+        //            id,
+        //            state,
+        //            cancellationToken);
 
-                return Ok(plugIn.ToApiModel());
-            },
-            cancellationToken);
-        }
+        //        return Ok(plugIn.ToApiModel());
+        //    },
+        //    cancellationToken);
+        //}
 
         [HttpPut("{id}")]
         [SwaggerResponse(StatusCodes.Status204NoContent, "The PlugIn was updated successfully")]

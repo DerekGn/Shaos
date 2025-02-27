@@ -27,7 +27,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// A <see cref="CodeFile"/> for a <see cref="PlugIn"/>
     /// </summary>
-    public class CodeFile : Base
+    public class CodeFile : PlugInChildBase
     {
         /// <summary>
         /// The file name of the <see cref="CodeFile"/>
@@ -38,15 +38,5 @@ namespace Shaos.Repository.Models
         /// The file path of the <see cref="CodeFile"/>
         /// </summary>
         public string FilePath { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The associated <see cref="PlugIn"/>
-        /// </summary>
-        public PlugIn? PlugIn { get; set; }
-
-        /// <summary>
-        /// The identifier of the associated <see cref="PlugIn"/>
-        /// </summary>
-        public int? PlugInId { get; set; }
     }
 }

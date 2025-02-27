@@ -36,7 +36,6 @@ namespace Shaos.Extensions
                 CreatedDate = plugIn.CreatedDate,
                 Description = plugIn.Description,
                 Id = plugIn.Id,
-                IsEnabled = plugIn.IsEnabled,
                 Name = plugIn.Name,
                 UpdatedDate = plugIn.UpdatedDate,
                 CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),

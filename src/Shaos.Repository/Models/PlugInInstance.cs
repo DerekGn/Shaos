@@ -22,26 +22,21 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// Represents a PlugIn
+    /// Represents a configured instance of a <see cref="PlugIn"/>
     /// </summary>
-    public record PlugIn : Base
+    public class PlugInInstance : PlugInChildBase
     {
         /// <summary>
-        /// The name of this <see cref="PlugIn"/>
+        /// Indicates if the <see cref="PlugInInstance"/> is enabled
         /// </summary>
-        public string Name { get; init; } = string.Empty;
+        public bool Enabled { get; set; } = false;
 
         /// <summary>
-        /// The description of this <see cref="PlugIn"/>
+        /// The name of this <see cref="PlugInInstance"/>
         /// </summary>
-        public string? Description { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
-        /// </summary>
-        public ICollection<CodeFile> CodeFiles { get; init; } = new List<CodeFile>();
+        public string Name { get; set; } = string.Empty;
     }
 }

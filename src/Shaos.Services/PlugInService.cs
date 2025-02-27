@@ -58,8 +58,7 @@ namespace Shaos.Services
             var plugIn = new PlugIn()
             {
                 Name = name,
-                Description = description,
-                IsEnabled = false
+                Description = description
             };
 
             await _context.PlugIns.AddAsync(plugIn, cancellationToken);
@@ -150,29 +149,25 @@ namespace Shaos.Services
             }
         }
 
-        /// <inheritdoc/>
-        public async Task SetPlugInEnabledStateAsync(
-            int id,
-            bool isEnabled,
-            CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("Setting PlugIn [{Id}] State To [{IsEnabled}]", id, isEnabled);
+        ///// <inheritdoc/>
+        //public async Task SetPlugInEnabledStateAsync(
+        //    int id,
+        //    bool isEnabled,
+        //    CancellationToken cancellationToken = default)
+        //{
+        //    _logger.LogInformation("Setting PlugIn [{Id}] State To [{IsEnabled}]", id, isEnabled);
 
-            await UpdatePlugInAsync(
-                id,
-                (plugIn) =>
-                {
-                    if (plugIn != null)
-                    {
-                        plugIn.IsEnabled = isEnabled;
-                    }
-                },
-                cancellationToken);
-        }
-
-
-
-        
+        //    await UpdatePlugInAsync(
+        //        id,
+        //        (plugIn) =>
+        //        {
+        //            if (plugIn != null)
+        //            {
+        //                plugIn.IsEnabled = isEnabled;
+        //            }
+        //        },
+        //        cancellationToken);
+        //}
 
         /// <inheritdoc/>
         public async Task<PlugIn?> UpdatePlugInAsync(

@@ -53,10 +53,10 @@ namespace Shaos.Services
         IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             CancellationToken cancellationToken = default);
 
-        Task SetPlugInEnabledStateAsync(
-            int id,
-            bool isEnabled,
-            CancellationToken cancellationToken = default);
+        //Task SetPlugInEnabledStateAsync(
+        //    int id,
+        //    bool isEnabled,
+        //    CancellationToken cancellationToken = default);
 
         Task<PlugIn?> UpdatePlugInAsync(
             int id,

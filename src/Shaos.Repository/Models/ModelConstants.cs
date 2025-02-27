@@ -22,26 +22,31 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// Represents a PlugIn
+    /// Constants for model field sizes
     /// </summary>
-    public record PlugIn : Base
+    public static class ModelConstants
     {
         /// <summary>
-        /// The name of this <see cref="PlugIn"/>
+        /// The maximum file name length
         /// </summary>
-        public string Name { get; init; } = string.Empty;
+        public const int MaxFileNameLength = 40;
 
         /// <summary>
-        /// The description of this <see cref="PlugIn"/>
+        /// The maximum file path length
         /// </summary>
-        public string? Description { get; init; } = string.Empty;
+        public const int MaxFilePathLength = 100;
 
         /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
+        /// The maximum description length
         /// </summary>
-        public ICollection<CodeFile> CodeFiles { get; init; } = new List<CodeFile>();
+        public const int MaxDescriptionLength = 100;
+
+        /// <summary>
+        /// The maximum name field length
+        /// </summary>
+        public const int MaxNameLength = 40;
     }
 }

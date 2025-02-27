@@ -36,14 +36,14 @@ namespace Shaos.Api.Model.v1
         /// The name of this <see cref="PlugIn"/>
         /// </summary>
         [Required]
-        [StringLength(PlugInConstants.MaxLengthName)]
+        [StringLength(ModelConstants.MaxNameLength)]
         public string Name { get; init; } = string.Empty;
 
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
         [Required]
-        [StringLength(PlugInConstants.MaxLengthDescription)]
+        [StringLength(ModelConstants.MaxDescriptionLength)]
         public string? Description { get; init; } = string.Empty;
     }
 }

@@ -24,24 +24,7 @@
 
 namespace Shaos.Api.Model.v1
 {
-    /// <summary>
-    /// Represents a PlugIn
-    /// </summary>
-    public record PlugIn : Base
+    public record PlugInInstance
     {
-        /// <summary>
-        /// The name of this <see cref="PlugIn"/>
-        /// </summary>
-        public string Name { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The description of this <see cref="PlugIn"/>
-        /// </summary>
-        public string? Description { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
-        /// </summary>
-        public ICollection<CodeFile> CodeFiles { get; init; } = new List<CodeFile>();
     }
 }

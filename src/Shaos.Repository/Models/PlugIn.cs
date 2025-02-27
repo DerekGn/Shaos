@@ -40,13 +40,13 @@ namespace Shaos.Repository.Models
         public string? Description { get; set; } = string.Empty;
 
         /// <summary>
-        /// Indicates if the <see cref="PlugIn"/> is enabled
-        /// </summary>
-        public bool IsEnabled { get; set; }
-
-        /// <summary>
         /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
         /// </summary>
         public ICollection<CodeFile> CodeFiles { get; } = new List<CodeFile>();
+
+        /// <summary>
+        /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugInInstance"/>
+        /// </summary>
+        public ICollection<PlugInInstance> PlugInInstances { get; } = new List<PlugInInstance>();
     }
 }
