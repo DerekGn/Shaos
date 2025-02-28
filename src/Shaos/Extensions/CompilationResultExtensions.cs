@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,22 +22,19 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
+using LastCompilationApi = Shaos.Api.Model.v1.CompilationStatus;
+using LastCompilationModel = Shaos.Services.Compiler.CompilationStatus;
 
-namespace Shaos.Services
+namespace Shaos.Extensions
 {
-    public interface IPlugInRuntime
+    public static class LastCompilationExtensions
     {
-        ExecutingPlugIn? GetExecutingPlugIn(int id);
-
-        public IEnumerable<ExecutingPlugIn> GetExecutingPlugIns();
-
-        Task StartPlugInAsync(
-            PlugIn plugIn,
-            CancellationToken cancellationToken = default);
-
-        Task StopPlugInAsync(
-            PlugIn plugIn,
-            CancellationToken cancellationToken = default);
+        public static LastCompilationApi ToApiModel(this LastCompilationModel compilationResult)
+        {
+            return new LastCompilationApi()
+            {
+                Id = compilationResult.Id
+            };
+        }
     }
 }

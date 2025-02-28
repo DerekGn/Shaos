@@ -30,6 +30,11 @@ namespace Shaos.Api.Model.v1
     public record PlugIn : Base
     {
         /// <summary>
+        /// The compiled assembly path
+        /// </summary>
+        public string? AssemblyFilePath { get; init; }
+
+        /// <summary>
         /// The name of this <see cref="PlugIn"/>
         /// </summary>
         public string Name { get; init; } = string.Empty;
@@ -43,5 +48,10 @@ namespace Shaos.Api.Model.v1
         /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
         /// </summary>
         public ICollection<CodeFile> CodeFiles { get; init; } = new List<CodeFile>();
+
+        /// <summary>
+        /// The set of compilation results
+        /// </summary>
+        public IEnumerable<string> CompilationResults { get; init; } = Enumerable.Empty<string>();
     }
 }

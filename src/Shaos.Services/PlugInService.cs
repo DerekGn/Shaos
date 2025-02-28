@@ -26,27 +26,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Compiler;
 using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
 {
-    public class PlugInService : IPlugInService
+    public class PlugInService : BasePlugInService, IPlugInService
     {
-        private readonly ShaosDbContext _context;
         private readonly IFileStoreService _fileStoreService;
-        private readonly ILogger<PlugInService> _logger;
-        private readonly IPlugInRuntime _manager;
+        private readonly IPlugInCompilerService _plugInCompilerService;
 
         public PlugInService(
             ILogger<PlugInService> logger,
-            IPlugInRuntime manager,
             IFileStoreService fileStoreService,
-            ShaosDbContext context)
+            IPlugInCompilerService plugInCompilerService,
+            ShaosDbContext context) : base(logger, context)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            _plugInCompilerService = plugInCompilerService ?? throw new ArgumentNullException(nameof(plugInCompilerService));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <inheritdoc/>
@@ -61,11 +58,11 @@ namespace Shaos.Services
                 Description = description
             };
 
-            await _context.PlugIns.AddAsync(plugIn, cancellationToken);
+            await Context.PlugIns.AddAsync(plugIn, cancellationToken);
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await Context.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
+            Logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
 
             return plugIn.Id;
         }
@@ -75,12 +72,12 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("PlugIn [{Id}] Deleting", id);
+            Logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
             _fileStoreService.DeleteCodeFolder(id.ToString());
 
             // this is EF COre 7 enhancement performs select and delete in one operation
-            await _context.PlugIns.Where(_ => _.Id == id)
+            await Context.PlugIns.Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
         }
 
@@ -90,23 +87,27 @@ namespace Shaos.Services
             int codeFileId,
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("PlugIn [{Id}] CodeFile [{CodeFileId}] Deleting", id, codeFileId);
-
             var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
 
             if (plugIn != null)
             {
+                Logger.LogInformation("PlugIn [{Id}] CodeFile [{CodeFileId}] Deleting", id, codeFileId);
+
                 var codeFile = plugIn.CodeFiles.FirstOrDefault(_ => _.Id == codeFileId);
 
                 if (codeFile != null)
                 {
                     plugIn.CodeFiles.Remove(codeFile);
-                    _context.Remove(codeFile);
+                    Context.Remove(codeFile);
 
                     _fileStoreService.DeleteCodeFile(codeFile.FilePath);
 
-                    await _context.SaveChangesAsync(cancellationToken);
+                    await Context.SaveChangesAsync(cancellationToken);
                 }
+            }
+            else
+            {
+                Logger.LogWarning("PlugIn [{Id}] not found", id);
             }
         }
 
@@ -127,7 +128,7 @@ namespace Shaos.Services
             string name,
             CancellationToken cancellationToken = default)
         {
-            var plugin = await _context
+            var plugin = await Context
                 .PlugIns
                 .AsNoTracking()
                 .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
@@ -139,7 +140,7 @@ namespace Shaos.Services
         public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach (var item in _context.PlugIns
+            await foreach (var item in Context.PlugIns
                 .Include(_ => _.CodeFiles)
                 .AsNoTracking()
                 .AsAsyncEnumerable()
@@ -148,26 +149,6 @@ namespace Shaos.Services
                 yield return item;
             }
         }
-
-        ///// <inheritdoc/>
-        //public async Task SetPlugInEnabledStateAsync(
-        //    int id,
-        //    bool isEnabled,
-        //    CancellationToken cancellationToken = default)
-        //{
-        //    _logger.LogInformation("Setting PlugIn [{Id}] State To [{IsEnabled}]", id, isEnabled);
-
-        //    await UpdatePlugInAsync(
-        //        id,
-        //        (plugIn) =>
-        //        {
-        //            if (plugIn != null)
-        //            {
-        //                plugIn.IsEnabled = isEnabled;
-        //            }
-        //        },
-        //        cancellationToken);
-        //}
 
         /// <inheritdoc/>
         public async Task<PlugIn?> UpdatePlugInAsync(
@@ -217,24 +198,9 @@ namespace Shaos.Services
                         FilePath = filePath!
                     });
 
-                    await _context.SaveChangesAsync(cancellationToken);
+                    await Context.SaveChangesAsync(cancellationToken);
                 }
             }
-        }
-
-        private async Task<PlugIn?> GetPlugInByIdFromContextAsync(
-            int id,
-            bool withNoTracking = true,
-            CancellationToken cancellationToken = default)
-        {
-            var query = _context.PlugIns.Include(_ => _.CodeFiles).AsQueryable();
-
-            if (withNoTracking)
-            {
-                query = query.AsNoTracking();
-            }
-
-            return await query.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -243,15 +209,25 @@ namespace Shaos.Services
             Action<PlugIn?> modify,
             CancellationToken cancellationToken)
         {
-            var plugIn = await _context
-                            .PlugIns
-                            .FirstOrDefaultAsync(
-                                _ => _.Id == id,
-                                cancellationToken);
+            var plugIn = await Context
+                .PlugIns
+                .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
 
             modify(plugIn);
 
             return plugIn;
         }
+
+        //private async Task UpdatePlugInCompilationResultAsync(
+        //    int id,
+        //    CompilationResult result,
+        //    CancellationToken cancellationToken)
+        //{
+        //    var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
+
+        //    plugIn.AssemblyFilePath = result.AssemblyFilePath;
+
+        //    await Context.SaveChangesAsync(cancellationToken);
+        //}
     }
 }

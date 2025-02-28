@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,42 +22,48 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 
-namespace Shaos.Services
+namespace Shaos.Services.Compiler
 {
     /// <summary>
-    /// An Executing PlugIn
+    /// The <see cref="PlugIn"/> compilation status
     /// </summary>
-    public class ExecutingPlugIn()
+    public class CompilationStatus
     {
         /// <summary>
-        /// The compiled assembly path
+        /// Indicates if this compilation is currently active
         /// </summary>
-        public string? AssemblyFilePath { get; set; }
+        public bool Active => CompileTask == null || CompileTask.IsCompleted;
 
         /// <summary>
-        /// The set of compilation results
+        /// The <see cref="CancellationTokenSource"/> for the <see cref="CompileTask"/>
         /// </summary>
-        public IEnumerable<string> CompileResults { get; set; } = Enumerable.Empty<string>();
+        public CancellationTokenSource? CancellationTokenSource { get; internal set; }
 
         /// <summary>
-        /// The <see cref="PlugIn"/> identifier
+        /// The compile <see cref="Task"/>
+        /// </summary>
+        public Task? CompileTask { get; internal set; }
+
+        /// <summary>
+        /// The end time of this compilation
+        /// </summary>
+        public DateTime EndTime { get; internal set; }
+
+        /// <summary>
+        /// The <see cref="PlugIn"/> id for this compilation
         /// </summary>
         public int Id { get; init; }
 
         /// <summary>
-        /// The <see cref="ExecutingState"/> of the <see cref="PlugIn"/>
+        /// The <see cref="PlugIn"/> being compiled
         /// </summary>
-        public ExecutionState State { get; set; }
+        public PlugIn PlugIn { get; init; }
 
         /// <summary>
-        /// The <see cref="Task"/> that is executing the <see cref="PlugIn"/>
+        /// The start time of this compilation
         /// </summary>
-        public Task? Task { get; init;}
-
-        /// <summary>
-        /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="PlugIn"/>
-        /// </summary>
-        public CancellationToken? Token { get; init; }
+        public DateTime StartTime { get; init; }
     }
 }

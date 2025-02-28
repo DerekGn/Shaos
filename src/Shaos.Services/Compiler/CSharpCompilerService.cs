@@ -27,14 +27,13 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
-namespace Shaos.Services
+namespace Shaos.Services.Compiler
 {
     public class CSharpCompilerService : ICompilerService
     {
         private readonly ILogger<CSharpCompilerService> _logger;
-        
+
         public CSharpCompilerService(ILogger<CSharpCompilerService> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

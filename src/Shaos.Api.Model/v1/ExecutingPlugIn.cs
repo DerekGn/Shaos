@@ -29,10 +29,7 @@ namespace Shaos.Api.Model.v1
     /// </summary> 
     public class ExecutingPlugIn
     {
-        /// <summary>
-        /// The compiled assembly path
-        /// </summary>
-        public string? AssemblyFilePath { get; init; }
+        
 
         /// <summary>
         /// The <see cref="PlugIn"/> identifier
@@ -43,10 +40,5 @@ namespace Shaos.Api.Model.v1
         /// The state of the <see cref="PlugIn"/>
         /// </summary>
         public ExecutionState Status { get; init; }
-
-        /// <summary>
-        /// The set of compilation results
-        /// </summary>
-        public IEnumerable<string> CompilationResults { get; init; } = Enumerable.Empty<string>();
     }
 }

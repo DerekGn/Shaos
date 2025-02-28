@@ -30,8 +30,8 @@ namespace Shaos.Controllers
 {
     public abstract class BasePlugInController : CoreController
     {
+        internal const string IdentifierNotFound = "A PlugIn with identifier was not found";
         internal const string PluginNotFound = "The PlugIn could not be found";
-
         internal readonly IPlugInService PlugInService;
 
         protected BasePlugInController(

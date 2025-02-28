@@ -9,7 +9,9 @@ using Shaos.Hosting;
 using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
+using Shaos.Services.Compiler;
 using Shaos.Services.Options;
+using Shaos.Services.Runtime;
 
 namespace Shaos
 {
@@ -94,6 +96,7 @@ namespace Shaos
 
             // Application defined services
             builder.Services.AddScoped<IPlugInService, PlugInService>();
+            builder.Services.AddScoped<IPlugInCompilerService, PlugInCompilerService>();
 
             builder.Services.AddSingleton<IAssemblyCache, AssemblyCache>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
@@ -103,6 +106,8 @@ namespace Shaos
             builder.Services.AddSingleton<ISystemService, SystemService>();
 
             builder.Services.AddHostedService<MonitorBackgroundWorker>();
+
+            builder.Services.AddMemoryCache();
 
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
 

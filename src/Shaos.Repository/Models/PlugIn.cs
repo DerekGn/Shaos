@@ -30,9 +30,14 @@ namespace Shaos.Repository.Models
     public class PlugIn : Base
     {
         /// <summary>
-        /// The name of this <see cref="PlugIn"/>
+        /// The compiled assembly path
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string? AssemblyFilePath { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
+        /// </summary>
+        public ICollection<CodeFile> CodeFiles { get; } = new List<CodeFile>();
 
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
@@ -40,9 +45,9 @@ namespace Shaos.Repository.Models
         public string? Description { get; set; } = string.Empty;
 
         /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
+        /// The name of this <see cref="PlugIn"/>
         /// </summary>
-        public ICollection<CodeFile> CodeFiles { get; } = new List<CodeFile>();
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugInInstance"/>

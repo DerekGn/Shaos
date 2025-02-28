@@ -28,22 +28,19 @@ using Shaos.Repository.Models;
 #warning Limit number of executing plugins
 #warning Support multi-instancing of plugins
 
-namespace Shaos.Services
+namespace Shaos.Services.Runtime
 {
     public class PlugInRuntime : IPlugInRuntime
     {
-        private readonly ICompilerService _compilerService;
         private readonly List<ExecutingPlugIn> _executingPlugIns;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<PlugInRuntime> _logger;
 
         public PlugInRuntime(
             ILogger<PlugInRuntime> logger,
-            ICompilerService compilerService,
             IFileStoreService fileStoreService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _compilerService = compilerService ?? throw new ArgumentNullException(nameof(compilerService));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
 
             _executingPlugIns = new List<ExecutingPlugIn>();
@@ -142,14 +139,15 @@ namespace Shaos.Services
                     assemblyFileName,
                     out string? assemblyFilePath);
 
-            executingPlugIn.AssemblyFilePath = assemblyFilePath;
+#warning MOVE
+            //executingPlugIn.AssemblyFilePath = assemblyFilePath;
 
-            var files = plugIn.CodeFiles.Select(_ => _.FilePath);
+            //var files = plugIn.CodeFiles.Select(_ => _.FilePath);
 
-            var result = await _compilerService.CompileAsync(assemblyFileName, assemblyFileStream, files, cancellationToken);
+            //var result = await _compilerService.CompileAsync(assemblyFileName, assemblyFileStream, files, cancellationToken);
 
-            executingPlugIn.State = result.Success ? ExecutionState.Compiled : ExecutionState.CompileFailed;
-            executingPlugIn.CompileResults = result.Diagnostics.Select(_ => _.ToString());
+            //executingPlugIn.State = result.Success ? ExecutionState.Compiled : ExecutionState.CompileFailed;
+            //executingPlugIn.CompileResults = result.Diagnostics.Select(_ => _.ToString());
         }
 
         private async Task ExecutePlugInAsync(

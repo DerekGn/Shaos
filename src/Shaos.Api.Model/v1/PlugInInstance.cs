@@ -24,7 +24,7 @@
 
 namespace Shaos.Api.Model.v1
 {
-    public record PlugInInstance
+    public record PlugInInstance : Base
     {
     }
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,17 +22,22 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 
-using Microsoft.CodeAnalysis.Emit;
-
-namespace Shaos.Services
+namespace Shaos.Services.Runtime
 {
-    public interface ICompilerService
+    public interface IPlugInRuntime
     {
-        Task<EmitResult> CompileAsync(
-            string assemblyName,
-            Stream outputStream,
-            IEnumerable<string> files,
+        ExecutingPlugIn? GetExecutingPlugIn(int id);
+
+        public IEnumerable<ExecutingPlugIn> GetExecutingPlugIns();
+
+        Task StartPlugInAsync(
+            PlugIn plugIn,
+            CancellationToken cancellationToken = default);
+
+        Task StopPlugInAsync(
+            PlugIn plugIn,
             CancellationToken cancellationToken = default);
     }
 }

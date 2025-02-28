@@ -22,25 +22,13 @@
 * SOFTWARE.
 */
 
-using PlugInApi = Shaos.Api.Model.v1.PlugIn;
-using ModelPlugIn = Shaos.Repository.Models.PlugIn;
+using Microsoft.CodeAnalysis.Emit;
 
-namespace Shaos.Extensions
+namespace Shaos.Services.Compiler
 {
-    internal static class PluginExtensions
+    public class CompilationResult
     {
-        public static PlugInApi ToApiModel(this ModelPlugIn plugIn)
-        {
-            return new PlugInApi()
-            {
-                AssemblyFilePath = plugIn.AssemblyFilePath,
-                CreatedDate = plugIn.CreatedDate,
-                Description = plugIn.Description,
-                Id = plugIn.Id,
-                Name = plugIn.Name,
-                UpdatedDate = plugIn.UpdatedDate,
-                CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),
-            };
-        }
+        public EmitResult? Result { get; internal set; }
+        public string? AssemblyFilePath { get; internal set; }
     }
 }

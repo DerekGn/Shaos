@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,25 +22,31 @@
 * SOFTWARE.
 */
 
-using PlugInApi = Shaos.Api.Model.v1.PlugIn;
-using ModelPlugIn = Shaos.Repository.Models.PlugIn;
-
-namespace Shaos.Extensions
+namespace Shaos.Services.Runtime
 {
-    internal static class PluginExtensions
+    /// <summary>
+    /// An Executing PlugIn
+    /// </summary>
+    public class ExecutingPlugIn()
     {
-        public static PlugInApi ToApiModel(this ModelPlugIn plugIn)
-        {
-            return new PlugInApi()
-            {
-                AssemblyFilePath = plugIn.AssemblyFilePath,
-                CreatedDate = plugIn.CreatedDate,
-                Description = plugIn.Description,
-                Id = plugIn.Id,
-                Name = plugIn.Name,
-                UpdatedDate = plugIn.UpdatedDate,
-                CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),
-            };
-        }
+        /// <summary>
+        /// The <see cref="PlugIn"/> identifier
+        /// </summary>
+        public int Id { get; init; }
+
+        /// <summary>
+        /// The <see cref="ExecutingState"/> of the <see cref="PlugIn"/>
+        /// </summary>
+        public ExecutionState State { get; set; }
+
+        /// <summary>
+        /// The <see cref="Task"/> that is executing the <see cref="PlugIn"/>
+        /// </summary>
+        public Task? Task { get; init; }
+
+        /// <summary>
+        /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="PlugIn"/>
+        /// </summary>
+        public CancellationToken? Token { get; init; }
     }
 }

@@ -23,7 +23,7 @@
 */
 
 using ExecutingPlugInApi = Shaos.Api.Model.v1.ExecutingPlugIn;
-using ExecutingPlugInService = Shaos.Services.ExecutingPlugIn;
+using ExecutingPlugInService = Shaos.Services.Runtime.ExecutingPlugIn;
 
 namespace Shaos.Extensions
 {
@@ -33,10 +33,8 @@ namespace Shaos.Extensions
         {
             return new ExecutingPlugInApi()
             {
-                AssemblyFilePath = executingPlugIn.AssemblyFilePath,
                 Id = executingPlugIn.Id,
-                Status = (Api.Model.v1.ExecutionState)executingPlugIn.State,
-                CompilationResults = executingPlugIn.CompileResults
+                Status = (Api.Model.v1.ExecutionState)executingPlugIn.State
             };
         }
     }

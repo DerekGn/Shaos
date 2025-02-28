@@ -41,7 +41,6 @@ namespace Shaos.Controllers
         private const string EnableDescription = "Set the state of a PlugIn, setting enabled to false prevents a PlugIn from being started at start up";
         private const string GetDescription = "Get the details of a PlugIn by its identifier";
         private const string GetListDescription = "Get a list of all PlugIns";
-        private const string IdentifierNotFound = "A PlugIn with identifier was not found";
         private const string PluginNameExists = "A PlugIn with the same name exists";
         private const string PlugInRetrieve = "The PlugIn identifier to retrieve";
 
