@@ -26,9 +26,19 @@ using Microsoft.CodeAnalysis.Emit;
 
 namespace Shaos.Services.Compiler
 {
-    public class CompilationResult
+    /// <summary>
+    /// A complication result
+    /// </summary>
+    internal class CompilationResult
     {
-        public EmitResult? Result { get; internal set; }
-        public string? AssemblyFilePath { get; internal set; }
+        /// <summary>
+        /// The assembly file path
+        /// </summary>
+        public string? AssemblyFilePath { get; init; }
+
+        /// <summary>
+        /// The compilation <see cref="EmitResult"/>
+        /// </summary>
+        public EmitResult? Result { get; init; }
     }
 }

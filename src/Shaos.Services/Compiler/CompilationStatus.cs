@@ -32,9 +32,14 @@ namespace Shaos.Services.Compiler
     public class CompilationStatus
     {
         /// <summary>
+        /// The compilation elapsed time
+        /// </summary>
+        public TimeSpan? ElapsedTime => EndTime?.Subtract(StartTime);
+
+        /// <summary>
         /// Indicates if this compilation is currently active
         /// </summary>
-        public bool Active => CompileTask == null || CompileTask.IsCompleted;
+        public bool Active => CompileTask != null && !CompileTask.IsCompleted;
 
         /// <summary>
         /// The <see cref="CancellationTokenSource"/> for the <see cref="CompileTask"/>
@@ -49,7 +54,7 @@ namespace Shaos.Services.Compiler
         /// <summary>
         /// The end time of this compilation
         /// </summary>
-        public DateTime EndTime { get; internal set; }
+        public DateTime? EndTime { get; internal set; } = default;
 
         /// <summary>
         /// The <see cref="PlugIn"/> id for this compilation
@@ -64,6 +69,11 @@ namespace Shaos.Services.Compiler
         /// <summary>
         /// The start time of this compilation
         /// </summary>
-        public DateTime StartTime { get; init; }
+        public DateTime StartTime { get; internal set; }
+
+        /// <summary>
+        /// Indicates if the compilation is successful
+        /// </summary>
+        public bool? Success { get; internal set; }
     }
 }

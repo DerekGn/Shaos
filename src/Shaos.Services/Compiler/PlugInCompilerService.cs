@@ -72,8 +72,6 @@ namespace Shaos.Services.Compiler
                     {
                         Id = plugIn.Id,
                         PlugIn = plugIn,
-                        StartTime = DateTime.UtcNow,
-                        EndTime = DateTime.UtcNow
                     };
 
                     _memoryCache.Set(plugIn.Id, compilationStatus,TimeSpan.FromMinutes(60));
@@ -85,6 +83,7 @@ namespace Shaos.Services.Compiler
 
                 if (!compilationStatus.Active)
                 {
+                    compilationStatus.StartTime = DateTime.UtcNow;
                     StartPlugInCompilationTask(compilationStatus);
                 }
             }
@@ -98,7 +97,6 @@ namespace Shaos.Services.Compiler
                 plugIn.Id,
                 plugIn.Name);
 
-            var compileResult = new CompilationResult();
             var assemblyFileName = Path.GetRandomFileName();
 
             using var assemblyFileStream = _fileStoreService
@@ -109,8 +107,11 @@ namespace Shaos.Services.Compiler
 
             var files = plugIn.CodeFiles.Select(_ => _.FilePath);
 
-            compileResult.AssemblyFilePath = assemblyFilePath;
-            compileResult.Result = await _compilerService.CompileAsync(assemblyFileName, assemblyFileStream, files, cancellationToken);
+            var compileResult = new CompilationResult()
+            {
+                AssemblyFilePath = assemblyFilePath,
+                Result = await _compilerService.CompileAsync(assemblyFileName, assemblyFileStream, files, cancellationToken)
+            };
 
             return compileResult;
         }
@@ -129,9 +130,12 @@ namespace Shaos.Services.Compiler
                 {
                     if (_ != null && _.IsCompletedSuccessfully)
                     {
+                        compilationStatus.EndTime = DateTime.UtcNow;
+                        compilationStatus.Success = _.Result?.Result?.Success;
+
                         await UpdatePlugInCompilationResultAsync(
                             plugIn.Id,
-                            _.Result,
+                            _.Result!,
                             cancellationToken);
                     }
                     else

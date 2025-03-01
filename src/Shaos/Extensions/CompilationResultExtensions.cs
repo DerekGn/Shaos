@@ -22,18 +22,23 @@
 * SOFTWARE.
 */
 
-using LastCompilationApi = Shaos.Api.Model.v1.CompilationStatus;
-using LastCompilationModel = Shaos.Services.Compiler.CompilationStatus;
+using CompilationStatusApi = Shaos.Api.Model.v1.CompilationStatus;
+using CompilationStatusModel = Shaos.Services.Compiler.CompilationStatus;
 
 namespace Shaos.Extensions
 {
     public static class LastCompilationExtensions
     {
-        public static LastCompilationApi ToApiModel(this LastCompilationModel compilationResult)
+        public static CompilationStatusApi ToApiModel(this CompilationStatusModel CompilationStatus)
         {
-            return new LastCompilationApi()
+            return new CompilationStatusApi()
             {
-                Id = compilationResult.Id
+                Active = CompilationStatus.Active,
+                ElapsedTime = CompilationStatus.ElapsedTime,
+                EndTime = CompilationStatus.EndTime,
+                Id = CompilationStatus.Id,
+                StartTime = CompilationStatus.StartTime,
+                Success = CompilationStatus.Success
             };
         }
     }

@@ -24,11 +24,39 @@
 
 namespace Shaos.Api.Model.v1
 {
+    /// <summary>
+    /// A <see cref="PlugIn"/> compilation status
+    /// </summary>
     public class CompilationStatus
     {
+        /// <summary>
+        /// Indicates if the compilation is still active
+        /// </summary>
+        public bool Active { get; init; }
+
+        /// <summary>
+        /// The end time of this compilation
+        /// </summary>
+        public DateTime? EndTime { get; init; }
+
         /// <summary>
         /// The <see cref="PlugIn"/> identifier for this <see cref="CompilationStatus"/>
         /// </summary>
         public int Id { get; init; }
+
+        /// <summary>
+        /// The start time of this compilation
+        /// </summary>
+        public DateTime StartTime { get; init; }
+
+        /// <summary>
+        /// The execution time of this compilation
+        /// </summary>
+        public TimeSpan? ElapsedTime { get; init; }
+
+        /// <summary>
+        /// Indicates if the compilation is a success
+        /// </summary>
+        public bool? Success { get; init; }
     }
 }

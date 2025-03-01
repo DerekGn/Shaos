@@ -24,6 +24,9 @@
 
 namespace Shaos.Api.Model.v1
 {
+    /// <summary>
+    /// Represents a running instance of a <see cref="PlugIn"/>
+    /// </summary>
     public record PlugInInstance : Base
     {
     }
