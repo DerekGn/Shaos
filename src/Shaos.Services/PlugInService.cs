@@ -26,7 +26,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Services.Compiler;
 using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
@@ -34,15 +33,12 @@ namespace Shaos.Services
     public class PlugInService : BasePlugInService, IPlugInService
     {
         private readonly IFileStoreService _fileStoreService;
-        private readonly IPlugInCompilerService _plugInCompilerService;
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IFileStoreService fileStoreService,
-            IPlugInCompilerService plugInCompilerService,
             ShaosDbContext context) : base(logger, context)
         {
-            _plugInCompilerService = plugInCompilerService ?? throw new ArgumentNullException(nameof(plugInCompilerService));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
         }
 
@@ -65,6 +61,38 @@ namespace Shaos.Services
             Logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
 
             return plugIn.Id;
+        }
+
+        /// <inheritdoc/>
+        public async Task<int> CreatePlugInInstanceAsync(
+            int id,
+            CreatePlugInInstance create,
+            CancellationToken cancellationToken = default)
+        {
+            int result = 0;
+
+            var plugIn = await GetPlugInByIdFromContextAsync(
+                id,
+                false,
+                cancellationToken: cancellationToken);
+
+            if (plugIn != null)
+            {
+                var plugInInstance = new PlugInInstance()
+                {
+                    Name = create.Name,
+                    Enabled = false,
+                    PlugIn = plugIn,
+                    PlugInId = plugIn.Id
+                };
+
+                plugIn.PlugInInstances.Add(plugInInstance);
+                await Context.SaveChangesAsync(cancellationToken);
+
+                result = plugInInstance.Id;
+            }
+
+            return result;
         }
 
         /// <inheritdoc/>
@@ -112,6 +140,14 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public async Task DeletePlugInInstanceAsync(
+            int id,
+            int instanceId,
+            CancellationToken cancellationToken = default)
+        {
+        }
+
+        /// <inheritdoc/>
         public async Task<PlugIn?> GetPlugInByIdAsync(
             int id,
             CancellationToken cancellationToken = default)
@@ -150,11 +186,17 @@ namespace Shaos.Services
             }
         }
 
+        public async Task SetPlugInInstanceEnableAsync(
+            int id,
+            bool state,
+            CancellationToken cancellationToken = default)
+        {
+        }
+
         /// <inheritdoc/>
         public async Task<PlugIn?> UpdatePlugInAsync(
             int id,
-            string name,
-            string? description,
+            UpdatePlugIn update, 
             CancellationToken cancellationToken = default)
         {
             return await UpdatePlugInAsync(
@@ -163,11 +205,19 @@ namespace Shaos.Services
                 {
                     if (plugIn != null)
                     {
-                        plugIn.Description = description;
-                        plugIn.Name = name;
+                        plugIn.Description = update.Description;
+                        plugIn.Name = update.Name;
                     }
                 },
                 cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdatePlugInInstanceAsync(
+            int id,
+            UpdatePlugInInstance update,
+            CancellationToken cancellationToken = default)
+        {
         }
 
         /// <inheritdoc/>
@@ -180,7 +230,7 @@ namespace Shaos.Services
             var plugIn = await GetPlugInByIdFromContextAsync(
                 id,
                 false,
-                cancellationToken: cancellationToken);
+                cancellationToken);
 
             if (plugIn != null)
             {
@@ -207,7 +257,7 @@ namespace Shaos.Services
         private async Task<PlugIn?> UpdatePlugInAsync(
             int id,
             Action<PlugIn?> modify,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var plugIn = await Context
                 .PlugIns

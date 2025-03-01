@@ -96,7 +96,7 @@ namespace Shaos.Controllers
                 [FromRoute, SwaggerParameter("The PlugIn identifier to start", Required = true)] int id,
                 CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
+            return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
                 await _plugInRuntime.StartPlugInAsync(plugIn, cancellationToken);
 
@@ -115,7 +115,7 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter("The PlugIn identifier to stop", Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
+            return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
                 await _plugInRuntime.StopPlugInAsync(plugIn, cancellationToken);
 

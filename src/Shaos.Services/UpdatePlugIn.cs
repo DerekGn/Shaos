@@ -25,12 +25,9 @@
 using Shaos.Repository.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace Shaos.Api.Model.v1
+namespace Shaos.Services
 {
-    /// <summary>
-    /// Update a PlugIn instance
-    /// </summary>
-    public record PlugInUpdate
+    public class UpdatePlugIn
     {
         /// <summary>
         /// The name of this <see cref="PlugIn"/>
