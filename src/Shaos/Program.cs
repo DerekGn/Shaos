@@ -102,7 +102,7 @@ namespace Shaos
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<ICompilerService, CSharpCompilerService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<IPlugInRuntime, PlugInRuntime>();
+            builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 
             builder.Services.AddHostedService<MonitorBackgroundWorker>();

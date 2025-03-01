@@ -25,27 +25,27 @@
 namespace Shaos.Services.Runtime
 {
     /// <summary>
-    /// An Executing PlugIn
+    /// An executing plugin instance
     /// </summary>
-    public class ExecutingPlugIn()
+    public class ExecutingInstance()
     {
         /// <summary>
-        /// The <see cref="PlugIn"/> identifier
+        /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int Id { get; init; }
 
         /// <summary>
-        /// The <see cref="ExecutingState"/> of the <see cref="PlugIn"/>
+        /// The <see cref="ExecutingState"/> of the <see cref="ExecutingInstance"/>
         /// </summary>
         public ExecutionState State { get; set; }
 
         /// <summary>
-        /// The <see cref="Task"/> that is executing the <see cref="PlugIn"/>
+        /// The <see cref="Task"/> that is executing the <see cref="ExecutingInstance"/>
         /// </summary>
         public Task? Task { get; init; }
 
         /// <summary>
-        /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="PlugIn"/>
+        /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="ExecutingInstance"/>
         /// </summary>
         public CancellationToken? Token { get; init; }
     }

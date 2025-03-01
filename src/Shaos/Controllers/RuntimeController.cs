@@ -28,100 +28,108 @@ using Shaos.Services;
 using Shaos.Services.Runtime;
 using Swashbuckle.AspNetCore.Annotations;
 
+using ExecutingInstanceApi = Shaos.Api.Model.v1.ExecutingInstance;
+
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/runtime")]
     public class RuntimeController : BasePlugInController
     {
-        private readonly IPlugInRuntime _plugInRuntime;
+        private const string ExecutingInstanceIdentifier = "The ExecutingInstance identifier";
+        private const string PlugInInstanceIdentifier = "The PlugInInstance identifier";
+        private readonly IRuntimeService _runtimeService;
 
         public RuntimeController(
             ILogger<RuntimeController> logger,
             IPlugInService plugInService,
-            IPlugInRuntime plugInRuntime) : base(logger, plugInService)
+            IRuntimeService runtimeService) : base(logger, plugInService)
         {
-            _plugInRuntime = plugInRuntime ?? throw new ArgumentNullException(nameof(plugInRuntime));
+            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
         }
 
         [HttpGet("{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Get an executing PlugIn by identifier", Type = typeof(Api.Model.v1.ExecutingPlugIn))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugIn is not currently executing")]
+        [SwaggerResponse(StatusCodes.Status200OK, "The ExecutingInstance", Type = typeof(ExecutingInstanceApi))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugInInstance is not currently executing")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Get an executing PlugIn",
-            Description = "Returns an executing PlugIn",
-            OperationId = "GetExecutingPlugIn")]
-        public ActionResult<Api.Model.v1.ExecutingPlugIn> GetExecutingPlugIn(
-            [FromRoute, SwaggerParameter("The PlugIn identifier of the PlugIn", Required = true)] int id)
+            Summary = "Get an ExecutingInstance",
+            Description = "Returns an ExecutingInstance",
+            OperationId = "GetExecutingInstance")]
+        public ActionResult<ExecutingInstanceApi> GetExecutingInstance(
+            [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id)
         {
-            var executingPlugIn = _plugInRuntime.GetExecutingPlugIn(id);
+            var executingInstance = _runtimeService.GetExecutingInstance(id);
 
-            if (executingPlugIn == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return new OkObjectResult(executingPlugIn);
-            }
+            return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance);
         }
 
         [HttpGet()]
-        [SwaggerResponse(StatusCodes.Status200OK, "The list of executing PlugIns", Type = typeof(IEnumerable<Api.Model.v1.ExecutingPlugIn>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "The list of ExecutingInstances", Type = typeof(IEnumerable<ExecutingInstanceApi>))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Gets the list of executing PlugIns", 
-            Description = "The list of executing PlugIns",
-            OperationId = "GetExecutingPlugIns")]
-        public IEnumerable<Api.Model.v1.ExecutingPlugIn> GetExecutingPlugInsAsync()
+            Summary = "Gets the list of ExecutingInstances",
+            Description = "The list of ExecutingInstances",
+            OperationId = "GetExecutingInstances")]
+        public IEnumerable<ExecutingInstanceApi> GetExecutingInstancesAsync()
         {
-            foreach (var item in _plugInRuntime.GetExecutingPlugIns())
+            foreach (var item in _runtimeService.GetExecutingInstances())
             {
                 yield return item.ToApiModel();
             }
         }
 
         [HttpPut("{id}/start")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn will be started")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugIn is not currently executing")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugInInstance will be started")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugInInstance was not found")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Start a PlugIn",
-            Description = "Start a PlugIn executing",
-            OperationId = "StartPlugIn")]
-        public async Task<ActionResult> StartPlugInAsync(
-                [FromRoute, SwaggerParameter("The PlugIn identifier to start", Required = true)] int id,
+            Summary = "Start a PlugInInstance",
+            Description = "Start a PlugInInstance executing",
+            OperationId = "StartInstance")]
+        public async Task<ActionResult> StartInstanceAsync(
+                [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
                 CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
-            {
-                await _plugInRuntime.StartPlugInAsync(plugIn, cancellationToken);
+            var plugInInstance = await PlugInService
+                .GetPlugInInstanceByIdAsync(id, cancellationToken);
 
-                return Accepted();
-            },
-            cancellationToken);
+            if (plugInInstance == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                await _runtimeService
+                    .StartInstanceAsync(plugInInstance, cancellationToken);
+            }
+
+            return Accepted();
         }
 
         [HttpPut("{id}/stop")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "A PlugIn will be stopped")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugIn is not currently executing")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "A ExecutingInstance will be stopped")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "The ExecutingInstance is not currently executing")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(Summary = "Stop an executing PlugIn", Description = "Stop an executing PlugIn", OperationId = "StopPlugIn")]
-        public async Task<ActionResult> StopPlugInAsync(
-            [FromRoute, SwaggerParameter("The PlugIn identifier to stop", Required = true)] int id,
+        [SwaggerOperation(
+            Summary = "Stop an ExecutingInstance",
+            Description = "Stop an ExecutingInstance", OperationId = "StopInstance")]
+        public async Task<ActionResult> StopInstanceAsync(
+            [FromRoute, SwaggerParameter(ExecutingInstanceIdentifier, Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
-            {
-                await _plugInRuntime.StopPlugInAsync(plugIn, cancellationToken);
+            //return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
+            //{
+            //    await _plugInRuntime.StopInstanceAsync(plugIn, cancellationToken);
 
-                return Accepted();
-            },
-            cancellationToken);
+            //    return Accepted();
+            //},
+            //cancellationToken);
+
+            return Ok();
         }
     }
 }

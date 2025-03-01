@@ -59,6 +59,10 @@ namespace Shaos.Services
             string name,
             CancellationToken cancellationToken = default);
 
+        Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
         Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
             string name,
             CancellationToken cancellationToken = default);

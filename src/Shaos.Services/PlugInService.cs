@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 
 namespace Shaos.Services
 {
@@ -178,6 +179,21 @@ namespace Shaos.Services
             return plugin;
         }
 
+        /// <inheritdoc/>
+        public async Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            var plugInInstance = await Context
+                .PlugInInstances
+                .AsNoTracking()
+                .FirstOrDefaultAsync(_ => _.Id == id,
+                cancellationToken);
+
+            return plugInInstance;
+        }
+
+        /// <inheritdoc/>
         public async Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
             string name,
             CancellationToken cancellationToken = default)
@@ -205,6 +221,7 @@ namespace Shaos.Services
             }
         }
 
+        /// <inheritdoc/>
         public async Task SetPlugInInstanceEnableAsync(
             int id,
             bool enable,
@@ -289,6 +306,7 @@ namespace Shaos.Services
             }
         }
 
+        /// <inheritdoc/>
         private async Task<PlugIn?> UpdatePlugInAsync(
             int id,
             Action<PlugIn?> modify,
@@ -305,6 +323,7 @@ namespace Shaos.Services
             return plugIn;
         }
 
+        /// <inheritdoc/>
         private async Task<PlugInInstance?> UpdatePlugInInstanceAsync(
             int id,
             Action<PlugInInstance?> modify,

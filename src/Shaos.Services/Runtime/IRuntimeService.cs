@@ -26,18 +26,18 @@ using Shaos.Repository.Models;
 
 namespace Shaos.Services.Runtime
 {
-    public interface IPlugInRuntime
+    public interface IRuntimeService
     {
-        ExecutingPlugIn? GetExecutingPlugIn(int id);
+        ExecutingInstance? GetExecutingInstance(int id);
 
-        public IEnumerable<ExecutingPlugIn> GetExecutingPlugIns();
+        public IEnumerable<ExecutingInstance> GetExecutingInstances();
 
-        Task StartPlugInAsync(
-            PlugIn plugIn,
+        Task StartInstanceAsync(
+            PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);
 
-        Task StopPlugInAsync(
-            PlugIn plugIn,
+        Task StopInstanceAsync(
+            PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);
     }
 }
