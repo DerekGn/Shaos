@@ -72,8 +72,8 @@ namespace Shaos.Services.Compiler
         public DateTime StartTime { get; internal set; }
 
         /// <summary>
-        /// Indicates if the compilation is successful
+        /// The <see cref="CompilationResult"/>
         /// </summary>
-        public bool? Success { get; internal set; }
+        public CompilationResult? Result { get; internal set; }
     }
 }

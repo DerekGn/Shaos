@@ -131,7 +131,7 @@ namespace Shaos.Services.Compiler
                     if (_ != null && _.IsCompletedSuccessfully)
                     {
                         compilationStatus.EndTime = DateTime.UtcNow;
-                        compilationStatus.Success = _.Result?.Result?.Success;
+                        compilationStatus.Result = _.Result;
 
                         await UpdatePlugInCompilationResultAsync(
                             plugIn.Id,

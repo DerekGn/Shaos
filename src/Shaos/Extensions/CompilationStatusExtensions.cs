@@ -27,7 +27,7 @@ using CompilationStatusModel = Shaos.Services.Compiler.CompilationStatus;
 
 namespace Shaos.Extensions
 {
-    public static class LastCompilationExtensions
+    public static class CompilationStatusExtensions
     {
         public static CompilationStatusApi ToApiModel(this CompilationStatusModel CompilationStatus)
         {
@@ -38,7 +38,7 @@ namespace Shaos.Extensions
                 EndTime = CompilationStatus.EndTime,
                 Id = CompilationStatus.Id,
                 StartTime = CompilationStatus.StartTime,
-                Success = CompilationStatus.Success
+                Success = CompilationStatus?.Result?.Result?.Success
             };
         }
     }

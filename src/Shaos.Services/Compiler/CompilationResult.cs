@@ -29,7 +29,7 @@ namespace Shaos.Services.Compiler
     /// <summary>
     /// A complication result
     /// </summary>
-    internal class CompilationResult
+    public class CompilationResult
     {
         /// <summary>
         /// The assembly file path
