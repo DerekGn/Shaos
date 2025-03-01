@@ -58,5 +58,10 @@ namespace Shaos.Api.Model.v1
         /// Indicates if the compilation is a success
         /// </summary>
         public bool? Success { get; init; }
+
+        /// <summary>
+        /// The result for this compilation
+        /// </summary>
+        public CompilationResult? CompilationResult { get; init; }
     }
 }

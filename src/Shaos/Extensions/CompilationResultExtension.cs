@@ -22,24 +22,20 @@
 * SOFTWARE.
 */
 
-using CompilationStatusApi = Shaos.Api.Model.v1.CompilationStatus;
-using CompilationStatusModel = Shaos.Services.Compiler.CompilationStatus;
+using CompilationResultApi = Shaos.Api.Model.v1.CompilationResult;
+using CompilationResultModel = Shaos.Services.Compiler.CompilationResult;
 
 namespace Shaos.Extensions
 {
-    public static class CompilationStatusExtensions
+    public static class CompilationResultExtension
     {
-        public static CompilationStatusApi ToApiModel(this CompilationStatusModel compilationStatus)
+        public static CompilationResultApi ToApiModel(this CompilationResultModel compilationResult)
         {
-            return new CompilationStatusApi()
+            return new CompilationResultApi()
             {
-                Active = compilationStatus.Active,
-                ElapsedTime = compilationStatus.ElapsedTime,
-                EndTime = compilationStatus.EndTime,
-                Id = compilationStatus.Id,
-                StartTime = compilationStatus.StartTime,
-                Success = compilationStatus?.Result?.Result?.Success,
-                CompilationResult = compilationStatus?.Result?.ToApiModel()
+                AssemblyFilePath = compilationResult?.AssemblyFilePath,
+                Diagnostics = compilationResult?.Result?.Diagnostics.Select(_ => _.ToString()).ToList(),
+                Success = compilationResult?.Result?.Success
             };
         }
     }
