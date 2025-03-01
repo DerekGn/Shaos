@@ -21,6 +21,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Services", "Shaos.Ser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Services.UnitTests", "Shaos.Services.UnitTests\Shaos.Services.UnitTests.csproj", "{193445F3-5710-4A75-BFA4-2FC90A611F26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Sdk", "Shaos.Sdk\Shaos.Sdk.csproj", "{E4E058B6-10EE-4817-A177-0ABDCFB90926}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sdk", "Sdk", "{65F7083B-B252-4653-837A-08D1AFB86C82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{39708260-FFCA-40E4-A831-F43A160E8D3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,8 +53,16 @@ Global
 		{193445F3-5710-4A75-BFA4-2FC90A611F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{193445F3-5710-4A75-BFA4-2FC90A611F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{193445F3-5710-4A75-BFA4-2FC90A611F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4E058B6-10EE-4817-A177-0ABDCFB90926}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E058B6-10EE-4817-A177-0ABDCFB90926}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4E058B6-10EE-4817-A177-0ABDCFB90926}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4E058B6-10EE-4817-A177-0ABDCFB90926}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{193445F3-5710-4A75-BFA4-2FC90A611F26} = {39708260-FFCA-40E4-A831-F43A160E8D3D}
+		{E4E058B6-10EE-4817-A177-0ABDCFB90926} = {65F7083B-B252-4653-837A-08D1AFB86C82}
 	EndGlobalSection
 EndGlobal
