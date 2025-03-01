@@ -28,6 +28,8 @@ using Shaos.Services;
 using Shaos.Services.Compiler;
 using Swashbuckle.AspNetCore.Annotations;
 
+using CompilationStatusApi = Shaos.Api.Model.v1.CompilationStatus;
+
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/compiler")]
@@ -44,7 +46,7 @@ namespace Shaos.Controllers
         }
 
         [HttpGet("{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn compilation status if one is available", typeof(CompilationStatus))]
+        [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn compilation status if one is available", typeof(CompilationStatusApi))]
         [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
@@ -56,7 +58,7 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter("The PlugIn identifier to get the compilation status", Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
+            return await GetPlugInOperationAsync(id, (plugIn) =>
             {
                 var compilationResult = _plugInCompilerService.GetCompilationStatus(id);
 
@@ -77,7 +79,7 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter("The PlugIn identifier to compile", Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
+            return await GetPlugInOperationAsync(id, (plugIn) =>
             {
                  _plugInCompilerService.StartCompilation(plugIn);
 

@@ -59,5 +59,24 @@ namespace Shaos.Controllers
                 return await operation(plugIn);
             }
         }
+
+        internal async Task<ActionResult> GetPlugInOperationAsync(
+            int id,
+            Func<PlugIn, ActionResult> operation,
+            CancellationToken cancellationToken)
+        {
+            var plugIn = await PlugInService.GetPlugInByIdAsync(
+                id,
+                cancellationToken);
+
+            if (plugIn == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return operation(plugIn);
+            }
+        }
     }
 }

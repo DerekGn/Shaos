@@ -131,7 +131,7 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter(PlugInRetrieve, Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn) =>
+            return await GetPlugInOperationAsync(id, (plugIn) =>
             {
                 return Ok(plugIn.ToApiModel());
             },
