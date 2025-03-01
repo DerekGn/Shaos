@@ -47,7 +47,11 @@ namespace Shaos.Services
             bool withNoTracking = true,
             CancellationToken cancellationToken = default)
         {
-            var query = Context.PlugIns.Include(_ => _.CodeFiles).AsQueryable();
+            var query = Context
+                .PlugIns
+                .Include(_ => _.CodeFiles)
+                .Include(_ => _.Instances)
+                .AsQueryable();
 
             if (withNoTracking)
             {

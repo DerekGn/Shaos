@@ -38,5 +38,10 @@ namespace Shaos.Repository.Models
         /// The name of this <see cref="PlugInInstance"/>
         /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The description of the <see cref="PlugInInstance"/>
+        /// </summary>
+        public string Description {  get; set; } = string.Empty;
     }
 }

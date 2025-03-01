@@ -52,6 +52,6 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugInInstance"/>
         /// </summary>
-        public ICollection<PlugInInstance> PlugInInstances { get; } = new List<PlugInInstance>();
+        public ICollection<PlugInInstance> Instances { get; } = new List<PlugInInstance>();
     }
 }

@@ -49,7 +49,6 @@ namespace Shaos.Services
 
         Task DeletePlugInInstanceAsync(
             int id,
-            int instanceId,
             CancellationToken cancellationToken = default);
 
         Task<PlugIn?> GetPlugInByIdAsync(
@@ -57,6 +56,10 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         Task<PlugIn?> GetPlugInByNameAsync(
+            string name,
+            CancellationToken cancellationToken = default);
+
+        Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
             string name,
             CancellationToken cancellationToken = default);
 

@@ -66,13 +66,13 @@ namespace Shaos.Services
 
         public void DeleteCodeFolder(string folder)
         {
-            if(!string.IsNullOrEmpty(folder))
+            if (!string.IsNullOrEmpty(folder))
             {
                 var codeStoreFolder = Path.Combine(_options.Value.CodeFilesPath, folder);
 
                 if (Directory.Exists(codeStoreFolder))
                 {
-                    Directory.Delete(codeStoreFolder);
+                    Directory.Delete(codeStoreFolder, true);
                 }
             }
         }
@@ -81,7 +81,7 @@ namespace Shaos.Services
             string folder,
             string fileName,
             Stream stream,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var codeStoreFolder = Path.Combine(_options.Value.CodeFilesPath, folder);
 

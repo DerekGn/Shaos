@@ -24,7 +24,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models;
-using System.Reflection.Metadata;
 
 namespace Shaos.Repository
 {
@@ -82,6 +81,13 @@ namespace Shaos.Repository
                 .IsRequired(false);
 
             modelBuilder
+               .Entity<PlugIn>()
+               .HasMany(_ => _.Instances)
+               .WithOne(_ => _.PlugIn)
+               .HasForeignKey(_ => _.PlugInId)
+               .IsRequired(false);
+
+            modelBuilder
                 .Entity<PlugIn>()
                 .Property(_ => _.Name)
                 .IsRequired()
@@ -95,7 +101,7 @@ namespace Shaos.Repository
             modelBuilder
                 .Entity<PlugIn>()
                 .HasIndex(_ => _.Name )
-                .HasDatabaseName("IX_Name_Ascending");
+                .HasDatabaseName("IX_PlugIn_Name_Ascending");
 
             modelBuilder.Entity<CodeFile>()
                 .HasKey(_ => _.Id)
@@ -118,11 +124,15 @@ namespace Shaos.Repository
                 .HasName("PrimaryKey_PlugInInstanceId");
 
             modelBuilder
-               .Entity<PlugIn>()
-               .HasMany(_ => _.PlugInInstances)
-               .WithOne(_ => _.PlugIn)
-               .HasForeignKey(_ => _.PlugInId)
-               .IsRequired(false);
+                .Entity<PlugInInstance>()
+                .Property(_ => _.Name)
+                .IsRequired()
+                .HasMaxLength(ModelConstants.MaxNameLength);
+
+            modelBuilder
+               .Entity<PlugInInstance>()
+               .HasIndex(_ => _.Name)
+               .HasDatabaseName("IX_PlugInInstance_Name_Ascending");
         }
     }
 }

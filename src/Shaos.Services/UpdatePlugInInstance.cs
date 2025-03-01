@@ -22,9 +22,23 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
+
 namespace Shaos.Services
 {
+    /// <summary>
+    /// The updated properties for the <see cref="PlugIn"/> instance
+    /// </summary>
     public class UpdatePlugInInstance
     {
+        /// <summary>
+        /// The name of the instance
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The description of the instance
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
     }
 }

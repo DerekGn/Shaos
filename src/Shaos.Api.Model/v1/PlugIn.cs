@@ -50,8 +50,8 @@ namespace Shaos.Api.Model.v1
         public ICollection<CodeFile> CodeFiles { get; init; } = new List<CodeFile>();
 
         /// <summary>
-        /// The set of compilation results
+        /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugIn"/>
         /// </summary>
-        public IEnumerable<string> CompilationResults { get; init; } = Enumerable.Empty<string>();
+        public IEnumerable<PlugInInstance> Instances { get; init; } = Enumerable.Empty<PlugInInstance>();
     }
 }

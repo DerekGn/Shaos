@@ -27,7 +27,7 @@ using ModelPlugIn = Shaos.Repository.Models.PlugIn;
 
 namespace Shaos.Extensions
 {
-    internal static class PluginExtensions
+    internal static class PlugInExtensions
     {
         public static PlugInApi ToApiModel(this ModelPlugIn plugIn)
         {
@@ -40,6 +40,7 @@ namespace Shaos.Extensions
                 Name = plugIn.Name,
                 UpdatedDate = plugIn.UpdatedDate,
                 CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),
+                Instances = plugIn.Instances.Select(_ => _.ToApiModel()).ToList()
             };
         }
     }

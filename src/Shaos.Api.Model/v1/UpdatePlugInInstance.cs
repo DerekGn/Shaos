@@ -38,5 +38,12 @@ namespace Shaos.Api.Model.v1
         [Required]
         [StringLength(ModelConstants.MaxNameLength)]
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The description of the instance
+        /// </summary>
+        [Required]
+        [StringLength(ModelConstants.MaxDescriptionLength)]
+        public string Description { get; set; } = string.Empty;
     }
 }

@@ -22,26 +22,24 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+using PlugInInstanceApi = Shaos.Api.Model.v1.PlugInInstance;
+using PlugInInstanceModel = Shaos.Repository.Models.PlugInInstance;
+
+namespace Shaos.Extensions
 {
-    /// <summary>
-    /// Represents a running instance of a <see cref="PlugIn"/>
-    /// </summary>
-    public record PlugInInstance : Base
+    public static class PlugInInstanceExtensions
     {
-        /// <summary>
-        /// Indicates if the <see cref="PlugInInstance"/> is enabled
-        /// </summary>
-        public bool Enabled { get; set; } = false;
-
-        /// <summary>
-        /// The <see cref="PlugInInstance"/> name
-        /// </summary>
-        public string Name { get; init; } = string.Empty;
-
-        /// <summary>
-        /// The <see cref="PlugInInstance"/> description
-        /// </summary>
-        public string Description {  get; init; } = string.Empty;
+        public static PlugInInstanceApi ToApiModel(this PlugInInstanceModel plugInInstance)
+        {
+            return new PlugInInstanceApi()
+            {
+                CreatedDate = plugInInstance.CreatedDate,
+                Description = plugInInstance.Description,
+                Enabled = plugInInstance.Enabled,
+                Id = plugInInstance.Id,
+                Name = plugInInstance.Name,
+                UpdatedDate = plugInInstance.UpdatedDate,
+            };
+        }
     }
 }

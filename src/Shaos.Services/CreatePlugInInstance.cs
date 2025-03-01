@@ -24,11 +24,19 @@
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// The <see cref="PlugInInstance"/> create instance
+    /// </summary>
     public class CreatePlugInInstance
     {
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
         public string Name { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The <see cref="PlugInInstance"/> description
+        /// </summary>
+        public string Description { get; init; } = string.Empty;
     }
 }

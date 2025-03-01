@@ -1,31 +1,108 @@
 # Update configuration to match application configuration
 # Use the Autorisation.http script to generate an access token
 @HostAddress = https://localhost:7000
-@id = 1
+@PlugInId = 1
+@CodeFileId = 1
+@PlugInIdInstanceId = 1
 @accessToken = <paste access token without quotes>
 
 ###
 
+# Create a PlugIn
 POST {{HostAddress}}/api/v1/plugins
 #Authorization: Bearer {{accessToken}}
 Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Test.Plugin",
-  "description": "A simple test plugIn",
-  "code": "class plugin {}"
+  "name": "Test Plugin",
+  "description": "A simple test plugIn"
 }
 
 ###
 
+# Get all PlugIns
 GET {{HostAddress}}/api/v1/plugins
 #Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 ###
 
-GET {{HostAddress}}/api/v1/plugins/{{id}}
+# Create a plugin instance
+POST {{HostAddress}}/api/v1/plugins/{{PlugInId}}/instances
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "Test Instance",
+  "description" : "A test plugin instance"
+}
+
+###
+
+# Delete A plugin
+DELETE {{HostAddress}}/api/v1/plugins/{{PlugInId}}
+Accept: application/json
+
+###
+
+# Get PlugIn by Id
+GET {{HostAddress}}/api/v1/plugins/{{PlugInId}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Update a PlugIn by Id
+PUT {{HostAddress}}/api/v1/plugins/{{PlugInId}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Test Plugin",
+  "description": "A simple test plugIn updated"
+}
+
+###
+
+# Delete CodeFile
+DELETE {{HostAddress}}/api/v1/plugins/{{PlugInId}}}/codefiles/{{codeFileId}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Delete the instances
+DELETE {{HostAddress}}/api/v1/plugins/instances/{{PlugInIdInstanceId}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Update a plugin instance
+PUT {{HostAddress}}/api/v1/plugins/instances/{{PlugInIdInstanceId}}
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "string",
+  "description": "Updated Description"
+}
+
+###
+
+# Enable a plugin instance
+PUT {{HostAddress}}/api/v1/plugins/instances/{{PlugInId}}/enable/true
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Disable a plugin instance
+PUT {{HostAddress}}/api/v1/plugins/instances/{{PlugInId}}/enable/false
 #Authorization: Bearer {{accessToken}}
 Accept: application/json
 

@@ -31,7 +31,11 @@ namespace Shaos.Extensions
     {
         public static UpdatePlugInInstanceModel ToModel(this UpdatePlugInInstanceApi updatePlugInInstanceApi)
         {
-            return new UpdatePlugInInstanceModel();
+            return new UpdatePlugInInstanceModel()
+            {
+                Description = updatePlugInInstanceApi.Description,
+                Name = updatePlugInInstanceApi.Name
+            };
         }
     }
 }
