@@ -24,7 +24,19 @@
 
 namespace Shaos.Services
 {
-    public class CreatePlugIn
+    /// <summary>
+    /// Create a PlugIn attributes class
+    /// </summary>
+    public record CreatePlugIn
     {
+        /// <summary>
+        /// The <see cref="PlugIn"/> description
+        /// </summary>
+        public string? Description { get; init; }
+
+        /// <summary>
+        /// The <see cref="PlugIn"/> name
+        /// </summary>
+        public string Name { get; init; }
     }
 }

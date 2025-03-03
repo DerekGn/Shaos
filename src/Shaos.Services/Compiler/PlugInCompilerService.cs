@@ -27,6 +27,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.IO;
 
 namespace Shaos.Services.Compiler
 {
@@ -54,6 +55,7 @@ namespace Shaos.Services.Compiler
             return _memoryCache.TryGetValue<CompilationStatus>(id, out var _);
         }
 
+        /// <inheritdoc/>
         public CompilationStatus? GetCompilationStatus(int id)
         {
             return _memoryCache.Get<CompilationStatus>(id);

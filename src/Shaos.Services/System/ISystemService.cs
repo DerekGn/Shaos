@@ -22,27 +22,40 @@
 * SOFTWARE.
 */
 
-
-namespace Shaos.Services
+namespace Shaos.Services.System
 {
-    public interface IFileStoreService
+    /// <summary>
+    /// Represents a system service for query of system runtime information
+    /// </summary>
+    public interface ISystemService
     {
-        Stream CreateAssemblyFileStream(
-            string folder,
-            string assemblyFileName,
-            out string? assemblyFilePath);
+        /// <summary>
+        /// Gets the <see cref="SystemEnvironment"/> details
+        /// </summary>
+        /// <returns>A <see cref="SystemEnvironment"/></returns>
+        SystemEnvironment GetEnvironment();
 
-        void DeleteCodeFile(string filePath);
+        /// <summary>
+        /// Get information about the operating system
+        /// </summary>
+        /// <returns>A <see cref="RuntimeInformation"/></returns>
+        RuntimeInformation GetOsInformation();
 
-        void DeleteCodeFolder(string folder);
+        /// <summary>
+        /// Get the <see cref="ProcessInformation"/>
+        /// </summary>
+        /// <returns>A <see cref="ProcessInformation"/></returns>
+        ProcessInformation GetProcessInformation();
 
-        Stream? GetCodeFileStream(
-            string filePath);
+        /// <summary>
+        /// Get the application version
+        /// </summary>
+        /// <returns>The application version in Major.Minor.Build format</returns>
+        string GetVersion();
 
-        Task<string?> WriteCodeFileStreamAsync(
-            string folder,
-            string fileName,
-            Stream stream,
-            CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Shutdown the application
+        /// </summary>
+        void ShutdownApplication();
     }
 }

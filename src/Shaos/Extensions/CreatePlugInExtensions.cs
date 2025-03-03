@@ -22,14 +22,20 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+using CreatePlugInApi = Shaos.Api.Model.v1.CreatePlugIn;
+using CreatePlugInModel = Shaos.Services.CreatePlugIn;
+
+namespace Shaos.Extensions
 {
-    public record OsInformation
+    public static class CreatePlugInExtensions
     {
-        public string FrameworkDescription { get; init; }
-        public string OsArchitecture { get; init; }
-        public string OsDescription { get; init; }
-        public string ProcessArchitecture { get; init; }
-        public string RuntimeIdentifier { get; internal set; }
+        public static CreatePlugInModel ToModel(this CreatePlugInApi createPlugIn)
+        {
+            return new CreatePlugInModel()
+            {
+                Description = createPlugIn?.Description,
+                Name = createPlugIn?.Name ?? string.Empty
+            };
+        }
     }
 }

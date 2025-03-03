@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.System
 {
     /// <summary>
     /// The current executing process information

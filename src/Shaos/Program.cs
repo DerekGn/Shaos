@@ -10,8 +10,10 @@ using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.Compiler;
+using Shaos.Services.IO;
 using Shaos.Services.Options;
 using Shaos.Services.Runtime;
+using Shaos.Services.System;
 
 namespace Shaos
 {
@@ -98,7 +100,6 @@ namespace Shaos
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IPlugInCompilerService, PlugInCompilerService>();
 
-            builder.Services.AddSingleton<IAssemblyCache, AssemblyCache>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<ICompilerService, CSharpCompilerService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();

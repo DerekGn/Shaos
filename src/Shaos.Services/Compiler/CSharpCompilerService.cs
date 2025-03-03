@@ -30,6 +30,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Shaos.Services.Compiler
 {
+    /// <summary>
+    /// A compiler service for c#
+    /// </summary>
     public class CSharpCompilerService : ICompilerService
     {
         private readonly ILogger<CSharpCompilerService> _logger;
@@ -39,6 +42,7 @@ namespace Shaos.Services.Compiler
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <inheritdoc/>
         public async Task<EmitResult> CompileAsync(
             string assemblyName,
             Stream outputStream,

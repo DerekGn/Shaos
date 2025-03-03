@@ -26,12 +26,29 @@ using Shaos.Repository.Models;
 
 namespace Shaos.Services.Compiler
 {
+    /// <summary>
+    /// Represents a PlugIn compiler service
+    /// </summary>
     public interface IPlugInCompilerService
     {
+        /// <summary>
+        /// Indicates if a compilation is in progress
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/> to compile</param>
+        /// <returns>True if the compilation with <paramref name="id"/> is in progress</returns>
         bool CompilationInProgress(int id);
 
+        /// <summary>
+        /// Gets the <see cref="CompilationStatus"/> for the <see cref="PlugIn"/>
+        /// </summary>
+        /// <param name="id">The id of the compilation</param>
+        /// <returns>The <see cref="CompilationStatus"/> if one exists</returns>
         CompilationStatus? GetCompilationStatus(int id);
 
+        /// <summary>
+        /// Start a compilation of a <see cref="PlugIn"/>
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to compile</param>
         void StartCompilation(PlugIn plugIn);
     }
 }

@@ -22,49 +22,58 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.System
 {
     /// <summary>
     /// The system environment
     /// </summary>
-    public class SystemEnvironment
+    public record SystemEnvironment
     {
         /// <summary>
         /// Indicates whether the current operating system is a 64-bit operating system.
         /// </summary>
         public bool Is64BitOperatingSystem { get; init; }
+
         /// <summary>
         /// Indicates whether the current process is a 64-bit process.
         /// </summary>
         public bool Is64BitProcess { get; init; }
+
         /// <summary>
         /// Indicates whether the current process is authorized to perform security-relevant functions
         /// </summary>
         public bool IsPrivilegedProcess { get; init; }
+
         /// <summary>
         /// Gets the NetBIOS name of this local computer.
         /// </summary>
         public string? MachineName { get; init; }
+
         /// <summary>
         /// The current platform identifier and version number.
         /// </summary>
         public string? OSVersion { get; init; }
+
         /// <summary>
         /// The unique identifier for the current process.
         /// </summary>
         public int ProcessId { get; init; }
+
         /// <summary>
         /// The number of processors available to the current process.
         /// </summary>
         public int ProcessorCount { get; init; }
+
         /// <summary>
         /// The number of bytes in the operating system's memory page.
         /// </summary>
         public int SystemPageSize { get; init; }
+
         /// <summary>
         /// The version of the common language runtime.
         /// </summary>
         public string? Version { get; init; }
+
         /// <summary>
         /// The amount of physical memory mapped to the process context.
         /// </summary>

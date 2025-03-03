@@ -30,7 +30,7 @@ namespace Shaos.Api.Model.v1
     /// <summary>
     /// Create a PlugIn instance
     /// </summary>
-    public record PlugInCreate
+    public record CreatePlugIn
     {
         /// <summary>
         /// The name of this <see cref="PlugIn"/>

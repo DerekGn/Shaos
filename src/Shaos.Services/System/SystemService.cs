@@ -25,17 +25,16 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 #warning resolve assembly version
 
-namespace Shaos.Services
+namespace Shaos.Services.System
 {
     public class SystemService : ISystemService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<SystemService> _logger;
-        private readonly Lazy<OsInformation> _osInformation;
+        private readonly Lazy<RuntimeInformation> _osInformation;
 
         public SystemService(
             ILogger<SystemService> logger,
@@ -44,19 +43,20 @@ namespace Shaos.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
 
-            _osInformation = new Lazy<OsInformation>(() =>
+            _osInformation = new Lazy<RuntimeInformation>(() =>
             {
-                return new OsInformation()
+                return new RuntimeInformation()
                 {
-                    FrameworkDescription = RuntimeInformation.FrameworkDescription,
-                    OsArchitecture = RuntimeInformation.OSArchitecture.ToString(),
-                    OsDescription = RuntimeInformation.OSDescription,
-                    ProcessArchitecture = RuntimeInformation.ProcessArchitecture.ToString(),
-                    RuntimeIdentifier = RuntimeInformation.RuntimeIdentifier
+                    FrameworkDescription = global::System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+                    OsArchitecture = global::System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
+                    OsDescription = global::System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                    ProcessArchitecture = global::System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+                    RuntimeIdentifier = global::System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
                 };
             });
         }
 
+        /// <inheritdoc/>
         public SystemEnvironment GetEnvironment()
         {
             return new SystemEnvironment()
@@ -74,11 +74,13 @@ namespace Shaos.Services
             };
         }
 
-        public OsInformation GetOsInformation()
+        /// <inheritdoc/>
+        public RuntimeInformation GetOsInformation()
         {
             return _osInformation.Value;
         }
 
+        /// <inheritdoc/>
         public ProcessInformation GetProcessInformation()
         {
             var process = Process.GetCurrentProcess();
@@ -107,12 +109,14 @@ namespace Shaos.Services
             };
         }
 
+        /// <inheritdoc/>
         public string GetVersion()
         {
             return "1.0.0";
         }
 
-        public void StopApplication()
+        /// <inheritdoc/>
+        public void ShutdownApplication()
         {
             _logger.LogInformation("Stopping Application");
 

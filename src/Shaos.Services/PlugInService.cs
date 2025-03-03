@@ -26,6 +26,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.IO;
 using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
@@ -44,14 +45,13 @@ namespace Shaos.Services
 
         /// <inheritdoc/>
         public async Task<int> CreatePlugInAsync(
-            string name,
-            string? description,
+            CreatePlugIn createPlugIn,
             CancellationToken cancellationToken = default)
         {
             var plugIn = new PlugIn()
             {
-                Name = name,
-                Description = description
+                Name = createPlugIn.Name,
+                Description = createPlugIn.Description
             };
 
             await Context.PlugIns.AddAsync(plugIn, cancellationToken);

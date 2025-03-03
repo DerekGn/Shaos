@@ -70,7 +70,7 @@ namespace Shaos.Controllers
             Description = CreateDescription,
             OperationId = "CreatePlugIn")]
         public async Task<ActionResult<int>> CreatePlugInAsync(
-            [FromBody, SwaggerParameter("A PlugIn create", Required = true)] PlugInCreate create,
+            [FromBody, SwaggerParameter("A PlugIn create", Required = true)] Api.Model.v1.CreatePlugIn create,
             CancellationToken cancellationToken)
         {
             if (await PlugInService.GetPlugInByNameAsync(create.Name, cancellationToken) != null)
@@ -82,8 +82,7 @@ namespace Shaos.Controllers
             else
             {
                 return Ok(await PlugInService.CreatePlugInAsync(
-                    create.Name,
-                    create.Description,
+                    create.ToModel(),
                     cancellationToken));
             }
         }

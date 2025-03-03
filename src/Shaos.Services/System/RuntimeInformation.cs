@@ -22,9 +22,36 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Options
+namespace Shaos.Services.System
 {
-    public class CSharpCompilerOptions
+    /// <summary>
+    /// Represents the .net framework runtime information
+    /// </summary>
+    public record RuntimeInformation
     {
+        /// <summary>
+        /// The name of the .NET installation on which an app is running.
+        /// </summary>
+        public string? FrameworkDescription { get; init; }
+
+        /// <summary>
+        /// The platform architecture on which the current app is running.
+        /// </summary>
+        public string? OsArchitecture { get; init; }
+
+        /// <summary>
+        /// The operating system on which the app is running.
+        /// </summary>
+        public string? OsDescription { get; init; }
+
+        /// <summary>
+        /// The process architecture of the currently running app.
+        /// </summary>
+        public string? ProcessArchitecture { get; init; }
+
+        /// <summary>
+        /// The platform for which the runtime was built.
+        /// </summary>
+        public string? RuntimeIdentifier { get; internal set; }
     }
 }

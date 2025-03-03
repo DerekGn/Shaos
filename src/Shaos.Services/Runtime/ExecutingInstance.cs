@@ -25,7 +25,7 @@
 namespace Shaos.Services.Runtime
 {
     /// <summary>
-    /// An executing plugin instance
+    /// An executing <see cref="PlugIn"/> instance
     /// </summary>
     public class ExecutingInstance()
     {

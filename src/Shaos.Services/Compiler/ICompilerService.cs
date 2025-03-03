@@ -27,8 +27,19 @@ using Microsoft.CodeAnalysis.Emit;
 
 namespace Shaos.Services.Compiler
 {
+    /// <summary>
+    /// Represents a compiler service
+    /// </summary>
     public interface ICompilerService
     {
+        /// <summary>
+        /// Compile a set of source files
+        /// </summary>
+        /// <param name="assemblyName">The output assembly name</param>
+        /// <param name="outputStream">The output stream for the compiled assembly</param>
+        /// <param name="files">The set of files to compile</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The <see cref="EmitResult"/> from the compile operation</returns>
         Task<EmitResult> CompileAsync(
             string assemblyName,
             Stream outputStream,

@@ -29,6 +29,9 @@ using Shaos.Repository.Models;
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class RuntimeService : IRuntimeService
     {
         private readonly List<ExecutingInstance> _executingInstances;

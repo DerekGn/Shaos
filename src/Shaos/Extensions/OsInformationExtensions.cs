@@ -23,7 +23,7 @@
 */
 
 using OsInformationApi = Shaos.Api.Model.v1.OsInformation;
-using OsInformationModel = Shaos.Services.OsInformation;
+using OsInformationModel = Shaos.Services.System.RuntimeInformation;
 
 namespace Shaos.Extensions
 {

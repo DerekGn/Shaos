@@ -26,16 +26,38 @@ using Shaos.Repository.Models;
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// The runtime service for executing <see cref="PlugInInstance"/>
+    /// </summary>
     public interface IRuntimeService
     {
+        /// <summary>
+        /// Get a <see cref="ExecutingInstance"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="ExecutingInstance"/></param>
+        /// <returns>The <see cref="ExecutingInstance"/> if found else null</returns>
         ExecutingInstance? GetExecutingInstance(int id);
 
+        /// <summary>
+        /// Get the <see cref="IEnumerable{T}"/> of <see cref="ExecutingInstance"/>
+        /// </summary>
+        /// <returns>The <see cref="IEnumerable{T}"/> of <see cref="ExecutingInstance"/></returns>
         public IEnumerable<ExecutingInstance> GetExecutingInstances();
 
+        /// <summary>
+        /// Start the execution of a <see cref="PlugInInstance"/>
+        /// </summary>
+        /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to start</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         Task StartInstanceAsync(
             PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Stop an executing <see cref="PlugInInstance"/>
+        /// </summary>
+        /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to stop</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/></param>
         Task StopInstanceAsync(
             PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);

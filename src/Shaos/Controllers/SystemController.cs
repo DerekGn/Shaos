@@ -24,7 +24,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
-using Shaos.Services;
+using Shaos.Services.System;
 using Swashbuckle.AspNetCore.Annotations;
 
 #warning resolve assembly version
@@ -56,16 +56,16 @@ namespace Shaos.Controllers
             return Ok(_systemService.GetVersion());
         }
 
-        [HttpPost("stop")]
+        [HttpPost("shutdown")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Stop the application host",
-            Description = "Stops the application host. The process terminates",
-            OperationId = "StopApplication")]
-        public void StopApplication()
+            Summary = "Shutdown the application host",
+            Description = "Shuts down the application host. The process terminates",
+            OperationId = "ShutdownApplication")]
+        public void ShutdownApplication()
         {
-            _systemService.StopApplication();
+            _systemService.ShutdownApplication();
         }
 
         [HttpGet("os")]

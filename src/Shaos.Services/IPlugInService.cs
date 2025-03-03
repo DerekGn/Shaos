@@ -29,8 +29,7 @@ namespace Shaos.Services
     public interface IPlugInService
     {
         Task<int> CreatePlugInAsync(
-            string name,
-            string? description,
+            CreatePlugIn createPlugIn,
             CancellationToken cancellationToken = default);
 
         Task CreatePlugInCodeFileAsync(
@@ -40,7 +39,7 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         Task<int> CreatePlugInInstanceAsync(
-                    int id,
+            int id,
             CreatePlugInInstance create,
             CancellationToken cancellationToken = default);
 
@@ -70,7 +69,7 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
-                    int id,
+            int id,
             CancellationToken cancellationToken = default);
 
         Task<PlugInInstance?> GetPlugInInstanceByNameAsync(

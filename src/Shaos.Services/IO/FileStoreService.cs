@@ -26,7 +26,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Options;
 
-namespace Shaos.Services
+namespace Shaos.Services.IO
 {
     public class FileStoreService : IFileStoreService
     {
@@ -41,13 +41,14 @@ namespace Shaos.Services
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
+        /// <inheritdoc/>
         public Stream CreateAssemblyFileStream(
             string folder,
             string assemblyFileName,
             out string? assemblyFilePath)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(folder);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(folder);
+            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFileName);
 
             var assemblyStoreFolder = Path.Combine(_options.Value.AssemblyFilesPath, folder);
 
@@ -63,6 +64,7 @@ namespace Shaos.Services
             return File.OpenWrite(assemblyFilePath);
         }
 
+        /// <inheritdoc/>
         public void DeleteCodeFile(string filePath)
         {
             if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
@@ -75,6 +77,7 @@ namespace Shaos.Services
             }
         }
 
+        /// <inheritdoc/>
         public void DeleteCodeFolder(string folder)
         {
             if (!string.IsNullOrEmpty(folder))
@@ -94,6 +97,7 @@ namespace Shaos.Services
             }
         }
 
+        /// <inheritdoc/>
         public Stream? GetCodeFileStream(string filePath)
         {
             Stream? result = null;
@@ -112,6 +116,7 @@ namespace Shaos.Services
             return result;
         }
 
+        /// <inheritdoc/>
         public async Task<string?> WriteCodeFileStreamAsync(
             string folder,
             string fileName,
