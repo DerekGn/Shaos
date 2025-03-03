@@ -22,34 +22,10 @@
 * SOFTWARE.
 */
 
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Shaos.Services.Options;
-
-namespace Shaos.Services.UnitTests
+namespace Shaos.Services.Options
 {
-    public abstract class BaseUnitTests
+    public record CSharpCompilerServiceOptions
     {
-        protected BaseUnitTests()
-        {
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false)
-                .Build();
-
-            var serviceCollection = new ServiceCollection()
-                .AddLogging()
-                .AddOptions();
-
-            serviceCollection
-                .AddOptions<CSharpCompilerServiceOptions>()
-                .Bind(Configuration.GetSection(nameof(CSharpCompilerServiceOptions)));
-
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-        }
-
-        public ServiceProvider ServiceProvider { get; }
-        public IConfiguration Configuration { get; }
+        public IList<string> Assemblies { get; init; } = new List<string>();
     }
 }

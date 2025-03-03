@@ -112,6 +112,7 @@ namespace Shaos
             builder.Services.AddMemoryCache();
 
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
+            builder.Services.Configure<CSharpCompilerServiceOptions>(builder.Configuration.GetSection(nameof(CSharpCompilerServiceOptions)));
 
             var app = builder.Build();
             var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();

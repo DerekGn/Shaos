@@ -23,9 +23,12 @@
 */
 
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Services.Compiler;
+using Shaos.Services.Options;
 using Shaos.Services.UnitTests.Extensions;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,9 +43,12 @@ namespace Shaos.Services.UnitTests
         public CompilerServiceTests(ITestOutputHelper output)
         {
             var factory = ServiceProvider.GetService<ILoggerFactory>();
+            var options = ServiceProvider.GetService<IOptions<CSharpCompilerServiceOptions>>();
 
             _compilerService = new CSharpCompilerService(
-                factory!.CreateLogger<CSharpCompilerService>());
+                factory!.CreateLogger<CSharpCompilerService>(),
+                options);
+
             _output = output;
         }
 

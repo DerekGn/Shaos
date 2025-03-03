@@ -27,7 +27,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Sdk;
+using Shaos.Services.Options;
 using System.Reflection;
 
 namespace Shaos.Services.Compiler
@@ -38,10 +40,14 @@ namespace Shaos.Services.Compiler
     public class CSharpCompilerService : ICompilerService
     {
         private readonly ILogger<CSharpCompilerService> _logger;
+        private readonly IOptions<CSharpCompilerServiceOptions> _options;
 
-        public CSharpCompilerService(ILogger<CSharpCompilerService> logger)
+        public CSharpCompilerService(
+            ILogger<CSharpCompilerService> logger,
+            IOptions<CSharpCompilerServiceOptions> options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <inheritdoc/>
@@ -64,9 +70,13 @@ namespace Shaos.Services.Compiler
             var references = new List<MetadataReference>
             {
                 MetadataReference.CreateFromFile(typeof(IPlugIn).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(Path.Combine(dotNetCorePath, "System.Runtime.dll"))
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location)
             };
+
+            foreach (var name in _options.Value.Assemblies)
+            {
+                references.Add(MetadataReference.CreateFromFile(Path.Combine(dotNetCorePath!, name)));
+            }
 
             foreach (var file in files.Where(file => File.Exists(file)))
             {
