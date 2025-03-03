@@ -45,11 +45,10 @@ namespace Shaos.Controllers
         private const string EnableDescription = "Set the state of a PlugIn, setting enabled to false prevents a PlugIn from being started at start up";
         private const string GetDescription = "Get the details of a PlugIn by its identifier";
         private const string GetListDescription = "Get a list of all PlugIns";
+        private const string PlugInCodeFileIdentifier = "The CodeFile identifier";
         private const string PlugInIdentifier = "The PlugIn identifier";
         private const string PlugInInstanceIdentifier = "The PlugIn Instance Identifier";
         private const string PluginNameExists = "A PlugIn with the same name exists";
-        private const string PlugInCodeFileIdentifier = "The CodeFile identifier";
-
         private readonly ICodeFileValidationService _codeFileValidationService;
 
         public PlugInController(
@@ -181,6 +180,29 @@ namespace Shaos.Controllers
                 return Accepted();
             },
             cancellationToken);
+        }
+
+        [HttpGet("codefiles/{id}")]
+        [SwaggerResponse(StatusCodes.Status200OK, "The CodeFile contents")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "The CodeFile was not found")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Get the content of a CodeFile",
+            Description = "Retrieves the content of a CodeFile by an Identifier",
+            OperationId = "DownloadCodeFile")]
+        public async Task<ActionResult> DownloadCodeFileAsync(int id, CancellationToken cancellationToken)
+        {
+            var stream = await PlugInService.GetPlugInCodeFileAsync(id, cancellationToken);
+
+            if(stream != null)
+            {
+                return File(stream, "text/plain");
+            }
+            else
+            {
+                return NoContent();
+            }
         }
 
         [HttpGet("{id}")]
@@ -350,7 +372,7 @@ namespace Shaos.Controllers
 
                         Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                        await PlugInService.UploadPlugInCodeFileAsync(
+                        await PlugInService.CreatePlugInCodeFileAsync(
                             plugIn.Id,
                             fileName,
                             formFile.OpenReadStream(),

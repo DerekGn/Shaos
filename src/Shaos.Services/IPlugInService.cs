@@ -33,8 +33,14 @@ namespace Shaos.Services
             string? description,
             CancellationToken cancellationToken = default);
 
-        Task<int> CreatePlugInInstanceAsync(
+        Task CreatePlugInCodeFileAsync(
             int id,
+            string fileName,
+            Stream stream,
+            CancellationToken cancellationToken = default);
+
+        Task<int> CreatePlugInInstanceAsync(
+                    int id,
             CreatePlugInInstance create,
             CancellationToken cancellationToken = default);
 
@@ -59,8 +65,12 @@ namespace Shaos.Services
             string name,
             CancellationToken cancellationToken = default);
 
-        Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
+        Task<Stream?> GetPlugInCodeFileAsync(
             int id,
+            CancellationToken cancellationToken = default);
+
+        Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
+                    int id,
             CancellationToken cancellationToken = default);
 
         Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
@@ -83,12 +93,6 @@ namespace Shaos.Services
         Task UpdatePlugInInstanceAsync(
             int id,
             UpdatePlugInInstance update,
-            CancellationToken cancellationToken = default);
-
-        Task UploadPlugInCodeFileAsync(
-            int id,
-            string fileName,
-            Stream stream,
             CancellationToken cancellationToken = default);
     }
 }

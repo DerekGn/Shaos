@@ -36,6 +36,9 @@ namespace Shaos.Services
 
         void DeleteCodeFolder(string folder);
 
+        Stream? GetCodeFileStream(
+            string filePath);
+
         Task<string?> WriteCodeFileStreamAsync(
             string folder,
             string fileName,

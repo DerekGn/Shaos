@@ -27,7 +27,6 @@ using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 
 namespace Shaos.Services
 {
@@ -65,6 +64,47 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public async Task CreatePlugInCodeFileAsync(
+            int id,
+            string fileName,
+            Stream stream,
+            CancellationToken cancellationToken = default)
+        {
+            var plugIn = await GetPlugInByIdFromContextAsync(
+                id,
+                false,
+                cancellationToken);
+
+            if (plugIn != null)
+            {
+                Logger.LogInformation("Creating PlugIn CodeFile. PlugIn: [{Id}] FileName: [{FileName}]",
+                    id,
+                    fileName);
+
+                var filePath = await _fileStoreService.WriteCodeFileStreamAsync(
+                    plugIn.Id.ToString(),
+                    fileName,
+                    stream,
+                    cancellationToken);
+
+                if (!plugIn.CodeFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
+                {
+                    plugIn.CodeFiles.Add(new CodeFile()
+                    {
+                        FileName = fileName,
+                        FilePath = filePath!
+                    });
+
+                    await Context.SaveChangesAsync(cancellationToken);
+                }
+            }
+            else
+            {
+                Logger.LogWarning("PlugIn: [{Id}] Not Found", id);
+            }
+        }
+
+        /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(
             int id,
             CreatePlugInInstance create,
@@ -79,6 +119,9 @@ namespace Shaos.Services
 
             if (plugIn != null)
             {
+                Logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]",
+                   id);
+
                 var plugInInstance = new PlugInInstance()
                 {
                     Description = create.Description,
@@ -92,6 +135,10 @@ namespace Shaos.Services
                 await Context.SaveChangesAsync(cancellationToken);
 
                 result = plugInInstance.Id;
+            }
+            else
+            {
+                Logger.LogWarning("PlugIn: [{Id}] Not Found", id);
             }
 
             return result;
@@ -180,6 +227,26 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public async Task<Stream?> GetPlugInCodeFileAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var codeFile = await Context
+                .CodeFiles
+                .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
+
+            if(codeFile == null)
+            {
+                Logger.LogWarning("CodeFile: [{Id}] Not Found", id);
+                
+                return null;
+            }
+            else
+            {
+                return _fileStoreService
+                    .GetCodeFileStream(codeFile.FilePath);
+            }
+        }
+
+        /// <inheritdoc/>
         public async Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
             int id,
             CancellationToken cancellationToken = default)
@@ -240,7 +307,7 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task<PlugIn?> UpdatePlugInAsync(
             int id,
-            UpdatePlugIn update, 
+            UpdatePlugIn update,
             CancellationToken cancellationToken = default)
         {
             return await UpdatePlugInAsync(
@@ -271,39 +338,6 @@ namespace Shaos.Services
                 }
             },
             cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public async Task UploadPlugInCodeFileAsync(
-            int id,
-            string fileName,
-            Stream stream,
-            CancellationToken cancellationToken = default)
-        {
-            var plugIn = await GetPlugInByIdFromContextAsync(
-                id,
-                false,
-                cancellationToken);
-
-            if (plugIn != null)
-            {
-                var filePath = await _fileStoreService.WriteCodeFileStreamAsync(
-                    plugIn.Id.ToString(),
-                    fileName,
-                    stream,
-                    cancellationToken);
-
-                if (!plugIn.CodeFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
-                {
-                    plugIn.CodeFiles.Add(new CodeFile()
-                    {
-                        FileName = fileName,
-                        FilePath = filePath!
-                    });
-
-                    await Context.SaveChangesAsync(cancellationToken);
-                }
-            }
         }
 
         /// <inheritdoc/>

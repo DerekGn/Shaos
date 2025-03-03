@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Options;
 
@@ -29,10 +30,14 @@ namespace Shaos.Services
 {
     public class FileStoreService : IFileStoreService
     {
+        private readonly ILogger<FileStoreService> _logger;
         private readonly IOptions<FileStoreOptions> _options;
 
-        public FileStoreService(IOptions<FileStoreOptions> options)
+        public FileStoreService(
+            ILogger<FileStoreService> logger,
+            IOptions<FileStoreOptions> options)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
@@ -48,6 +53,8 @@ namespace Shaos.Services
 
             if (!Directory.Exists(assemblyStoreFolder))
             {
+                _logger.LogInformation("Creating folder: [{Folder}]", assemblyStoreFolder);
+
                 Directory.CreateDirectory(assemblyStoreFolder);
             }
 
@@ -62,6 +69,10 @@ namespace Shaos.Services
             {
                 File.Delete(filePath);
             }
+            else
+            {
+                _logger.LogWarning("File: [{File}] Not Found", filePath);
+            }
         }
 
         public void DeleteCodeFolder(string folder)
@@ -72,9 +83,33 @@ namespace Shaos.Services
 
                 if (Directory.Exists(codeStoreFolder))
                 {
+                    _logger.LogInformation("Deleting Folder: [{Folder}]", codeStoreFolder);
+
                     Directory.Delete(codeStoreFolder, true);
                 }
             }
+            else
+            {
+                _logger.LogWarning("Folder: [{Folder}] Not Found", folder);
+            }
+        }
+
+        public Stream? GetCodeFileStream(string filePath)
+        {
+            Stream? result = null;
+
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            {
+                _logger.LogInformation("Opening File [{File}]", filePath);
+
+                result = File.OpenRead(filePath);
+            }
+            else
+            {
+                _logger.LogWarning("File: [{File}] Not Found", filePath);
+            }
+
+            return result;
         }
 
         public async Task<string?> WriteCodeFileStreamAsync(

@@ -112,7 +112,7 @@ namespace Shaos.Services.Runtime
             }
             else
             {
-                _logger.LogInformation("Executing Instance: [{Id}] Name: [{Name}] Not Found",
+                _logger.LogInformation("ExecutingInstance: [{Id}] Name: [{Name}] Not Found",
                     plugInInstance.Id,
                     plugInInstance.Name);
             }
@@ -123,9 +123,11 @@ namespace Shaos.Services.Runtime
             ExecutingInstance executingInstance,
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Starting Executing PlugInInstance: [{Id}] Name: [{Name}]",
+            _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}]",
                 plugInInstance.Id,
                 plugInInstance.Name);
+
+            //load and 
         }
 
         private async Task StopExecutingInstanceAsync(
