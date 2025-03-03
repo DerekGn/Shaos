@@ -24,7 +24,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Shaos.Services
+namespace Shaos.Services.Validation
 {
     public interface ICodeFileValidationService
     {

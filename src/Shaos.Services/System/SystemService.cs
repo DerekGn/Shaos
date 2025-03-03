@@ -30,6 +30,9 @@ using System.Diagnostics;
 
 namespace Shaos.Services.System
 {
+    /// <summary>
+    /// The <see cref="ISystemService"/> implementation
+    /// </summary>
     public class SystemService : ISystemService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;

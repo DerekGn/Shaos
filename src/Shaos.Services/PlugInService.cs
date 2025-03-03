@@ -227,7 +227,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<Stream?> GetPlugInCodeFileAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Stream?> GetPlugInCodeFileStreamAsync(int id, CancellationToken cancellationToken = default)
         {
             var codeFile = await Context
                 .CodeFiles

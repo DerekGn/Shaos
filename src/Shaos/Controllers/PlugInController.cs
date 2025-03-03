@@ -27,6 +27,7 @@ using Microsoft.Extensions.Primitives;
 using Shaos.Api.Model.v1;
 using Shaos.Extensions;
 using Shaos.Services;
+using Shaos.Services.Validation;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -192,7 +193,7 @@ namespace Shaos.Controllers
             OperationId = "DownloadCodeFile")]
         public async Task<ActionResult> DownloadCodeFileAsync(int id, CancellationToken cancellationToken)
         {
-            var stream = await PlugInService.GetPlugInCodeFileAsync(id, cancellationToken);
+            var stream = await PlugInService.GetPlugInCodeFileStreamAsync(id, cancellationToken);
 
             if(stream != null)
             {

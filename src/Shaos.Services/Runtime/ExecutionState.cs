@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.Runtime
 {
     /// <summary>
     /// The execution state of a <see cref="PlugIn"/>

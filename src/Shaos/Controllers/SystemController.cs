@@ -27,8 +27,6 @@ using Shaos.Extensions;
 using Shaos.Services.System;
 using Swashbuckle.AspNetCore.Annotations;
 
-#warning resolve assembly version
-
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/system")]

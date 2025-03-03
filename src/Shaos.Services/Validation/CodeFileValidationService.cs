@@ -24,7 +24,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Shaos.Services
+namespace Shaos.Services.Validation
 {
     public class CodeFileValidationService : ICodeFileValidationService
     {
@@ -34,7 +34,7 @@ namespace Shaos.Services
         {
             FileValidationResult result = FileValidationResult.Success;
 
-            if(string.IsNullOrEmpty(formFile.FileName))
+            if (string.IsNullOrEmpty(formFile.FileName))
             {
                 result = FileValidationResult.FileNameEmpty;
             }
