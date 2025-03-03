@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RuntimeIdentifiers>win-x64;linux-arm64</RuntimeIdentifiers>
     <UserSecretsId>aspnet-Shaos-75ca1b94-320d-44c9-ac0c-a074ee311309</UserSecretsId>
   </PropertyGroup>
 

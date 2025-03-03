@@ -1,0 +1,17 @@
+﻿using Shaos.Sdk;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Shaos.Services.UnitTests.TestCode
+{
+    public class TestPlugInOk : IPlugIn
+    {
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            do
+            {
+                await Task.Delay(1000, cancellationToken);
+            } while (!cancellationToken.IsCancellationRequested);
+        }
+    }
+}

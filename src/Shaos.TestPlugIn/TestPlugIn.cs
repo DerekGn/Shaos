@@ -22,13 +22,18 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk
+using Shaos.Sdk;
+
+namespace Shaos.TestPlugIn
 {
-    /// <summary>
-    /// Defines the interface for a plug in
-    /// </summary>
-    public interface IPlugIn
+    public class TestPlugIn : IPlugIn
     {
-        Task ExecuteAsync(CancellationToken cancellationToken);
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            do
+            {
+                await Task.Delay(1000, cancellationToken);
+            } while (!cancellationToken.IsCancellationRequested);
+        }
     }
 }

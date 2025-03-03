@@ -22,13 +22,19 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Shaos.Services.UnitTests
 {
-    /// <summary>
-    /// Defines the interface for a plug in
-    /// </summary>
-    public interface IPlugIn
+    public abstract class BaseUnitTests
     {
-        Task ExecuteAsync(CancellationToken cancellationToken);
+        protected BaseUnitTests()
+        {
+            ServiceProvider = new ServiceCollection()
+                .AddLogging()
+                .BuildServiceProvider();
+        }
+
+        public ServiceProvider ServiceProvider { get; }
     }
 }

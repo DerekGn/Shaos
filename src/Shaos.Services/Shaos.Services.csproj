@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shaos.Repository\Shaos.Repository.csproj" />
+    <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
   </ItemGroup>
 
 </Project>

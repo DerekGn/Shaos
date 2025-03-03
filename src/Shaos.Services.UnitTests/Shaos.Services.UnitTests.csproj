@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -23,7 +23,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
     <ProjectReference Include="..\Shaos.Services\Shaos.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestCode\TestPlugInNotOk.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestCode\TestPlugInOk.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

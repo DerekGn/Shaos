@@ -27,6 +27,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
+using Shaos.Sdk;
+using System.Reflection;
 
 namespace Shaos.Services.Compiler
 {
@@ -47,18 +49,24 @@ namespace Shaos.Services.Compiler
             string assemblyName,
             Stream outputStream,
             IEnumerable<string> files,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
 #warning compiler settings from configuration
             var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp11);
             var syntaxTrees = new List<SyntaxTree>();
-            var references = new List<MetadataReference>();
             var compilerOptions = new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary,
                 optimizationLevel: OptimizationLevel.Release,
                 assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
 
-            references.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
+            var dotNetCorePath = Path.GetDirectoryName(typeof(object).GetTypeInfo().Assembly.Location);
+
+            var references = new List<MetadataReference>
+            {
+                MetadataReference.CreateFromFile(typeof(IPlugIn).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(Path.Combine(dotNetCorePath, "System.Runtime.dll"))
+            };
 
             foreach (var file in files.Where(file => File.Exists(file)))
             {
