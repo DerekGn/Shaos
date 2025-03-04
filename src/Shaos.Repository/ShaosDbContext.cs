@@ -30,28 +30,23 @@ namespace Shaos.Repository
     /// <summary>
     /// The application store database context
     /// </summary>
-    public class ShaosDbContext : DbContext
+    public class ShaosDbContext : DbContext, IDbContext
     {
         public ShaosDbContext(DbContextOptions<ShaosDbContext> options)
             : base(options)
         {
         }
 
-        /// <summary>
-        /// The <see cref="PlugIn"/> database set
-        /// </summary>
+        /// <inheritdoc/>>
         public DbSet<PlugIn> PlugIns { get; set; }
 
-        /// <summary>
-        /// The <see cref="CodeFile"/> database set
-        /// </summary>
+        /// <inheritdoc/>>
         public DbSet<CodeFile> CodeFiles { get; set; }
 
-        /// <summary>
-        /// The <see cref="PlugInInstance"/> database set
-        /// </summary>
+        /// <inheritdoc/>>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
 
+        /// <inheritdoc/>>
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             ChangeTracker.Entries<Base>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
@@ -67,6 +62,7 @@ namespace Shaos.Repository
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
+        /// <inheritdoc/>>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PlugIn>()
