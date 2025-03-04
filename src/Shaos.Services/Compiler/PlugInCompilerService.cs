@@ -25,9 +25,11 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
+using Shaos.Services.Options;
 
 namespace Shaos.Services.Compiler
 {
@@ -36,17 +38,20 @@ namespace Shaos.Services.Compiler
         private readonly ICompilerService _compilerService;
         private readonly IFileStoreService _fileStoreService;
         private readonly IMemoryCache _memoryCache;
+        private readonly IOptions<PlugInCompilerServiceOptions> _options;
 
         public PlugInCompilerService(
             ILogger<PlugInCompilerService> logger,
             ShaosDbContext context,
             IMemoryCache memoryCache,
             ICompilerService compilerService,
-            IFileStoreService fileStoreService) : base(logger, context)
+            IFileStoreService fileStoreService,
+            IOptions<PlugInCompilerServiceOptions> options) : base(logger, context)
         {
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _compilerService = compilerService ?? throw new ArgumentNullException(nameof(compilerService));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// </<inheritdoc/>
@@ -76,7 +81,7 @@ namespace Shaos.Services.Compiler
                         PlugIn = plugIn,
                     };
 
-                    _memoryCache.Set(plugIn.Id, compilationStatus,TimeSpan.FromMinutes(60));
+                    _memoryCache.Set(plugIn.Id, compilationStatus, _options.Value.CacheTime);
                 }
 
                 Logger.LogInformation("Starting PlugIn: [{Id}] Name: [{Name}] Compilation",
