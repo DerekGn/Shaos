@@ -22,38 +22,15 @@
 * SOFTWARE.
 */
 
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Shaos.Services.Options;
-
-namespace Shaos.Services.UnitTests
+namespace Shaos.Services.UnitTests.Validation
 {
-    public abstract class BaseUnitTests
+    public class CodeFileValidationTests
     {
-        protected BaseUnitTests()
+        //private readonly CodeFileValidationService _codeFileValidationService;
+
+        public CodeFileValidationTests()
         {
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false)
-                .Build();
 
-            var serviceCollection = new ServiceCollection()
-                .AddLogging()
-                .AddOptions();
-
-            serviceCollection
-                .AddOptions<CSharpCompilerServiceOptions>()
-                .Bind(Configuration.GetSection(nameof(CSharpCompilerServiceOptions)));
-
-            serviceCollection
-                .AddOptions<FileStoreOptions>()
-                .Bind(Configuration.GetSection(nameof(FileStoreOptions)));
-
-            ServiceProvider = serviceCollection.BuildServiceProvider();
         }
-
-        public ServiceProvider ServiceProvider { get; }
-        public IConfiguration Configuration { get; }
     }
 }

@@ -31,12 +31,12 @@ namespace Shaos.Services
 {
     public abstract class BasePlugInService
     {
-        protected readonly ShaosDbContext Context;
+        protected readonly IDbContext Context;
         protected readonly ILogger<BasePlugInService> Logger;
 
         protected BasePlugInService(
             ILogger<BasePlugInService> logger,
-            ShaosDbContext context)
+            IDbContext context)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Context = context ?? throw new ArgumentNullException(nameof(context));

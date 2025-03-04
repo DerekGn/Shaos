@@ -38,7 +38,7 @@ namespace Shaos.Services
         public PlugInService(
             ILogger<PlugInService> logger,
             IFileStoreService fileStoreService,
-            ShaosDbContext context) : base(logger, context)
+            IDbContext context) : base(logger, context)
         {
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
         }

@@ -42,7 +42,7 @@ namespace Shaos.Services.Compiler
 
         public PlugInCompilerService(
             ILogger<PlugInCompilerService> logger,
-            ShaosDbContext context,
+            IDbContext context,
             IMemoryCache memoryCache,
             ICompilerService compilerService,
             IFileStoreService fileStoreService,

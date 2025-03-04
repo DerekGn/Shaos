@@ -32,7 +32,7 @@ using Shaos.Services.UnitTests.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests
+namespace Shaos.Services.UnitTests.Compiler
 {
     public class CompilerServiceTests : BaseUnitTests
     {
@@ -58,7 +58,7 @@ namespace Shaos.Services.UnitTests
 
             List<string> files =
             [
-                "./TestCode/TestPlugInNotOk.txt"
+                "./Files/TestCode/TestPlugInNotOk.txt"
             ];
 
             var result = await _compilerService.CompileAsync("Assembly.dll", stream, files);
@@ -78,7 +78,7 @@ namespace Shaos.Services.UnitTests
 
             List<string> files =
             [
-                "./TestCode/TestPlugInOk.txt"
+                "./Files/TestCode/TestPlugInOk.txt"
             ];
 
             var result = await _compilerService.CompileAsync("Assembly.dll", stream, files);
