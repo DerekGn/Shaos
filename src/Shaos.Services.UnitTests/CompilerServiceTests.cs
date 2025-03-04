@@ -58,7 +58,7 @@ namespace Shaos.Services.UnitTests
 
             List<string> files =
             [
-                ".\\TestCode\\TestPlugInNotOk.txt"
+                "./TestCode/TestPlugInNotOk.txt"
             ];
 
             var result = await _compilerService.CompileAsync("Assembly.dll", stream, files);
@@ -78,7 +78,7 @@ namespace Shaos.Services.UnitTests
 
             List<string> files =
             [
-                ".\\TestCode\\TestPlugInOk.txt"
+                "./TestCode/TestPlugInOk.txt"
             ];
 
             var result = await _compilerService.CompileAsync("Assembly.dll", stream, files);
