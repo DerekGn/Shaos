@@ -89,6 +89,7 @@ namespace Shaos.Services.UnitTests
 
             Assert.NotNull(result);
             Assert.True(result.Success);
+            Assert.False(result.Diagnostics.Any());
         }
     }
 }
