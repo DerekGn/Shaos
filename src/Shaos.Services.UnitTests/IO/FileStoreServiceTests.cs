@@ -25,7 +25,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shaos.Services.Compiler;
 using Shaos.Services.IO;
 using Shaos.Services.Options;
 using Xunit;
@@ -35,8 +34,8 @@ namespace Shaos.Services.UnitTests.IO
 {
     public class FileStoreServiceTests : BaseUnitTests
     {
-        private readonly IOptions<FileStoreOptions>? _options;
         private readonly FileStoreService _fileStoreService;
+        private readonly IOptions<FileStoreOptions>? _options;
         private readonly ITestOutputHelper _output;
 
         public FileStoreServiceTests(ITestOutputHelper output)
@@ -49,6 +48,17 @@ namespace Shaos.Services.UnitTests.IO
                 _options!);
 
             _output = output;
+        }
+
+        [Theory]
+        [InlineData("TestCodeFile.txt")]
+        public void GetCodeFileStream(string file)
+        {
+            var filePath = Path.Combine(_options!.Value.CodeFilesPath, file);
+
+            var result = _fileStoreService.GetCodeFileStream(filePath);
+
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -84,6 +94,18 @@ namespace Shaos.Services.UnitTests.IO
             _fileStoreService.DeleteCodeFolder(folder);
 
             Assert.False(Directory.Exists(folderPath));
+        }
+
+        [Fact]
+        public async Task TestWriteCodeFileStreamAsync()
+        {
+            using var memoryStream = new MemoryStream();
+            memoryStream.Write([0xAA, 0x55]);
+            memoryStream.Position = 0;
+
+            var result = await _fileStoreService.WriteCodeFileStreamAsync("CodeWriteFolder", "FileName.txt", memoryStream);
+            
+            Assert.NotNull(result);
         }
     }
 }

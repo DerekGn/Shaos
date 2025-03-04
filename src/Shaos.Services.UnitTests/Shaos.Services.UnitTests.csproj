@@ -36,6 +36,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Files\CodeFiles\TestCodeFile.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Files\TestCode\TestPlugInNotOk.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
