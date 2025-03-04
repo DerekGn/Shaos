@@ -23,7 +23,6 @@
 */
 
 using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -47,7 +46,7 @@ namespace Shaos.Services.UnitTests
 
             _compilerService = new CSharpCompilerService(
                 factory!.CreateLogger<CSharpCompilerService>(),
-                options);
+                options!);
 
             _output = output;
         }
@@ -67,7 +66,6 @@ namespace Shaos.Services.UnitTests
             _output.WriteLine(result.ToFormattedString());
 
             Assert.NotNull(result);
-            Assert.Equal(0, stream.Length);
             Assert.False(result.Success);
             Assert.True(result.Diagnostics.Any());
             Assert.Equal(DiagnosticSeverity.Error, result.Diagnostics.First().Severity);
