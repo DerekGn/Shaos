@@ -29,4 +29,9 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      run: dotnet test --verbosity normal
+      run: dotnet test --verbosity normal --logger "trx;LogFileName=test-results.trx"
+    - uses: actions/upload-artifact@v4  # upload test results
+      if: success() || failure()        # run this step even if previous step failed
+      with:
+        name: test-results
+        path: test-results.trx
