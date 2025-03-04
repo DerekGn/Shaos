@@ -122,7 +122,7 @@ namespace Shaos.Services.Compiler
         {
             compilationStatus.CancellationTokenSource = new CancellationTokenSource();
 
-            var plugIn = compilationStatus.PlugIn;
+            var plugIn = compilationStatus.PlugIn!;
             var cancellationToken = compilationStatus.CancellationTokenSource.Token;
 
             return Task
@@ -157,9 +157,19 @@ namespace Shaos.Services.Compiler
         {
             var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
 
-            plugIn.AssemblyFilePath = result.AssemblyFilePath;
+            if (plugIn != null)
+            {
+                Logger.LogInformation("Updating compilation result for PlugIn: [{Id}] Assembly File Path: [{FilePath}]",
+                    id, result.AssemblyFilePath);
 
-            await Context.SaveChangesAsync(cancellationToken);
+                plugIn.AssemblyFilePath = result.AssemblyFilePath;
+
+                await Context.SaveChangesAsync(cancellationToken);
+            }
+            else
+            {
+                Logger.LogWarning("Unable to find PlugIn: [{Id}]", id);
+            }
         }
     }
 }

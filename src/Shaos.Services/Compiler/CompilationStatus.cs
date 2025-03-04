@@ -64,7 +64,7 @@ namespace Shaos.Services.Compiler
         /// <summary>
         /// The <see cref="PlugIn"/> being compiled
         /// </summary>
-        public PlugIn PlugIn { get; init; }
+        public PlugIn? PlugIn { get; init; }
 
         /// <summary>
         /// The start time of this compilation

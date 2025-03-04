@@ -37,6 +37,6 @@ namespace Shaos.Services
         /// <summary>
         /// The <see cref="PlugIn"/> name
         /// </summary>
-        public string Name { get; init; }
+        public string Name { get; init; } = string.Empty;
     }
 }
