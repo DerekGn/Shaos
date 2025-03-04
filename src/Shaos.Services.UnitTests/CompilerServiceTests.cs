@@ -66,9 +66,9 @@ namespace Shaos.Services.UnitTests
             _output.WriteLine(result.ToFormattedString());
 
             Assert.NotNull(result);
-            //Assert.False(result.Success);
-            //Assert.True(result.Diagnostics.Any());
-            //Assert.Equal(DiagnosticSeverity.Error, result.Diagnostics.First().Severity);
+            Assert.False(result.Success);
+            Assert.True(result.Diagnostics.Any());
+            Assert.Equal(DiagnosticSeverity.Error, result.Diagnostics.First().Severity);
         }
 
         [Fact]
