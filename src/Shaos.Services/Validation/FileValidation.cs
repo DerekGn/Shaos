@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.Validation
 {
     public enum FileValidationResult
     {
