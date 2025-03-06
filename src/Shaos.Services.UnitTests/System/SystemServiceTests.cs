@@ -28,7 +28,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Services.System;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.System
 {

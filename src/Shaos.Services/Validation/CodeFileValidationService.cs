@@ -38,7 +38,7 @@ namespace Shaos.Services.Validation
             {
                 result = FileValidationResult.FileNameEmpty;
             }
-            if (!formFile.ContentType.Equals("text/plain", StringComparison.CurrentCultureIgnoreCase))
+            else if (!formFile.ContentType.Equals("text/plain", StringComparison.CurrentCultureIgnoreCase))
             {
                 result = FileValidationResult.InvalidContentType;
             }
