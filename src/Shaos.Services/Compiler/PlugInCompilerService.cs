@@ -91,7 +91,7 @@ namespace Shaos.Services.Compiler
                 if (!compilationStatus.Active)
                 {
                     compilationStatus.StartTime = DateTime.UtcNow;
-                    StartPlugInCompilationTask(compilationStatus);
+                    _ = StartPlugInCompilationTask(compilationStatus);
                 }
             }
         }

@@ -129,7 +129,7 @@ namespace Shaos.Services.Runtime
             _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}]",
                 plugInInstance.Id,
                 plugInInstance.Name);
-
+            
             //load and 
         }
 

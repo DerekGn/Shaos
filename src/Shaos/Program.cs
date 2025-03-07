@@ -98,6 +98,7 @@ namespace Shaos
             });
 
             // Application defined services
+            builder.Services.AddScoped<IDbContext, ShaosDbContext>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IPlugInCompilerService, PlugInCompilerService>();
 
