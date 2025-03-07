@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+
+// Ignore Spelling: Nuget
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Shaos.Api.Model.v1;
@@ -143,23 +146,23 @@ namespace Shaos.Controllers
             return Accepted();
         }
 
-        [HttpDelete("{id}/codefiles/{codeFileId}")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn CodeFile will be deleted")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Delete a PlugIn CodeFile",
-            Description = "Delete a CodeFile from a PlugIn",
-            OperationId = "DeletePlugInCodeFile")]
-        public async Task<ActionResult> DeletePlugInCodeFileAsync(
-            [FromRoute, SwaggerParameter(PlugInCodeFileIdentifier, Required = true)] int id,
-            [FromRoute, SwaggerParameter(PlugInCodeFileIdentifier, Required = true)] int codeFileId,
-            CancellationToken cancellationToken)
-        {
-            await PlugInService.DeletePlugInCodeFileAsync(id, codeFileId, cancellationToken);
+        //[HttpDelete("{id}/codefiles/{codeFileId}")]
+        //[SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn CodeFile will be deleted")]
+        //[SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        //[SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        //[SwaggerOperation(
+        //    Summary = "Delete a PlugIn CodeFile",
+        //    Description = "Delete a CodeFile from a PlugIn",
+        //    OperationId = "DeletePlugInCodeFile")]
+        //public async Task<ActionResult> DeletePlugInCodeFileAsync(
+        //    [FromRoute, SwaggerParameter(PlugInCodeFileIdentifier, Required = true)] int id,
+        //    [FromRoute, SwaggerParameter(PlugInCodeFileIdentifier, Required = true)] int codeFileId,
+        //    CancellationToken cancellationToken)
+        //{
+        //    await PlugInService.DeletePlugInCodeFileAsync(id, codeFileId, cancellationToken);
 
-            return Accepted();
-        }
+        //    return Accepted();
+        //}
 
         [HttpDelete("instances/{id}")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn Instance will be deleted")]
@@ -182,28 +185,28 @@ namespace Shaos.Controllers
             cancellationToken);
         }
 
-        [HttpGet("codefiles/{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The CodeFile contents")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The CodeFile was not found")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get the content of a CodeFile",
-            Description = "Retrieves the content of a CodeFile by an Identifier",
-            OperationId = "DownloadCodeFile")]
-        public async Task<ActionResult> DownloadCodeFileAsync(int id, CancellationToken cancellationToken)
-        {
-            var stream = await PlugInService.GetPlugInCodeFileStreamAsync(id, cancellationToken);
+        //[HttpGet("codefiles/{id}")]
+        //[SwaggerResponse(StatusCodes.Status200OK, "The CodeFile contents")]
+        //[SwaggerResponse(StatusCodes.Status404NotFound, "The CodeFile was not found")]
+        //[SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        //[SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        //[SwaggerOperation(
+        //    Summary = "Get the content of a CodeFile",
+        //    Description = "Retrieves the content of a CodeFile by an Identifier",
+        //    OperationId = "DownloadCodeFile")]
+        //public async Task<ActionResult> DownloadCodeFileAsync(int id, CancellationToken cancellationToken)
+        //{
+        //    var stream = await PlugInService.GetPlugInCodeFileStreamAsync(id, cancellationToken);
 
-            if(stream != null)
-            {
-                return File(stream, "text/plain");
-            }
-            else
-            {
-                return NoContent();
-            }
-        }
+        //    if(stream != null)
+        //    {
+        //        return File(stream, "text/plain");
+        //    }
+        //    else
+        //    {
+        //        return NoContent();
+        //    }
+        //}
 
         [HttpGet("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn details", Type = typeof(PlugIn))]
@@ -327,27 +330,27 @@ namespace Shaos.Controllers
             return Accepted();
         }
 
-        [HttpPut("{id}/codefiles")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn code files where accepted")]
+        [HttpPut("{id}/nuget")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn nuget was accepted")]
         [SwaggerResponse(StatusCodes.Status400BadRequest)]
         [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Upload a set of PlugIn code files",
-            Description = "Upload a set of PlugIn code files. Existing files will be over written, new files will be created",
-            OperationId = "UploadPlugInCodeFiles")]
-        public async Task<ActionResult> UploadPlugInCodesFileAsync(
+            Summary = "",
+            Description = "",
+            OperationId = "UploadPlugInNuget")]
+        public async Task<ActionResult> UploadPlugInNugetAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            List<IFormFile> files,
+            IFormFile formFile,
             CancellationToken cancellationToken)
         {
             return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
                 ProblemDetails? problemDetails = null;
 
-                foreach (var formFile in files)
-                {
+                //foreach (var formFile in files)
+                //{
                     var validationResult = _codeFileValidationService.ValidateFile(formFile);
 
                     if (validationResult == FileValidationResult.FileNameEmpty)
@@ -372,13 +375,13 @@ namespace Shaos.Controllers
 
                         Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                        await PlugInService.CreatePlugInCodeFileAsync(
+                        await PlugInService.CreatePlugInNugetAsync(
                             plugIn.Id,
                             fileName,
                             formFile.OpenReadStream(),
                             cancellationToken);
                     }
-                }
+                //}
 
                 if (problemDetails != null)
                 {

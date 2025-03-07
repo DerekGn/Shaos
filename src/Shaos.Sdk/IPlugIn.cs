@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+
+// Ignore Spelling: Shaos
+
 namespace Shaos.Sdk
 {
     /// <summary>

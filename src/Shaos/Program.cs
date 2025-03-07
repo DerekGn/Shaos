@@ -9,7 +9,6 @@ using Shaos.Hosting;
 using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
-using Shaos.Services.Compiler;
 using Shaos.Services.IO;
 using Shaos.Services.Options;
 using Shaos.Services.Runtime;
@@ -100,10 +99,8 @@ namespace Shaos
             // Application defined services
             builder.Services.AddScoped<IDbContext, ShaosDbContext>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
-            builder.Services.AddScoped<IPlugInCompilerService, PlugInCompilerService>();
 
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
-            builder.Services.AddSingleton<ICompilerService, CSharpCompilerService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();

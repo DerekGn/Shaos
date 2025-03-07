@@ -45,9 +45,9 @@ namespace Shaos.Api.Model.v1
         public string? Description { get; init; } = string.Empty;
 
         /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
+        /// The set of <see cref="NuGetFile"/> associated with this <see cref="PlugIn"/>
         /// </summary>
-        public ICollection<CodeFile> CodeFiles { get; init; } = new List<CodeFile>();
+        public ICollection<NuGetFile> CodeFiles { get; init; } = new List<NuGetFile>();
 
         /// <summary>
         /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugIn"/>

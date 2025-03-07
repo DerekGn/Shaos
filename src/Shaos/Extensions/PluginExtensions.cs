@@ -39,7 +39,7 @@ namespace Shaos.Extensions
                 Id = plugIn.Id,
                 Name = plugIn.Name,
                 UpdatedDate = plugIn.UpdatedDate,
-                CodeFiles = plugIn.CodeFiles.Select(_ => _.ToApiModel()).ToList(),
+                CodeFiles = plugIn.NuGetFiles.Select(_ => _.ToApiModel()).ToList(),
                 Instances = plugIn.Instances.Select(_ => _.ToApiModel()).ToList()
             };
         }

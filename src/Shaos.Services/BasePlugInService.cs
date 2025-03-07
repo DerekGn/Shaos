@@ -49,7 +49,7 @@ namespace Shaos.Services
         {
             var query = Context
                 .PlugIns
-                .Include(_ => _.CodeFiles)
+                .Include(_ => _.NuGetFiles)
                 .Include(_ => _.Instances)
                 .AsQueryable();
 

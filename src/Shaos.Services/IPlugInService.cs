@@ -38,19 +38,19 @@ namespace Shaos.Services
             CreatePlugIn createPlugIn,
             CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Create a new <see cref="CodeFile"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
-        /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>The identifier of the created <see cref="CodeFile"/></returns>
-        Task CreatePlugInCodeFileAsync(
-            int id,
-            string fileName,
-            Stream stream,
-            CancellationToken cancellationToken = default);
+        ///// <summary>
+        ///// Create a new <see cref="CodeFile"/>
+        ///// </summary>
+        ///// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        ///// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
+        ///// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
+        ///// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        ///// <returns>The identifier of the created <see cref="CodeFile"/></returns>
+        //Task CreatePlugInCodeFileAsync(
+        //    int id,
+        //    string fileName,
+        //    Stream stream,
+        //    CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create an instance of a <see cref="PlugIn"/>
@@ -65,6 +65,19 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Create a new <see cref="NuGet"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/> to create the instance</param>
+        /// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
+        /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        Task CreatePlugInNugetAsync(
+            int id,
+            string fileName,
+            Stream stream,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Delete a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
@@ -73,16 +86,16 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Delete a <see cref="CodeFile"/> from a <see cref="PlugIn"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="codeFileId">The identifier of the <see cref="CodeFile"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        Task DeletePlugInCodeFileAsync(
-            int id,
-            int codeFileId,
-            CancellationToken cancellationToken = default);
+        ///// <summary>
+        ///// Delete a <see cref="CodeFile"/> from a <see cref="PlugIn"/>
+        ///// </summary>
+        ///// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        ///// <param name="codeFileId">The identifier of the <see cref="CodeFile"/></param>
+        ///// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        //Task DeletePlugInCodeFileAsync(
+        //    int id,
+        //    int codeFileId,
+        //    CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete a <see cref="PlugInInstance"/>
@@ -114,15 +127,15 @@ namespace Shaos.Services
             string name,
             CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Get a <see cref="Stream"/> to a <see cref="CodeFile"/> file
-        /// </summary>
-        /// <param name="id">The <see cref="CodeFile"/> identifier</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>The <see cref="Stream"/> if the code file exists</returns>
-        Task<Stream?> GetPlugInCodeFileStreamAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        ///// <summary>
+        ///// Get a <see cref="Stream"/> to a <see cref="CodeFile"/> file
+        ///// </summary>
+        ///// <param name="id">The <see cref="CodeFile"/> identifier</param>
+        ///// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        ///// <returns>The <see cref="Stream"/> if the code file exists</returns>
+        //Task<Stream?> GetPlugInCodeFileStreamAsync(
+        //    int id,
+        //    CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a <see cref="PlugInInstance"/> by its identifier

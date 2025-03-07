@@ -41,7 +41,7 @@ namespace Shaos.Repository
         public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>
-        public DbSet<CodeFile> CodeFiles { get; set; }
+        public DbSet<NuGetFile> NuGetFiles { get; set; }
 
         /// <inheritdoc/>>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
@@ -71,7 +71,7 @@ namespace Shaos.Repository
 
             modelBuilder
                 .Entity<PlugIn>()
-                .HasMany(_ => _.CodeFiles)
+                .HasMany(_ => _.NuGetFiles)
                 .WithOne(_ => _.PlugIn)
                 .HasForeignKey(_ => _.PlugInId)
                 .IsRequired(false);
@@ -99,18 +99,18 @@ namespace Shaos.Repository
                 .HasIndex(_ => _.Name )
                 .HasDatabaseName("IX_PlugIn_Name_Ascending");
 
-            modelBuilder.Entity<CodeFile>()
+            modelBuilder.Entity<NuGetFile>()
                 .HasKey(_ => _.Id)
                 .HasName("PrimaryKey_CodeId");
 
             modelBuilder
-                .Entity<CodeFile>()
+                .Entity<NuGetFile>()
                 .Property(_ => _.FileName)
                 .HasMaxLength(ModelConstants.MaxFileNameLength)
                 .IsRequired();
 
             modelBuilder
-                .Entity<CodeFile>()
+                .Entity<NuGetFile>()
                 .Property(_ => _.FilePath)
                 .HasMaxLength(ModelConstants.MaxFilePathLength)
                 .IsRequired();

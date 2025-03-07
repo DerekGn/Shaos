@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,23 +22,21 @@
 * SOFTWARE.
 */
 
-using Microsoft.CodeAnalysis.Emit;
-
-namespace Shaos.Services.Compiler
+namespace Shaos.Api.Model.v1
 {
     /// <summary>
-    /// A complication result
+    /// Represents a code file that implements a <see cref="PlugIn"/> functionality
     /// </summary>
-    public class CompilationResult
+    public record NuGetFile : Base
     {
         /// <summary>
-        /// The assembly file path
+        /// The file name of the <see cref="NuGetFile"/>
         /// </summary>
-        public string? AssemblyFilePath { get; init; }
+        public string FileName { get; init; } = string.Empty;
 
         /// <summary>
-        /// The compilation <see cref="EmitResult"/>
+        /// The file path of the <see cref="NuGetFile"/>
         /// </summary>
-        public EmitResult? Result { get; init; }
+        public string FilePath { get; init; } = string.Empty;
     }
 }

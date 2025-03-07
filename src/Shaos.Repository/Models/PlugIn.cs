@@ -35,9 +35,9 @@ namespace Shaos.Repository.Models
         public string? AssemblyFilePath { get; set; }
 
         /// <summary>
-        /// The set of <see cref="CodeFile"/> associated with this <see cref="PlugIn"/>
+        /// The set of <see cref="NuGetFile"/> associated with this <see cref="PlugIn"/>
         /// </summary>
-        public ICollection<CodeFile> CodeFiles { get; } = new List<CodeFile>();
+        public ICollection<NuGetFile> NuGetFiles { get; } = new List<NuGetFile>();
 
         /// <summary>
         /// The description of this <see cref="PlugIn"/>

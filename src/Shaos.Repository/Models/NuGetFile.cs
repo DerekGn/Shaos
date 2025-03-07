@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,21 +22,21 @@
 * SOFTWARE.
 */
 
-using CompilationResultApi = Shaos.Api.Model.v1.CompilationResult;
-using CompilationResultModel = Shaos.Services.Compiler.CompilationResult;
-
-namespace Shaos.Extensions
+namespace Shaos.Repository.Models
 {
-    public static class CompilationResultExtension
+    /// <summary>
+    /// A <see cref="NuGetFile"/> for a <see cref="PlugIn"/>
+    /// </summary>
+    public class NuGetFile : PlugInChildBase
     {
-        public static CompilationResultApi ToApiModel(this CompilationResultModel compilationResult)
-        {
-            return new CompilationResultApi()
-            {
-                AssemblyFilePath = compilationResult?.AssemblyFilePath,
-                Diagnostics = compilationResult?.Result?.Diagnostics.Select(_ => _.ToString()).ToList(),
-                Success = compilationResult?.Result?.Success
-            };
-        }
+        /// <summary>
+        /// The file name of the <see cref="NuGetFile"/>
+        /// </summary>
+        public string FileName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The file path of the <see cref="NuGetFile"/>
+        /// </summary>
+        public string FilePath { get; set; } = string.Empty;
     }
 }
