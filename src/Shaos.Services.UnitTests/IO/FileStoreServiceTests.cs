@@ -50,62 +50,62 @@ namespace Shaos.Services.UnitTests.IO
             _output = output;
         }
 
-        [Theory]
-        [InlineData("TestCodeFile.txt")]
-        public void GetCodeFileStream(string file)
-        {
-            var filePath = Path.Combine(_options!.Value.CodeFilesPath, file);
+        //[Theory]
+        //[InlineData("TestCodeFile.txt")]
+        //public void GetCodeFileStream(string file)
+        //{
+        //    var filePath = Path.Combine(_options!.Value.CodeFilesPath, file);
 
-            var result = _fileStoreService.GetCodeFileStream(filePath);
+        //    var result = _fileStoreService.GetCodeFileStream(filePath);
 
-            Assert.NotNull(result);
-        }
+        //    Assert.NotNull(result);
+        //}
 
-        [Fact]
-        public void TestCreateAssemblyFileStream()
-        {
-            using var result = _fileStoreService
-                .CreateAssemblyFileStream(
-                "folder", "assemblyFileName",
-                out var assemblyFilePath);
+        //[Fact]
+        //public void TestCreateAssemblyFileStream()
+        //{
+        //    using var result = _fileStoreService
+        //        .CreateAssemblyFileStream(
+        //        "folder", "assemblyFileName",
+        //        out var assemblyFilePath);
 
-            Assert.NotNull(result);
-            Assert.NotNull(assemblyFilePath);
-            Assert.True(File.Exists(assemblyFilePath));
-        }
+        //    Assert.NotNull(result);
+        //    Assert.NotNull(assemblyFilePath);
+        //    Assert.True(File.Exists(assemblyFilePath));
+        //}
 
-        [Theory]
-        [InlineData("./Files/TestFile.txt")]
-        public void TestDeleteCodeFile(string filePath)
-        {
-            _fileStoreService.DeleteCodeFile(filePath);
+        //[Theory]
+        //[InlineData("./Files/TestFile.txt")]
+        //public void TestDeleteCodeFile(string filePath)
+        //{
+        //    _fileStoreService.DeleteCodeFile(filePath);
 
-            Assert.False(File.Exists(filePath));
-        }
+        //    Assert.False(File.Exists(filePath));
+        //}
 
-        [Theory]
-        [InlineData("TestFolder")]
-        public void TestDeleteCodeFolder(string folder)
-        {
-            var folderPath = Path.Combine(_options!.Value.CodeFilesPath, folder);
+        //[Theory]
+        //[InlineData("TestFolder")]
+        //public void TestDeleteCodeFolder(string folder)
+        //{
+        //    var folderPath = Path.Combine(_options!.Value.CodeFilesPath, folder);
 
-            Directory.CreateDirectory(folderPath);
+        //    Directory.CreateDirectory(folderPath);
 
-            _fileStoreService.DeleteCodeFolder(folder);
+        //    _fileStoreService.DeleteCodeFolder(folder);
 
-            Assert.False(Directory.Exists(folderPath));
-        }
+        //    Assert.False(Directory.Exists(folderPath));
+        //}
 
-        [Fact]
-        public async Task TestWriteCodeFileStreamAsync()
-        {
-            using var memoryStream = new MemoryStream();
-            memoryStream.Write([0xAA, 0x55]);
-            memoryStream.Position = 0;
+        //[Fact]
+        //public async Task TestWriteCodeFileStreamAsync()
+        //{
+        //    using var memoryStream = new MemoryStream();
+        //    memoryStream.Write([0xAA, 0x55]);
+        //    memoryStream.Position = 0;
 
-            var result = await _fileStoreService.WriteCodeFileStreamAsync("CodeWriteFolder", "FileName.txt", memoryStream);
+        //    var result = await _fileStoreService.WriteCodeFileStreamAsync("CodeWriteFolder", "FileName.txt", memoryStream);
             
-            Assert.NotNull(result);
-        }
+        //    Assert.NotNull(result);
+        //}
     }
 }

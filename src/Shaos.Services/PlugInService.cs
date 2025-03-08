@@ -66,47 +66,6 @@ namespace Shaos.Services
             return plugIn.Id;
         }
 
-        ///// <inheritdoc/>
-        //public async Task CreatePlugInCodeFileAsync(
-        //    int id,
-        //    string fileName,
-        //    Stream stream,
-        //    CancellationToken cancellationToken = default)
-        //{
-        //    var plugIn = await GetPlugInByIdFromContextAsync(
-        //        id,
-        //        false,
-        //        cancellationToken);
-
-        //    if (plugIn != null)
-        //    {
-        //        Logger.LogInformation("Creating PlugIn CodeFile. PlugIn: [{Id}] FileName: [{FileName}]",
-        //            id,
-        //            fileName);
-
-        //        var filePath = await _fileStoreService.WriteCodeFileStreamAsync(
-        //            plugIn.Id.ToString(),
-        //            fileName,
-        //            stream,
-        //            cancellationToken);
-
-        //        if (!plugIn.CodeFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
-        //        {
-        //            plugIn.CodeFiles.Add(new CodeFile()
-        //            {
-        //                FileName = fileName,
-        //                FilePath = filePath!
-        //            });
-
-        //            await Context.SaveChangesAsync(cancellationToken);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Logger.LogWarning("PlugIn: [{Id}] Not Found", id);
-        //    }
-        //}
-
         /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(
             int id,
@@ -158,7 +117,26 @@ namespace Shaos.Services
 
             if (plugIn != null)
             {
+                Logger.LogInformation("Creating PlugIn NuGetFile. PlugIn: [{Id}] FileName: [{FileName}]",
+                    id,
+                    fileName);
 
+                var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
+                    plugIn.Id.ToString(),
+                    fileName,
+                    stream,
+                    cancellationToken);
+
+                if (!plugIn.NuGetFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
+                {
+                    plugIn.NuGetFiles.Add(new NuGetFile()
+                    {
+                        FileName = fileName,
+                        FilePath = filePath!
+                    });
+
+                    await Context.SaveChangesAsync(cancellationToken);
+                }
             }
             else
             {
@@ -171,45 +149,16 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
+#warning Check if plugin used and delete plugin package
             Logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
             // Delete code and compiled assembly files
-            _fileStoreService.DeleteCodeFolder(id.ToString());
+            //_fileStoreService.DeleteNuGetFile();
 
             // this is EF COre 7 enhancement performs select and delete in one operation
             await Context.PlugIns.Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
         }
-
-        ///// <inheritdoc/>
-        //public async Task DeletePlugInCodeFileAsync(
-        //    int id,
-        //    int codeFileId,
-        //    CancellationToken cancellationToken = default)
-        //{
-        //    var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
-
-        //    if (plugIn != null)
-        //    {
-        //        Logger.LogInformation("PlugIn [{Id}] CodeFile [{CodeFileId}] Deleting", id, codeFileId);
-
-        //        var codeFile = plugIn.CodeFiles.FirstOrDefault(_ => _.Id == codeFileId);
-
-        //        if (codeFile != null)
-        //        {
-        //            plugIn.CodeFiles.Remove(codeFile);
-        //            Context.Remove(codeFile);
-
-        //            _fileStoreService.DeleteCodeFile(codeFile.FilePath);
-
-        //            await Context.SaveChangesAsync(cancellationToken);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Logger.LogWarning("PlugIn [{Id}] not found", id);
-        //    }
-        //}
 
         /// <inheritdoc/>
         public async Task DeletePlugInInstanceAsync(
@@ -247,26 +196,6 @@ namespace Shaos.Services
 
             return plugin;
         }
-
-        ///// <inheritdoc/>
-        //public async Task<Stream?> GetPlugInCodeFileStreamAsync(int id, CancellationToken cancellationToken = default)
-        //{
-        //    var codeFile = await Context
-        //        .CodeFiles
-        //        .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
-
-        //    if(codeFile == null)
-        //    {
-        //        Logger.LogWarning("CodeFile: [{Id}] Not Found", id);
-                
-        //        return null;
-        //    }
-        //    else
-        //    {
-        //        return _fileStoreService
-        //            .GetCodeFileStream(codeFile.FilePath);
-        //    }
-        //}
 
         /// <inheritdoc/>
         public async Task<PlugInInstance?> GetPlugInInstanceByIdAsync(

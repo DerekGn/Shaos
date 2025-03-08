@@ -49,7 +49,6 @@ namespace Shaos.Controllers
         private const string EnableDescription = "Set the state of a PlugIn, setting enabled to false prevents a PlugIn from being started at start up";
         private const string GetDescription = "Get the details of a PlugIn by its identifier";
         private const string GetListDescription = "Get a list of all PlugIns";
-        private const string PlugInCodeFileIdentifier = "The CodeFile identifier";
         private const string PlugInIdentifier = "The PlugIn identifier";
         private const string PlugInInstanceIdentifier = "The PlugIn Instance Identifier";
         private const string PluginNameExists = "A PlugIn with the same name exists";
@@ -146,24 +145,6 @@ namespace Shaos.Controllers
             return Accepted();
         }
 
-        //[HttpDelete("{id}/codefiles/{codeFileId}")]
-        //[SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn CodeFile will be deleted")]
-        //[SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        //[SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        //[SwaggerOperation(
-        //    Summary = "Delete a PlugIn CodeFile",
-        //    Description = "Delete a CodeFile from a PlugIn",
-        //    OperationId = "DeletePlugInCodeFile")]
-        //public async Task<ActionResult> DeletePlugInCodeFileAsync(
-        //    [FromRoute, SwaggerParameter(PlugInCodeFileIdentifier, Required = true)] int id,
-        //    [FromRoute, SwaggerParameter(PlugInCodeFileIdentifier, Required = true)] int codeFileId,
-        //    CancellationToken cancellationToken)
-        //{
-        //    await PlugInService.DeletePlugInCodeFileAsync(id, codeFileId, cancellationToken);
-
-        //    return Accepted();
-        //}
-
         [HttpDelete("instances/{id}")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn Instance will be deleted")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
@@ -184,29 +165,6 @@ namespace Shaos.Controllers
             },
             cancellationToken);
         }
-
-        //[HttpGet("codefiles/{id}")]
-        //[SwaggerResponse(StatusCodes.Status200OK, "The CodeFile contents")]
-        //[SwaggerResponse(StatusCodes.Status404NotFound, "The CodeFile was not found")]
-        //[SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        //[SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        //[SwaggerOperation(
-        //    Summary = "Get the content of a CodeFile",
-        //    Description = "Retrieves the content of a CodeFile by an Identifier",
-        //    OperationId = "DownloadCodeFile")]
-        //public async Task<ActionResult> DownloadCodeFileAsync(int id, CancellationToken cancellationToken)
-        //{
-        //    var stream = await PlugInService.GetPlugInCodeFileStreamAsync(id, cancellationToken);
-
-        //    if(stream != null)
-        //    {
-        //        return File(stream, "text/plain");
-        //    }
-        //    else
-        //    {
-        //        return NoContent();
-        //    }
-        //}
 
         [HttpGet("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn details", Type = typeof(PlugIn))]
@@ -349,39 +307,36 @@ namespace Shaos.Controllers
             {
                 ProblemDetails? problemDetails = null;
 
-                //foreach (var formFile in files)
-                //{
-                    var validationResult = _codeFileValidationService.ValidateFile(formFile);
+                var validationResult = _codeFileValidationService.ValidateFile(formFile);
 
-                    if (validationResult == FileValidationResult.FileNameEmpty)
-                    {
-                        problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
-                    }
-                    else if (validationResult == FileValidationResult.InvalidContentType)
-                    {
-                        problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
-                    }
-                    else if (validationResult == FileValidationResult.InvalidFileLength)
-                    {
-                        problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
-                    }
-                    else if (validationResult == FileValidationResult.InvalidFileName)
-                    {
-                        problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
-                    }
-                    else
-                    {
-                        var fileName = Path.GetFileName(formFile.FileName);
+                if (validationResult == FileValidationResult.FileNameEmpty)
+                {
+                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
+                }
+                else if (validationResult == FileValidationResult.InvalidContentType)
+                {
+                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
+                }
+                else if (validationResult == FileValidationResult.InvalidFileLength)
+                {
+                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
+                }
+                else if (validationResult == FileValidationResult.InvalidFileName)
+                {
+                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
+                }
+                else
+                {
+                    var fileName = Path.GetFileName(formFile.FileName);
 
-                        Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
+                    Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                        await PlugInService.CreatePlugInNugetAsync(
-                            plugIn.Id,
-                            fileName,
-                            formFile.OpenReadStream(),
-                            cancellationToken);
-                    }
-                //}
+                    await PlugInService.CreatePlugInNugetAsync(
+                        plugIn.Id,
+                        fileName,
+                        formFile.OpenReadStream(),
+                        cancellationToken);
+                }
 
                 if (problemDetails != null)
                 {

@@ -30,13 +30,8 @@ namespace Shaos.Services.Options
     public record FileStoreOptions
     {
         /// <summary>
-        /// The store path where code files will be stored
+        /// The store path where NuGet files will be stored
         /// </summary>
-        public required string CodeFilesPath { get; init; }
-
-        /// <summary>
-        /// The store path where compiled assemblies will be stored
-        /// </summary>
-        public required string AssemblyFilesPath { get; init; }
+        public required string NuGetPackagesPath { get; init; }
     }
 }

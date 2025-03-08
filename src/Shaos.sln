@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiRequests", "ApiRequests", "{057AF7FB-A4B5-43BB-B3C8-44FC5C3FF61E}"
 	ProjectSection(SolutionItems) = preProject
 		Authorisation.http = Authorisation.http
-		Compiler.http = Compiler.http
 		Plugin.http = Plugin.http
 		Runtime.http = Runtime.http
 	EndProjectSection

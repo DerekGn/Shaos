@@ -42,30 +42,7 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public Stream CreateAssemblyFileStream(
-            string folder,
-            string assemblyFileName,
-            out string? assemblyFilePath)
-        {
-            ArgumentException.ThrowIfNullOrWhiteSpace(folder);
-            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFileName);
-
-            var assemblyStoreFolder = Path.Combine(_options.Value.AssemblyFilesPath, folder);
-
-            if (!Directory.Exists(assemblyStoreFolder))
-            {
-                _logger.LogInformation("Creating folder: [{Folder}]", assemblyStoreFolder);
-
-                Directory.CreateDirectory(assemblyStoreFolder);
-            }
-
-            assemblyFilePath = Path.Combine(assemblyStoreFolder, assemblyFileName);
-
-            return File.OpenWrite(assemblyFilePath);
-        }
-
-        /// <inheritdoc/>
-        public void DeleteCodeFile(string filePath)
+        public void DeleteNuGetFile(string filePath)
         {
             if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
             {
@@ -78,65 +55,26 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeleteCodeFolder(string folder)
-        {
-            if (!string.IsNullOrEmpty(folder))
-            {
-                var codeStoreFolder = Path.Combine(_options.Value.CodeFilesPath, folder);
-
-                if (Directory.Exists(codeStoreFolder))
-                {
-                    _logger.LogInformation("Deleting Folder: [{Folder}]", codeStoreFolder);
-
-                    Directory.Delete(codeStoreFolder, true);
-                }
-            }
-            else
-            {
-                _logger.LogWarning("Folder: [{Folder}] Not Found", folder);
-            }
-        }
-
-        /// <inheritdoc/>
-        public Stream? GetCodeFileStream(string filePath)
-        {
-            Stream? result = null;
-
-            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-            {
-                _logger.LogInformation("Opening File [{File}]", filePath);
-
-                result = File.OpenRead(filePath);
-            }
-            else
-            {
-                _logger.LogWarning("File: [{File}] Not Found", filePath);
-            }
-
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public async Task<string?> WriteCodeFileStreamAsync(
+        public async Task<string?> WriteNuGetFileStreamAsync(
             string folder,
             string fileName,
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            var codeStoreFolder = Path.Combine(_options.Value.CodeFilesPath, folder);
+            var nuGetFolder = Path.Combine(_options.Value.NuGetPackagesPath, folder);
 
-            if (!Directory.Exists(codeStoreFolder))
+            if (!Directory.Exists(nuGetFolder))
             {
-                Directory.CreateDirectory(codeStoreFolder);
+                Directory.CreateDirectory(nuGetFolder);
             }
 
-            var codeFilePath = Path.Combine(codeStoreFolder, fileName);
+            var nugetFilePath = Path.Combine(nuGetFolder, fileName);
 
-            using var outputStream = File.Open(codeFilePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var outputStream = File.Open(nugetFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 
             await stream.CopyToAsync(outputStream, cancellationToken);
 
-            return codeFilePath;
+            return nugetFilePath;
         }
     }
 }

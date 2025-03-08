@@ -30,36 +30,10 @@ namespace Shaos.Services.IO
     public interface IFileStoreService
     {
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="folder"></param>
-        /// <param name="assemblyFileName"></param>
-        /// <param name="assemblyFilePath"></param>
-        /// <returns></returns>
-        Stream CreateAssemblyFileStream(
-            string folder,
-            string assemblyFileName,
-            out string? assemblyFilePath);
-
-        /// <summary>
-        /// Delete a CodeFile
+        /// Delete a NuGetFile
         /// </summary>
         /// <param name="filePath">The file path of the file to delete</param>
-        void DeleteCodeFile(string filePath);
-
-        /// <summary>
-        /// Delete a code folder
-        /// </summary>
-        /// <param name="folder">The folder to delete</param>
-        void DeleteCodeFolder(string folder);
-
-        /// <summary>
-        /// Open a code file from the file store
-        /// </summary>
-        /// <param name="filePath">The file path to the code file</param>
-        /// <returns>The open stream if the code file was found</returns>
-        Stream? GetCodeFileStream(
-            string filePath);
+        void DeleteNuGetFile(string filePath);
 
         /// <summary>
         /// Write the contents of a stream to a <paramref name="folder"/> <paramref name="fileName"/> combination
@@ -69,7 +43,7 @@ namespace Shaos.Services.IO
         /// <param name="stream">The stream to be written to the <paramref name="folder"/> <paramref name="fileName"/> combination</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string?> WriteCodeFileStreamAsync(
+        Task<string?> WriteNuGetFileStreamAsync(
             string folder,
             string fileName,
             Stream stream,
