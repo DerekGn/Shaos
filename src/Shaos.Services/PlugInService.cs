@@ -107,7 +107,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task CreatePlugInNugetAsync(
+        public async Task CreatePlugInNuGetAsync(
             int id,
             string fileName,
             Stream stream,
@@ -117,31 +117,41 @@ namespace Shaos.Services
 
             if (plugIn != null)
             {
-                Logger.LogInformation("Creating PlugIn NuGetFile. PlugIn: [{Id}] FileName: [{FileName}]",
-                    id,
-                    fileName);
-
-                var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
-                    plugIn.Id.ToString(),
-                    fileName,
-                    stream,
-                    cancellationToken);
-
-                // if (!plugIn.NuGetFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
-                // {
-                //     plugIn.NuGetFiles.Add(new NuGetFile()
-                //     {
-                //         FileName = fileName,
-                //         FilePath = filePath!
-                //     });
-
-                //     await Context.SaveChangesAsync(cancellationToken);
-                // }
+                await CreateNuGetPackage(id, fileName, stream, plugIn, cancellationToken);
             }
             else
             {
                 Logger.LogWarning("PlugIn [{Id}] not found", id);
             }
+        }
+
+        private async Task CreateNuGetPackage(
+            int id,
+            string fileName,
+            Stream stream,
+            PlugIn plugIn,
+            CancellationToken cancellationToken)
+        {
+            Logger.LogInformation("Creating PlugIn NuGetFile. PlugIn: [{Id}] FileName: [{FileName}]",
+                                id,
+                                fileName);
+
+            var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
+                plugIn.Id.ToString(),
+                fileName,
+                stream,
+                cancellationToken);
+
+            // if (!plugIn.NuGetFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
+            // {
+            //     plugIn.NuGetFiles.Add(new NuGetFile()
+            //     {
+            //         FileName = fileName,
+            //         FilePath = filePath!
+            //     });
+
+            //     await Context.SaveChangesAsync(cancellationToken);
+            // }
         }
 
         /// <inheritdoc/>
@@ -229,7 +239,7 @@ namespace Shaos.Services
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in Context.PlugIns
-                .Include(_ => _.NuGetFile)
+                .Include(_ => _.NuGetPackage)
                 .Include(_ => _.Instances)
                 .AsNoTracking()
                 .AsAsyncEnumerable()

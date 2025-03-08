@@ -297,57 +297,58 @@ namespace Shaos.Controllers
         [SwaggerOperation(
             Summary = "",
             Description = "",
-            OperationId = "UploadPlugInNuget")]
-        public async Task<ActionResult> UploadPlugInNugetAsync(
+            OperationId = "UploadPlugInNuGetPackage")]
+        public async Task<ActionResult> UploadPlugInNuGetPackageAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
             IFormFile formFile,
             CancellationToken cancellationToken)
         {
             return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                ProblemDetails? problemDetails = null;
-
-                var validationResult = _codeFileValidationService.ValidateFile(formFile);
-
-                if (validationResult == FileValidationResult.FileNameEmpty)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
-                }
-                else if (validationResult == FileValidationResult.InvalidContentType)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
-                }
-                else if (validationResult == FileValidationResult.InvalidFileLength)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
-                }
-                else if (validationResult == FileValidationResult.InvalidFileName)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
-                }
-                else
+                if(ValidateFile(formFile, out var problemDetails))
                 {
                     var fileName = Path.GetFileName(formFile.FileName);
 
                     Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                    await PlugInService.CreatePlugInNugetAsync(
+                    await PlugInService.CreatePlugInNuGetAsync(
                         plugIn.Id,
                         fileName,
                         formFile.OpenReadStream(),
                         cancellationToken);
                 }
-
-                if (problemDetails != null)
+                else
                 {
                     return BadRequest(problemDetails);
                 }
-                else
-                {
-                    return Accepted();
-                }
             },
             cancellationToken);
+        }
+
+        private bool ValidateFile(IFormFile formFile, out ProblemDetails? problemDetails)
+        {
+            problemDetails = null;
+
+            var validationResult = _codeFileValidationService.ValidateFile(formFile);
+
+            if (validationResult == FileValidationResult.FileNameEmpty)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
+            }
+            else if (validationResult == FileValidationResult.InvalidContentType)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
+            }
+            else if (validationResult == FileValidationResult.InvalidFileLength)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
+            }
+            else if (validationResult == FileValidationResult.InvalidFileName)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
+            }
+
+            return problemDetails != null;
         }
 
         private static ProblemDetails CreateProblemDetails(
