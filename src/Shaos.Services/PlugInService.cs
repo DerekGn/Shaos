@@ -127,16 +127,16 @@ namespace Shaos.Services
                     stream,
                     cancellationToken);
 
-                if (!plugIn.NuGetFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
-                {
-                    plugIn.NuGetFiles.Add(new NuGetFile()
-                    {
-                        FileName = fileName,
-                        FilePath = filePath!
-                    });
+                // if (!plugIn.NuGetFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
+                // {
+                //     plugIn.NuGetFiles.Add(new NuGetFile()
+                //     {
+                //         FileName = fileName,
+                //         FilePath = filePath!
+                //     });
 
-                    await Context.SaveChangesAsync(cancellationToken);
-                }
+                //     await Context.SaveChangesAsync(cancellationToken);
+                // }
             }
             else
             {
@@ -229,7 +229,7 @@ namespace Shaos.Services
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in Context.PlugIns
-                .Include(_ => _.NuGetFiles)
+                .Include(_ => _.NuGetFile)
                 .Include(_ => _.Instances)
                 .AsNoTracking()
                 .AsAsyncEnumerable()
