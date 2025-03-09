@@ -51,13 +51,13 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Create a new <see cref="NuGet"/>
+        /// Update a <see cref="PlugIn"/> <see cref="NuGetPackage"/>
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/> to create the instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/> to update the <see cref="NuGetPackage"/></param>
         /// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
         /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        Task CreatePlugInNuGetAsync(
+        Task UpdatePlugInNuGetPackageAsync(
             int id,
             string fileName,
             Stream stream,

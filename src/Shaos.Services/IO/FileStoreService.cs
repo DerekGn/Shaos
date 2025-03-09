@@ -42,33 +42,40 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeleteNuGetFile(string filePath)
+        public void DeletePlugInPackageFolder(int plugInId)
         {
-            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, plugInId.ToString());
+
+            if (!Directory.Exists(packageFolder))
             {
-                File.Delete(filePath);
+                _logger.LogDebug("Deleting folder [{Folder}]", packageFolder);
+                Directory.Delete(packageFolder, true);
             }
             else
             {
-                _logger.LogWarning("File: [{File}] Not Found", filePath);
+                _logger.LogDebug("Folder [{Folder}] Does Not Exist", packageFolder);
             }
         }
 
         /// <inheritdoc/>
-        public async Task<string?> WriteNuGetFileStreamAsync(
-            string folder,
+        public async Task<string?> WritePlugInNuGetPackageFileStreamAsync(
+            int plugInId,
             string fileName,
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            var nuGetFolder = Path.Combine(_options.Value.NuGetPackagesPath, folder);
+            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, plugInId.ToString());
 
-            if (!Directory.Exists(nuGetFolder))
+            if (!Directory.Exists(packageFolder))
             {
-                Directory.CreateDirectory(nuGetFolder);
+                _logger.LogDebug("Creating folder [{Folder}]", packageFolder);
+
+                Directory.CreateDirectory(packageFolder);
             }
 
-            var nugetFilePath = Path.Combine(nuGetFolder, fileName);
+            _logger.LogInformation("Writing File: [{File}] To [{Folder}]", packageFolder, packageFolder);
+
+            var nugetFilePath = Path.Combine(packageFolder, fileName);
 
             using var outputStream = File.Open(nugetFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 

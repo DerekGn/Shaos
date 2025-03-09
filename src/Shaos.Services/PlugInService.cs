@@ -108,7 +108,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task CreatePlugInNuGetAsync(
+        public async Task UpdatePlugInNuGetPackageAsync(
             int id,
             string fileName,
             Stream stream,
@@ -122,8 +122,8 @@ namespace Shaos.Services
                     id,
                     fileName);
 
-                var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
-                    plugIn.Id.ToString(),
+                var filePath = await _fileStoreService.WritePlugInNuGetPackageFileStreamAsync(
+                    plugIn.Id,
                     fileName,
                     stream,
                     cancellationToken);
@@ -137,9 +137,14 @@ namespace Shaos.Services
                         FileName = fileName,
                         Version = version.ToString(),
                     };
-
-                    await Context.SaveChangesAsync(cancellationToken);
                 }
+                else
+                {
+                    plugIn.NuGetPackage.FileName = fileName;
+                    plugIn.NuGetPackage.Version = version.ToString();
+                }
+
+                await Context.SaveChangesAsync(cancellationToken);
             }
         }
 
@@ -152,7 +157,7 @@ namespace Shaos.Services
             Logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
             // Delete code and compiled assembly files
-            //_fileStoreService.DeleteNuGetFile();
+            _fileStoreService.DeletePlugInPackageFolder(id);
 
             // this is EF COre 7 enhancement performs select and delete in one operation
             await Context.PlugIns.Where(_ => _.Id == id)

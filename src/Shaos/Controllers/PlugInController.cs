@@ -114,15 +114,10 @@ namespace Shaos.Controllers
                 }
                 else
                 {
-#warning path or url
-                    return new CreatedResult
-                    (
-                        "",
-                        await PlugInService.CreatePlugInInstanceAsync(
+                    return Ok(await PlugInService.CreatePlugInInstanceAsync(
                             plugIn.Id,
                             create.ToModel(),
-                            cancellationToken)
-                    );
+                            cancellationToken));
                 }
             },
             cancellationToken);
@@ -295,8 +290,8 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "",
-            Description = "",
+            Summary = "Upload a NuGetPackage for a PlugIn",
+            Description = "Overwrites any existing PlugIn package",
             OperationId = "UploadPlugInNuGetPackage")]
         public async Task<ActionResult> UploadPlugInNuGetPackageAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
@@ -311,7 +306,7 @@ namespace Shaos.Controllers
 
                     Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                    await PlugInService.CreatePlugInNuGetAsync(
+                    await PlugInService.UpdatePlugInNuGetPackageAsync(
                         plugIn.Id,
                         fileName,
                         formFile.OpenReadStream(),

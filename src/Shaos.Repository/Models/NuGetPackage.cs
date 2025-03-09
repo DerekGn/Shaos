@@ -37,6 +37,6 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The version of the <see cref="NuGetPackage"/>
         /// </summary>
-        public string Version {get; set;} = string.Empty;
+        public string Version { get; set; } = string.Empty;
     }
 }
