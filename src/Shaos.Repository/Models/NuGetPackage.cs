@@ -35,19 +35,8 @@ namespace Shaos.Repository.Models
         public string FileName { get; set; } = string.Empty;
 
         /// <summary>
-<<<<<<< HEAD
-        /// The version of the  <see cref="NuGetPackage"/>
-        /// </summary>
-        public string Version { get; set; } = string.Empty;
-=======
-        /// The file path of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string FilePath { get; set; } = string.Empty;
-
-        /// <summary>
         /// The version of the <see cref="NuGetPackage"/>
         /// </summary>
         public string Version {get; set;} = string.Empty;
->>>>>>> d0cd741a7f89a978c2d156ee706b7fdf88d35445
     }
 }

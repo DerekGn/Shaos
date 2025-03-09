@@ -122,11 +122,11 @@ namespace Shaos.Services
                     id,
                     fileName);
 
-            var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
-                plugIn.Id.ToString(),
-                fileName,
-                stream,
-                cancellationToken);
+                var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
+                    plugIn.Id.ToString(),
+                    fileName,
+                    stream,
+                    cancellationToken);
 
                 var version = GetNuGetPackageVersion(filePath);
 
@@ -138,8 +138,9 @@ namespace Shaos.Services
                         Version = version.ToString(),
                     };
 
-            //     await Context.SaveChangesAsync(cancellationToken);
-            // }
+                    await Context.SaveChangesAsync(cancellationToken);
+                }
+            }
         }
 
         /// <inheritdoc/>
