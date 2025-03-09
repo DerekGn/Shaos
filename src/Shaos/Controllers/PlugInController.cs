@@ -297,8 +297,8 @@ namespace Shaos.Controllers
         [SwaggerOperation(
             Summary = "",
             Description = "",
-            OperationId = "UploadPlugInNuget")]
-        public async Task<ActionResult> UploadPlugInNugetAsync(
+            OperationId = "UploadPlugInNuGetPackage")]
+        public async Task<ActionResult> UploadPlugInNuGetPackageAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
             IFormFile formFile,
             CancellationToken cancellationToken)

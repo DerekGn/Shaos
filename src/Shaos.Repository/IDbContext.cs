@@ -16,6 +16,7 @@ namespace Shaos.Repository
 
         /// <summary>
         /// The <see cref="DbSet{TEntity}"/> of <see cref="NuGetPackage"/>
+        /// The <see cref="DbSet{TEntity}"/> of <see cref="NuGetPackage"/>
         /// </summary>
         DbSet<NuGetPackage> NuGetFiles { get; set; }
 

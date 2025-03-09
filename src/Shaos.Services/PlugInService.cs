@@ -108,7 +108,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task CreatePlugInNugetAsync(
+        public async Task CreatePlugInNuGetAsync(
             int id,
             string fileName,
             Stream stream,
@@ -122,11 +122,11 @@ namespace Shaos.Services
                     id,
                     fileName);
 
-                var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
-                    plugIn.Id.ToString(),
-                    fileName,
-                    stream,
-                    cancellationToken);
+            var filePath = await _fileStoreService.WriteNuGetFileStreamAsync(
+                plugIn.Id.ToString(),
+                fileName,
+                stream,
+                cancellationToken);
 
                 var version = GetNuGetPackageVersion(filePath);
 
@@ -138,13 +138,8 @@ namespace Shaos.Services
                         Version = version.ToString(),
                     };
 
-                    await Context.SaveChangesAsync(cancellationToken);
-                }
-            }
-            else
-            {
-                Logger.LogWarning("PlugIn [{Id}] not found", id);
-            }
+            //     await Context.SaveChangesAsync(cancellationToken);
+            // }
         }
 
         /// <inheritdoc/>

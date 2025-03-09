@@ -72,6 +72,7 @@ namespace Shaos.Repository
             modelBuilder
                 .Entity<PlugIn>()
                 .HasOne(_ => _.NuGetPackage)
+                .HasOne(_ => _.NuGetPackage)
                 .WithOne(_ => _.PlugIn)
                 .HasForeignKey<NuGetPackage>(_ => _.PlugInId)
                 .IsRequired(false);
@@ -101,7 +102,7 @@ namespace Shaos.Repository
 
             modelBuilder.Entity<NuGetPackage>()
                 .HasKey(_ => _.Id)
-                .HasName("PrimaryKey_CodeId");
+                .HasName("PrimaryKey_NuGetId");
 
             modelBuilder
                 .Entity<NuGetPackage>()
