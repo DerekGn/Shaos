@@ -15,9 +15,9 @@ namespace Shaos.Repository
         EntityEntry<TEntity> Remove<TEntity>(TEntity entity) where TEntity : class;
 
         /// <summary>
-        /// The <see cref="DbSet{TEntity}"/> of <see cref="NuGetFile"/>
+        /// The <see cref="DbSet{TEntity}"/> of <see cref="NuGetPackage"/>
         /// </summary>
-        DbSet<NuGetFile> NuGetFiles { get; set; }
+        DbSet<NuGetPackage> NuGetFiles { get; set; }
 
         /// <summary>
         /// The <see cref="DbSet{TEntity}"/> of <see cref="PlugInInstance"/>

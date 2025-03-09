@@ -10,7 +10,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.*" />
     <PackageReference Include="Microsoft.CodeAnalysis.Compilers" Version="4.5.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.*" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.*" />
+    <PackageReference Include="NuGet.Packaging" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>

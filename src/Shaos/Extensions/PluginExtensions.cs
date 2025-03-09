@@ -33,14 +33,13 @@ namespace Shaos.Extensions
         {
             return new PlugInApi()
             {
-                AssemblyFilePath = plugIn.AssemblyFilePath,
                 CreatedDate = plugIn.CreatedDate,
                 Description = plugIn.Description,
                 Id = plugIn.Id,
+                Instances = plugIn.Instances.Select(_ => _.ToApiModel()).ToList(),
                 Name = plugIn.Name,
+                NuGetPackage = plugIn.NuGetPackage?.ToApiModel(),
                 UpdatedDate = plugIn.UpdatedDate,
-                CodeFiles = plugIn.NuGetFiles.Select(_ => _.ToApiModel()).ToList(),
-                Instances = plugIn.Instances.Select(_ => _.ToApiModel()).ToList()
             };
         }
     }

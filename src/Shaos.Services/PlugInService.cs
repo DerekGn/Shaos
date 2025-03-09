@@ -22,11 +22,12 @@
 * SOFTWARE.
 */
 
-
 // Ignore Spelling: Nuget
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NuGet.Packaging;
+using NuGet.Versioning;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
@@ -117,7 +118,7 @@ namespace Shaos.Services
 
             if (plugIn != null)
             {
-                Logger.LogInformation("Creating PlugIn NuGetFile. PlugIn: [{Id}] FileName: [{FileName}]",
+                Logger.LogDebug("Storing NuGet Package. PlugIn: [{Id}] FileName: [{FileName}]",
                     id,
                     fileName);
 
@@ -127,13 +128,15 @@ namespace Shaos.Services
                     stream,
                     cancellationToken);
 
-                if (!plugIn.NuGetFiles.Any(_ => string.Compare(_.FileName, fileName, true) == 0))
+                var version = GetNuGetPackageVersion(filePath);
+
+                if (plugIn.NuGetPackage == null)
                 {
-                    plugIn.NuGetFiles.Add(new NuGetFile()
+                    plugIn.NuGetPackage = new NuGetPackage()
                     {
                         FileName = fileName,
-                        FilePath = filePath!
-                    });
+                        Version = version.ToString(),
+                    };
 
                     await Context.SaveChangesAsync(cancellationToken);
                 }
@@ -229,7 +232,7 @@ namespace Shaos.Services
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in Context.PlugIns
-                .Include(_ => _.NuGetFiles)
+                .Include(_ => _.NuGetPackage)
                 .Include(_ => _.Instances)
                 .AsNoTracking()
                 .AsAsyncEnumerable()
@@ -289,6 +292,15 @@ namespace Shaos.Services
                 }
             },
             cancellationToken);
+        }
+
+        private static NuGetVersion GetNuGetPackageVersion(string? filePath)
+        {
+            using FileStream inputStream = new FileStream(filePath, FileMode.Open);
+            using PackageArchiveReader reader = new PackageArchiveReader(inputStream);
+            NuspecReader nuspec = reader.NuspecReader;
+
+            return nuspec.GetVersion();
         }
 
         /// <inheritdoc/>

@@ -305,27 +305,7 @@ namespace Shaos.Controllers
         {
             return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                ProblemDetails? problemDetails = null;
-
-                var validationResult = _codeFileValidationService.ValidateFile(formFile);
-
-                if (validationResult == FileValidationResult.FileNameEmpty)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
-                }
-                else if (validationResult == FileValidationResult.InvalidContentType)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
-                }
-                else if (validationResult == FileValidationResult.InvalidFileLength)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
-                }
-                else if (validationResult == FileValidationResult.InvalidFileName)
-                {
-                    problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
-                }
-                else
+                if(ValidateFormFile(formFile,out var problemDetails))
                 {
                     var fileName = Path.GetFileName(formFile.FileName);
 
@@ -336,15 +316,12 @@ namespace Shaos.Controllers
                         fileName,
                         formFile.OpenReadStream(),
                         cancellationToken);
-                }
 
-                if (problemDetails != null)
-                {
-                    return BadRequest(problemDetails);
+                    return Accepted();
                 }
                 else
                 {
-                    return Accepted();
+                    return BadRequest(problemDetails);
                 }
             },
             cancellationToken);
@@ -361,6 +338,32 @@ namespace Shaos.Controllers
                 Status = (int?)statusCode,
                 Type = statusCode.MapToType()
             };
+        }
+
+        private bool ValidateFormFile(IFormFile formFile, out ProblemDetails? problemDetails)
+        {
+            problemDetails = null;
+
+            var validationResult = _codeFileValidationService.ValidateFile(formFile);
+
+            if (validationResult == FileValidationResult.FileNameEmpty)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
+            }
+            else if (validationResult == FileValidationResult.InvalidContentType)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
+            }
+            else if (validationResult == FileValidationResult.InvalidFileLength)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
+            }
+            else if (validationResult == FileValidationResult.InvalidFileName)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
+            }
+
+            return problemDetails == null;
         }
     }
 }

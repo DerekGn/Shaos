@@ -22,22 +22,22 @@
 * SOFTWARE.
 */
 
-using CodeFileApi = Shaos.Api.Model.v1.NuGetFile;
-using ModelNuGetFile = Shaos.Repository.Models.NuGetFile;
+using NugetPackageApi = Shaos.Api.Model.v1.NuGetPackage;
+using NuGetPackageModel = Shaos.Repository.Models.NuGetPackage;
 
 namespace Shaos.Extensions
 {
-    internal static class NuGetExtensions
+    internal static class NuGetPackageExtensions
     {
-        public static CodeFileApi ToApiModel(this ModelNuGetFile nugetFile)
+        public static NugetPackageApi ToApiModel(this NuGetPackageModel nuGetPackage)
         {
-            return new CodeFileApi()
+            return new NugetPackageApi()
             {
-                CreatedDate = nugetFile.CreatedDate,
-                FileName = nugetFile.FileName,
-                FilePath = nugetFile.FilePath,
-                Id = nugetFile.Id,
-                UpdatedDate = nugetFile.UpdatedDate
+                CreatedDate = nuGetPackage.CreatedDate,
+                FileName = nuGetPackage.FileName,
+                Id = nuGetPackage.Id,
+                UpdatedDate = nuGetPackage.UpdatedDate,
+                Version = nuGetPackage.Version
             };
         }
     }
