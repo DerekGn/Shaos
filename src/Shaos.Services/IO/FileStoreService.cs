@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+
+// Ignore Spelling: Shaos
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Options;
@@ -55,6 +58,28 @@ namespace Shaos.Services.IO
             {
                 _logger.LogDebug("Folder [{Folder}] Does Not Exist", packageFolder);
             }
+        }
+
+        /// <inheritdoc/>
+        public Stream? GetNuGetPackageStream(int id, string fileName)
+        {
+            Stream? stream = null;
+
+            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, id.ToString());
+
+            var nugetFilePath = Path.Combine(packageFolder, fileName);
+
+            if (Path.Exists(nugetFilePath))
+            {
+                _logger.LogDebug("Opening File Stream: [{File}]", nugetFilePath);
+                stream = File.Open(nugetFilePath, FileMode.Open, FileAccess.Read);
+            }
+            else
+            {
+                _logger.LogWarning("File not Found [{File}]", nugetFilePath);
+            }
+
+            return stream;
         }
 
         /// <inheritdoc/>

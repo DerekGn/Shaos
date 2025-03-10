@@ -208,6 +208,8 @@ namespace Shaos.Services
         {
             var plugInInstance = await Context
                 .PlugInInstances
+                .Include(_ => _.PlugIn)
+                .Include(_ => _.PlugIn.NuGetPackage)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(_ => _.Id == id,
                 cancellationToken);

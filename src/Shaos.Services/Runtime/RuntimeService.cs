@@ -23,23 +23,27 @@
 */
 
 using Microsoft.Extensions.Logging;
+using NuGet.Packaging;
+using NuGet.Versioning;
 using Shaos.Repository.Models;
+using Shaos.Services.IO;
 
 #warning Limit number of executing plugins
 
 namespace Shaos.Services.Runtime
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class RuntimeService : IRuntimeService
     {
         private readonly List<ExecutingInstance> _executingInstances;
+        private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<RuntimeService> _logger;
 
-        public RuntimeService(ILogger<RuntimeService> logger)
+        public RuntimeService(
+            ILogger<RuntimeService> logger,
+            IFileStoreService fileStoreService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
 
             _executingInstances = new List<ExecutingInstance>();
         }
@@ -121,6 +125,21 @@ namespace Shaos.Services.Runtime
             }
         }
 
+        private async Task LoadNuGetPackageDependanciesAsync(int id, NuGetPackage? nuGetPackage, CancellationToken cancellationToken = default)
+        {
+            using var stream = _fileStoreService.GetNuGetPackageStream(id, nuGetPackage.FileName);
+
+            if(stream != null)
+            {
+                using PackageArchiveReader reader = new PackageArchiveReader(stream);
+                var nuspecReader = await reader.GetNuspecReaderAsync(cancellationToken);
+
+                if (nuspecReader != null)
+                {
+                }
+            }
+        }
+
         private async Task StartExecutingInstanceAsync(
             PlugInInstance plugInInstance,
             ExecutingInstance executingInstance,
@@ -129,8 +148,10 @@ namespace Shaos.Services.Runtime
             _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}]",
                 plugInInstance.Id,
                 plugInInstance.Name);
-            
-            //load and 
+
+            LoadNuGetPackageDependanciesAsync(plugInInstance.PlugIn.Id, plugInInstance.PlugIn.NuGetPackage);
+
+            //load and
         }
 
         private async Task StopExecutingInstanceAsync(

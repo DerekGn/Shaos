@@ -36,6 +36,13 @@ namespace Shaos.Services.IO
         void DeletePlugInPackageFolder(int plugInId);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        Stream? GetNuGetPackageStream(int id, string fileName);
+
+        /// <summary>
         /// Write the contents of a stream to a <paramref name="folder"/> <paramref name="fileName"/> combination
         /// </summary>
         /// <param name="plugInId">The <see cref="PlugIn"/> identifier</param>

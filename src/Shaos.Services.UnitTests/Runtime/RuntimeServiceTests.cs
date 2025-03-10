@@ -24,6 +24,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
+using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Xunit.Abstractions;
 
@@ -31,14 +33,17 @@ namespace Shaos.Services.UnitTests.Runtime
 {
     public class RuntimeServiceTests : BaseUnitTests
     {
-        private readonly RuntimeService _runtimeService;
+        private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly ITestOutputHelper _output;
+        private readonly RuntimeService _runtimeService;
 
         public RuntimeServiceTests(ITestOutputHelper output)
         {
             var factory = ServiceProvider.GetService<ILoggerFactory>();
 
-            _runtimeService = new RuntimeService(factory!.CreateLogger<RuntimeService>());
+            _mockFileStoreService = new Mock<IFileStoreService>();
+
+            _runtimeService = new RuntimeService(factory!.CreateLogger<RuntimeService>(), _mockFileStoreService.Object);
 
             _output = output;
         }
