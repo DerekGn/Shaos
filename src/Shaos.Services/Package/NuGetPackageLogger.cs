@@ -38,12 +38,41 @@ namespace Shaos.Services.Package
 
         public override void Log(ILogMessage message)
         {
-            throw new NotImplementedException();
+            LogMessage(message);
         }
 
         public override Task LogAsync(ILogMessage message)
         {
-            throw new NotImplementedException();
+            LogMessage(message);
+
+            return Task.CompletedTask;
+        }
+
+        private void LogMessage(ILogMessage message)
+        {
+            switch (message.Level)
+            {
+                case NuGet.Common.LogLevel.Debug:
+                    _logger.LogDebug(message.Message);
+                    break;
+                case NuGet.Common.LogLevel.Verbose:
+                    _logger.LogTrace(message.Message);
+                    break;
+                case NuGet.Common.LogLevel.Information:
+                    _logger.LogInformation(message.Message);
+                    break;
+                case NuGet.Common.LogLevel.Minimal:
+                    _logger.LogDebug(message.Message);
+                    break;
+                case NuGet.Common.LogLevel.Warning:
+                    _logger.LogWarning(message.Message);
+                    break;
+                case NuGet.Common.LogLevel.Error:
+                    _logger.LogError(message.Message);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

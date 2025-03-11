@@ -31,7 +31,7 @@ namespace Shaos.Services.Options
         /// <summary>
         /// The folder to which packages will be downloaded too.
         /// </summary>
-        public string PackageFolder { get; init; } = "\\PackageCache";
+        public string PackageFolder { get; init; } = ".\\PackageCache";
 
         /// <summary>
         /// The list of package sources to resolve nuget packages

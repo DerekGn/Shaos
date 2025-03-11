@@ -1,7 +1,0 @@
-﻿
-namespace Shaos.Services.UnitTests.TestCode
-{
-    public class TestPlugInNotOk : IPlugIn
-    {
-    }
-}
