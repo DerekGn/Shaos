@@ -28,6 +28,7 @@ namespace Shaos.Services.Validation
 {
     public class CodeFileValidationService : ICodeFileValidationService
     {
+        internal const string ContentType = "application/octet-stream";
         private readonly string[] permittedExtensions = { ".nupkg" };
 
         public FileValidationResult ValidateFile(IFormFile formFile)
@@ -38,7 +39,7 @@ namespace Shaos.Services.Validation
             {
                 result = FileValidationResult.FileNameEmpty;
             }
-            else if (!formFile.ContentType.Equals("application/octet-stream", StringComparison.CurrentCultureIgnoreCase))
+            else if (!formFile.ContentType.Equals(ContentType, StringComparison.CurrentCultureIgnoreCase))
             {
                 result = FileValidationResult.InvalidContentType;
             }

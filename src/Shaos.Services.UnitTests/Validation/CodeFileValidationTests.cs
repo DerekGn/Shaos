@@ -31,7 +31,7 @@ namespace Shaos.Services.UnitTests.Validation
 {
     public class CodeFileValidationTests
     {
-        private const string ContentType = "text/plain";
+        private const string ContentType = "application/octet-stream";
         private readonly CodeFileValidationService _codeFileValidationService;
         private Mock<IFormFile> _mockFile;
 
@@ -76,7 +76,7 @@ namespace Shaos.Services.UnitTests.Validation
         [Fact]
         public void TestValidateFileInvalidLength()
         {
-            _mockFile.Setup(_ => _.FileName).Returns("filename.cs");
+            _mockFile.Setup(_ => _.FileName).Returns("filename.nupkg");
             _mockFile.Setup(_ => _.ContentType).Returns(ContentType);
             _mockFile.Setup(_ => _.Length).Returns(0);
 
@@ -88,7 +88,7 @@ namespace Shaos.Services.UnitTests.Validation
         [Fact]
         public void TestValidateFileValid()
         {
-            _mockFile.Setup(_ => _.FileName).Returns("filename.cs");
+            _mockFile.Setup(_ => _.FileName).Returns("filename.nupkg");
             _mockFile.Setup(_ => _.ContentType).Returns(ContentType);
             _mockFile.Setup(_ => _.Length).Returns(10);
             
