@@ -43,10 +43,6 @@ namespace Shaos.Services.UnitTests
                 .AddOptions();
 
             serviceCollection
-                .AddOptions<CSharpCompilerServiceOptions>()
-                .Bind(Configuration.GetSection(nameof(CSharpCompilerServiceOptions)));
-
-            serviceCollection
                 .AddOptions<FileStoreOptions>()
                 .Bind(Configuration.GetSection(nameof(FileStoreOptions)));
 
