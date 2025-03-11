@@ -27,7 +27,7 @@ using System.Runtime.Loader;
 
 namespace Shaos.Services.Runtime
 {
-    internal class RuntimeAssemblyLoadContext : AssemblyLoadContext
+    public class RuntimeAssemblyLoadContext : AssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _resolver;
 

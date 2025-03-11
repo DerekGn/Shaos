@@ -48,5 +48,10 @@ namespace Shaos.Services.Runtime
         /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="ExecutingInstance"/>
         /// </summary>
         public CancellationToken? Token { get; init; }
+
+        /// <summary>
+        /// The <see cref="RuntimeAssemblyLoadContext"/>
+        /// </summary>
+        public RuntimeAssemblyLoadContext? AssemblyLoadContext { get; set; }
     }
 }
