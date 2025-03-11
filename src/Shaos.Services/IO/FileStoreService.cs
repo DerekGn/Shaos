@@ -22,9 +22,6 @@
 * SOFTWARE.
 */
 
-
-// Ignore Spelling: Shaos
-
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Options;
@@ -65,9 +62,7 @@ namespace Shaos.Services.IO
         {
             Stream? stream = null;
 
-            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, id.ToString());
-
-            var nugetFilePath = Path.Combine(packageFolder, fileName);
+            var nugetFilePath = GetPlugInNuGetPackagePath(id, fileName);
 
             if (Path.Exists(nugetFilePath))
             {
@@ -80,6 +75,14 @@ namespace Shaos.Services.IO
             }
 
             return stream;
+        }
+
+        /// <inheritdoc/>
+        public string GetPlugInNuGetPackagePath(int id, string fileName)
+        {
+            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, id.ToString());
+
+            return Path.Combine(packageFolder, fileName);
         }
 
         /// <inheritdoc/>
