@@ -27,12 +27,12 @@ namespace Shaos.Services.Package
     public interface INuGetPackageService
     {
         /// <summary>
-        /// Resolve a set of nuget packages
+        /// Resolve a set of NuGet packages
         /// </summary>
-        /// <param name="packageResolveRequests">The <see cref="IList{T}"/> of <see cref="NuGetPackageResolveRequest"/></param>
-        /// <returns>The <see cref="IList{T}"/> of <see cref="NuGetPackageResolveResult"/></returns>
-        Task<IList<NuGetPackageResolveResult>> ResolvePackagesAsync(
-            IList<NuGetPackageResolveRequest> packageResolveRequests,
+        /// <param name="packageResolveRequest">The <see cref="NuGetPackageResolveRequest"/> to resolve the package reference</param>
+        /// <returns>The <see cref="NuGetPackageResolveResult"/> for the resolved package</returns>
+        Task<NuGetPackageResolveResult> ResolvePackagesAsync(
+            NuGetPackageResolveRequest packageResolveRequest,
             CancellationToken cancellationToken = default);
     }
 }

@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Services.Options
 {
     public class NuGetPackageServiceOptions
@@ -31,12 +33,14 @@ namespace Shaos.Services.Options
         /// <summary>
         /// The folder to which packages will be downloaded too.
         /// </summary>
-        public string PackageFolder { get; init; } = ".\\PackageCache";
+        [Required]
+        public required string PackageFolder { get; init; } = ".\\PackageCache";
 
         /// <summary>
         /// The list of package sources to resolve nuget packages
         /// </summary>
-        public IList<Uri> PackageSources { get; init; } = new List<Uri>()
+        [Required]
+        public required IList<Uri> PackageSources { get; init; } = new List<Uri>()
         {
             new Uri("https://api.nuget.org/v3/index.json")
         };

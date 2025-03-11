@@ -70,68 +70,61 @@ namespace Shaos.Services.Package
             _settings = Settings.LoadDefaultSettings(_options.Value.PackageFolder);
         }
 
-        public async Task<IList<NuGetPackageResolveResult>> ResolvePackagesAsync(
-            IList<NuGetPackageResolveRequest> packageResolveRequests,
+        public async Task<NuGetPackageResolveResult> ResolvePackagesAsync(
+            NuGetPackageResolveRequest packageResolveRequest,
             CancellationToken cancellationToken = default)
         {
-            List<NuGetPackageResolveResult> resolvedPackages = new List<NuGetPackageResolveResult>();
+            NuGetPackageResolveResult? result;
             var resolvedSourcePackages = new HashSet<SourcePackageDependencyInfo>();
-            NuGetPackageResolveResult? resolvedNuGetPackage = null;
 
-            foreach (var packageResolveRequest in packageResolveRequests)
+            _logger.LogDebug("Resolving [{PackageName}] [{PackageVersion}] [{PreRelease}]",
+                packageResolveRequest.Package,
+                packageResolveRequest.Version,
+                packageResolveRequest.PreRelease);
+
+            var packageIdentity = await GetPackageIdentityAsync(
+                packageResolveRequest, cancellationToken);
+
+            if (packageIdentity is null)
             {
-                _logger.LogDebug("Resolving [{PackageName}] [{PackageVersion}] [{PreRelease}]",
-                    packageResolveRequest.PackageName,
-                    packageResolveRequest.PackageVersion,
+                _logger.LogDebug("Unable to resolve [{PackageName}] [{PackageVersion}] [{PreRelease}]",
+                    packageResolveRequest.Package,
+                    packageResolveRequest.Version,
                     packageResolveRequest.PreRelease);
 
-                var packageIdentity = await GetPackageIdentityAsync(
-                    packageResolveRequest, cancellationToken);
-
-                if (packageIdentity is null)
+                result = new NuGetPackageResolveResult()
                 {
-                    _logger.LogDebug("Unable to resolve [{PackageName}] [{PackageVersion}] [{PreRelease}]",
-                        packageResolveRequest.PackageName,
-                        packageResolveRequest.PackageVersion,
-                        packageResolveRequest.PreRelease);
+                    Request = packageResolveRequest,
+                    Status = ResolveStatus.NotFound
+                };
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "Resolved [{PackageName}] [{PackageVersion}] [{PreRelease}] " +
+                    "Resolved Package: [{Id}] Version: [{Version}]",
+                    packageResolveRequest.Package,
+                    packageResolveRequest.Version,
+                    packageResolveRequest.PreRelease,
+                    packageIdentity.Id,
+                    packageIdentity.Version);
 
-                    resolvedNuGetPackage = new NuGetPackageResolveResult()
-                    {
-                        Request = packageResolveRequest,
-                        Status = NuGetPackageResolveResultStatus.NotFound
-                    };
-                }
-                else
+                await GetPackageDependenciesAsync(
+                    packageIdentity,
+                    DependencyContext.Default!,
+                    resolvedSourcePackages,
+                    cancellationToken);
+
+                result = new NuGetPackageResolveResult()
                 {
-                    _logger.LogInformation(
-                        "Resolved [{PackageName}] [{PackageVersion}] [{PreRelease}] " +
-                        "Resolved Package: [{Id}] Version: [{Version}]",
-                        packageResolveRequest.PackageName,
-                        packageResolveRequest.PackageVersion,
-                        packageResolveRequest.PreRelease,
-                        packageIdentity.Id,
-                        packageIdentity.Version);
-
-                    await GetPackageDependenciesAsync(
-                        packageIdentity, DependencyContext.Default,
-                        resolvedSourcePackages, cancellationToken);
-
-                    resolvedNuGetPackage = new NuGetPackageResolveResult()
-                    {
-                        Request = packageResolveRequest,
-                        Status = NuGetPackageResolveResultStatus.Success,
-                        Identity = packageIdentity
-                    };
-                }
-
-                resolvedPackages.Add(resolvedNuGetPackage);
+                    Request = packageResolveRequest,
+                    Status = ResolveStatus.Success,
+                    Identity = packageIdentity,
+                    Dependencies = GetPackageDependencies(packageResolveRequest, resolvedSourcePackages, cancellationToken)
+                };
             }
 
-            var packagesToInstall = GetPackagesToInstall(packageResolveRequests, resolvedSourcePackages);
-
-            await InstallPackagesAsync(packagesToInstall, cancellationToken);
-
-            return resolvedPackages;
+            return result;
         }
 
         private static bool HostSuppliedDependancy(
@@ -169,7 +162,7 @@ namespace Shaos.Services.Package
             {
                 foreach (var repository in _repositories)
                 {
-                    var dependencyInfoResource = await repository.GetResourceAsync<DependencyInfoResource>();
+                    var dependencyInfoResource = await repository.GetResourceAsync<DependencyInfoResource>(cancellationToken);
 
                     var resolvedPackageDependencyInfo = await dependencyInfoResource.ResolvePackage(
                         packageIdentity,
@@ -206,16 +199,19 @@ namespace Shaos.Services.Package
 
         private async Task<PackageIdentity?> GetPackageIdentityAsync(
             NuGetPackageResolveRequest resolveNuGetPackage,
-            CancellationToken cancelToken)
+            CancellationToken cancellationToken)
         {
             NuGetVersion? nuGetVersion = null;
 
             foreach (var sourceRepository in _repositories)
             {
-                var packageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>();
+                var packageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
 
                 var packageVersions = await packageByIdResource.GetAllVersionsAsync(
-                    resolveNuGetPackage.PackageName, _sourceCacheContext, _nuGetLogger, cancelToken);
+                    resolveNuGetPackage.Package,
+                    _sourceCacheContext,
+                    _nuGetLogger,
+                    cancellationToken);
 
                 if (resolveNuGetPackage.GetVersionRange(out var versionRange))
                 {
@@ -229,16 +225,17 @@ namespace Shaos.Services.Package
                 }
             }
 
-            return new PackageIdentity(resolveNuGetPackage.PackageVersion, nuGetVersion);
+            return nuGetVersion == null ? null : new PackageIdentity(resolveNuGetPackage.Package, nuGetVersion);
         }
 
-        private IEnumerable<SourcePackageDependencyInfo> GetPackagesToInstall(
-            IList<NuGetPackageResolveRequest> packageResolveRequests,
-            HashSet<SourcePackageDependencyInfo> resolvedSourcePackages)
+        private IEnumerable<SourcePackageDependencyInfo> GetPackageDependencies(
+            NuGetPackageResolveRequest packageResolveRequest,
+            HashSet<SourcePackageDependencyInfo> resolvedSourcePackages,
+            CancellationToken cancellationToken)
         {
             var resolverContext = new PackageResolverContext(
                 DependencyBehavior.Lowest,
-                packageResolveRequests.Select(_ => _.PackageName),
+                [packageResolveRequest.Package],
                 Enumerable.Empty<string>(),
                 Enumerable.Empty<PackageReference>(),
                 Enumerable.Empty<PackageIdentity>(),
@@ -249,7 +246,7 @@ namespace Shaos.Services.Package
             var resolver = new PackageResolver();
 
             return resolver
-                .Resolve(resolverContext, CancellationToken.None)
+                .Resolve(resolverContext, cancellationToken)
                 .Select(_ => resolvedSourcePackages.Single(x => PackageIdentityComparer.Default.Equals(x, _)));
         }
 

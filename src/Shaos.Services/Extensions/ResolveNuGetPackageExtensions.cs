@@ -35,9 +35,9 @@ namespace Shaos.Services.Extensions
         {
             versionRange = null;
 
-            if ((resolveNuGet != null) && !string.IsNullOrEmpty(resolveNuGet.PackageVersion))
+            if ((resolveNuGet != null) && !string.IsNullOrEmpty(resolveNuGet.Version))
             {
-                return VersionRange.TryParse(resolveNuGet.PackageVersion, out versionRange);
+                return VersionRange.TryParse(resolveNuGet.Version, out versionRange);
             }
             else
             {

@@ -27,7 +27,7 @@ namespace Shaos.Services.Package
     /// <summary>
     /// Represents the result of a NuGet package resolution request
     /// </summary>
-    public enum NuGetPackageResolveResultStatus
+    public enum ResolveStatus
     {
         /// <summary>
         /// Indicates that the NuGet package was resolved successfully

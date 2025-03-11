@@ -32,12 +32,12 @@ namespace Shaos.Services.Package
         /// <summary>
         /// The package name
         /// </summary>
-        public required string PackageName { get; init; }
+        public required string Package { get; init; }
 
         /// <summary>
         /// The package version
         /// </summary>
-        public string? PackageVersion { get; init; }
+        public string? Version { get; init; }
 
         /// <summary>
         /// Indicates if pre release packages can be resolved

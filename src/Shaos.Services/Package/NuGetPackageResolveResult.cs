@@ -23,6 +23,7 @@
 */
 
 using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
 
 namespace Shaos.Services.Package
 {
@@ -31,19 +32,21 @@ namespace Shaos.Services.Package
     /// </summary>
     public class NuGetPackageResolveResult
     {
-        /// <summary>
-        /// The <see cref="NuGetPackageResolveRequest"/>
-        /// </summary>
-        public NuGetPackageResolveRequest Request { get; init; }
-
-        /// <summary>
-        /// The <see cref="NuGetPackageResolveResultStatus"/>
-        /// </summary>
-        public NuGetPackageResolveResultStatus Status { get; set; }
+        public IEnumerable<SourcePackageDependencyInfo>? Dependencies { get; internal set; } = new List<SourcePackageDependencyInfo>();
 
         /// <summary>
         /// The <see cref="PackageIdentity"/> of the resolved package
         /// </summary>
         public PackageIdentity? Identity { get; internal set; }
+
+        /// <summary>
+        /// The <see cref="NuGetPackageResolveRequest"/>
+        /// </summary>
+        public required NuGetPackageResolveRequest Request { get; init; }
+
+        /// <summary>
+        /// The <see cref="ResolveStatus"/>
+        /// </summary>
+        public ResolveStatus Status { get; set; }
     }
 }
