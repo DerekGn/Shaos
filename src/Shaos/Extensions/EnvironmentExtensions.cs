@@ -27,9 +27,9 @@ using SystemEnvironmentModel = Shaos.Services.System.SystemEnvironment;
 
 namespace Shaos.Extensions
 {
-    public static class SystemEnvironmentExtensions
+    internal static class SystemEnvironmentExtensions
     {
-        public static SystemEnvironmentApi ToApiModel(this SystemEnvironmentModel systemEnvironment)
+        internal static SystemEnvironmentApi ToApi(this SystemEnvironmentModel systemEnvironment)
         {
             return new SystemEnvironmentApi()
             {

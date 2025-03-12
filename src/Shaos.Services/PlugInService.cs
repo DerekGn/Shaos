@@ -139,35 +139,54 @@ namespace Shaos.Services
             NuGetSpecification nuGetSpecification,
             CancellationToken cancellationToken = default)
         {
-            DownloadPlugInNuGetResult result = null;
+#warning //TODO add ctor
+            DownloadPlugInNuGetResult result = new DownloadPlugInNuGetResult()
+            {
+                Packages = new List<PlugInNuGetPackage>()
+            };
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                var resolvedSpecification = await _nuGetPackageService
-                    .ResolveNuGetSpecificationAsync(
+                var resolvedSpecification = await _nuGetPackageService.ResolveNuGetSpecificationAsync(
                     nuGetSpecification,
                     cancellationToken);
 
-                if (resolvedSpecification.Status == ResolveStatus.NotFound)
+                if(resolvedSpecification.Status == ResolveStatus.NotFound)
                 {
-                    result = new DownloadPlugInNuGetResult()
-                    {
-                        Status = DownloadPlugInNuGetStatus.NotResolved
-                    };
+                    result.Status = DownloadPlugInNuGetStatus.NotFound;
                 }
                 else
                 {
-                    foreach (var dependency in resolvedSpecification.Dependencies)
+                    if(resolvedSpecification.Dependencies != null)
                     {
-                        var downloadPackageResult = await _nuGetPackageService.DownloadPackageDependenciesAsync(
-                            dependency,
-                            cancellationToken);
-                    }
+                        foreach (var dependency in resolvedSpecification.Dependencies)
+                        {
+                            var downloadPackageResult = await _nuGetPackageService
+                                .DownloadPackageDependenciesAsync(
+                                    dependency,
+                                    cancellationToken);
 
-                    result = new DownloadPlugInNuGetResult()
+                            if (downloadPackageResult.Status == DownloadStatus.Success)
+                            {
+                                result.Packages.Add(new PlugInNuGetPackage()
+                                {
+                                    Package = downloadPackageResult.PackageDependency.Id,
+                                    Version = downloadPackageResult.PackageDependency.Version.ToString(),
+                                    ExtractedFiles = downloadPackageResult.ExtractedFiles
+                                });
+                            }
+                            else
+                            {
+                                _logger.LogWarning("TODO");
+                            }
+                        }
+
+                        result.Status = DownloadPlugInNuGetStatus.Success;
+                    }
+                    else
                     {
-                        Status = DownloadPlugInNuGetStatus.NotResolved
-                    };
+                        _logger.LogWarning("TODO");
+                    }
                 }
             },
             true,

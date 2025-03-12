@@ -177,12 +177,19 @@ namespace Shaos.Controllers
         {
             return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                await PlugInService.DownloadPlugInNuGetAsync(
+                var result = await PlugInService.DownloadPlugInNuGetAsync(
                     id,
                     specification.ToModel(),
                     cancellationToken);
 
-                return Ok();
+                if(result.Status == Services.DownloadPlugInNuGetStatus.Success)
+                {
+                    return Ok(result.ToApi());
+                }
+                else
+                {
+                    return BadRequest();
+                }
             },
             cancellationToken);
         }
@@ -202,7 +209,7 @@ namespace Shaos.Controllers
         {
             return await GetPlugInOperationAsync(id, (plugIn) =>
             {
-                return Ok(plugIn.ToApiModel());
+                return Ok(plugIn.ToApi());
             },
             cancellationToken);
         }
@@ -220,7 +227,7 @@ namespace Shaos.Controllers
         {
             await foreach (var item in PlugInService.GetPlugInsAsync(cancellationToken))
             {
-                yield return item.ToApiModel();
+                yield return item.ToApi();
             }
         }
 

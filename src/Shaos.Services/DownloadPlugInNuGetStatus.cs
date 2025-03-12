@@ -26,7 +26,8 @@ namespace Shaos.Services
 {
     public enum DownloadPlugInNuGetStatus
     {
-        None = 0,
-        NotResolved = 1,
+        None,
+        Success,
+        NotFound,
     }
 }

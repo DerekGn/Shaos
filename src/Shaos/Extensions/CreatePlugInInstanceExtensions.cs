@@ -27,9 +27,10 @@ using CreatePlugInInstanceModel = Shaos.Services.CreatePlugInInstance;
 
 namespace Shaos.Extensions
 {
-    public static class CreatePlugInInstanceExtensions
+    internal static class CreatePlugInInstanceExtensions
     {
-        public static CreatePlugInInstanceModel ToModel(this CreatePlugInInstanceApi createPlugInInstance)
+        internal static CreatePlugInInstanceModel ToModel(
+            this CreatePlugInInstanceApi createPlugInInstance)
         {
             return new CreatePlugInInstanceModel()
             {

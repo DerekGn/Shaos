@@ -27,9 +27,9 @@ using ProcessInformationModel = Shaos.Services.System.ProcessInformation;
 
 namespace Shaos.Extensions
 {
-    public static class ProcessInformationExtensions
+    internal static class ProcessInformationExtensions
     {
-        public static ProcessInformationApi ToApiModel(this ProcessInformationModel processInformation)
+        internal static ProcessInformationApi ToApi(this ProcessInformationModel processInformation)
         {
             return new ProcessInformationApi()
             {

@@ -28,10 +28,10 @@ namespace Shaos.Extensions
 {
     internal static class HttpStatusCodeExtension
     {
-        public static bool IsSuccessStatusCode(this HttpStatusCode statusCode) => ((int)statusCode >= 200) && ((int)statusCode <= 299);
-        public static bool IsSuccessStatusCode(this int statusCode) => (statusCode >= 200) && (statusCode <= 299);
+        internal static bool IsSuccessStatusCode(this HttpStatusCode statusCode) => ((int)statusCode >= 200) && ((int)statusCode <= 299);
+        internal static bool IsSuccessStatusCode(this int statusCode) => (statusCode >= 200) && (statusCode <= 299);
 
-        public static string MapToType(this HttpStatusCode statusCode) => statusCode switch
+        internal static string MapToType(this HttpStatusCode statusCode) => statusCode switch
         {
             HttpStatusCode.Continue => "https://datatracker.ietf.org/doc/html/rfc7231#section-6.2.1",
             HttpStatusCode.SwitchingProtocols => "https://datatracker.ietf.org/doc/html/rfc7231#section-6.2.2",

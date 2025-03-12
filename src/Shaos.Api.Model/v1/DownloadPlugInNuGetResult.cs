@@ -22,20 +22,15 @@
 * SOFTWARE.
 */
 
-using CreatePlugInApi = Shaos.Api.Model.v1.CreatePlugIn;
-using CreatePlugInModel = Shaos.Services.CreatePlugIn;
-
-namespace Shaos.Extensions
+namespace Shaos.Api.Model.v1
 {
-    internal static class CreatePlugInExtensions
+    public class DownloadPlugInNuGetResult
     {
-        internal static CreatePlugInModel ToModel(this CreatePlugInApi createPlugIn)
-        {
-            return new CreatePlugInModel()
-            {
-                Description = createPlugIn?.Description,
-                Name = createPlugIn!.Name
-            };
-        }
+        /// <summary>
+        /// The <see cref="DownloadPlugInNuGetResult"/> status
+        /// </summary>
+        public DownloadPlugInNuGetStatus Status { get; init; }
+
+        public IList<PlugInNuGetPackage>? Packages { get; init; }
     }
 }

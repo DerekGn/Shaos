@@ -76,7 +76,7 @@ namespace Shaos.Controllers
         {
             foreach (var item in _runtimeService.GetExecutingInstances())
             {
-                yield return item.ToApiModel();
+                yield return item.ToApi();
             }
         }
 

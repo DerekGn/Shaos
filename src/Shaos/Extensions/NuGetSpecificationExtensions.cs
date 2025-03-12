@@ -27,9 +27,9 @@ using NuGetSpecificationModel = Shaos.Services.NuGetSpecification;
 
 namespace Shaos.Extensions
 {
-    public static class NuGetSpecificationExtensions
+    internal static class NuGetSpecificationExtensions
     {
-        public static NuGetSpecificationModel ToModel(
+        internal static NuGetSpecificationModel ToModel(
             this NuGetSpecificationApi nuGetSpecification)
         {
             return new NuGetSpecificationModel()

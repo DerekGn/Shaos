@@ -22,19 +22,22 @@
 * SOFTWARE.
 */
 
-using CreatePlugInApi = Shaos.Api.Model.v1.CreatePlugIn;
-using CreatePlugInModel = Shaos.Services.CreatePlugIn;
+using DownloadPlugInNuGetResultApi = Shaos.Api.Model.v1.DownloadPlugInNuGetResult;
+using DownloadPlugInNuGetResultModel = Shaos.Services.DownloadPlugInNuGetResult;
+
+#warning //TODO update enumeration mapping
 
 namespace Shaos.Extensions
 {
-    internal static class CreatePlugInExtensions
+    internal static class DownloadPlugInNuGetResultExtensions
     {
-        internal static CreatePlugInModel ToModel(this CreatePlugInApi createPlugIn)
+        internal static DownloadPlugInNuGetResultApi ToApi(
+            this DownloadPlugInNuGetResultModel downloadPlugInNuGetResult)
         {
-            return new CreatePlugInModel()
+            return new DownloadPlugInNuGetResultApi()
             {
-                Description = createPlugIn?.Description,
-                Name = createPlugIn!.Name
+                Status = (Api.Model.v1.DownloadPlugInNuGetStatus)downloadPlugInNuGetResult.Status,
+                Packages = downloadPlugInNuGetResult.Packages.Select(_ => _.ToApi()).ToList()
             };
         }
     }

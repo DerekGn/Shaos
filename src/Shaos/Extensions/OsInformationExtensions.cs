@@ -27,9 +27,9 @@ using OsInformationModel = Shaos.Services.System.RuntimeInformation;
 
 namespace Shaos.Extensions
 {
-    public static class OsInformationExtensions
+    internal static class OsInformationExtensions
     {
-        public static OsInformationApi ToApiModel(this OsInformationModel osInformation)
+        internal static OsInformationApi ToApi(this OsInformationModel osInformation)
         {
             return new OsInformationApi()
             {

@@ -25,11 +25,13 @@
 using ExecutingInstanceApi = Shaos.Api.Model.v1.ExecutingInstance;
 using ExecutinginstanceService = Shaos.Services.Runtime.ExecutingInstance;
 
+#warning TODO updated enumeration mapping
+
 namespace Shaos.Extensions
 {
     internal static class ExecutingPlugInExtension
     {
-        public static ExecutingInstanceApi ToApiModel(this ExecutinginstanceService executingInstance)
+        internal static ExecutingInstanceApi ToApi(this ExecutinginstanceService executingInstance)
         {
             return new ExecutingInstanceApi()
             {

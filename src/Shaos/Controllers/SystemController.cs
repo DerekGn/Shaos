@@ -76,7 +76,7 @@ namespace Shaos.Controllers
             OperationId = "GetOsInformation")]
         public ActionResult GetOsInformation()
         {
-            return Ok(_systemService.GetOsInformation().ToApiModel());
+            return Ok(_systemService.GetOsInformation().ToApi());
         }
 
         [HttpGet("environment")]
@@ -89,7 +89,7 @@ namespace Shaos.Controllers
             OperationId = "GetEnvironment")]
         public ActionResult GetEnvironment()
         {
-            return Ok(_systemService.GetEnvironment().ToApiModel());
+            return Ok(_systemService.GetEnvironment().ToApi());
         }
 
         [HttpGet("process")]
@@ -102,7 +102,7 @@ namespace Shaos.Controllers
             OperationId = "GetProcessInformation")]
         public ActionResult GetProcessInformation()
         {
-            return Ok(_systemService.GetProcessInformation().ToApiModel());
+            return Ok(_systemService.GetProcessInformation().ToApi());
         }
     }
 }

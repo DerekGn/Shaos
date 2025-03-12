@@ -27,9 +27,9 @@ using PlugInInstanceModel = Shaos.Repository.Models.PlugInInstance;
 
 namespace Shaos.Extensions
 {
-    public static class PlugInInstanceExtensions
+    internal static class PlugInInstanceExtensions
     {
-        public static PlugInInstanceApi ToApiModel(this PlugInInstanceModel plugInInstance)
+        internal static PlugInInstanceApi ToApi(this PlugInInstanceModel plugInInstance)
         {
             return new PlugInInstanceApi()
             {

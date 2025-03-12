@@ -23,22 +23,22 @@
 */
 
 using PlugInApi = Shaos.Api.Model.v1.PlugIn;
-using ModelPlugIn = Shaos.Repository.Models.PlugIn;
+using PlugInModel = Shaos.Repository.Models.PlugIn;
 
 namespace Shaos.Extensions
 {
     internal static class PlugInExtensions
     {
-        public static PlugInApi ToApiModel(this ModelPlugIn plugIn)
+        internal static PlugInApi ToApi(this PlugInModel plugIn)
         {
             return new PlugInApi()
             {
                 CreatedDate = plugIn.CreatedDate,
                 Description = plugIn.Description,
                 Id = plugIn.Id,
-                Instances = plugIn.Instances.Select(_ => _.ToApiModel()).ToList(),
+                Instances = plugIn.Instances.Select(_ => _.ToApi()).ToList(),
                 Name = plugIn.Name,
-                NuGetPackage = plugIn.NuGetPackage?.ToApiModel(),
+                NuGetPackage = plugIn.NuGetPackage?.ToApi(),
                 UpdatedDate = plugIn.UpdatedDate,
             };
         }

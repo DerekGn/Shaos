@@ -32,7 +32,7 @@ namespace Shaos.Services.Package
     public record NuGetPackageDownloadResult
     {
         /// <summary>
-        /// The list of extracted resource files
+        /// The list of extracted package files
         /// </summary>
         public IEnumerable<string>? ExtractedFiles { get; internal set; }
         /// <summary>

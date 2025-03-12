@@ -27,9 +27,10 @@ using UpdatePlugInInstanceModel = Shaos.Services.UpdatePlugInInstance;
 
 namespace Shaos.Extensions
 {
-    public static class UpdatePlugInInstanceExtensions
+    internal static class UpdatePlugInInstanceExtensions
     {
-        public static UpdatePlugInInstanceModel ToModel(this UpdatePlugInInstanceApi updatePlugInInstanceApi)
+        internal static UpdatePlugInInstanceModel ToModel(
+            this UpdatePlugInInstanceApi updatePlugInInstanceApi)
         {
             return new UpdatePlugInInstanceModel()
             {

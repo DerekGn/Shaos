@@ -29,7 +29,8 @@ namespace Shaos.Extensions
 {
     internal static class NuGetPackageExtensions
     {
-        public static NugetPackageApi ToApiModel(this NuGetPackageModel nuGetPackage)
+        internal static NugetPackageApi ToApi(
+            this NuGetPackageModel nuGetPackage)
         {
             return new NugetPackageApi()
             {
