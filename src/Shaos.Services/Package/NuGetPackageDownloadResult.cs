@@ -22,26 +22,26 @@
 * SOFTWARE.
 */
 
+using NuGet.Protocol.Core.Types;
+
 namespace Shaos.Services.Package
 {
     /// <summary>
-    /// Represent a package resolve request
+    /// Represents a package download result
     /// </summary>
-    public record NuGetPackageResolveRequest
+    public record NuGetPackageDownloadResult
     {
         /// <summary>
-        /// The package name
+        /// The list of extracted resource files
         /// </summary>
-        public required string Package { get; init; }
-
+        public IEnumerable<string>? ExtractedFiles { get; internal set; }
         /// <summary>
-        /// The package version
+        /// The <see cref="SourcePackageDependencyInfo"/> that was downloaded
         /// </summary>
-        public string? Version { get; init; }
-
+        public SourcePackageDependencyInfo PackageDependency { get; internal set; }
         /// <summary>
-        /// Indicates if pre release packages can be resolved
+        /// The <see cref="DownloadStatus"/> of the download
         /// </summary>
-        public bool PreRelease { get; init; }
+        public DownloadStatus Status { get; internal set; }
     }
 }

@@ -22,26 +22,29 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Package
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Shaos.Services.Options;
+
+namespace Shaos.Services.UnitTests.Package
 {
-    /// <summary>
-    /// Represent a package resolve request
-    /// </summary>
-    public record NuGetPackageResolveRequest
+    public abstract class BaseTests
     {
-        /// <summary>
-        /// The package name
-        /// </summary>
-        public required string Package { get; init; }
+        protected BaseTests()
+        {
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
 
-        /// <summary>
-        /// The package version
-        /// </summary>
-        public string? Version { get; init; }
+            var serviceCollection = new ServiceCollection()
+                .AddLogging()
+                .AddOptions();
 
-        /// <summary>
-        /// Indicates if pre release packages can be resolved
-        /// </summary>
-        public bool PreRelease { get; init; }
+            ServiceProvider = serviceCollection.BuildServiceProvider();
+        }
+
+        public ServiceProvider ServiceProvider { get; }
+        public IConfiguration Configuration { get; }
     }
 }

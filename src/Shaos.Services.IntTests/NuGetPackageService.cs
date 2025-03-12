@@ -32,7 +32,7 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Package
 {
-    public class NuGetPackageServiceTests : BaseUnitTests
+    public class NuGetPackageServiceTests : BaseTests
     {
         private readonly NuGetPackageService _nuGetPackageService;
         private readonly ITestOutputHelper _output;
@@ -55,6 +55,30 @@ namespace Shaos.Services.UnitTests.Package
         }
 
         [Fact]
+        public async Task TestDownloadPackageDependenciesAsync()
+        {
+            var packageToResolve = new NuGetPackageResolveRequest()
+            {
+                Package = "MCP2221IO",
+                Version = "4.0.1"
+            };
+
+            var resolveResult = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
+
+            AssertResolveResult(resolveResult, 4);
+
+            foreach (var dependencyInfo in resolveResult.Dependencies)
+            {
+                var downloadResult = await _nuGetPackageService.DownloadPackageDependenciesAsync(dependencyInfo);
+
+                Assert.NotNull(downloadResult);
+                Assert.Equal(DownloadStatus.Success, downloadResult.Status);
+                Assert.NotNull(downloadResult.ExtractedFiles);
+                Assert.NotEmpty(downloadResult.ExtractedFiles);
+            }
+        }
+
+        [Fact]
         public async Task TestResolvePackageFoundAsync()
         {
             var packageToResolve = new NuGetPackageResolveRequest()
@@ -63,7 +87,7 @@ namespace Shaos.Services.UnitTests.Package
                 Version = "5.0.1"
             };
 
-            var result = await _nuGetPackageService.ResolvePackagesAsync(packageToResolve);
+            var result = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
 
             Assert.NotNull(result);
             Assert.NotNull(result.Identity);
@@ -71,6 +95,20 @@ namespace Shaos.Services.UnitTests.Package
             Assert.Equal(ResolveStatus.Success, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Single(result.Dependencies);
+        }
+
+        [Fact]
+        public async Task TestResolvePackageFoundWithDependenciesAsync()
+        {
+            var packageToResolve = new NuGetPackageResolveRequest()
+            {
+                Package = "MCP2221IO",
+                Version = "4.0.1"
+            };
+
+            var result = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
+
+            AssertResolveResult(result, 4);
         }
 
         [Fact]
@@ -83,7 +121,7 @@ namespace Shaos.Services.UnitTests.Package
                     Version = "9.9.9"
                 };
 
-            var result = await _nuGetPackageService.ResolvePackagesAsync(packageToResolve);
+            var result = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
 
             Assert.NotNull(result);
             Assert.Null(result.Identity);
@@ -91,6 +129,18 @@ namespace Shaos.Services.UnitTests.Package
             Assert.Equal(ResolveStatus.NotFound, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Empty(result.Dependencies);
+        }
+
+        private static void AssertResolveResult(
+            NuGetPackageResolveResult result,
+            int dedpendancyCount)
+        {
+            Assert.NotNull(result);
+            Assert.NotNull(result.Identity);
+            Assert.NotNull(result.Request);
+            Assert.Equal(ResolveStatus.Success, result.Status);
+            Assert.NotNull(result.Dependencies);
+            Assert.Equal(dedpendancyCount, result.Dependencies.Count());
         }
     }
 }

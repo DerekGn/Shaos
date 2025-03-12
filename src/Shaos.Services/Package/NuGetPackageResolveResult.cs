@@ -30,7 +30,7 @@ namespace Shaos.Services.Package
     /// <summary>
     /// The result of a package resolution request
     /// </summary>
-    public class NuGetPackageResolveResult
+    public record NuGetPackageResolveResult
     {
         public IEnumerable<SourcePackageDependencyInfo>? Dependencies { get; internal set; } = new List<SourcePackageDependencyInfo>();
 

@@ -22,17 +22,30 @@
 * SOFTWARE.
 */
 
+using NuGet.Protocol.Core.Types;
+
 namespace Shaos.Services.Package
 {
     public interface INuGetPackageService
     {
         /// <summary>
-        /// Resolve a set of NuGet packages
+        /// Resolve a NuGet packages and its dependent packages
         /// </summary>
         /// <param name="packageResolveRequest">The <see cref="NuGetPackageResolveRequest"/> to resolve the package reference</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel this operation</param>
         /// <returns>The <see cref="NuGetPackageResolveResult"/> for the resolved package</returns>
-        Task<NuGetPackageResolveResult> ResolvePackagesAsync(
+        Task<NuGetPackageResolveResult> ResolvePackageAsync(
             NuGetPackageResolveRequest packageResolveRequest,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Download a set of package dependencies
+        /// </summary>
+        /// <param name="packageDependency">The <see cref="SourcePackageDependencyInfo"/> to download</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel this operation</param>
+        /// <returns>The <see cref="NuGetPackageDownloadResult"/></returns>
+        Task<NuGetPackageDownloadResult> DownloadPackageDependenciesAsync(
+            SourcePackageDependencyInfo packageDependency,
             CancellationToken cancellationToken = default);
     }
 }

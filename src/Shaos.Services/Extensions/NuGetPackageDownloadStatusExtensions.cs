@@ -22,26 +22,20 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Package
+using NuGet.Protocol.Core.Types;
+using Shaos.Services.Package;
+
+namespace Shaos.Services.Extensions
 {
-    /// <summary>
-    /// Represent a package resolve request
-    /// </summary>
-    public record NuGetPackageResolveRequest
+    public static class NuGetPackageDownloadStatusExtensions
     {
-        /// <summary>
-        /// The package name
-        /// </summary>
-        public required string Package { get; init; }
-
-        /// <summary>
-        /// The package version
-        /// </summary>
-        public string? Version { get; init; }
-
-        /// <summary>
-        /// Indicates if pre release packages can be resolved
-        /// </summary>
-        public bool PreRelease { get; init; }
+        public static DownloadStatus ToDownloadStatus(this DownloadResourceResultStatus downloadResourceResultStatus) => downloadResourceResultStatus switch
+        {
+            DownloadResourceResultStatus.Available => DownloadStatus.Success,
+            DownloadResourceResultStatus.AvailableWithoutStream => DownloadStatus.AvailableWithoutStream,
+            DownloadResourceResultStatus.NotFound => DownloadStatus.NotFound,
+            DownloadResourceResultStatus.Cancelled => DownloadStatus.Cancelled,
+            _ => throw new ArgumentOutOfRangeException(nameof(downloadResourceResultStatus), $"Not expected direction value: {downloadResourceResultStatus}")
+        };
     }
 }

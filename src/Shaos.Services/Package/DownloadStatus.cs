@@ -25,23 +25,29 @@
 namespace Shaos.Services.Package
 {
     /// <summary>
-    /// Represent a package resolve request
+    /// The status of the dependency download
     /// </summary>
-    public record NuGetPackageResolveRequest
+    public enum DownloadStatus
     {
         /// <summary>
-        /// The package name
+        /// The download resource is available without a stream
         /// </summary>
-        public required string Package { get; init; }
-
+        AvailableWithoutStream,
         /// <summary>
-        /// The package version
+        /// The download resource was cancelled
         /// </summary>
-        public string? Version { get; init; }
-
+        Cancelled,
         /// <summary>
-        /// Indicates if pre release packages can be resolved
+        /// The download resource was not found
         /// </summary>
-        public bool PreRelease { get; init; }
+        NotFound,
+        /// <summary>
+        /// The resource as not found
+        /// </summary>
+        ResourceNotFound,
+        /// <summary>
+        /// The download was successfully downloaded
+        /// </summary>
+        Success
     }
 }

@@ -44,6 +44,8 @@ namespace Shaos.Services.Package
         private readonly NuGetFramework _nuGetFramework;
         private readonly NuGetPackageLogger _nuGetLogger;
         private readonly IOptions<NuGetPackageServiceOptions> _options;
+        private readonly PackageExtractionContext _packageExtractionContext;
+        private readonly PackagePathResolver _packagePathResolver;
         private readonly IEnumerable<SourceRepository> _repositories;
         private readonly ISettings _settings;
         private readonly SourceCacheContext _sourceCacheContext;
@@ -56,8 +58,17 @@ namespace Shaos.Services.Package
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options ?? throw new ArgumentNullException(nameof(options));
 
+            _settings = Settings.LoadDefaultSettings(_options.Value.PackageFolder);
             _nuGetFramework = FrameworkConstants.CommonFrameworks.Net80;
             _nuGetLogger = new NuGetPackageLogger(_logger);
+
+            _packageExtractionContext = new PackageExtractionContext(
+                PackageSaveMode.Defaultv3,
+                XmlDocFileSaveMode.Skip,
+                ClientPolicyContext.GetClientPolicy(_settings, _nuGetLogger),
+                _nuGetLogger);
+            
+            _packagePathResolver = new PackagePathResolver(_options.Value.PackageFolder);
             _sourceCacheContext = new SourceCacheContext();
 
             var packageSourceProvider = options.Value.GetPackageSourceProvider();
@@ -67,10 +78,69 @@ namespace Shaos.Services.Package
                 NuGet.Protocol.Core.Types.Repository.Provider.GetCoreV3());
 
             _repositories = _sourceRepositoryProvider.GetRepositories();
-            _settings = Settings.LoadDefaultSettings(_options.Value.PackageFolder);
         }
 
-        public async Task<NuGetPackageResolveResult> ResolvePackagesAsync(
+        /// <inheritdoc/>
+        public async Task<NuGetPackageDownloadResult> DownloadPackageDependenciesAsync(
+            SourcePackageDependencyInfo packageDependency,
+            CancellationToken cancellationToken = default)
+        {
+            NuGetPackageDownloadResult result = new NuGetPackageDownloadResult()
+            {
+                PackageDependency = packageDependency
+            };
+
+            var downloadResource = await packageDependency.Source.GetResourceAsync<DownloadResource>(cancellationToken);
+
+            if(downloadResource == null)
+            {
+                _logger.LogWarning("Unable to get [{Resource}] for [{Dependency}]",
+                    nameof(DownloadResource),
+                    packageDependency.ToString());
+
+                result.Status = DownloadStatus.ResourceNotFound;
+            }
+            else
+            {
+                _logger.LogInformation("Downloading [{Dependency}]",
+                    packageDependency.ToString());
+
+                var downloadResult = await downloadResource.GetDownloadResourceResultAsync(
+                    packageDependency,
+                    new PackageDownloadContext(_sourceCacheContext),
+                    SettingsUtility.GetGlobalPackagesFolder(_settings),
+                    _nuGetLogger,
+                    cancellationToken);
+
+                if(downloadResult.Status != DownloadResourceResultStatus.Available)
+                {
+                    _logger.LogWarning("Unexpected Status: [{Status}] for [{Dependency}]",
+                        packageDependency.ToString(),
+                        downloadResult.Status);
+
+                    result.Status = downloadResult.Status.ToDownloadStatus();
+                }
+                else
+                {
+                    _logger.LogInformation("Extracting [{Dependency}]", packageDependency.ToString());
+
+                    var extractedFiles = await PackageExtractor.ExtractPackageAsync(
+                        downloadResult.PackageSource,
+                        downloadResult.PackageStream,
+                        _packagePathResolver,
+                        _packageExtractionContext,
+                        cancellationToken);
+
+                    result.Status = DownloadStatus.Success;
+                    result.ExtractedFiles = extractedFiles;
+                }
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public async Task<NuGetPackageResolveResult> ResolvePackageAsync(
             NuGetPackageResolveRequest packageResolveRequest,
             CancellationToken cancellationToken = default)
         {
@@ -152,6 +222,49 @@ namespace Shaos.Services.Package
             return result;
         }
 
+        private async Task DownloadPackageAsync(
+            SourcePackageDependencyInfo sourcePackageDependencyInfo,
+            CancellationToken cancellationToken = default)
+        {
+            var downloadResource = await sourcePackageDependencyInfo.Source.GetResourceAsync<DownloadResource>(cancellationToken);
+
+            var downloadResult = await downloadResource.GetDownloadResourceResultAsync(
+                    sourcePackageDependencyInfo,
+                    new PackageDownloadContext(_sourceCacheContext),
+                    SettingsUtility.GetGlobalPackagesFolder(_settings),
+                    _nuGetLogger,
+                    cancellationToken);
+
+            await PackageExtractor.ExtractPackageAsync(
+                downloadResult.PackageSource,
+                downloadResult.PackageStream,
+                _packagePathResolver,
+                _packageExtractionContext,
+                cancellationToken);
+        }
+
+        private IEnumerable<SourcePackageDependencyInfo> GetPackageDependencies(
+            NuGetPackageResolveRequest packageResolveRequest,
+            HashSet<SourcePackageDependencyInfo> resolvedSourcePackages,
+            CancellationToken cancellationToken)
+        {
+            var resolverContext = new PackageResolverContext(
+                DependencyBehavior.Lowest,
+                [packageResolveRequest.Package],
+                Enumerable.Empty<string>(),
+                Enumerable.Empty<PackageReference>(),
+                Enumerable.Empty<PackageIdentity>(),
+                resolvedSourcePackages,
+                _sourceRepositoryProvider.GetRepositories().Select(_ => _.PackageSource),
+                _nuGetLogger);
+
+            var resolver = new PackageResolver();
+
+            return resolver
+                .Resolve(resolverContext, cancellationToken)
+                .Select(_ => resolvedSourcePackages.Single(x => PackageIdentityComparer.Default.Equals(x, _)));
+        }
+
         private async Task GetPackageDependenciesAsync(
             PackageIdentity packageIdentity,
             DependencyContext dependencyContext,
@@ -226,28 +339,6 @@ namespace Shaos.Services.Package
             }
 
             return nuGetVersion == null ? null : new PackageIdentity(resolveNuGetPackage.Package, nuGetVersion);
-        }
-
-        private IEnumerable<SourcePackageDependencyInfo> GetPackageDependencies(
-            NuGetPackageResolveRequest packageResolveRequest,
-            HashSet<SourcePackageDependencyInfo> resolvedSourcePackages,
-            CancellationToken cancellationToken)
-        {
-            var resolverContext = new PackageResolverContext(
-                DependencyBehavior.Lowest,
-                [packageResolveRequest.Package],
-                Enumerable.Empty<string>(),
-                Enumerable.Empty<PackageReference>(),
-                Enumerable.Empty<PackageIdentity>(),
-                resolvedSourcePackages,
-                _sourceRepositoryProvider.GetRepositories().Select(_ => _.PackageSource),
-                _nuGetLogger);
-
-            var resolver = new PackageResolver();
-
-            return resolver
-                .Resolve(resolverContext, cancellationToken)
-                .Select(_ => resolvedSourcePackages.Single(x => PackageIdentityComparer.Default.Equals(x, _)));
         }
 
         private async Task InstallPackagesAsync(
