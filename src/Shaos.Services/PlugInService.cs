@@ -166,6 +166,7 @@ namespace Shaos.Services
                                     dependency,
                                     cancellationToken);
 
+#warning //TODO mask downloaded files path either here or in controller
                             if (downloadPackageResult.Status == DownloadStatus.Success)
                             {
                                 result.Packages.Add(new PlugInNuGetPackage()
@@ -177,6 +178,7 @@ namespace Shaos.Services
                             }
                             else
                             {
+#warning //TODO add logging
                                 _logger.LogWarning("TODO");
                             }
                         }
