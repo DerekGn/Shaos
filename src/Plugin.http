@@ -67,13 +67,6 @@ Content-Type: application/json
 
 ###
 
-# Delete CodeFile
-DELETE {{HostAddress}}/api/v1/plugins/{{PlugInId}}}/codefiles/{{codeFileId}}
-#Authorization: Bearer {{accessToken}}
-Accept: application/json
-
-###
-
 # Delete the instances
 DELETE {{HostAddress}}/api/v1/plugins/instances/{{PlugInIdInstanceId}}
 #Authorization: Bearer {{accessToken}}
@@ -90,6 +83,19 @@ Content-Type: application/json
 {
   "name": "string",
   "description": "Updated Description"
+}
+###
+
+# 
+PUT {{HostAddress}}/api/v1/plugins/{{PlugInId}}/nuget/download
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "package": "HexIO",
+  "preRelease": false,
+  "version": "5.0.1"
 }
 
 ###

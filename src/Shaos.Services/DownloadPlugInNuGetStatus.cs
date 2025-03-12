@@ -22,27 +22,11 @@
 * SOFTWARE.
 */
 
-using System.ComponentModel.DataAnnotations;
-
-namespace Shaos.Services.Options
+namespace Shaos.Services
 {
-    public class NuGetPackageServiceOptions
+    public enum DownloadPlugInNuGetStatus
     {
-        public string FrameworkFolder { get; init; } = "net8.0";
-
-        /// <summary>
-        /// The folder to which packages will be downloaded too.
-        /// </summary>
-        [Required]
-        public required string PackageFolder { get; init; }
-
-        /// <summary>
-        /// The list of package sources to resolve nuget packages
-        /// </summary>
-        [Required]
-        public required IList<Uri> PackageSources { get; init; } = new List<Uri>()
-        {
-            new Uri("https://api.nuget.org/v3/index.json")
-        };
+        None = 0,
+        NotResolved = 1,
     }
 }

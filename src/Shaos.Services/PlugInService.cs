@@ -34,19 +34,23 @@ using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
 {
-    public class PlugInService : BasePlugInService, IPlugInService
+    public class PlugInService : IPlugInService
     {
+        private readonly IDbContext _context;
         private readonly IFileStoreService _fileStoreService;
+        private readonly ILogger<PlugInService> _logger;
         private readonly INuGetPackageService _nuGetPackageService;
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IFileStoreService fileStoreService,
             INuGetPackageService nuGetPackageService,
-            IDbContext context) : base(logger, context)
+            IDbContext context)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
             _nuGetPackageService = nuGetPackageService ?? throw new ArgumentNullException(nameof(nuGetPackageService));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <inheritdoc/>
@@ -60,11 +64,11 @@ namespace Shaos.Services
                 Description = createPlugIn.Description
             };
 
-            await Context.PlugIns.AddAsync(plugIn, cancellationToken);
+            await _context.PlugIns.AddAsync(plugIn, cancellationToken);
 
-            await Context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
-            Logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
+            _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
 
             return plugIn.Id;
         }
@@ -77,15 +81,9 @@ namespace Shaos.Services
         {
             int result = 0;
 
-            var plugIn = await GetPlugInByIdFromContextAsync(
-                id,
-                false,
-                cancellationToken);
-
-            if (plugIn != null)
+            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                Logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]",
-                   id);
+                _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
 
                 var plugInInstance = new PlugInInstance()
                 {
@@ -97,14 +95,12 @@ namespace Shaos.Services
                 };
 
                 plugIn.Instances.Add(plugInInstance);
-                await Context.SaveChangesAsync(cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
 
                 result = plugInInstance.Id;
-            }
-            else
-            {
-                Logger.LogWarning("PlugIn: [{Id}] Not Found", id);
-            }
+            },
+            true,
+            cancellationToken);
 
             return result;
         }
@@ -115,13 +111,13 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default)
         {
 #warning Check if plugin used and delete plugin package
-            Logger.LogInformation("PlugIn [{Id}] Deleting", id);
+            _logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
             // Delete code and compiled assembly files
             _fileStoreService.DeletePlugInPackageFolder(id);
 
             // this is EF COre 7 enhancement performs select and delete in one operation
-            await Context.PlugIns.Where(_ => _.Id == id)
+            await _context.PlugIns.Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
         }
 
@@ -130,19 +126,54 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            Logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
+            _logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
 
             // this is EF COre 7 enhancement performs select and delete in one operation
-            await Context.PlugInInstances.Where(_ => _.Id == id)
+            await _context.PlugInInstances.Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task DownloadPlugInNuGetAsync(
+        public async Task<DownloadPlugInNuGetResult> DownloadPlugInNuGetAsync(
             int id,
             NuGetSpecification nuGetSpecification,
             CancellationToken cancellationToken = default)
         {
+            DownloadPlugInNuGetResult result = null;
+
+            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
+            {
+                var resolvedSpecification = await _nuGetPackageService
+                    .ResolveNuGetSpecificationAsync(
+                    nuGetSpecification,
+                    cancellationToken);
+
+                if (resolvedSpecification.Status == ResolveStatus.NotFound)
+                {
+                    result = new DownloadPlugInNuGetResult()
+                    {
+                        Status = DownloadPlugInNuGetStatus.NotResolved
+                    };
+                }
+                else
+                {
+                    foreach (var dependency in resolvedSpecification.Dependencies)
+                    {
+                        var downloadPackageResult = await _nuGetPackageService.DownloadPackageDependenciesAsync(
+                            dependency,
+                            cancellationToken);
+                    }
+
+                    result = new DownloadPlugInNuGetResult()
+                    {
+                        Status = DownloadPlugInNuGetStatus.NotResolved
+                    };
+                }
+            },
+            true,
+            cancellationToken);
+
+            return result;
         }
 
         /// <inheritdoc/>
@@ -162,7 +193,7 @@ namespace Shaos.Services
             string name,
             CancellationToken cancellationToken = default)
         {
-            var plugin = await Context
+            var plugin = await _context
                 .PlugIns
                 .AsNoTracking()
                 .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
@@ -175,7 +206,7 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await Context
+            var plugInInstance = await _context
                 .PlugInInstances
                 .Include(_ => _.PlugIn)
                 .Include(_ => _.PlugIn.NuGetPackage)
@@ -191,7 +222,7 @@ namespace Shaos.Services
             string name,
             CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await Context
+            var plugInInstance = await _context
                 .PlugInInstances
                 .AsNoTracking()
                 .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
@@ -203,7 +234,7 @@ namespace Shaos.Services
         public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach (var item in Context.PlugIns
+            await foreach (var item in _context.PlugIns
                 .Include(_ => _.NuGetPackage)
                 .Include(_ => _.Instances)
                 .AsNoTracking()
@@ -273,11 +304,9 @@ namespace Shaos.Services
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
-
-            if (plugIn != null)
+            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                Logger.LogDebug("Storing NuGet Package. PlugIn: [{Id}] FileName: [{FileName}]",
+                _logger.LogDebug("Storing NuGet Package. PlugIn: [{Id}] FileName: [{FileName}]",
                     id,
                     fileName);
 
@@ -303,8 +332,10 @@ namespace Shaos.Services
                     plugIn.NuGetPackage.Version = version.ToString();
                 }
 
-                await Context.SaveChangesAsync(cancellationToken);
-            }
+                await _context.SaveChangesAsync(cancellationToken);
+            },
+            true,
+            cancellationToken);
         }
 
         private static NuGetVersion GetNuGetPackageVersion(string? filePath)
@@ -316,18 +347,55 @@ namespace Shaos.Services
             return nuspec.GetVersion();
         }
 
+        private async Task ExecutePlugInOperationAsync(
+            int id,
+            Func<PlugIn, CancellationToken, Task> operation,
+            bool withNoTracking = true,
+            CancellationToken cancellationToken = default)
+        {
+            var plugIn = await GetPlugInByIdFromContextAsync(id, withNoTracking, cancellationToken);
+
+            if (plugIn != null)
+            {
+                await operation(plugIn, cancellationToken);
+            }
+            else
+            {
+                _logger.LogWarning("PlugIn: [{Id}] not found", id);
+            }
+        }
+
+        private async Task<PlugIn?> GetPlugInByIdFromContextAsync(
+            int id,
+            bool withNoTracking = true,
+            CancellationToken cancellationToken = default)
+        {
+            var query = _context
+                .PlugIns
+                .Include(_ => _.NuGetPackage)
+                .Include(_ => _.Instances)
+                .AsQueryable();
+
+            if (withNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
+        }
+
         private async Task<PlugIn?> UpdatePlugInAsync(
             int id,
             Action<PlugIn?> modify,
             CancellationToken cancellationToken = default)
         {
-            var plugIn = await Context
+            var plugIn = await _context
                 .PlugIns
                 .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
 
             modify(plugIn);
 
-            await Context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return plugIn;
         }
@@ -337,13 +405,13 @@ namespace Shaos.Services
             Action<PlugInInstance?> modify,
             CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await Context
+            var plugInInstance = await _context
                 .PlugInInstances
                 .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
 
             modify(plugInInstance);
 
-            await Context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return plugInInstance;
         }

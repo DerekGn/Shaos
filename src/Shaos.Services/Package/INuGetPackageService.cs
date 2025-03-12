@@ -29,13 +29,13 @@ namespace Shaos.Services.Package
     public interface INuGetPackageService
     {
         /// <summary>
-        /// Resolve a NuGet packages and its dependent packages
+        /// Resolves a <see cref="NuGetSpecification"/> to a NuGet and its dependent NuGet packages
         /// </summary>
-        /// <param name="packageResolveRequest">The <see cref="NuGetPackageResolveRequest"/> to resolve the package reference</param>
+        /// <param name="nuGetSpecification">The <see cref="NuGetSpecification"/> to resolve the NuGet package reference</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel this operation</param>
-        /// <returns>The <see cref="NuGetPackageResolveResult"/> for the resolved package</returns>
-        Task<NuGetPackageResolveResult> ResolvePackageAsync(
-            NuGetPackageResolveRequest packageResolveRequest,
+        /// <returns>The <see cref="NuGetSpecificationResolveResult"/> for the resolved package</returns>
+        Task<NuGetSpecificationResolveResult> ResolveNuGetSpecificationAsync(
+            NuGetSpecification nuGetSpecification,
             CancellationToken cancellationToken = default);
 
         /// <summary>

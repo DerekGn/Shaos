@@ -23,21 +23,20 @@
 */
 
 using NuGet.Versioning;
-using Shaos.Services.Package;
 
 namespace Shaos.Services.Extensions
 {
     public static class ResolveNuGetPackageExtensions
     {
         public static bool GetVersionRange(
-            this NuGetPackageResolveRequest resolveNuGet,
+            this NuGetSpecification nuGetSpecification,
             out VersionRange? versionRange)
         {
             versionRange = null;
 
-            if ((resolveNuGet != null) && !string.IsNullOrEmpty(resolveNuGet.Version))
+            if ((nuGetSpecification != null) && !string.IsNullOrEmpty(nuGetSpecification.Version))
             {
-                return VersionRange.TryParse(resolveNuGet.Version, out versionRange);
+                return VersionRange.TryParse(nuGetSpecification.Version, out versionRange);
             }
             else
             {

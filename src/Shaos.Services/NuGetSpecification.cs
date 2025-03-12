@@ -31,7 +31,7 @@ namespace Shaos.Services
         /// <summary>
         /// The package name
         /// </summary>
-        public string Package { get; init; }
+        public required string Package { get; init; }
 
         /// <summary>
         /// Indicates if pre release packages can be resolved
@@ -46,6 +46,6 @@ namespace Shaos.Services
         /// See https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort
         /// See https://semver.org/
         /// </remarks>
-        public string Version { get; init; }
+        public required string Version { get; init; }
     }
 }

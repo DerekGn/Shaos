@@ -165,7 +165,7 @@ namespace Shaos.Services
             UpdatePlugInInstance update,
             CancellationToken cancellationToken = default);
 
-        Task DownloadPlugInNuGetAsync(
+        Task<DownloadPlugInNuGetResult> DownloadPlugInNuGetAsync(
             int id,
             NuGetSpecification nuGetSpecification,
             CancellationToken cancellationToken = default);

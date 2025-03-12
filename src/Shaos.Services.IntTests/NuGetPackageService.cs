@@ -57,13 +57,13 @@ namespace Shaos.Services.UnitTests.Package
         [Fact]
         public async Task TestDownloadPackageDependenciesAsync()
         {
-            var packageToResolve = new NuGetPackageResolveRequest()
+            var nuGetSpecification = new NuGetSpecification()
             {
                 Package = "MCP2221IO",
                 Version = "4.0.1"
             };
 
-            var resolveResult = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
+            var resolveResult = await _nuGetPackageService.ResolveNuGetSpecificationAsync(nuGetSpecification);
 
             AssertResolveResult(resolveResult, 4);
 
@@ -81,17 +81,17 @@ namespace Shaos.Services.UnitTests.Package
         [Fact]
         public async Task TestResolvePackageFoundAsync()
         {
-            var packageToResolve = new NuGetPackageResolveRequest()
+            var nuGetSpecification = new NuGetSpecification()
             {
                 Package = "HexIO",
                 Version = "5.0.1"
             };
 
-            var result = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
+            var result = await _nuGetPackageService.ResolveNuGetSpecificationAsync(nuGetSpecification);
 
             Assert.NotNull(result);
             Assert.NotNull(result.Identity);
-            Assert.NotNull(result.Request);
+            Assert.NotNull(result.Specification);
             Assert.Equal(ResolveStatus.Success, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Single(result.Dependencies);
@@ -100,13 +100,13 @@ namespace Shaos.Services.UnitTests.Package
         [Fact]
         public async Task TestResolvePackageFoundWithDependenciesAsync()
         {
-            var packageToResolve = new NuGetPackageResolveRequest()
+            var nuGetSpecification = new NuGetSpecification()
             {
                 Package = "MCP2221IO",
                 Version = "4.0.1"
             };
 
-            var result = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
+            var result = await _nuGetPackageService.ResolveNuGetSpecificationAsync(nuGetSpecification);
 
             AssertResolveResult(result, 4);
         }
@@ -114,30 +114,29 @@ namespace Shaos.Services.UnitTests.Package
         [Fact]
         public async Task TestResolvePackageNotFoundAsync()
         {
-            var packageToResolve =
-                new NuGetPackageResolveRequest()
-                {
-                    Package = "287391",
-                    Version = "9.9.9"
-                };
+            var nuGetSpecification = new NuGetSpecification()
+            {
+                Package = "287391",
+                Version = "9.9.9"
+            };
 
-            var result = await _nuGetPackageService.ResolvePackageAsync(packageToResolve);
+            var result = await _nuGetPackageService.ResolveNuGetSpecificationAsync(nuGetSpecification);
 
             Assert.NotNull(result);
             Assert.Null(result.Identity);
-            Assert.NotNull(result.Request);
+            Assert.NotNull(result.Specification);
             Assert.Equal(ResolveStatus.NotFound, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Empty(result.Dependencies);
         }
 
         private static void AssertResolveResult(
-            NuGetPackageResolveResult result,
+            NuGetSpecificationResolveResult result,
             int dedpendancyCount)
         {
             Assert.NotNull(result);
             Assert.NotNull(result.Identity);
-            Assert.NotNull(result.Request);
+            Assert.NotNull(result.Specification);
             Assert.Equal(ResolveStatus.Success, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Equal(dedpendancyCount, result.Dependencies.Count());

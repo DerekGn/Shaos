@@ -28,10 +28,13 @@ using NuGet.Protocol.Core.Types;
 namespace Shaos.Services.Package
 {
     /// <summary>
-    /// The result of a package resolution request
+    /// The result of a <see cref="NuGetSpecification"/> resolve result
     /// </summary>
-    public record NuGetPackageResolveResult
+    public record NuGetSpecificationResolveResult
     {
+        /// <summary>
+        /// The set of <see cref="SourcePackageDependencyInfo"/> for the NuGet package
+        /// </summary>
         public IEnumerable<SourcePackageDependencyInfo>? Dependencies { get; internal set; } = new List<SourcePackageDependencyInfo>();
 
         /// <summary>
@@ -40,9 +43,9 @@ namespace Shaos.Services.Package
         public PackageIdentity? Identity { get; internal set; }
 
         /// <summary>
-        /// The <see cref="NuGetPackageResolveRequest"/>
+        /// The <see cref="NuGetSpecification"/>
         /// </summary>
-        public required NuGetPackageResolveRequest Request { get; init; }
+        public required NuGetSpecification Specification { get; init; }
 
         /// <summary>
         /// The <see cref="ResolveStatus"/>

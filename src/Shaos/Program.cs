@@ -35,6 +35,7 @@ using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
 using Shaos.Services.Options;
+using Shaos.Services.Package;
 using Shaos.Services.Runtime;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
@@ -126,6 +127,7 @@ namespace Shaos
 
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
+            builder.Services.AddSingleton<INuGetPackageService, NuGetPackageService>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 
@@ -134,6 +136,7 @@ namespace Shaos
             builder.Services.AddMemoryCache();
 
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
+            builder.Services.Configure<NuGetPackageServiceOptions>(builder.Configuration.GetSection(nameof(NuGetPackageServiceOptions)));
 
             var app = builder.Build();
             var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
