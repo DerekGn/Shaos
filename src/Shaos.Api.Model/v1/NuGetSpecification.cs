@@ -22,26 +22,36 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Api.Model.v1
 {
     /// <summary>
-    /// The compilation result
+    /// The NuGet specification
     /// </summary>
-    public class CompilationResult
+    public record NuGetSpecification
     {
         /// <summary>
-        /// The compiled assembly file path
+        /// The package name
         /// </summary>
-        public string? AssemblyFilePath { get; set; }
+        [Required]
+        public required string Package { get; init; }
 
         /// <summary>
-        /// Indicates if this <see cref="CompilationResult"/> is successful
+        /// Indicates if pre release packages can be resolved
         /// </summary>
-        public bool? Success { get; set; }
+        public bool PreRelease { get; init; }
 
         /// <summary>
-        /// The list of diagnostic errors or warnings
+        /// The package version
         /// </summary>
-        public List<string>? Diagnostics { get; init; } = null;
+        /// <remarks>
+        /// Follows the semantic versioning specification
+        /// See https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort
+        /// See https://semver.org/
+        /// </remarks>
+        [Required]
+        [RegularExpression("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$")]
+        public required string Version { get; init; }
     }
 }

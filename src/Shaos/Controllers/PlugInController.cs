@@ -22,9 +22,7 @@
 * SOFTWARE.
 */
 
-
-// Ignore Spelling: Nuget
-
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Shaos.Api.Model.v1;
@@ -36,6 +34,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 
 using CreatePlugInInstanceApi = Shaos.Api.Model.v1.CreatePlugInInstance;
+using NuGetSpecificationApi = Shaos.Api.Model.v1.NuGetSpecification;
 using UpdatePlugInApi = Shaos.Api.Model.v1.UpdatePlugIn;
 using UpdatePlugInInstanceApi = Shaos.Api.Model.v1.UpdatePlugInInstance;
 
@@ -161,6 +160,33 @@ namespace Shaos.Controllers
             cancellationToken);
         }
 
+        [HttpPut("{id}/nuget/download")]
+        [SwaggerResponse(StatusCodes.Status200OK, "")]
+        [SwaggerResponse(StatusCodes.Status400BadRequest)]
+        [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        [SwaggerOperation(
+            Summary = "Download a NuGet package for a PlugIn",
+            Description = "The downloaded NuGet package will be verified and then associated with the PlugIn, if the package contains a valid PlugIn class",
+            OperationId = "DownloadPlugInNuget")]
+        public async Task<ActionResult> DownloadPlugInNuGetAsync(
+            [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+            [FromBody, SwaggerParameter("The NuGet package specification", Required = true)] NuGetSpecificationApi specification,
+            CancellationToken cancellationToken)
+        {
+            return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
+            {
+                await PlugInService.DownloadPlugInNuGetAsync(
+                    id,
+                    specification.ToModel(),
+                    cancellationToken);
+
+                return Ok();
+            },
+            cancellationToken);
+        }
+
         [HttpGet("{id}")]
         [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn details", Type = typeof(PlugIn))]
         [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
@@ -219,7 +245,6 @@ namespace Shaos.Controllers
 
             return Ok();
         }
-
         [HttpPut("{id}")]
         [SwaggerResponse(StatusCodes.Status204NoContent, "The PlugIn was updated successfully")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, InvalidRequest, Type = typeof(ProblemDetails))]
@@ -283,30 +308,30 @@ namespace Shaos.Controllers
             return Accepted();
         }
 
-        [HttpPut("{id}/nuget")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn nuget was accepted")]
+        [HttpPut("{id}/nuget/upload")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn NuGet was accepted")]
         [SwaggerResponse(StatusCodes.Status400BadRequest)]
         [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Upload a NuGetPackage for a PlugIn",
-            Description = "Overwrites any existing PlugIn package",
-            OperationId = "UploadPlugInNuGetPackage")]
-        public async Task<ActionResult> UploadPlugInNuGetPackageAsync(
+            Summary = "Upload a NuGet package directly to a PlugIn instance",
+            Description = "The uploaded NuGet package will be validated",
+            OperationId = "UploadPlugInNuGet")]
+        public async Task<ActionResult> UploadPlugInNuGetAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
             IFormFile formFile,
             CancellationToken cancellationToken)
         {
             return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if(ValidateFormFile(formFile,out var problemDetails))
+                if (ValidateFormFile(formFile, out var problemDetails))
                 {
                     var fileName = Path.GetFileName(formFile.FileName);
 
                     Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                    await PlugInService.UpdatePlugInNuGetPackageAsync(
+                    await PlugInService.UploadPlugInNuGetAsync(
                         plugIn.Id,
                         fileName,
                         formFile.OpenReadStream(),

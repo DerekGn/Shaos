@@ -29,6 +29,7 @@ using NuGet.Versioning;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
+using Shaos.Services.Package;
 using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
@@ -36,13 +37,16 @@ namespace Shaos.Services
     public class PlugInService : BasePlugInService, IPlugInService
     {
         private readonly IFileStoreService _fileStoreService;
+        private readonly INuGetPackageService _nuGetPackageService;
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IFileStoreService fileStoreService,
+            INuGetPackageService nuGetPackageService,
             IDbContext context) : base(logger, context)
         {
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
+            _nuGetPackageService = nuGetPackageService ?? throw new ArgumentNullException(nameof(nuGetPackageService));
         }
 
         /// <inheritdoc/>
@@ -76,7 +80,7 @@ namespace Shaos.Services
             var plugIn = await GetPlugInByIdFromContextAsync(
                 id,
                 false,
-                cancellationToken: cancellationToken);
+                cancellationToken);
 
             if (plugIn != null)
             {
@@ -106,47 +110,6 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task UpdatePlugInNuGetPackageAsync(
-            int id,
-            string fileName,
-            Stream stream,
-            CancellationToken cancellationToken = default)
-        {
-            var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
-
-            if (plugIn != null)
-            {
-                Logger.LogDebug("Storing NuGet Package. PlugIn: [{Id}] FileName: [{FileName}]",
-                    id,
-                    fileName);
-
-                var filePath = await _fileStoreService.WritePlugInNuGetPackageFileStreamAsync(
-                    plugIn.Id,
-                    fileName,
-                    stream,
-                    cancellationToken);
-
-                var version = GetNuGetPackageVersion(filePath);
-
-                if (plugIn.NuGetPackage == null)
-                {
-                    plugIn.NuGetPackage = new NuGetPackage()
-                    {
-                        FileName = fileName,
-                        Version = version.ToString(),
-                    };
-                }
-                else
-                {
-                    plugIn.NuGetPackage.FileName = fileName;
-                    plugIn.NuGetPackage.Version = version.ToString();
-                }
-
-                await Context.SaveChangesAsync(cancellationToken);
-            }
-        }
-
-        /// <inheritdoc/>
         public async Task DeletePlugInAsync(
             int id,
             CancellationToken cancellationToken = default)
@@ -172,6 +135,14 @@ namespace Shaos.Services
             // this is EF COre 7 enhancement performs select and delete in one operation
             await Context.PlugInInstances.Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task DownloadPlugInNuGetAsync(
+            int id,
+            NuGetSpecification nuGetSpecification,
+            CancellationToken cancellationToken = default)
+        {
         }
 
         /// <inheritdoc/>
@@ -295,6 +266,47 @@ namespace Shaos.Services
             cancellationToken);
         }
 
+        /// <inheritdoc/>
+        public async Task UploadPlugInNuGetAsync(
+            int id,
+            string fileName,
+            Stream stream,
+            CancellationToken cancellationToken = default)
+        {
+            var plugIn = await GetPlugInByIdFromContextAsync(id, false, cancellationToken);
+
+            if (plugIn != null)
+            {
+                Logger.LogDebug("Storing NuGet Package. PlugIn: [{Id}] FileName: [{FileName}]",
+                    id,
+                    fileName);
+
+                var filePath = await _fileStoreService.WritePlugInNuGetPackageFileStreamAsync(
+                    plugIn.Id,
+                    fileName,
+                    stream,
+                    cancellationToken);
+
+                var version = GetNuGetPackageVersion(filePath);
+
+                if (plugIn.NuGetPackage == null)
+                {
+                    plugIn.NuGetPackage = new NuGetPackage()
+                    {
+                        FileName = fileName,
+                        Version = version.ToString(),
+                    };
+                }
+                else
+                {
+                    plugIn.NuGetPackage.FileName = fileName;
+                    plugIn.NuGetPackage.Version = version.ToString();
+                }
+
+                await Context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
         private static NuGetVersion GetNuGetPackageVersion(string? filePath)
         {
             using FileStream inputStream = new FileStream(filePath, FileMode.Open);
@@ -304,7 +316,6 @@ namespace Shaos.Services
             return nuspec.GetVersion();
         }
 
-        /// <inheritdoc/>
         private async Task<PlugIn?> UpdatePlugInAsync(
             int id,
             Action<PlugIn?> modify,
@@ -321,7 +332,6 @@ namespace Shaos.Services
             return plugIn;
         }
 
-        /// <inheritdoc/>
         private async Task<PlugInInstance?> UpdatePlugInInstanceAsync(
             int id,
             Action<PlugInInstance?> modify,

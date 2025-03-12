@@ -60,5 +60,10 @@ namespace Shaos.Services
 
             return await query.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
         }
+
+        internal async Task ExecutePlugInOperationAsync()
+        {
+
+        }
     }
 }

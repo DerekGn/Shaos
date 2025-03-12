@@ -22,26 +22,22 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+using NuGetSpecificationApi = Shaos.Api.Model.v1.NuGetSpecification;
+using NuGetSpecificationModel = Shaos.Services.NuGetSpecification;
+
+namespace Shaos.Extensions
 {
-    /// <summary>
-    /// The compilation result
-    /// </summary>
-    public class CompilationResult
+    public static class NuGetSpecificationExtensions
     {
-        /// <summary>
-        /// The compiled assembly file path
-        /// </summary>
-        public string? AssemblyFilePath { get; set; }
-
-        /// <summary>
-        /// Indicates if this <see cref="CompilationResult"/> is successful
-        /// </summary>
-        public bool? Success { get; set; }
-
-        /// <summary>
-        /// The list of diagnostic errors or warnings
-        /// </summary>
-        public List<string>? Diagnostics { get; init; } = null;
+        public static NuGetSpecificationModel ToModel(
+            this NuGetSpecificationApi nuGetSpecification)
+        {
+            return new NuGetSpecificationModel()
+            {
+                Package = nuGetSpecification.Package,
+                PreRelease = nuGetSpecification.PreRelease,
+                Version = nuGetSpecification.Version
+            };
+        }
     }
 }
