@@ -22,25 +22,33 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
-
-namespace Shaos.Services
+namespace Shaos.Services.Processing
 {
-    /// <summary>
-    /// A <see cref="PlugIn"/> download NuGet package result
-    /// </summary>
-    public record DownloadPlugInNuGetResult
+    public class PlugInNuGetProcessingService : IPlugInNuGetProcessingService
     {
-        public DownloadPlugInNuGetResult()
+        private readonly Lazy<IList<DownloadProcessingStep>> _processingSteps;
+
+        public PlugInNuGetProcessingService()
         {
-            Packages = new List<PlugInNuGetPackage>();
+            _processingSteps = new Lazy<IList<DownloadProcessingStep>>(InitaliseProcessingSteps);
         }
 
-        /// <summary>
-        /// The <see cref="DownloadPlugInNuGetResult"/> status
-        /// </summary>
-        public DownloadPlugInNuGetStatus Status { get; internal set; }
+        private List<DownloadProcessingStep> InitaliseProcessingSteps()
+        {
+            return
+                [
+                    new ()
+                    {
+                        ProcessAsync = ResolveNuGetSpecificationAsync
+                    }
+                ];
+        }
 
-        public IList<PlugInNuGetPackage> Packages { get; internal set; }
+        private async Task<bool> ResolveNuGetSpecificationAsync(
+            DownloadPackageContext context,
+            CancellationToken cancellationToken)
+        {
+            return true;
+        }
     }
 }

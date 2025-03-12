@@ -27,6 +27,7 @@ using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using NuGet.Protocol.Plugins;
 using Serilog;
 using Shaos.Data;
 using Shaos.Hosting;
@@ -36,6 +37,7 @@ using Shaos.Services;
 using Shaos.Services.IO;
 using Shaos.Services.Options;
 using Shaos.Services.Package;
+using Shaos.Services.Processing;
 using Shaos.Services.Runtime;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
@@ -125,9 +127,10 @@ namespace Shaos
             builder.Services.AddScoped<IDbContext, ShaosDbContext>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
 
+            builder.Services.AddSingleton<IPlugInNuGetProcessingService, PlugInNuGetProcessingService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<INuGetPackageService, NuGetPackageService>();
+            builder.Services.AddSingleton<INuGetPackageSourceService, NuGetPackageSourceService>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 

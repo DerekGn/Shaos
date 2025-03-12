@@ -34,7 +34,7 @@ namespace Shaos.Services.UnitTests.Package
 {
     public class NuGetPackageServiceTests : BaseTests
     {
-        private readonly NuGetPackageService _nuGetPackageService;
+        private readonly NuGetPackageSourceService _nuGetPackageService;
         private readonly ITestOutputHelper _output;
 
         public NuGetPackageServiceTests(ITestOutputHelper output)
@@ -48,8 +48,8 @@ namespace Shaos.Services.UnitTests.Package
 
             IOptions<NuGetPackageServiceOptions> options = Microsoft.Extensions.Options.Options.Create(optionsInstance);
 
-            _nuGetPackageService = new NuGetPackageService(
-                factory!.CreateLogger<NuGetPackageService>(),
+            _nuGetPackageService = new NuGetPackageSourceService(
+                factory!.CreateLogger<NuGetPackageSourceService>(),
                 options);
             _output = output;
         }

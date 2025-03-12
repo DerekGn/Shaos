@@ -30,6 +30,7 @@ using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
 using Shaos.Services.Package;
+using Shaos.Services.Processing;
 using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
@@ -39,17 +40,20 @@ namespace Shaos.Services
         private readonly IDbContext _context;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<PlugInService> _logger;
-        private readonly INuGetPackageService _nuGetPackageService;
+        private readonly INuGetPackageSourceService _nuGetPackageService;
+        private readonly IPlugInNuGetProcessingService _plugInNuGetProcessingService;
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IFileStoreService fileStoreService,
-            INuGetPackageService nuGetPackageService,
+            INuGetPackageSourceService nuGetPackageService,
+            IPlugInNuGetProcessingService plugInNuGetProcessingService,
             IDbContext context)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
             _nuGetPackageService = nuGetPackageService ?? throw new ArgumentNullException(nameof(nuGetPackageService));
+            _plugInNuGetProcessingService = plugInNuGetProcessingService ?? throw new ArgumentNullException(nameof(plugInNuGetProcessingService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
@@ -151,13 +155,13 @@ namespace Shaos.Services
                     nuGetSpecification,
                     cancellationToken);
 
-                if(resolvedSpecification.Status == ResolveStatus.NotFound)
+                if (resolvedSpecification.Status == ResolveStatus.NotFound)
                 {
                     result.Status = DownloadPlugInNuGetStatus.NotFound;
                 }
                 else
                 {
-                    if(resolvedSpecification.Dependencies != null)
+                    if (resolvedSpecification.Dependencies != null)
                     {
                         foreach (var dependency in resolvedSpecification.Dependencies)
                         {

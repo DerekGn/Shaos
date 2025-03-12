@@ -26,7 +26,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace Shaos.Services.Package
 {
-    public interface INuGetPackageService
+    public interface INuGetPackageSourceService
     {
         /// <summary>
         /// Resolves a <see cref="NuGetSpecification"/> to a NuGet and its dependent NuGet packages

@@ -22,25 +22,10 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
-
-namespace Shaos.Services
+namespace Shaos.Services.Processing
 {
-    /// <summary>
-    /// A <see cref="PlugIn"/> download NuGet package result
-    /// </summary>
-    public record DownloadPlugInNuGetResult
+    public interface IPlugInNuGetProcessingService
     {
-        public DownloadPlugInNuGetResult()
-        {
-            Packages = new List<PlugInNuGetPackage>();
-        }
 
-        /// <summary>
-        /// The <see cref="DownloadPlugInNuGetResult"/> status
-        /// </summary>
-        public DownloadPlugInNuGetStatus Status { get; internal set; }
-
-        public IList<PlugInNuGetPackage> Packages { get; internal set; }
     }
 }

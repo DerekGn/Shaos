@@ -38,9 +38,9 @@ using Shaos.Services.Options;
 
 namespace Shaos.Services.Package
 {
-    public class NuGetPackageService : INuGetPackageService
+    public class NuGetPackageSourceService : INuGetPackageSourceService
     {
-        private readonly ILogger<NuGetPackageService> _logger;
+        private readonly ILogger<NuGetPackageSourceService> _logger;
         private readonly NuGetFramework _nuGetFramework;
         private readonly NuGetPackageLogger _nuGetLogger;
         private readonly IOptions<NuGetPackageServiceOptions> _options;
@@ -51,8 +51,8 @@ namespace Shaos.Services.Package
         private readonly SourceCacheContext _sourceCacheContext;
         private readonly SourceRepositoryProvider _sourceRepositoryProvider;
 
-        public NuGetPackageService(
-            ILogger<NuGetPackageService> logger,
+        public NuGetPackageSourceService(
+            ILogger<NuGetPackageSourceService> logger,
             IOptions<NuGetPackageServiceOptions> options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
