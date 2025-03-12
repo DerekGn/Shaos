@@ -32,11 +32,11 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The file name of the <see cref="NuGetPackage"/>
         /// </summary>
-        public string FileName { get; init; } = string.Empty;
+        public required string FileName { get; init; }
 
         /// <summary>
         /// The version of the <see cref="NuGetPackage"/>
         /// </summary>
-        public string Version { get; init; } = string.Empty;
+        public required string Version { get; init; }
     }
 }

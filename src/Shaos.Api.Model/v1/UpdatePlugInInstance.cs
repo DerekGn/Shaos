@@ -28,22 +28,21 @@ using System.ComponentModel.DataAnnotations;
 namespace Shaos.Api.Model.v1
 {
     /// <summary>
-    /// The updated properties for the <see cref="PlugIn"/> instance
+    /// The properties of a <see cref="PlugIn"/> instance to update
     /// </summary>
-    public class UpdatePlugInInstance
+    public record UpdatePlugInInstance
     {
         /// <summary>
         /// The name of the instance
         /// </summary>
         [Required]
         [StringLength(ModelConstants.MaxNameLength)]
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; init; }
 
         /// <summary>
         /// The description of the instance
         /// </summary>
-        [Required]
         [StringLength(ModelConstants.MaxDescriptionLength)]
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; init; }
     }
 }

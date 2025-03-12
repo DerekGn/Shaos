@@ -46,17 +46,7 @@ namespace Shaos.Services.System
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
 
-            _osInformation = new Lazy<RuntimeInformation>(() =>
-            {
-                return new RuntimeInformation()
-                {
-                    FrameworkDescription = global::System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
-                    OsArchitecture = global::System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
-                    OsDescription = global::System.Runtime.InteropServices.RuntimeInformation.OSDescription,
-                    ProcessArchitecture = global::System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
-                    RuntimeIdentifier = global::System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
-                };
-            });
+            _osInformation = new Lazy<RuntimeInformation>(LoadRuntimeInformation);
         }
 
         /// <inheritdoc/>
@@ -124,6 +114,18 @@ namespace Shaos.Services.System
             _logger.LogInformation("Stopping Application");
 
             _hostApplicationLifetime.StopApplication();
+        }
+
+        private static RuntimeInformation LoadRuntimeInformation()
+        {
+            return new RuntimeInformation()
+            {
+                FrameworkDescription = global::System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+                OsArchitecture = global::System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),
+                OsDescription = global::System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                ProcessArchitecture = global::System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(),
+                RuntimeIdentifier = global::System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
+            };
         }
     }
 }

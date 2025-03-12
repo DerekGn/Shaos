@@ -37,11 +37,11 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public string Name { get; init; } = string.Empty;
+        public required string Name { get; init; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> description
         /// </summary>
-        public string Description {  get; init; } = string.Empty;
+        public string? Description {  get; init; }
     }
 }

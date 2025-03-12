@@ -37,13 +37,12 @@ namespace Shaos.Api.Model.v1
         /// </summary>
         [Required]
         [StringLength(ModelConstants.MaxNameLength)]
-        public string Name { get; init; } = string.Empty;
+        public required string Name { get; init; }
 
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
-        [Required]
         [StringLength(ModelConstants.MaxDescriptionLength)]
-        public string? Description { get; init; } = string.Empty;
+        public string? Description { get; init; }
     }
 }

@@ -37,7 +37,7 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
-        public string? Description { get; init; } = string.Empty;
+        public string? Description { get; init; }
 
         /// <summary>
         /// The set of <see cref="NuGetPackage"/> associated with this <see cref="PlugIn"/>
