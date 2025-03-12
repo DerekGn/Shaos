@@ -22,8 +22,6 @@
 * SOFTWARE.
 */
 
-// Ignore Spelling: Nuget
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NuGet.Packaging;

@@ -67,7 +67,7 @@ namespace Shaos.Services.UnitTests.Package
 
             AssertResolveResult(resolveResult, 4);
 
-            foreach (var dependencyInfo in resolveResult.Dependencies)
+            foreach (var dependencyInfo in resolveResult.Dependencies!)
             {
                 var downloadResult = await _nuGetPackageService.DownloadPackageDependenciesAsync(dependencyInfo);
 
