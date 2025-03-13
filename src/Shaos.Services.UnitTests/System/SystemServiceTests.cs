@@ -26,17 +26,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Services.Shared.Tests;
 using Shaos.Services.System;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.System
 {
-    public class SystemServiceTests : BaseUnitTests
+    public class SystemServiceTests : BaseTests
     {
         private readonly Mock<IHostApplicationLifetime> _mockHostApplicationLifetime;
         private readonly SystemService _systemService;
 
-        public SystemServiceTests()
+        public SystemServiceTests(ITestOutputHelper output) : base(output)
         {
             var factory = ServiceProvider.GetService<ILoggerFactory>();
 

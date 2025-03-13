@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Options;
 using Shaos.Services.Package;
+using Shaos.Services.Shared.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -63,7 +64,7 @@ namespace Shaos.Services.UnitTests.Package
 
             var resolveResult = await _nuGetPackageService.ResolveNuGetSpecificationAsync(nuGetSpecification);
 
-            AssertResolveResult(resolveResult, 4);
+            AssertResolveResult(resolveResult, 5);
 
             foreach (var dependencyInfo in resolveResult.Dependencies!)
             {
@@ -89,7 +90,6 @@ namespace Shaos.Services.UnitTests.Package
 
             Assert.NotNull(result);
             Assert.NotNull(result.Identity);
-            Assert.NotNull(result.Specification);
             Assert.Equal(ResolveStatus.Success, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Single(result.Dependencies);
@@ -106,7 +106,7 @@ namespace Shaos.Services.UnitTests.Package
 
             var result = await _nuGetPackageService.ResolveNuGetSpecificationAsync(nuGetSpecification);
 
-            AssertResolveResult(result, 4);
+            AssertResolveResult(result, 5);
         }
 
         [Fact]
@@ -122,7 +122,6 @@ namespace Shaos.Services.UnitTests.Package
 
             Assert.NotNull(result);
             Assert.Null(result.Identity);
-            Assert.NotNull(result.Specification);
             Assert.Equal(ResolveStatus.NotFound, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Empty(result.Dependencies);
@@ -134,7 +133,6 @@ namespace Shaos.Services.UnitTests.Package
         {
             Assert.NotNull(result);
             Assert.NotNull(result.Identity);
-            Assert.NotNull(result.Specification);
             Assert.Equal(ResolveStatus.Success, result.Status);
             Assert.NotNull(result.Dependencies);
             Assert.Equal(dedpendancyCount, result.Dependencies.Count());

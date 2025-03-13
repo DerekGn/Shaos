@@ -24,8 +24,8 @@
 
 namespace Shaos.Services.Processing
 {
-    public interface IPlugInNuGetProcessingService
+    public interface INuGetProcessingService
     {
-
+        Task DownloadNuGetAsync(NuGetSpecification specification, CancellationToken cancellationToken = default);
     }
 }

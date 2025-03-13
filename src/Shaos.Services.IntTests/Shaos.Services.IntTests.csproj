@@ -7,11 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.5.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.*" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.*" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.*" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.*" />
+        <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.5.*" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
         <PackageReference Include="coverlet.collector" Version="6.*">
             <PrivateAssets>all</PrivateAssets>
@@ -25,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
+        <ProjectReference Include="..\Shaos.Services.Shared.Tests\Shaos.Services.Shared.Tests.csproj" />
         <ProjectReference Include="..\Shaos.Services\Shaos.Services.csproj" />
     </ItemGroup>
 

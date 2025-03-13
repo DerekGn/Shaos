@@ -22,7 +22,8 @@
 * SOFTWARE.
 */
 
-using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace Shaos.Services
 {
@@ -47,5 +48,18 @@ namespace Shaos.Services
         /// See https://semver.org/
         /// </remarks>
         public required string Version { get; init; }
+
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append($"{nameof(Package)}: {Package} ");
+            stringBuilder.Append($"{nameof(PreRelease)}: {PreRelease} ");
+            stringBuilder.Append($"{nameof(Version)}: {Version}");
+
+            return stringBuilder.ToString();
+        }
     }
 }

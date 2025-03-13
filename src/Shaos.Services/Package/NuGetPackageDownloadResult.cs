@@ -31,10 +31,16 @@ namespace Shaos.Services.Package
     /// </summary>
     public record NuGetPackageDownloadResult
     {
+        public NuGetPackageDownloadResult()
+        {
+            ExtractedFiles = new List<string>();
+        }
+
+#warning //TODO mask downloaded files path before presenting to UI or controller
         /// <summary>
         /// The list of extracted package files
         /// </summary>
-        public IEnumerable<string>? ExtractedFiles { get; internal set; }
+        public IList<string> ExtractedFiles { get; }
         /// <summary>
         /// The <see cref="SourcePackageDependencyInfo"/> that was downloaded
         /// </summary>

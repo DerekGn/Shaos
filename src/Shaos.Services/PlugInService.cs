@@ -29,7 +29,6 @@ using NuGet.Versioning;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
-using Shaos.Services.Package;
 using Shaos.Services.Processing;
 using System.Runtime.CompilerServices;
 
@@ -40,19 +39,16 @@ namespace Shaos.Services
         private readonly IDbContext _context;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<PlugInService> _logger;
-        private readonly INuGetPackageSourceService _nuGetPackageService;
-        private readonly IPlugInNuGetProcessingService _plugInNuGetProcessingService;
+        private readonly INuGetProcessingService _plugInNuGetProcessingService;
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IFileStoreService fileStoreService,
-            INuGetPackageSourceService nuGetPackageService,
-            IPlugInNuGetProcessingService plugInNuGetProcessingService,
+            INuGetProcessingService plugInNuGetProcessingService,
             IDbContext context)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
-            _nuGetPackageService = nuGetPackageService ?? throw new ArgumentNullException(nameof(nuGetPackageService));
             _plugInNuGetProcessingService = plugInNuGetProcessingService ?? throw new ArgumentNullException(nameof(plugInNuGetProcessingService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -143,7 +139,6 @@ namespace Shaos.Services
             NuGetSpecification nuGetSpecification,
             CancellationToken cancellationToken = default)
         {
-#warning //TODO add ctor
             DownloadPlugInNuGetResult result = new DownloadPlugInNuGetResult()
             {
                 Packages = new List<PlugInNuGetPackage>()
@@ -151,49 +146,7 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                var resolvedSpecification = await _nuGetPackageService.ResolveNuGetSpecificationAsync(
-                    nuGetSpecification,
-                    cancellationToken);
-
-                if (resolvedSpecification.Status == ResolveStatus.NotFound)
-                {
-                    result.Status = DownloadPlugInNuGetStatus.NotFound;
-                }
-                else
-                {
-                    if (resolvedSpecification.Dependencies != null)
-                    {
-                        foreach (var dependency in resolvedSpecification.Dependencies)
-                        {
-                            var downloadPackageResult = await _nuGetPackageService
-                                .DownloadPackageDependenciesAsync(
-                                    dependency,
-                                    cancellationToken);
-
-#warning //TODO mask downloaded files path either here or in controller
-                            if (downloadPackageResult.Status == DownloadStatus.Success)
-                            {
-                                result.Packages.Add(new PlugInNuGetPackage()
-                                {
-                                    Package = downloadPackageResult.PackageDependency.Id,
-                                    Version = downloadPackageResult.PackageDependency.Version.ToString(),
-                                    ExtractedFiles = downloadPackageResult.ExtractedFiles
-                                });
-                            }
-                            else
-                            {
-#warning //TODO add logging
-                                _logger.LogWarning("TODO");
-                            }
-                        }
-
-                        result.Status = DownloadPlugInNuGetStatus.Success;
-                    }
-                    else
-                    {
-                        _logger.LogWarning("TODO");
-                    }
-                }
+                //_plugInNuGetProcessingService.DownloadNuGetAsync()
             },
             true,
             cancellationToken);

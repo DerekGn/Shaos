@@ -35,17 +35,12 @@ namespace Shaos.Services.Package
         /// <summary>
         /// The set of <see cref="SourcePackageDependencyInfo"/> for the NuGet package
         /// </summary>
-        public IEnumerable<SourcePackageDependencyInfo>? Dependencies { get; internal set; } = new List<SourcePackageDependencyInfo>();
+        public IList<SourcePackageDependencyInfo> Dependencies { get; } = new List<SourcePackageDependencyInfo>();
 
         /// <summary>
         /// The <see cref="PackageIdentity"/> of the resolved package
         /// </summary>
         public PackageIdentity? Identity { get; internal set; }
-
-        /// <summary>
-        /// The <see cref="NuGetSpecification"/>
-        /// </summary>
-        public required NuGetSpecification Specification { get; init; }
 
         /// <summary>
         /// The <see cref="ResolveStatus"/>

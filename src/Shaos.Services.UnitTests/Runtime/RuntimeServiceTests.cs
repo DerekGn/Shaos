@@ -27,17 +27,18 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
+using Shaos.Services.Shared.Tests;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime
 {
-    public class RuntimeServiceTests : BaseUnitTests
+    public class RuntimeServiceTests : BaseTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly ITestOutputHelper _output;
         private readonly RuntimeService _runtimeService;
 
-        public RuntimeServiceTests(ITestOutputHelper output)
+        public RuntimeServiceTests(ITestOutputHelper output) : base(output)
         {
             var factory = ServiceProvider.GetService<ILoggerFactory>();
 

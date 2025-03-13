@@ -26,6 +26,6 @@ namespace Shaos.Services.Processing
 {
     internal record DownloadProcessingStep
     {
-        public Func<DownloadPackageContext, CancellationToken, Task<bool>> ProcessAsync { get; init; } = default!;
+        public Func<DownloadNuGetContext, CancellationToken, Task<bool>> ProcessAsync { get; init; } = default!;
     }
 }

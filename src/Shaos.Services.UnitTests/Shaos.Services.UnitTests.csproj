@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
+    <ProjectReference Include="..\Shaos.Services.Shared.Tests\Shaos.Services.Shared.Tests.csproj" />
     <ProjectReference Include="..\Shaos.Services\Shaos.Services.csproj" />
   </ItemGroup>
 

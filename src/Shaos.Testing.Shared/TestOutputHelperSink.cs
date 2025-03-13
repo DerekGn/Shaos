@@ -22,30 +22,24 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Serilog.Core;
+using Serilog.Events;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests.Package
+namespace Shaos.Testing.Shared
 {
-    public abstract class BaseTests
+    public class TestOutputHelperSink : ILogEventSink
     {
-        protected BaseTests(ITestOutputHelper outputHelper)
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public TestOutputHelperSink(ITestOutputHelper testOutputHelper)
         {
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false)
-                .Build();
-
-            var serviceCollection = new ServiceCollection()
-                .AddLogging((builder) => builder.AddXUnit(outputHelper))
-                .AddOptions();
-
-            ServiceProvider = serviceCollection.BuildServiceProvider();
+            _testOutputHelper = testOutputHelper;
         }
 
-        public ServiceProvider ServiceProvider { get; }
-        public IConfiguration Configuration { get; }
+        public void Emit(LogEvent logEvent)
+        {
+            _testOutputHelper.WriteLine(logEvent.RenderMessage());
+        }
     }
 }

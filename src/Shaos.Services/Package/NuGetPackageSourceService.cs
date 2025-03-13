@@ -132,7 +132,7 @@ namespace Shaos.Services.Package
                         cancellationToken);
 
                     result.Status = DownloadStatus.Success;
-                    result.ExtractedFiles = extractedFiles;
+                    result.ExtractedFiles.AddRange(extractedFiles);
                 }
             }
 
@@ -165,7 +165,6 @@ namespace Shaos.Services.Package
 
                 result = new NuGetSpecificationResolveResult()
                 {
-                    Specification = nuGetSpecification,
                     Status = ResolveStatus.NotFound
                 };
             }
@@ -188,11 +187,15 @@ namespace Shaos.Services.Package
 
                 result = new NuGetSpecificationResolveResult()
                 {
-                    Specification = nuGetSpecification,
                     Status = ResolveStatus.Success,
-                    Identity = packageIdentity,
-                    Dependencies = GetPackageDependencies(nuGetSpecification, resolvedSourcePackages, cancellationToken)
+                    Identity = packageIdentity
                 };
+
+                result.Dependencies.AddRange(
+                    GetPackageDependencies(
+                        nuGetSpecification,
+                        resolvedSourcePackages,
+                        cancellationToken));
             }
 
             return result;

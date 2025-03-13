@@ -22,9 +22,23 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Processing
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
+
+namespace Shaos.Services.Shared.Tests
 {
-    internal class DownloadPackageContext
+    public abstract class BaseTests
     {
+        protected BaseTests(ITestOutputHelper outputHelper)
+        {
+            var serviceCollection = new ServiceCollection()
+                .AddLogging((builder) => builder.AddXUnit(outputHelper))
+                .AddOptions();
+
+            ServiceProvider = serviceCollection.BuildServiceProvider();
+        }
+
+        public ServiceProvider ServiceProvider { get; }
     }
 }

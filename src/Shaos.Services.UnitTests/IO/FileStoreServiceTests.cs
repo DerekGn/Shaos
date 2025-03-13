@@ -27,18 +27,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
 using Shaos.Services.Options;
-using Xunit;
+using Shaos.Services.Shared.Tests;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.IO
 {
-    public class FileStoreServiceTests : BaseUnitTests
+    public class FileStoreServiceTests : BaseTests
     {
         private readonly FileStoreService _fileStoreService;
         private readonly IOptions<FileStoreOptions>? _options;
-        private readonly ITestOutputHelper _output;
 
-        public FileStoreServiceTests(ITestOutputHelper output)
+        public FileStoreServiceTests(ITestOutputHelper output) : base(output)
         {
             var factory = ServiceProvider.GetService<ILoggerFactory>();
             _options = ServiceProvider.GetService<IOptions<FileStoreOptions>>();
@@ -46,8 +45,6 @@ namespace Shaos.Services.UnitTests.IO
             _fileStoreService = new FileStoreService(
                 factory!.CreateLogger<FileStoreService>(),
                 _options!);
-
-            _output = output;
         }
 
         //[Theory]

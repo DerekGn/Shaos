@@ -22,33 +22,24 @@
 * SOFTWARE.
 */
 
+using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
+using Shaos.Services.Package;
+
 namespace Shaos.Services.Processing
 {
-    public class PlugInNuGetProcessingService : IPlugInNuGetProcessingService
+    internal class DownloadNuGetContext
     {
-        private readonly Lazy<IList<DownloadProcessingStep>> _processingSteps;
-
-        public PlugInNuGetProcessingService()
+        public DownloadNuGetContext(NuGetSpecification nuGetSpecification)
         {
-            _processingSteps = new Lazy<IList<DownloadProcessingStep>>(InitaliseProcessingSteps);
+            Specification = nuGetSpecification;
+            Dependencies = new List<SourcePackageDependencyInfo>();
+            Downloads = new List<NuGetPackageDownloadResult>();
         }
 
-        private List<DownloadProcessingStep> InitaliseProcessingSteps()
-        {
-            return
-                [
-                    new ()
-                    {
-                        ProcessAsync = ResolveNuGetSpecificationAsync
-                    }
-                ];
-        }
-
-        private async Task<bool> ResolveNuGetSpecificationAsync(
-            DownloadPackageContext context,
-            CancellationToken cancellationToken)
-        {
-            return true;
-        }
+        public IList<SourcePackageDependencyInfo> Dependencies { get; }
+        public IList<NuGetPackageDownloadResult> Downloads { get; }
+        public PackageIdentity? Identity { get; internal set; }
+        public NuGetSpecification Specification { get; }
     }
 }
