@@ -24,13 +24,14 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shaos.Services.Options;
+using Microsoft.Extensions.Logging;
+using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Package
 {
     public abstract class BaseTests
     {
-        protected BaseTests()
+        protected BaseTests(ITestOutputHelper outputHelper)
         {
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -38,7 +39,7 @@ namespace Shaos.Services.UnitTests.Package
                 .Build();
 
             var serviceCollection = new ServiceCollection()
-                .AddLogging()
+                .AddLogging((builder) => builder.AddXUnit(outputHelper))
                 .AddOptions();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();

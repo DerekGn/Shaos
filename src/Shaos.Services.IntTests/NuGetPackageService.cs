@@ -35,9 +35,8 @@ namespace Shaos.Services.UnitTests.Package
     public class NuGetPackageServiceTests : BaseTests
     {
         private readonly NuGetPackageSourceService _nuGetPackageService;
-        private readonly ITestOutputHelper _output;
 
-        public NuGetPackageServiceTests(ITestOutputHelper output)
+        public NuGetPackageServiceTests(ITestOutputHelper output) : base(output)
         {
             var factory = ServiceProvider.GetService<ILoggerFactory>();
             var optionsInstance = new NuGetPackageServiceOptions()
@@ -51,7 +50,6 @@ namespace Shaos.Services.UnitTests.Package
             _nuGetPackageService = new NuGetPackageSourceService(
                 factory!.CreateLogger<NuGetPackageSourceService>(),
                 options);
-            _output = output;
         }
 
         [Fact]
