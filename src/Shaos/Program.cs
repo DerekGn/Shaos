@@ -127,7 +127,7 @@ namespace Shaos
             builder.Services.AddScoped<IDbContext, ShaosDbContext>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
 
-            builder.Services.AddSingleton<IPlugInNuGetProcessingService, PlugInNuGetProcessingService>();
+            builder.Services.AddSingleton<INuGetProcessingService, NuGetProcessingService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<INuGetPackageSourceService, NuGetPackageSourceService>();
