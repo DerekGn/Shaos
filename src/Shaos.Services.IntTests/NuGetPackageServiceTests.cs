@@ -52,7 +52,7 @@ namespace Shaos.Services.IntTests
         }
 
         [Fact]
-        public async Task TestDownloadPackageDependenciesSuccessAsync()
+        public async Task TestDownloadPackageSuccessAsync()
         {
             var nuGetSpecification = new NuGetSpecification()
             {
