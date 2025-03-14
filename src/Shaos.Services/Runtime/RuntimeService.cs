@@ -148,7 +148,7 @@ namespace Shaos.Services.Runtime
                 plugInInstance.Id,
                 plugInInstance.Name);
 
-            LoadNuGetPackageDependanciesAsync(plugInInstance.PlugIn.Id, plugInInstance.PlugIn.NuGetPackage);
+            //LoadNuGetPackageDependanciesAsync(plugInInstance.PlugIn.Id, plugInInstance.PlugIn.NuGetPackage);
 
             //load and
         }

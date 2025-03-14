@@ -30,7 +30,7 @@ using Shaos.Services.Shared.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests.Package
+namespace Shaos.Services.IntTests
 {
     public class NuGetPackageServiceTests : BaseTests
     {
