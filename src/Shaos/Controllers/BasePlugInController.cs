@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Repository.Models;
 using Shaos.Services;
+using Shaos.Services.Store;
 
 namespace Shaos.Controllers
 {
@@ -32,23 +33,28 @@ namespace Shaos.Controllers
     {
         internal const string IdentifierNotFound = "A PlugIn with identifier was not found";
         internal const string PluginNotFound = "The PlugIn could not be found";
-        internal readonly IPlugInService PlugInService;
 
         protected BasePlugInController(
             ILogger<BasePlugInController> logger,
+            IStore store,
             IPlugInService plugInService) : base(logger)
         {
+            Store = store ?? throw new ArgumentNullException(nameof(store));
             PlugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
         }
+
+        public IPlugInService PlugInService { get; }
+
+        public IStore Store { get; }
 
         internal async Task<ActionResult> GetPlugInOperationAsync(
             int id,
             Func<PlugIn, CancellationToken, Task<ActionResult>> operation,
             CancellationToken cancellationToken)
         {
-            var plugIn = await PlugInService.GetPlugInByIdAsync(
+            var plugIn = await Store.GetPlugInByIdAsync(
                 id,
-                cancellationToken);
+                cancellationToken: cancellationToken);
 
             if (plugIn == null)
             {
@@ -65,9 +71,9 @@ namespace Shaos.Controllers
             Func<PlugIn, ActionResult> operation,
             CancellationToken cancellationToken)
         {
-            var plugIn = await PlugInService.GetPlugInByIdAsync(
+            var plugIn = await Store.GetPlugInByIdAsync(
                 id,
-                cancellationToken);
+                cancellationToken: cancellationToken);
 
             if (plugIn == null)
             {

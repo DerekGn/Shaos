@@ -41,6 +41,9 @@ namespace Shaos.Services
         /// </summary>
         public DownloadPlugInNuGetStatus Status { get; internal set; }
 
-        public IList<PlugInNuGetPackage> Packages { get; internal set; }
+        /// <summary>
+        /// The set of <see cref="PlugInNuGetPackage"/>
+        /// </summary>
+        public IList<PlugInNuGetPackage> Packages { get; }
     }
 }

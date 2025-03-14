@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -40,12 +39,10 @@ namespace Shaos.Services.UnitTests.System
 
         public SystemServiceTests(ITestOutputHelper output) : base(output)
         {
-            var factory = ServiceProvider.GetService<ILoggerFactory>();
-
             _mockHostApplicationLifetime = new Mock<IHostApplicationLifetime>();
 
             _systemService = new SystemService(
-                factory!.CreateLogger<SystemService>(),
+                Factory!.CreateLogger<SystemService>(),
                 _mockHostApplicationLifetime.Object);
         }
 

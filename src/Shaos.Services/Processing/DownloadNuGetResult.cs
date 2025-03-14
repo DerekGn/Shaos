@@ -30,14 +30,14 @@ namespace Shaos.Services.Processing
     {
         public DownloadNuGetResult(
             bool success,
-            IList<NuGetPackageDownloadResult> downloads)
+            IList<PackageDownload> packageDownloads)
         {
             Success = success;
-            Downloads = downloads;
+            PackageDownloads = packageDownloads;
         }
 
         public bool Success { get; }
 
-        public IList<NuGetPackageDownloadResult> Downloads { get; }
+        public IList<PackageDownload> PackageDownloads { get; }
     }
 }

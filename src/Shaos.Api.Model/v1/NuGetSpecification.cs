@@ -32,10 +32,10 @@ namespace Shaos.Api.Model.v1
     public record NuGetSpecification
     {
         /// <summary>
-        /// The package name
+        /// The package identifier
         /// </summary>
         [Required]
-        public required string Package { get; init; }
+        public required string Id { get; init; }
 
         /// <summary>
         /// Indicates if pre release packages can be resolved

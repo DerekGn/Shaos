@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,26 +22,18 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models
+using NuGet.Protocol.Core.Types;
+using Shaos.Services.Package;
+
+namespace Shaos.Services.Extensions
 {
-    /// <summary>
-    /// A <see cref="NuGetPackage"/> for a <see cref="PlugIn"/>
-    /// </summary>
-    public class NuGetPackage : PlugInChildBase
+    internal static class SourcePackageDependencyInfoExtensions
     {
-        /// <summary>
-        /// The file name of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string FileName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The name of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The version of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string Version { get; set; } = string.Empty;
+        public static PackageSpecification ToPackageSpecification(this SourcePackageDependencyInfo sourcePackageDependencyInfo)
+        {
+            return new PackageSpecification(
+                sourcePackageDependencyInfo.Id,
+                sourcePackageDependencyInfo.Version.ToString());
+        }
     }
 }

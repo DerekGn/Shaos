@@ -28,6 +28,18 @@ namespace Shaos.Services
     {
         None,
         Success,
+        /// <summary>
+        /// The package was not downloaded
+        /// </summary>
+        DownloadFailed,
+        /// <summary>
+        /// The package was not found in the download payload
+        /// </summary>
         NotFound,
+        /// <summary>
+        /// 
+        /// </summary>
+        AssemblyNotFound,
+        PlugInValidationFailed,
     }
 }

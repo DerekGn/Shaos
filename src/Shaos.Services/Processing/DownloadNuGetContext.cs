@@ -34,11 +34,11 @@ namespace Shaos.Services.Processing
         {
             Specification = nuGetSpecification;
             Dependencies = new List<SourcePackageDependencyInfo>();
-            Downloads = new List<NuGetPackageDownloadResult>();
+            Downloads = new List<PackageDownload>();
         }
 
         public IList<SourcePackageDependencyInfo> Dependencies { get; }
-        public IList<NuGetPackageDownloadResult> Downloads { get; }
+        public IList<PackageDownload> Downloads { get; }
         public PackageIdentity? Identity { get; internal set; }
         public NuGetSpecification Specification { get; }
     }

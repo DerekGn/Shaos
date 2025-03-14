@@ -22,31 +22,10 @@
 * SOFTWARE.
 */
 
-using System.ComponentModel.DataAnnotations;
-
-namespace Shaos.Repository.Models
+namespace Shaos.Services
 {
-    /// <summary>
-    /// The <see cref="Base"/> entity
-    /// </summary>
-    public abstract class Base
+    public interface IPlugInValidationService
     {
-        /// <summary>
-        /// The created date
-        /// </summary>
-        [DisplayFormat(DataFormatString = "{0:f}")]
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        [Key]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// The updated date
-        /// </summary>
-        [DisplayFormat(DataFormatString = "{0:f}")]
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+        bool ValidatePlugIn(string assemblyFile);
     }
 }

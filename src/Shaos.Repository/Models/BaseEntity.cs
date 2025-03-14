@@ -22,44 +22,31 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 
-namespace Shaos.Services
+namespace Shaos.Repository.Models
 {
-    public class NuGetSpecification
+    /// <summary>
+    /// The <see cref="BaseEntity"/> entity
+    /// </summary>
+    public abstract class BaseEntity
     {
         /// <summary>
-        /// The package identifier
+        /// The created date
         /// </summary>
-        public required string Id { get; init; }
+        [DisplayFormat(DataFormatString = "{0:f}")]
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// Indicates if pre release packages can be resolved
+        /// The identifier
         /// </summary>
-        public bool PreRelease { get; init; }
+        [Key]
+        public int Id { get; set; }
 
         /// <summary>
-        /// The package version
+        /// The updated date
         /// </summary>
-        /// <remarks>
-        /// Follows the semantic versioning specification
-        /// See https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort
-        /// See https://semver.org/
-        /// </remarks>
-        public required string Version { get; init; }
-
-        /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.Append($"{nameof(Id)}: {Id} ");
-            stringBuilder.Append($"{nameof(PreRelease)}: {PreRelease} ");
-            stringBuilder.Append($"{nameof(Version)}: {Version}");
-
-            return stringBuilder.ToString();
-        }
+        [DisplayFormat(DataFormatString = "{0:f}")]
+        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
     }
 }

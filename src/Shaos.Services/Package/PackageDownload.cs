@@ -22,17 +22,16 @@
 * SOFTWARE.
 */
 
-using NuGet.Protocol.Core.Types;
-
 namespace Shaos.Services.Package
 {
     /// <summary>
     /// Represents a package download result
     /// </summary>
-    public record NuGetPackageDownloadResult
+    public record PackageDownload
     {
-        public NuGetPackageDownloadResult()
+        public PackageDownload(PackageSpecification specification)
         {
+            Specification = specification;
             ExtractedFiles = new List<string>();
         }
 
@@ -41,10 +40,12 @@ namespace Shaos.Services.Package
         /// The list of extracted package files
         /// </summary>
         public IList<string> ExtractedFiles { get; }
+
         /// <summary>
-        /// The <see cref="SourcePackageDependencyInfo"/> that was downloaded
+        /// The <see cref="PackageSpecification"/> that was downloaded
         /// </summary>
-        public SourcePackageDependencyInfo PackageDependency { get; internal set; }
+        public PackageSpecification Specification { get; }
+
         /// <summary>
         /// The <see cref="DownloadStatus"/> of the download
         /// </summary>

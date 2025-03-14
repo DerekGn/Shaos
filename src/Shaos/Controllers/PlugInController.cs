@@ -28,6 +28,7 @@ using Microsoft.Extensions.Primitives;
 using Shaos.Api.Model.v1;
 using Shaos.Extensions;
 using Shaos.Services;
+using Shaos.Services.Store;
 using Shaos.Services.Validation;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
@@ -55,8 +56,9 @@ namespace Shaos.Controllers
 
         public PlugInController(
             ILogger<PlugInController> logger,
+            IStore store,
             IPlugInService plugInService,
-            ICodeFileValidationService codeFileValidationService) : base(logger, plugInService)
+            ICodeFileValidationService codeFileValidationService) : base(logger, store, plugInService)
         {
             _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
         }
@@ -75,7 +77,7 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("A PlugIn create", Required = true)] Api.Model.v1.CreatePlugIn create,
             CancellationToken cancellationToken)
         {
-            if (await PlugInService.GetPlugInByNameAsync(create.Name, cancellationToken) != null)
+            if (await Store.GetPlugInByNameAsync(create.Name, cancellationToken) != null)
             {
                 return base.Conflict(CreateProblemDetails(
                     HttpStatusCode.Conflict,
@@ -83,8 +85,11 @@ namespace Shaos.Controllers
             }
             else
             {
-                return Ok(await PlugInService.CreatePlugInAsync(
-                    create.ToModel(),
+                var createModel = create.ToModel();
+
+                return Ok(await Store.CreatePlugInAsync(
+                    createModel.Name,
+                    createModel.Description,
                     cancellationToken));
             }
         }
@@ -105,7 +110,7 @@ namespace Shaos.Controllers
         {
             return await GetPlugInOperationAsync(id, async (plugIn, CancellationToken) =>
             {
-                if (await PlugInService.GetPlugInInstanceByNameAsync(create.Name, cancellationToken) != null)
+                if (await Store.GetPlugInInstanceByNameAsync(create.Name, cancellationToken) != null)
                 {
                     return base.Conflict(CreateProblemDetails(
                         HttpStatusCode.Conflict,
@@ -177,19 +182,21 @@ namespace Shaos.Controllers
         {
             return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                var result = await PlugInService.DownloadPlugInNuGetAsync(
-                    id,
-                    specification.ToModel(),
-                    cancellationToken);
+                //var result = await PlugInService.DownloadPlugInNuGetAsync(
+                //    id,
+                //    specification.ToModel(),
+                //    cancellationToken);
 
-                if(result.Status == Services.DownloadPlugInNuGetStatus.Success)
-                {
-                    return Ok(result.ToApi());
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                //if(result.Status == Services.DownloadPlugInNuGetStatus.Success)
+                //{
+                //    return Ok(result.ToApi());
+                //}
+                //else
+                //{
+                //    return BadRequest();
+                //}
+
+                return Ok();
             },
             cancellationToken);
         }
@@ -225,7 +232,7 @@ namespace Shaos.Controllers
         public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            await foreach (var item in PlugInService.GetPlugInsAsync(cancellationToken))
+            await foreach (var item in Store.GetPlugInsAsync(cancellationToken))
             {
                 yield return item.ToApi();
             }
@@ -252,6 +259,7 @@ namespace Shaos.Controllers
 
             return Ok();
         }
+
         [HttpPut("{id}")]
         [SwaggerResponse(StatusCodes.Status204NoContent, "The PlugIn was updated successfully")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, InvalidRequest, Type = typeof(ProblemDetails))]
@@ -268,22 +276,23 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInApi update,
             CancellationToken cancellationToken)
         {
-            var plugIn = await PlugInService.GetPlugInByNameAsync(update.Name, cancellationToken);
+            var plugIn = await Store.GetPlugInByIdAsync(id);
 
-            if ((plugIn != null) && plugIn.Id != id)
+            if(plugIn == null)
             {
-                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugIn with name [{update.Name}] already exists"));
+                return NotFound();
             }
             else
             {
-                var updated = await PlugInService.UpdatePlugInAsync(
+                var updatedPlugIn = await Store.UpdatePlugInAsync(
                     id,
-                    update.ToModel(),
+                    update.Name,
+                    update.Description,
                     cancellationToken);
 
-                if (updated == null)
+                if(updatedPlugIn == null)
                 {
-                    return NotFound();
+                    return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugIn with name [{update.Name}] already exists"));
                 }
                 else
                 {

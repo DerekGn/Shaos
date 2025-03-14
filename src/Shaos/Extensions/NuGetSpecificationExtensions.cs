@@ -34,7 +34,7 @@ namespace Shaos.Extensions
         {
             return new NuGetSpecificationModel()
             {
-                Package = nuGetSpecification.Package,
+                Id = nuGetSpecification.Id,
                 PreRelease = nuGetSpecification.PreRelease,
                 Version = nuGetSpecification.Version
             };

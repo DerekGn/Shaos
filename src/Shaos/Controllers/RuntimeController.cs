@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Services;
 using Shaos.Services.Runtime;
+using Shaos.Services.Store;
 using Swashbuckle.AspNetCore.Annotations;
 
 using ExecutingInstanceApi = Shaos.Api.Model.v1.ExecutingInstance;
@@ -41,8 +42,9 @@ namespace Shaos.Controllers
 
         public RuntimeController(
             ILogger<RuntimeController> logger,
+            IStore store,
             IPlugInService plugInService,
-            IRuntimeService runtimeService) : base(logger, plugInService)
+            IRuntimeService runtimeService) : base(logger, store, plugInService)
         {
             _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
         }
@@ -93,8 +95,7 @@ namespace Shaos.Controllers
                 [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
                 CancellationToken cancellationToken)
         {
-            var plugInInstance = await PlugInService
-                .GetPlugInInstanceByIdAsync(id, cancellationToken);
+            var plugInInstance = await Store.GetPlugInInstanceByIdAsync(id, cancellationToken);
 
             if (plugInInstance == null)
             {

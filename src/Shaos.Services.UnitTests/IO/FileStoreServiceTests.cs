@@ -39,11 +39,10 @@ namespace Shaos.Services.UnitTests.IO
 
         public FileStoreServiceTests(ITestOutputHelper output) : base(output)
         {
-            var factory = ServiceProvider.GetService<ILoggerFactory>();
             _options = ServiceProvider.GetService<IOptions<FileStoreOptions>>();
 
             _fileStoreService = new FileStoreService(
-                factory!.CreateLogger<FileStoreService>(),
+                Factory!.CreateLogger<FileStoreService>(),
                 _options!);
         }
 

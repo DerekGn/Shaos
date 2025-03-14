@@ -29,21 +29,11 @@ namespace Shaos.Services
     public interface IPlugInService
     {
         /// <summary>
-        /// Creates a new <see cref="PlugIn"/>
-        /// </summary>
-        /// <param name="createPlugIn">The plug in create attributes</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>The identifier of the created <see cref="PlugIn"/></returns>
-        Task<int> CreatePlugInAsync(
-            CreatePlugIn createPlugIn,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Create an instance of a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to create the instance</param>
         /// <param name="create">The create instance attributes</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the created <see cref="PlugInInstance"/></returns>
         Task<int> CreatePlugInInstanceAsync(
             int id,
@@ -56,7 +46,7 @@ namespace Shaos.Services
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to update the NuGet package</param>
         /// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
         /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task UploadPlugInNuGetAsync(
             int id,
             string fileName,
@@ -67,7 +57,7 @@ namespace Shaos.Services
         /// Delete a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task DeletePlugInAsync(
             int id,
             CancellationToken cancellationToken = default);
@@ -76,58 +66,10 @@ namespace Shaos.Services
         /// Delete a <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns></returns>
         Task DeletePlugInInstanceAsync(
             int id,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get a <see cref="PlugIn"/> instance by its identifier
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/> to retrieve</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>The <see cref="PlugIn"/> instance if found</returns>
-        Task<PlugIn?> GetPlugInByIdAsync(
-            int id,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get a <see cref="PlugIn"/> instance by its name
-        /// </summary>
-        /// <param name="name">The name of the <see cref="PlugIn"/> to search for</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>The <see cref="PlugIn"/> if found</returns>
-        Task<PlugIn?> GetPlugInByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get a <see cref="PlugInInstance"/> by its identifier
-        /// </summary>
-        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns></returns>
-        Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
-            int id,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get a <see cref="PlugInInstance"/> instance by its name
-        /// </summary>
-        /// <param name="name">The name of the <see cref="PlugInInstance"/> to search for</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>The <see cref="PlugInInstance"/> if found</returns>
-        Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get the set of <see cref="PlugIn"/>
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/></returns>
-        IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -135,22 +77,10 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="enable">The enable state to set</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task SetPlugInInstanceEnableAsync(
             int id,
             bool enable,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Update the properties of a <see cref="PlugIn"/>
-        /// </summary>
-        /// <param name="id">The <see cref="PlugIn"/> identifier</param>
-        /// <param name="update">The <see cref="UpdatePlugIn"/> properties to update</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
-        /// <returns>The <see cref="PlugIn"/> instance if found</returns>
-        Task<PlugIn?> UpdatePlugInAsync(
-            int id,
-            UpdatePlugIn update,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -158,7 +88,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
         /// <param name="update">The <see cref="UpdatePlugInInstance"/> properties to update</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the operation</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns></returns>
         Task UpdatePlugInInstanceAsync(
             int id,
@@ -167,7 +97,7 @@ namespace Shaos.Services
 
         Task<DownloadPlugInNuGetResult> DownloadPlugInNuGetAsync(
             int id,
-            NuGetSpecification nuGetSpecification,
+            NuGetSpecification specification,
             CancellationToken cancellationToken = default);
     }
 }

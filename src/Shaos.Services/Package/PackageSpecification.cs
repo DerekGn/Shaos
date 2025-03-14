@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,26 +22,18 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models
+namespace Shaos.Services.Package
 {
-    /// <summary>
-    /// A <see cref="NuGetPackage"/> for a <see cref="PlugIn"/>
-    /// </summary>
-    public class NuGetPackage : PlugInChildBase
+    public record PackageSpecification
     {
-        /// <summary>
-        /// The file name of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string FileName { get; set; } = string.Empty;
+        public PackageSpecification(string id, string version)
+        {
+            Id = id;
+            Version = version;
+        }
 
-        /// <summary>
-        /// The name of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string Id { get; }
 
-        /// <summary>
-        /// The version of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string Version { get; set; } = string.Empty;
+        public string Version { get; }
     }
 }

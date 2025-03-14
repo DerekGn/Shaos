@@ -30,7 +30,7 @@ namespace Shaos.Repository
     /// <summary>
     /// The application store database context
     /// </summary>
-    public class ShaosDbContext : DbContext, IDbContext
+    public class ShaosDbContext : DbContext
     {
         public ShaosDbContext(DbContextOptions<ShaosDbContext> options)
             : base(options)
@@ -41,7 +41,7 @@ namespace Shaos.Repository
         public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>
-        public DbSet<NuGetPackage> NuGetFiles { get; set; }
+        public DbSet<NuGetPackage> NuGetPackages { get; set; }
 
         /// <inheritdoc/>>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
@@ -49,12 +49,12 @@ namespace Shaos.Repository
         /// <inheritdoc/>>
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            ChangeTracker.Entries<Base>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
+            ChangeTracker.Entries<BaseEntity>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
             {
                 _.Entity.CreatedDate = DateTime.UtcNow;
             });
 
-            ChangeTracker.Entries<Base>().Where(_ => _.State == EntityState.Modified).ToList().ForEach(_ =>
+            ChangeTracker.Entries<BaseEntity>().Where(_ => _.State == EntityState.Modified).ToList().ForEach(_ =>
             {
                 _.Entity.UpdatedDate = DateTime.UtcNow;
             });

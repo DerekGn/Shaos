@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
+
 namespace Shaos.Repository.Models
 {
     /// <summary>
@@ -43,5 +46,18 @@ namespace Shaos.Repository.Models
         /// The description of the <see cref="PlugInInstance"/>
         /// </summary>
         public string Description {  get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append($"{nameof(Name)}: {Name} ");
+            stringBuilder.Append($"{nameof(Description)}: {Description} ");
+            stringBuilder.Append($"{nameof(Enabled)}: {Enabled}");
+
+            return stringBuilder.ToString();
+        }
     }
 }

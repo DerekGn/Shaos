@@ -43,8 +43,8 @@ namespace Shaos.Services.Package
         /// </summary>
         /// <param name="packageDependency">The <see cref="SourcePackageDependencyInfo"/> to download</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel this operation</param>
-        /// <returns>The <see cref="NuGetPackageDownloadResult"/></returns>
-        Task<NuGetPackageDownloadResult> DownloadPackageDependenciesAsync(
+        /// <returns>The <see cref="PackageDownload"/></returns>
+        Task<PackageDownload> DownloadPackageDependenciesAsync(
             SourcePackageDependencyInfo packageDependency,
             CancellationToken cancellationToken = default);
     }

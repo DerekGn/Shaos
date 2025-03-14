@@ -37,8 +37,11 @@ namespace Shaos.Services.Shared.Tests
                 .AddOptions();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
+
+            Factory = ServiceProvider.GetService<ILoggerFactory>();
         }
 
         public ServiceProvider ServiceProvider { get; }
+        public ILoggerFactory? Factory { get; }
     }
 }

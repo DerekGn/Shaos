@@ -27,7 +27,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// Represents a PlugIn entity
     /// </summary>
-    public class PlugIn : Base
+    public class PlugIn : BaseEntity
     {
         /// <summary>
         /// The description of this <see cref="PlugIn"/>

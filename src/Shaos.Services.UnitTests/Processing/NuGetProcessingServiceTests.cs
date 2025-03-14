@@ -44,11 +44,10 @@ namespace Shaos.Services.UnitTests.Processing
 
         public NuGetProcessingServiceTests(ITestOutputHelper output) : base(output)
         {
-            var factory = ServiceProvider.GetService<ILoggerFactory>();
             _mockNuGetPackageSource = new Mock<INuGetPackageSourceService>();
 
             _nuGetProcessingService = new NuGetProcessingService(
-                factory!.CreateLogger<NuGetProcessingService>(),
+                Factory!.CreateLogger<NuGetProcessingService>(),
                 _mockNuGetPackageSource.Object);
         }
 
@@ -57,7 +56,7 @@ namespace Shaos.Services.UnitTests.Processing
         {
             var specification = new NuGetSpecification()
             {
-                Package = "PACKAGE",
+                Id = "PACKAGE",
                 PreRelease = false,
                 Version = "1.0.0",
             };
@@ -73,7 +72,7 @@ namespace Shaos.Services.UnitTests.Processing
 
             resoveResult.Dependencies.Add(
                 new SourcePackageDependencyInfo(
-                    specification.Package,
+                    specification.Id,
                     version,
                     packageDependancies,
                     true,
@@ -81,7 +80,7 @@ namespace Shaos.Services.UnitTests.Processing
                     new List<INuGetResourceProvider>())));
 
             resoveResult.Identity = new PackageIdentity(
-                specification.Package,
+                specification.Id,
                 version);
 
             _mockNuGetPackageSource.Setup(_ => _.ResolveNuGetSpecificationAsync(
@@ -92,7 +91,7 @@ namespace Shaos.Services.UnitTests.Processing
             _mockNuGetPackageSource.Setup(_ => _.DownloadPackageDependenciesAsync(
                 It.IsAny<SourcePackageDependencyInfo>(),
                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new NuGetPackageDownloadResult()
+                .ReturnsAsync(new PackageDownload(new PackageSpecification("id", "version"))
                 {
                     Status = DownloadStatus.NotFound
                 });
@@ -101,8 +100,8 @@ namespace Shaos.Services.UnitTests.Processing
 
             Assert.NotNull(result);
             Assert.False(result.Success);
-            Assert.NotEmpty(result.Downloads);
-            Assert.Equal(DownloadStatus.NotFound, result.Downloads.First().Status);
+            Assert.NotEmpty(result.PackageDownloads);
+            Assert.Equal(DownloadStatus.NotFound, result.PackageDownloads.First().Status);
         }
 
         [Fact]
@@ -110,7 +109,7 @@ namespace Shaos.Services.UnitTests.Processing
         {
             var specification = new NuGetSpecification()
             {
-                Package = "PACKAGE",
+                Id = "PACKAGE",
                 PreRelease = false,
                 Version = "1.0.0",
             };
@@ -133,7 +132,7 @@ namespace Shaos.Services.UnitTests.Processing
         {
             var specification = new NuGetSpecification()
             {
-                Package = "PACKAGE",
+                Id = "PACKAGE",
                 PreRelease = false,
                 Version = "1.0.0",
             };
@@ -149,7 +148,7 @@ namespace Shaos.Services.UnitTests.Processing
 
             resoveResult.Dependencies.Add(
                 new SourcePackageDependencyInfo(
-                    specification.Package,
+                    specification.Id,
                     version,
                     packageDependancies,
                     true,
@@ -157,7 +156,7 @@ namespace Shaos.Services.UnitTests.Processing
                     new List<INuGetResourceProvider>())));
 
             resoveResult.Identity = new PackageIdentity(
-                specification.Package,
+                specification.Id,
                 version);
 
             _mockNuGetPackageSource.Setup(_ => _.ResolveNuGetSpecificationAsync(
@@ -168,7 +167,7 @@ namespace Shaos.Services.UnitTests.Processing
             _mockNuGetPackageSource.Setup(_ => _.DownloadPackageDependenciesAsync(
                 It.IsAny<SourcePackageDependencyInfo>(),
                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new NuGetPackageDownloadResult()
+                .ReturnsAsync(new PackageDownload(new PackageSpecification("id", "version"))
                 {
                     Status = DownloadStatus.Success
                 });
@@ -177,7 +176,7 @@ namespace Shaos.Services.UnitTests.Processing
 
             Assert.NotNull(result);
             Assert.True(result.Success);
-            Assert.NotEmpty(result.Downloads);
+            Assert.NotEmpty(result.PackageDownloads);
         }
     }
 }

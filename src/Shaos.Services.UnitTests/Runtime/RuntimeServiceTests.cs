@@ -40,11 +40,11 @@ namespace Shaos.Services.UnitTests.Runtime
 
         public RuntimeServiceTests(ITestOutputHelper output) : base(output)
         {
-            var factory = ServiceProvider.GetService<ILoggerFactory>();
-
             _mockFileStoreService = new Mock<IFileStoreService>();
 
-            _runtimeService = new RuntimeService(factory!.CreateLogger<RuntimeService>(), _mockFileStoreService.Object);
+            _runtimeService = new RuntimeService(
+                Factory!.CreateLogger<RuntimeService>(),
+                _mockFileStoreService.Object);
         }
     }
 }

@@ -81,14 +81,11 @@ namespace Shaos.Services.Package
         }
 
         /// <inheritdoc/>
-        public async Task<NuGetPackageDownloadResult> DownloadPackageDependenciesAsync(
+        public async Task<PackageDownload> DownloadPackageDependenciesAsync(
             SourcePackageDependencyInfo packageDependency,
             CancellationToken cancellationToken = default)
         {
-            NuGetPackageDownloadResult result = new NuGetPackageDownloadResult()
-            {
-                PackageDependency = packageDependency
-            };
+            PackageDownload result = new PackageDownload(packageDependency.ToPackageSpecification());
 
             var downloadResource = await packageDependency.Source.GetResourceAsync<DownloadResource>(cancellationToken);
 
@@ -141,38 +138,30 @@ namespace Shaos.Services.Package
 
         /// <inheritdoc/>
         public async Task<NuGetSpecificationResolveResult> ResolveNuGetSpecificationAsync(
-            NuGetSpecification nuGetSpecification,
+            NuGetSpecification specification,
             CancellationToken cancellationToken = default)
         {
             NuGetSpecificationResolveResult? result;
             var resolvedSourcePackages = new HashSet<SourcePackageDependencyInfo>();
 
-            _logger.LogDebug("Resolving [{PackageName}] [{PackageVersion}] [{PreRelease}]",
-                nuGetSpecification.Package,
-                nuGetSpecification.Version,
-                nuGetSpecification.PreRelease);
+            _logger.LogDebug("Resolving [{Specification}]", specification.ToString());
 
             var packageIdentity = await GetPackageIdentityAsync(
-                nuGetSpecification,
+                specification,
                 cancellationToken);
 
             if (packageIdentity is null)
             {
-                _logger.LogDebug("Unable to resolve [{PackageName}] [{PackageVersion}] [{PreRelease}]",
-                    nuGetSpecification.Package,
-                    nuGetSpecification.Version,
-                    nuGetSpecification.PreRelease);
+                _logger.LogDebug("Unable to resolve [{Specification}]", specification.ToString());
 
                 result = new NuGetSpecificationResolveResult(false);
             }
             else
             {
                 _logger.LogInformation(
-                    "Resolved [{PackageName}] [{PackageVersion}] [{PreRelease}] " +
+                    "Resolved [{Specification}] " +
                     "Resolved Package: [{Id}] Version: [{Version}]",
-                    nuGetSpecification.Package,
-                    nuGetSpecification.Version,
-                    nuGetSpecification.PreRelease,
+                    specification.ToString(),
                     packageIdentity.Id,
                     packageIdentity.Version);
 
@@ -189,7 +178,7 @@ namespace Shaos.Services.Package
 
                 result.Dependencies.AddRange(
                     GetPackageDependencies(
-                        nuGetSpecification,
+                        specification,
                         resolvedSourcePackages,
                         cancellationToken));
             }
@@ -250,7 +239,7 @@ namespace Shaos.Services.Package
         {
             var resolverContext = new PackageResolverContext(
                 DependencyBehavior.Lowest,
-                [nuGetSpecification.Package],
+                [nuGetSpecification.Id],
                 Enumerable.Empty<string>(),
                 Enumerable.Empty<PackageReference>(),
                 Enumerable.Empty<PackageIdentity>(),
@@ -321,7 +310,7 @@ namespace Shaos.Services.Package
                 var packageByIdResource = await sourceRepository.GetResourceAsync<FindPackageByIdResource>(cancellationToken);
 
                 var packageVersions = await packageByIdResource.GetAllVersionsAsync(
-                    nuGetSpecification.Package,
+                    nuGetSpecification.Id,
                     _sourceCacheContext,
                     _nuGetLogger,
                     cancellationToken);
@@ -338,7 +327,7 @@ namespace Shaos.Services.Package
                 }
             }
 
-            return nuGetVersion == null ? null : new PackageIdentity(nuGetSpecification.Package, nuGetVersion);
+            return nuGetVersion == null ? null : new PackageIdentity(nuGetSpecification.Id, nuGetVersion);
         }
 
         private async Task InstallPackagesAsync(

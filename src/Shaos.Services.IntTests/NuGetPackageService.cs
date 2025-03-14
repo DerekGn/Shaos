@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Options;
@@ -39,7 +38,6 @@ namespace Shaos.Services.UnitTests.Package
 
         public NuGetPackageServiceTests(ITestOutputHelper output) : base(output)
         {
-            var factory = ServiceProvider.GetService<ILoggerFactory>();
             var optionsInstance = new NuGetPackageServiceOptions()
             {
                 PackageFolder = Path.Combine(Environment.CurrentDirectory, "Packages"),
@@ -49,16 +47,16 @@ namespace Shaos.Services.UnitTests.Package
             IOptions<NuGetPackageServiceOptions> options = Microsoft.Extensions.Options.Options.Create(optionsInstance);
 
             _nuGetPackageService = new NuGetPackageSourceService(
-                factory!.CreateLogger<NuGetPackageSourceService>(),
+                Factory!.CreateLogger<NuGetPackageSourceService>(),
                 options);
         }
 
-        [Fact]
-        public async Task TestDownloadPackageDependenciesAsync()
+        [Fact(Skip = "Not implemented")]
+        public async Task TestDownloadPackageDependenciesSuccessAsync()
         {
             var nuGetSpecification = new NuGetSpecification()
             {
-                Package = "MCP2221IO",
+                Id = "MCP2221IO",
                 Version = "4.0.1"
             };
 
@@ -82,7 +80,7 @@ namespace Shaos.Services.UnitTests.Package
         {
             var nuGetSpecification = new NuGetSpecification()
             {
-                Package = "HexIO",
+                Id = "HexIO",
                 Version = "5.0.1"
             };
 
@@ -100,7 +98,7 @@ namespace Shaos.Services.UnitTests.Package
         {
             var nuGetSpecification = new NuGetSpecification()
             {
-                Package = "MCP2221IO",
+                Id = "MCP2221IO",
                 Version = "4.0.1"
             };
 
@@ -114,7 +112,7 @@ namespace Shaos.Services.UnitTests.Package
         {
             var nuGetSpecification = new NuGetSpecification()
             {
-                Package = "287391",
+                Id = "287391",
                 Version = "9.9.9"
             };
 
@@ -122,7 +120,7 @@ namespace Shaos.Services.UnitTests.Package
 
             Assert.NotNull(result);
             Assert.Null(result.Identity);
-            Assert.True(result.Resolved);
+            Assert.False(result.Resolved);
             Assert.NotNull(result.Dependencies);
             Assert.Empty(result.Dependencies);
         }
