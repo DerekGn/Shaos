@@ -52,6 +52,6 @@ namespace Shaos.Services.System
         /// <summary>
         /// The platform for which the runtime was built.
         /// </summary>
-        public string? RuntimeIdentifier { get; internal set; }
+        public string? RuntimeIdentifier { get; init; }
     }
 }

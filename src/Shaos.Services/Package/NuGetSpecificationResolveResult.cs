@@ -32,6 +32,11 @@ namespace Shaos.Services.Package
     /// </summary>
     public record NuGetSpecificationResolveResult
     {
+        public NuGetSpecificationResolveResult(bool resolved)
+        {
+            Resolved = resolved;
+        }
+
         /// <summary>
         /// The set of <see cref="SourcePackageDependencyInfo"/> for the NuGet package
         /// </summary>
@@ -45,6 +50,6 @@ namespace Shaos.Services.Package
         /// <summary>
         /// The <see cref="ResolveStatus"/>
         /// </summary>
-        public ResolveStatus Status { get; set; }
+        public bool Resolved { get; }
     }
 }

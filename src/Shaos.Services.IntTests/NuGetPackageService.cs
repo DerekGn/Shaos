@@ -90,7 +90,7 @@ namespace Shaos.Services.UnitTests.Package
 
             Assert.NotNull(result);
             Assert.NotNull(result.Identity);
-            Assert.Equal(ResolveStatus.Success, result.Status);
+            Assert.True(result.Resolved);
             Assert.NotNull(result.Dependencies);
             Assert.Single(result.Dependencies);
         }
@@ -122,7 +122,7 @@ namespace Shaos.Services.UnitTests.Package
 
             Assert.NotNull(result);
             Assert.Null(result.Identity);
-            Assert.Equal(ResolveStatus.NotFound, result.Status);
+            Assert.True(result.Resolved);
             Assert.NotNull(result.Dependencies);
             Assert.Empty(result.Dependencies);
         }
@@ -133,7 +133,7 @@ namespace Shaos.Services.UnitTests.Package
         {
             Assert.NotNull(result);
             Assert.NotNull(result.Identity);
-            Assert.Equal(ResolveStatus.Success, result.Status);
+            Assert.True(result.Resolved);
             Assert.NotNull(result.Dependencies);
             Assert.Equal(dedpendancyCount, result.Dependencies.Count());
         }

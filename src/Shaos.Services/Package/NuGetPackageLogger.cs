@@ -53,22 +53,22 @@ namespace Shaos.Services.Package
             switch (message.Level)
             {
                 case NuGet.Common.LogLevel.Debug:
-                    _logger.LogDebug(message.Message);
+                    _logger.LogDebug(message.FormatWithCode());
                     break;
                 case NuGet.Common.LogLevel.Verbose:
-                    _logger.LogTrace(message.Message);
+                    _logger.LogTrace(message.FormatWithCode());
                     break;
                 case NuGet.Common.LogLevel.Information:
-                    _logger.LogInformation(message.Message);
+                    _logger.LogInformation(message.FormatWithCode());
                     break;
                 case NuGet.Common.LogLevel.Minimal:
-                    _logger.LogDebug(message.Message);
+                    _logger.LogDebug(message.FormatWithCode());
                     break;
                 case NuGet.Common.LogLevel.Warning:
-                    _logger.LogWarning(message.Message);
+                    _logger.LogWarning(message.FormatWithCode());
                     break;
                 case NuGet.Common.LogLevel.Error:
-                    _logger.LogError(message.Message);
+                    _logger.LogError(message.FormatWithCode());
                     break;
                 default:
                     break;

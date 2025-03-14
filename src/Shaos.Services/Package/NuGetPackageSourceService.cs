@@ -163,10 +163,7 @@ namespace Shaos.Services.Package
                     nuGetSpecification.Version,
                     nuGetSpecification.PreRelease);
 
-                result = new NuGetSpecificationResolveResult()
-                {
-                    Status = ResolveStatus.NotFound
-                };
+                result = new NuGetSpecificationResolveResult(false);
             }
             else
             {
@@ -185,9 +182,8 @@ namespace Shaos.Services.Package
                     resolvedSourcePackages,
                     cancellationToken);
 
-                result = new NuGetSpecificationResolveResult()
+                result = new NuGetSpecificationResolveResult(true)
                 {
-                    Status = ResolveStatus.Success,
                     Identity = packageIdentity
                 };
 

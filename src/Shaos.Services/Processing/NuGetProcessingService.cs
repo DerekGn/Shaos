@@ -44,20 +44,23 @@ namespace Shaos.Services.Processing
             _processingSteps = new Lazy<IList<DownloadProcessingStep>>(InitaliseProcessingSteps);
         }
 
-        public async Task DownloadNuGetAsync(
+        public async Task<DownloadNuGetResult> DownloadNuGetAsync(
             NuGetSpecification specification,
             CancellationToken cancellationToken = default)
         {
-            DownloadNuGetContext downloadNuGetContext = new DownloadNuGetContext(specification);
+            DownloadNuGetContext context = new DownloadNuGetContext(specification);
+            bool result = true;
 
             foreach (var step in _processingSteps.Value)
             {
-                if (!await step.ProcessAsync(downloadNuGetContext, cancellationToken))
+                if (!await step.ProcessAsync(context, cancellationToken))
                 {
+                    result = false;
                     break;
                 }
             }
 
+            return new DownloadNuGetResult(result, context.Downloads);
         }
 
         private async Task<bool> DownloadNuGetPackageAndDependanciesAsync(
@@ -75,11 +78,7 @@ namespace Shaos.Services.Processing
 
                 context.Downloads.Add(downloadResult);
 
-                if (downloadResult.Status == DownloadStatus.Success)
-                {
-                    context.Dependencies.Remove(dependency);
-                }
-                else
+                if (downloadResult.Status != DownloadStatus.Success)
                 {
                     result = false;
                     break;
@@ -114,8 +113,10 @@ namespace Shaos.Services.Processing
                 context.Specification,
                 cancellationToken);
 
-            if (resolvedSpecification != null && resolvedSpecification.Status == ResolveStatus.Success)
+            if (resolvedSpecification != null && resolvedSpecification.Resolved)
             {
+                _logger.LogWarning("Resolved specification: [{Specification}]", context.Specification);
+
                 context.Identity = resolvedSpecification.Identity;
                 context.Dependencies.AddRange(resolvedSpecification.Dependencies);
 

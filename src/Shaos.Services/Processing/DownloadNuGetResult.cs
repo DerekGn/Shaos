@@ -22,20 +22,22 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Package
+using Shaos.Services.Package;
+
+namespace Shaos.Services.Processing
 {
-    /// <summary>
-    /// Represents the result of a NuGet package resolution request
-    /// </summary>
-    public enum ResolveStatus
+    public class DownloadNuGetResult
     {
-        /// <summary>
-        /// Indicates that the NuGet package was resolved successfully
-        /// </summary>
-        Success,
-        /// <summary>
-        /// Indicates that the NuGet package was not found in any of the package sources
-        /// </summary>
-        NotFound
+        public DownloadNuGetResult(
+            bool success,
+            IList<NuGetPackageDownloadResult> downloads)
+        {
+            Success = success;
+            Downloads = downloads;
+        }
+
+        public bool Success { get; }
+
+        public IList<NuGetPackageDownloadResult> Downloads { get; }
     }
 }

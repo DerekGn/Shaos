@@ -28,6 +28,7 @@ using Moq;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime
@@ -35,7 +36,6 @@ namespace Shaos.Services.UnitTests.Runtime
     public class RuntimeServiceTests : BaseTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
-        private readonly ITestOutputHelper _output;
         private readonly RuntimeService _runtimeService;
 
         public RuntimeServiceTests(ITestOutputHelper output) : base(output)
@@ -45,8 +45,6 @@ namespace Shaos.Services.UnitTests.Runtime
             _mockFileStoreService = new Mock<IFileStoreService>();
 
             _runtimeService = new RuntimeService(factory!.CreateLogger<RuntimeService>(), _mockFileStoreService.Object);
-
-            _output = output;
         }
     }
 }

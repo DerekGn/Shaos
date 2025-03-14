@@ -22,15 +22,162 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
+using NuGet.Configuration;
+using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
+using Shaos.Services.Package;
+using Shaos.Services.Processing;
 using Shaos.Services.Shared.Tests;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Processing
 {
     public class NuGetProcessingServiceTests : BaseTests
     {
+        private readonly Mock<INuGetPackageSourceService> _mockNuGetPackageSource;
+        private readonly NuGetProcessingService _nuGetProcessingService;
+
         public NuGetProcessingServiceTests(ITestOutputHelper output) : base(output)
         {
+            var factory = ServiceProvider.GetService<ILoggerFactory>();
+            _mockNuGetPackageSource = new Mock<INuGetPackageSourceService>();
+
+            _nuGetProcessingService = new NuGetProcessingService(
+                factory!.CreateLogger<NuGetProcessingService>(),
+                _mockNuGetPackageSource.Object);
+        }
+
+        [Fact]
+        public async Task TestDownloadNuGetNotDownloadedAsync()
+        {
+            var specification = new NuGetSpecification()
+            {
+                Package = "PACKAGE",
+                PreRelease = false,
+                Version = "1.0.0",
+            };
+
+            var version = new NuGetVersion(specification.Version);
+
+            var resoveResult = new NuGetSpecificationResolveResult(true);
+
+            var packageDependancies = new List<PackageDependency>()
+            {
+                new PackageDependency("Dependency")
+            };
+
+            resoveResult.Dependencies.Add(
+                new SourcePackageDependencyInfo(
+                    specification.Package,
+                    version,
+                    packageDependancies,
+                    true,
+                    new SourceRepository(new PackageSource("source"),
+                    new List<INuGetResourceProvider>())));
+
+            resoveResult.Identity = new PackageIdentity(
+                specification.Package,
+                version);
+
+            _mockNuGetPackageSource.Setup(_ => _.ResolveNuGetSpecificationAsync(
+                It.IsAny<NuGetSpecification>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resoveResult);
+
+            _mockNuGetPackageSource.Setup(_ => _.DownloadPackageDependenciesAsync(
+                It.IsAny<SourcePackageDependencyInfo>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new NuGetPackageDownloadResult()
+                {
+                    Status = DownloadStatus.NotFound
+                });
+
+            var result = await _nuGetProcessingService.DownloadNuGetAsync(specification);
+
+            Assert.NotNull(result);
+            Assert.False(result.Success);
+            Assert.NotEmpty(result.Downloads);
+            Assert.Equal(DownloadStatus.NotFound, result.Downloads.First().Status);
+        }
+
+        [Fact]
+        public async Task TestDownloadNuGetNotResolvedAsync()
+        {
+            var specification = new NuGetSpecification()
+            {
+                Package = "PACKAGE",
+                PreRelease = false,
+                Version = "1.0.0",
+            };
+
+            var resoveResult = new NuGetSpecificationResolveResult(false);
+
+            _mockNuGetPackageSource.Setup(_ => _.ResolveNuGetSpecificationAsync(
+                It.IsAny<NuGetSpecification>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resoveResult);
+
+            var result = await _nuGetProcessingService.DownloadNuGetAsync(specification);
+
+            Assert.NotNull(result);
+            Assert.False(result.Success);
+        }
+
+        [Fact]
+        public async Task TestDownloadNuGetSuccessAsync()
+        {
+            var specification = new NuGetSpecification()
+            {
+                Package = "PACKAGE",
+                PreRelease = false,
+                Version = "1.0.0",
+            };
+
+            var version = new NuGetVersion(specification.Version);
+
+            var resoveResult = new NuGetSpecificationResolveResult(true);
+
+            var packageDependancies = new List<PackageDependency>() 
+            {
+                new PackageDependency("Dependency")
+            };
+
+            resoveResult.Dependencies.Add(
+                new SourcePackageDependencyInfo(
+                    specification.Package,
+                    version,
+                    packageDependancies,
+                    true,
+                    new SourceRepository(new PackageSource("source"),
+                    new List<INuGetResourceProvider>())));
+
+            resoveResult.Identity = new PackageIdentity(
+                specification.Package,
+                version);
+
+            _mockNuGetPackageSource.Setup(_ => _.ResolveNuGetSpecificationAsync(
+                It.IsAny<NuGetSpecification>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(resoveResult);
+
+            _mockNuGetPackageSource.Setup(_ => _.DownloadPackageDependenciesAsync(
+                It.IsAny<SourcePackageDependencyInfo>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new NuGetPackageDownloadResult()
+                {
+                    Status = DownloadStatus.Success
+                });
+
+            var result = await _nuGetProcessingService.DownloadNuGetAsync(specification);
+
+            Assert.NotNull(result);
+            Assert.True(result.Success);
+            Assert.NotEmpty(result.Downloads);
         }
     }
 }

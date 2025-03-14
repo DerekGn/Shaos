@@ -55,6 +55,16 @@ namespace Shaos.Services.UnitTests.System
             var result = _systemService.GetEnvironment();
 
             Assert.NotNull(result);
+            Assert.True(result.Is64BitOperatingSystem);
+            Assert.True(result.Is64BitProcess);
+            Assert.False(result.IsPrivilegedProcess);
+            Assert.NotNull(result.MachineName);
+            Assert.NotNull(result.OSVersion);
+            Assert.NotEqual(0, result.ProcessId);
+            Assert.NotEqual(0, result.ProcessorCount);
+            Assert.NotEqual(0, result.SystemPageSize);
+            Assert.NotNull(result.Version);
+            Assert.NotEqual(0, result.WorkingSet);
         }
 
         [Fact]
@@ -63,6 +73,11 @@ namespace Shaos.Services.UnitTests.System
             var result = _systemService.GetOsInformation();
 
             Assert.NotNull(result);
+            Assert.NotNull(result.FrameworkDescription);
+            Assert.NotNull(result.OsArchitecture);
+            Assert.NotNull(result.OsDescription);
+            Assert.NotNull(result.ProcessArchitecture);
+            Assert.NotNull(result.RuntimeIdentifier);
         }
 
         [Fact]
@@ -71,6 +86,25 @@ namespace Shaos.Services.UnitTests.System
             var result = _systemService.GetProcessInformation();
 
             Assert.NotNull(result);
+            Assert.NotEqual(0, result.BasePriority);
+            Assert.NotEqual(0, result.HandleCount);
+            Assert.NotEqual(0, result.MaxWorkingSet);
+            Assert.NotEqual(0, result.MinWorkingSet);
+            Assert.NotEqual(0, result.NonpagedSystemMemorySize);
+            Assert.NotEqual(0, result.PagedMemorySize);
+            Assert.NotEqual(0, result.PagedSystemMemorySize);
+            Assert.NotEqual(0, result.PeakPagedMemorySize);
+            Assert.NotEqual(0, result.PeakVirtualMemorySize);
+            Assert.NotEqual(0, result.PeakWorkingSet);
+            Assert.NotEqual(0, result.PrivateMemorySize);
+            Assert.NotEqual(0, result.PrivilegedProcessorTime.TotalMilliseconds);
+            Assert.NotNull(result.ProcessName);
+            Assert.NotEqual(0, result.ProcessorAffinity);
+            Assert.NotEqual(0, result.StartTime.Ticks);
+            Assert.NotEqual(0, result.ThreadsCount);
+            Assert.NotEqual(0, result.TotalProcessorTime.TotalMilliseconds);
+            Assert.NotEqual(0, result.UserProcessorTime.TotalMilliseconds);
+            Assert.NotEqual(0, result.VirtualMemorySize);
         }
 
         [Fact]
