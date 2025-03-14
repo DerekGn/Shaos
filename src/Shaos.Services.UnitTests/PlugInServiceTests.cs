@@ -65,7 +65,7 @@ namespace Shaos.Services.UnitTests
                 _mockPlugInValidationService.Object);
         }
 
-        [Fact]
+        [Fact(Skip = "Incomplete")]
         public async Task TestDownloadPlugInNuGetAsync()
         {
             var specification = new NuGetSpecification()

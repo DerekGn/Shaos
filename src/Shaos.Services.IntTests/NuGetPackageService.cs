@@ -51,7 +51,7 @@ namespace Shaos.Services.UnitTests.Package
                 options);
         }
 
-        [Fact(Skip = "Not implemented")]
+        [Fact]
         public async Task TestDownloadPackageDependenciesSuccessAsync()
         {
             var nuGetSpecification = new NuGetSpecification()
