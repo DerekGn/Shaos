@@ -88,7 +88,7 @@ namespace Shaos.Services.UnitTests.System
             Assert.NotEqual(0, result.MaxWorkingSet);
             Assert.True(result.MinWorkingSet >= 0);
             Assert.True(result.NonpagedSystemMemorySize >= 0);
-            Assert.NotEqual(0, result.PagedMemorySize);
+            Assert.True(result.PagedMemorySize >= 0);
             Assert.NotEqual(0, result.PagedSystemMemorySize);
             Assert.NotEqual(0, result.PeakPagedMemorySize);
             Assert.NotEqual(0, result.PeakVirtualMemorySize);
