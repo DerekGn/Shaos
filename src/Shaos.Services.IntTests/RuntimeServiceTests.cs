@@ -27,7 +27,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
-using Shaos.Services.Options;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using Xunit;

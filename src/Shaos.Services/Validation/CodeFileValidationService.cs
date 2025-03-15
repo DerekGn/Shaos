@@ -29,7 +29,7 @@ namespace Shaos.Services.Validation
     public class CodeFileValidationService : ICodeFileValidationService
     {
         internal const string ContentType = "application/octet-stream";
-        private readonly string[] permittedExtensions = { ".nupkg" };
+        private readonly string[] permittedExtensions = { ".zip" };
 
         public FileValidationResult ValidateFile(IFormFile formFile)
         {

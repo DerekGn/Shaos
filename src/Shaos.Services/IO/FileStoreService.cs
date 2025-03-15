@@ -24,7 +24,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shaos.Services.Options;
 
 namespace Shaos.Services.IO
 {
@@ -41,75 +40,73 @@ namespace Shaos.Services.IO
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
+        ///// <inheritdoc/>
+        //public void DeletePlugInPackageFolder(int plugInId)
+        //{
+        //    var packageFolder = Path.Combine(_options.Value.PlugInArchivesPath, plugInId.ToString());
+
+        //    if (!Directory.Exists(packageFolder))
+        //    {
+        //        _logger.LogDebug("Deleting folder [{Folder}]", packageFolder);
+        //        Directory.Delete(packageFolder, true);
+        //    }
+        //    else
+        //    {
+        //        _logger.LogDebug("Folder [{Folder}] Does Not Exist", packageFolder);
+        //    }
+        //}
+
+        ///// <inheritdoc/>
+        //public Stream? GetNuGetPackageStream(int id, string fileName)
+        //{
+        //    Stream? stream = null;
+
+        //    var nugetFilePath = GetPlugInNuGetPackagePath(id, fileName);
+
+        //    if (Path.Exists(nugetFilePath))
+        //    {
+        //        _logger.LogDebug("Opening File Stream: [{File}]", nugetFilePath);
+        //        stream = File.Open(nugetFilePath, FileMode.Open, FileAccess.Read);
+        //    }
+        //    else
+        //    {
+        //        _logger.LogWarning("File not Found [{File}]", nugetFilePath);
+        //    }
+
+        //    return stream;
+        //}
+
+        ///// <inheritdoc/>
+        //public string GetPlugInNuGetPackagePath(int id, string fileName)
+        //{
+        //    var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, id.ToString());
+
+        //    return Path.Combine(packageFolder, fileName);
+        //}
+
         /// <inheritdoc/>
-        public void DeletePlugInPackageFolder(int plugInId)
-        {
-            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, plugInId.ToString());
-
-            if (!Directory.Exists(packageFolder))
-            {
-                _logger.LogDebug("Deleting folder [{Folder}]", packageFolder);
-                Directory.Delete(packageFolder, true);
-            }
-            else
-            {
-                _logger.LogDebug("Folder [{Folder}] Does Not Exist", packageFolder);
-            }
-        }
-
-        /// <inheritdoc/>
-        public Stream? GetNuGetPackageStream(int id, string fileName)
-        {
-            Stream? stream = null;
-
-            var nugetFilePath = GetPlugInNuGetPackagePath(id, fileName);
-
-            if (Path.Exists(nugetFilePath))
-            {
-                _logger.LogDebug("Opening File Stream: [{File}]", nugetFilePath);
-                stream = File.Open(nugetFilePath, FileMode.Open, FileAccess.Read);
-            }
-            else
-            {
-                _logger.LogWarning("File not Found [{File}]", nugetFilePath);
-            }
-
-            return stream;
-        }
-
-        /// <inheritdoc/>
-        public string GetPlugInNuGetPackagePath(int id, string fileName)
-        {
-            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, id.ToString());
-
-            return Path.Combine(packageFolder, fileName);
-        }
-
-        /// <inheritdoc/>
-        public async Task<string?> WritePlugInNuGetPackageFileStreamAsync(
+        public async Task<string?> WritePlugInArchiveFileStreamAsync(
             int plugInId,
             string fileName,
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, plugInId.ToString());
-
-            if (!Directory.Exists(packageFolder))
+            if (!Directory.Exists(_options.Value.PlugInArchivesPath))
             {
-                _logger.LogDebug("Creating folder [{Folder}]", packageFolder);
+                _logger.LogDebug("Creating folder [{Folder}]", _options.Value.PlugInArchivesPath);
 
-                Directory.CreateDirectory(packageFolder);
+                Directory.CreateDirectory(_options.Value.PlugInArchivesPath);
             }
 
-            _logger.LogInformation("Writing File: [{File}] To [{Folder}]", packageFolder, packageFolder);
+            _logger.LogInformation("Writing File: [{File}] To [{Folder}]", fileName, _options.Value.PlugInArchivesPath);
 
-            var nugetFilePath = Path.Combine(packageFolder, fileName);
+            var archiveFilePath = Path.Combine(_options.Value.PlugInArchivesPath, fileName);
 
-            using var outputStream = File.Open(nugetFilePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var outputStream = File.Open(archiveFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 
             await stream.CopyToAsync(outputStream, cancellationToken);
 
-            return nugetFilePath;
+            return archiveFilePath;
         }
     }
 }

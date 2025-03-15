@@ -29,15 +29,15 @@ namespace Shaos.Services.IO
     /// </summary>
     public interface IFileStoreService
     {
-        /// <summary>
-        /// Deletes a <see cref="PlugIn"/> package folder
-        /// </summary>
-        /// <param name="plugInId">The <see cref="PlugIn"/> identifier</param>
-        void DeletePlugInPackageFolder(int plugInId);
+        ///// <summary>
+        ///// Deletes a <see cref="PlugIn"/> package folder
+        ///// </summary>
+        ///// <param name="plugInId">The <see cref="PlugIn"/> identifier</param>
+        //void DeletePlugInPackageFolder(int plugInId);
 
-        Stream? GetNuGetPackageStream(int id, string fileName);
+        //Stream? GetNuGetPackageStream(int id, string fileName);
 
-        string GetPlugInNuGetPackagePath(int id, string fileName);
+        //string GetPlugInNuGetPackagePath(int id, string fileName);
 
         /// <summary>
         /// Write the contents of a stream to a <paramref name="folder"/> <paramref name="fileName"/> combination
@@ -47,7 +47,7 @@ namespace Shaos.Services.IO
         /// <param name="stream">The stream to be written to the <paramref name="folder"/> <paramref name="fileName"/> combination</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string?> WritePlugInNuGetPackageFileStreamAsync(
+        Task<string?> WritePlugInArchiveFileStreamAsync(
             int plugInId,
             string fileName,
             Stream stream,

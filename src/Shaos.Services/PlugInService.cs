@@ -23,8 +23,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using NuGet.Packaging;
-using NuGet.Versioning;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
@@ -83,11 +81,11 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-#warning Check if plugin used and delete plugin package
+#warning Check if plugin used and delete plugin archive and files
             _logger.LogInformation("PlugIn [{Id}] Deleting", id);
 
             // Delete code and compiled assembly files
-            _fileStoreService.DeletePlugInPackageFolder(id);
+            //_fileStoreService.DeletePlugInPackageFolder(id);
 
             await _store.DeleteAsync<PlugIn>(id, cancellationToken);
         }
@@ -157,7 +155,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task UploadPlugInNuGetAsync(
+        public async Task UploadPlugInArchiveAsync(
             int id,
             string fileName,
             Stream stream,
@@ -169,13 +167,11 @@ namespace Shaos.Services
                     id,
                     fileName);
 
-                var filePath = await _fileStoreService.WritePlugInNuGetPackageFileStreamAsync(
+                var filePath = await _fileStoreService.WritePlugInArchiveFileStreamAsync(
                     plugIn.Id,
                     fileName,
                     stream,
                     cancellationToken);
-
-                var version = GetNuGetPackageVersion(filePath);
 
                 //if (plugIn.NuGetPackage == null)
                 //{
@@ -195,15 +191,6 @@ namespace Shaos.Services
             },
             true,
             cancellationToken);
-        }
-
-        private static NuGetVersion GetNuGetPackageVersion(string? filePath)
-        {
-            using FileStream inputStream = new FileStream(filePath, FileMode.Open);
-            using PackageArchiveReader reader = new PackageArchiveReader(inputStream);
-            NuspecReader nuspec = reader.NuspecReader;
-
-            return nuspec.GetVersion();
         }
 
         private async Task ExecutePlugInOperationAsync(

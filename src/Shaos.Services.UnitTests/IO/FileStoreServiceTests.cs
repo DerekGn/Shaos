@@ -26,7 +26,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
-using Shaos.Services.Options;
 using Shaos.Services.Shared.Tests;
 using Xunit.Abstractions;
 

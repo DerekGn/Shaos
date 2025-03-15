@@ -34,7 +34,6 @@ using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
-using Shaos.Services.Options;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Shaos.Services.System;
@@ -136,7 +135,6 @@ namespace Shaos
             builder.Services.AddMemoryCache();
 
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
-            builder.Services.Configure<NuGetPackageServiceOptions>(builder.Configuration.GetSection(nameof(NuGetPackageServiceOptions)));
 
             var app = builder.Build();
             var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();

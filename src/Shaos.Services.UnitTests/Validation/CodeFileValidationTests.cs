@@ -32,6 +32,8 @@ namespace Shaos.Services.UnitTests.Validation
     public class CodeFileValidationTests
     {
         private const string ContentType = "application/octet-stream";
+        private const string FileName = "filename.zip";
+
         private readonly CodeFileValidationService _codeFileValidationService;
         private Mock<IFormFile> _mockFile;
 
@@ -39,16 +41,6 @@ namespace Shaos.Services.UnitTests.Validation
         {
             _codeFileValidationService = new CodeFileValidationService();
             _mockFile = new Mock<IFormFile>();
-        }
-
-        [Fact]
-        public void TestValidateFileInvalidFileName()
-        {
-            _mockFile.Setup(_ => _.FileName).Returns(string.Empty);
-
-            var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
-
-            Assert.Equal(FileValidationResult.FileNameEmpty, result);
         }
 
         [Fact]
@@ -63,6 +55,15 @@ namespace Shaos.Services.UnitTests.Validation
         }
 
         [Fact]
+        public void TestValidateFileInvalidFileName()
+        {
+            _mockFile.Setup(_ => _.FileName).Returns(string.Empty);
+
+            var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
+
+            Assert.Equal(FileValidationResult.FileNameEmpty, result);
+        }
+        [Fact]
         public void TestValidateFileInvalidFileType()
         {
             _mockFile.Setup(_ => _.FileName).Returns("filename.exe");
@@ -76,7 +77,7 @@ namespace Shaos.Services.UnitTests.Validation
         [Fact]
         public void TestValidateFileInvalidLength()
         {
-            _mockFile.Setup(_ => _.FileName).Returns("filename.nupkg");
+            _mockFile.Setup(_ => _.FileName).Returns(FileName);
             _mockFile.Setup(_ => _.ContentType).Returns(ContentType);
             _mockFile.Setup(_ => _.Length).Returns(0);
 
@@ -88,7 +89,7 @@ namespace Shaos.Services.UnitTests.Validation
         [Fact]
         public void TestValidateFileValid()
         {
-            _mockFile.Setup(_ => _.FileName).Returns("filename.nupkg");
+            _mockFile.Setup(_ => _.FileName).Returns(FileName);
             _mockFile.Setup(_ => _.ContentType).Returns(ContentType);
             _mockFile.Setup(_ => _.Length).Returns(10);
             

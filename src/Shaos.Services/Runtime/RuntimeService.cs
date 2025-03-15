@@ -23,7 +23,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using NuGet.Packaging;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
 
@@ -124,21 +123,6 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private async Task LoadNuGetPackageDependanciesAsync(int id, NuGetPackage? nuGetPackage, CancellationToken cancellationToken = default)
-        {
-            using var stream = _fileStoreService.GetNuGetPackageStream(id, nuGetPackage.FileName);
-
-            if(stream != null)
-            {
-                using PackageArchiveReader reader = new PackageArchiveReader(stream);
-                var nuspecReader = await reader.GetNuspecReaderAsync(cancellationToken);
-
-                if (nuspecReader != null)
-                {
-                }
-            }
-        }
-
         private async Task StartExecutingInstanceAsync(
             PlugInInstance plugInInstance,
             ExecutingInstance executingInstance,
@@ -147,10 +131,6 @@ namespace Shaos.Services.Runtime
             _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}]",
                 plugInInstance.Id,
                 plugInInstance.Name);
-
-            //LoadNuGetPackageDependanciesAsync(plugInInstance.PlugIn.Id, plugInInstance.PlugIn.NuGetPackage);
-
-            //load and
         }
 
         private async Task StopExecutingInstanceAsync(

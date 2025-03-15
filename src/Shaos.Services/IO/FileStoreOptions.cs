@@ -22,27 +22,16 @@
 * SOFTWARE.
 */
 
-using System.ComponentModel.DataAnnotations;
-
-namespace Shaos.Services.Options
+namespace Shaos.Services.IO
 {
-    public class NuGetPackageServiceOptions
+    /// <summary>
+    /// The file store options
+    /// </summary>
+    public record FileStoreOptions
     {
-        public string FrameworkFolder { get; init; } = "net8.0";
-
         /// <summary>
-        /// The folder to which packages will be downloaded too.
+        /// The store path where PlugIn archives will be storeed
         /// </summary>
-        [Required]
-        public required string PackageFolder { get; init; }
-
-        /// <summary>
-        /// The list of package sources to resolve nuget packages
-        /// </summary>
-        [Required]
-        public required IList<Uri> PackageSources { get; init; } = new List<Uri>()
-        {
-            new Uri("https://api.nuget.org/v3/index.json")
-        };
+        public required string PlugInArchivesPath { get; init; }
     }
 }
