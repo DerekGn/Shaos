@@ -26,8 +26,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
-using Shaos.Services.Package;
-using Shaos.Services.Processing;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using Shaos.Services.Store;
@@ -38,11 +36,7 @@ namespace Shaos.Services.UnitTests
 {
     public class PlugInServiceTests : BaseTests
     {
-        private const string PackageName = "Package";
-        private const string PackageVersion = "1.0.0";
-
         private readonly Mock<IFileStoreService> _mockFileStoreService;
-        private readonly Mock<INuGetProcessingService> _mockNuGetProcessingService;
         private readonly Mock<IPlugInValidationService> _mockPlugInValidationService;
         private readonly Mock<IRuntimeService> _mockRuntimeService;
         private readonly Mock<IStore> _mockStore;
@@ -51,7 +45,6 @@ namespace Shaos.Services.UnitTests
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockNuGetProcessingService = new Mock<INuGetProcessingService>();
             _mockPlugInValidationService = new Mock<IPlugInValidationService>();
             _mockRuntimeService = new Mock<IRuntimeService>();
             _mockStore = new Mock<IStore>();
@@ -61,50 +54,7 @@ namespace Shaos.Services.UnitTests
                 _mockStore.Object,
                 _mockRuntimeService.Object,
                 _mockFileStoreService.Object,
-                _mockNuGetProcessingService.Object,
                 _mockPlugInValidationService.Object);
-        }
-
-        [Fact(Skip = "Incomplete")]
-        public async Task TestDownloadPlugInNuGetAsync()
-        {
-            var specification = new NuGetSpecification()
-            {
-                Id = PackageName,
-                Version = PackageVersion
-            };
-
-            var packageDownloadResult = new PackageDownload(
-                new PackageSpecification(PackageName, PackageVersion));
-
-            packageDownloadResult.ExtractedFiles.Add("C:\\NONEXISTANT\\lib\\plugin.dll");
-            packageDownloadResult.ExtractedFiles.Add("C:\\NONEXISTANT\\x.nuspec");
-
-            var downloads = new List<PackageDownload>()
-            {
-                packageDownloadResult
-            };
-
-            var downloadResult = new DownloadNuGetResult(true, downloads);
-
-            _mockStore.Setup(_ => _.GetPlugInByIdAsync(
-                It.IsAny<int>(),
-                It.IsAny<bool>(),
-                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugIn());
-
-            _mockNuGetProcessingService.Setup(_ => _.DownloadNuGetAsync(
-                It.IsAny<NuGetSpecification>(),
-                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(downloadResult);
-
-            _mockPlugInValidationService.Setup(_ => _.ValidatePlugIn(It.IsAny<String>()))
-                .Returns(true);
-
-            var result = await _plugInService.DownloadPlugInNuGetAsync(1, specification);
-
-            Assert.NotNull(result);
-            Assert.Equal(DownloadPlugInNuGetStatus.Success, result.Status);
         }
     }
 }

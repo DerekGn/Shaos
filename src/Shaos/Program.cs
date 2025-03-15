@@ -35,8 +35,6 @@ using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
 using Shaos.Services.Options;
-using Shaos.Services.Package;
-using Shaos.Services.Processing;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Shaos.Services.System;
@@ -129,8 +127,6 @@ namespace Shaos
 
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<INuGetPackageSourceService, NuGetPackageSourceService>();
-            builder.Services.AddSingleton<INuGetProcessingService, NuGetProcessingService>();
             builder.Services.AddSingleton<IPlugInValidationService, PlugInValidationService>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
