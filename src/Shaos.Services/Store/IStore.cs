@@ -94,16 +94,6 @@ namespace Shaos.Services.Store
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Get a <see cref="PlugIn"/> instance by its name
-        /// </summary>
-        /// <param name="name">The name of the <see cref="PlugIn"/> to search for</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="PlugIn"/> if found</returns>
-        Task<PlugIn?> GetPlugInByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Get a <see cref="PlugInInstance"/> by its identifier
         /// </summary>
         /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
@@ -111,16 +101,6 @@ namespace Shaos.Services.Store
         /// <returns>The <see cref="PlugInInstance"/> if found</returns>
         Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
             int id,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get a <see cref="PlugInInstance"/> instance by its name
-        /// </summary>
-        /// <param name="name">The name of the <see cref="PlugInInstance"/> to search for</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="PlugInInstance"/> if found</returns>
-        Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
-            string name,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -159,12 +139,24 @@ namespace Shaos.Services.Store
         /// <param name="filePath">The fully qualified file path to the PlugIn assembly</param>
         /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
         Task UpdatePlugInPackageAsync(
             PlugIn plugIn,
             string fileName,
             string filePath,
             string version,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update a <see cref="PlugInInstance"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
+        /// <param name="name">The updated name for the <see cref="PlugInInstance"/></param>
+        /// <param name="description">The updated description of the <see cref="PlugInInstance"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task UpdatePlugInInstanceAsync(
+            int id,
+            string name,
+            string? description,
+            CancellationToken cancellationToken);
     }
 }

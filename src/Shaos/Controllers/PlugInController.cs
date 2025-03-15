@@ -27,6 +27,7 @@ using Microsoft.Extensions.Primitives;
 using Shaos.Api.Model.v1;
 using Shaos.Extensions;
 using Shaos.Services;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Store;
 using Shaos.Services.Validation;
 using Swashbuckle.AspNetCore.Annotations;
@@ -76,20 +77,24 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("A PlugIn create", Required = true)] Api.Model.v1.CreatePlugIn create,
             CancellationToken cancellationToken)
         {
-            if (await Store.GetPlugInByNameAsync(create.Name, cancellationToken) != null)
+            var createModel = create.ToModel();
+
+            var id = 0;
+            
+            try
+            {
+                id = await Store.CreatePlugInAsync(
+                    createModel.Name,
+                    createModel.Description,
+                    cancellationToken);
+
+                return Ok(id);
+            }
+            catch (PlugInNameExistsException)
             {
                 return base.Conflict(CreateProblemDetails(
                     HttpStatusCode.Conflict,
                     $"A PlugIn with name [{create.Name}] already exists"));
-            }
-            else
-            {
-                var createModel = create.ToModel();
-
-                return Ok(await Store.CreatePlugInAsync(
-                    createModel.Name,
-                    createModel.Description,
-                    cancellationToken));
             }
         }
 
@@ -109,18 +114,22 @@ namespace Shaos.Controllers
         {
             return await GetPlugInOperationAsync(id, async (plugIn, CancellationToken) =>
             {
-                if (await Store.GetPlugInInstanceByNameAsync(create.Name, cancellationToken) != null)
+                var id = 0;
+
+                try
+                {
+                    id = await PlugInService.CreatePlugInInstanceAsync(
+                        plugIn.Id,
+                        create.ToModel(),
+                        cancellationToken);
+
+                    return Ok(id);
+                }
+                catch (PlugInInstanceNameExistsException)
                 {
                     return base.Conflict(CreateProblemDetails(
                         HttpStatusCode.Conflict,
-                        $"A PlugIn Instance with name [{create.Name}] already exists"));
-                }
-                else
-                {
-                    return Ok(await PlugInService.CreatePlugInInstanceAsync(
-                            plugIn.Id,
-                            create.ToModel(),
-                            cancellationToken));
+                        $"A PlugInInstance with name [{create.Name}] already exists"));
                 }
             },
             cancellationToken);
@@ -239,30 +248,25 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInApi update,
             CancellationToken cancellationToken)
         {
-            var plugIn = await Store.GetPlugInByIdAsync(id);
-
-            if(plugIn == null)
+            try
             {
-                return NotFound();
-            }
-            else
-            {
-                var updatedPlugIn = await Store.UpdatePlugInAsync(
+                await Store.UpdatePlugInAsync(
                     id,
                     update.Name,
                     update.Description,
                     cancellationToken);
 
-                if(updatedPlugIn == null)
-                {
-                    return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugIn with name [{update.Name}] already exists"));
-                }
-                else
-                {
 #warning how to map the content location to correct version url
-                    Response.Headers.ContentLocation = new StringValues($"/api/v1/plugins/{id}");
-                    return NoContent();
-                }
+                Response.Headers.ContentLocation = new StringValues($"/api/v1/plugins/{id}");
+                return NoContent();
+            }
+            catch (PlugInNameExistsException)
+            {
+                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugIn with name [{update.Name}] already exists"));
+            }
+            catch (PlugInNotFoundException)
+            {
+                return NotFound();
             }
         }
 
@@ -279,12 +283,24 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInInstanceApi update,
             CancellationToken cancellationToken)
         {
-            await PlugInService.UpdatePlugInInstanceAsync(
-                id,
-                update.ToModel(),
-                cancellationToken);
+            try
+            {
+                await Store.UpdatePlugInInstanceAsync(
+                    id,
+                    update.Name,
+                    update.Description,
+                    cancellationToken);
 
-            return Accepted();
+                return Accepted();
+            }
+            catch (PlugInInstanceNameExistsException)
+            {
+                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugInInstance with name [{update.Name}] already exists"));
+            }
+            catch (PlugInInstanceNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPut("{id}/upload")]

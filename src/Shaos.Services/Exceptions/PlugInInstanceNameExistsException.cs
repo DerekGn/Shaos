@@ -24,23 +24,22 @@
 
 namespace Shaos.Services.Exceptions
 {
-    public class PlugInNotFoundException : Exception
+
+    public class PlugInInstanceNameExistsException : Exception
     {
-        public PlugInNotFoundException(int id)
+        public PlugInInstanceNameExistsException(string name)
         {
-            Id = id;
+            Name = name;
+        }
+        public PlugInInstanceNameExistsException(string name, string message) : base(message)
+        {
+            Name = name;
+        }
+        public PlugInInstanceNameExistsException(string name, string message, Exception inner) : base(message, inner)
+        {
+            Name = name;
         }
 
-        public PlugInNotFoundException(int id, string message) : base(message)
-        {
-            Id = id;
-        }
-
-        public PlugInNotFoundException(int id, string message, Exception inner) : base(message, inner)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        public string? Name { get; }
     }
 }

@@ -257,7 +257,7 @@ namespace Shaos.Services
             else
             {
                 _logger.LogWarning("PlugIn: [{Id}] not found", id);
-                throw new PlugInNotFoundException($"PlugIn: [{id}] not found");
+                throw new PlugInNotFoundException(id, $"PlugIn: [{id}] not found");
             }
         }
 

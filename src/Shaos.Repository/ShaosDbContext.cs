@@ -97,11 +97,12 @@ namespace Shaos.Repository
             modelBuilder
                 .Entity<PlugIn>()
                 .HasIndex(_ => _.Name )
-                .HasDatabaseName("IX_PlugIn_Name_Ascending");
+                .HasDatabaseName("IX_PlugIn_Name_Ascending")
+                .IsUnique(true);
 
             modelBuilder.Entity<Package>()
                 .HasKey(_ => _.Id)
-                .HasName("PrimaryKey_NuGetId");
+                .HasName("PrimaryKey_PackageId");
 
             modelBuilder
                 .Entity<Package>()
@@ -133,8 +134,15 @@ namespace Shaos.Repository
 
             modelBuilder
                .Entity<PlugInInstance>()
+               .Property(_ => _.Description)
+               .IsRequired(false)
+               .HasMaxLength(ModelConstants.MaxDescriptionLength);
+
+            modelBuilder
+               .Entity<PlugInInstance>()
                .HasIndex(_ => _.Name)
-               .HasDatabaseName("IX_PlugInInstance_Name_Ascending");
+               .HasDatabaseName("IX_PlugInInstance_Name_Ascending")
+               .IsUnique(true);
         }
     }
 }
