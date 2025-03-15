@@ -34,11 +34,6 @@ namespace Shaos.Repository.Models
         /// </summary>
         public const int MaxFilePathLength = 40;
 
-        ///// <summary>
-        ///// The maximum file path length
-        ///// </summary>
-        //public const int MaxFilePathLength = 100;
-
         /// <summary>
         /// The maximum description length
         /// </summary>

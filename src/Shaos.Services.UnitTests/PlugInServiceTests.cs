@@ -105,6 +105,7 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<PlugIn>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
                 Times.Never);
         }
@@ -137,6 +138,7 @@ namespace Shaos.Services.UnitTests
 
             _mockStore.Verify(_ => _.CreatePlugInPackageAsync(
                 It.IsAny<PlugIn>(),
+                It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
@@ -194,6 +196,7 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<PlugIn>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
         }
@@ -239,6 +242,7 @@ namespace Shaos.Services.UnitTests
 
             _mockStore.Verify(_ => _.CreatePlugInPackageAsync(
                 It.IsAny<PlugIn>(),
+                It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),

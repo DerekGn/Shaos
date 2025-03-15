@@ -98,16 +98,19 @@ namespace Shaos.Services.Store
         /// <inheritdoc/>
         public async Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
+            string fileName,
             string filePath,
             string version,
             CancellationToken cancellationToken = default)
         {
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
             filePath.ThrowIfNullOrEmpty(nameof(filePath));
             version.ThrowIfNullOrEmpty(nameof(version));
 
             var package = new Package()
             {
-                FilePath = filePath,
+                FileName = fileName,
+                AssemblyFile = filePath,
                 PlugIn = plugIn,
                 PlugInId = plugIn.Id,
                 Version = version
@@ -248,10 +251,23 @@ namespace Shaos.Services.Store
         /// <inheritdoc/>
         public async Task UpdatePlugInPackageAsync(
             PlugIn plugIn,
+            string fileName,
             string filePath,
             string version,
             CancellationToken cancellationToken = default)
         {
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+            filePath.ThrowIfNullOrEmpty(nameof(filePath));
+            version.ThrowIfNullOrEmpty(nameof(version));
+
+            if(plugIn.Package != null)
+            {
+                plugIn.Package.FileName = fileName;
+                plugIn.Package.AssemblyFile = filePath;
+                plugIn.Package.Version = version;
+
+                await _context.SaveChangesAsync(cancellationToken);
+            }
         }
     }
 }

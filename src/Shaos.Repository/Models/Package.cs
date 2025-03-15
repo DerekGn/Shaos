@@ -37,7 +37,7 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The file name of the <see cref="Package"/>
         /// </summary>
-        public string FilePath { get; set; } = string.Empty;
+        public string FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// The version of the <see cref="Package"/>

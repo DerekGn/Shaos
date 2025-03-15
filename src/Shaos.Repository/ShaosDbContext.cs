@@ -105,8 +105,14 @@ namespace Shaos.Repository
 
             modelBuilder
                 .Entity<Package>()
-                .Property(_ => _.FilePath)
+                .Property(_ => _.AssemblyFile)
                 .HasMaxLength(ModelConstants.MaxFilePathLength)
+                .IsRequired();
+
+            modelBuilder
+                .Entity<Package>()
+                .Property(_ => _.FileName)
+                .HasMaxLength(ModelConstants.MaxNameLength)
                 .IsRequired();
 
             modelBuilder

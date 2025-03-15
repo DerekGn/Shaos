@@ -35,7 +35,7 @@ namespace Shaos.Extensions
             {
                 AssemblyFile = package.AssemblyFile,
                 CreatedDate = package.CreatedDate,
-                FilePath = package.FilePath,
+                FilePath = package.FileName,
                 Id = package.Id,
                 UpdatedDate = package.UpdatedDate,
                 Version = package.Version

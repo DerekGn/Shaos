@@ -62,12 +62,14 @@ namespace Shaos.Services.Store
         /// Create a new <see cref="Package"/> instance
         /// </summary>
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
-        /// <param name="filePath">The fully qualified <see cref="Package"/> file path</param>
-        /// <param name="version">The <see cref="Package"/> version</param>
+        /// <param name="filename">The file name of the <see cref="Package"/></param>
+        /// <param name="filePath">The fully qualified file path to the PlugIn assembly</param>
+        /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="Package"/> identifier</returns>
         Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
+            string fileName,
             string filePath,
             string version,
             CancellationToken cancellationToken = default);
@@ -149,8 +151,18 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
+        /// <param name="filename">The file name of the <see cref="Package"/></param>
+        /// <param name="filePath">The fully qualified file path to the PlugIn assembly</param>
+        /// <param name="version">The <see cref="Package"/> assembly version</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
         Task UpdatePlugInPackageAsync(
             PlugIn plugIn,
+            string fileName,
             string filePath,
             string version,
             CancellationToken cancellationToken = default);

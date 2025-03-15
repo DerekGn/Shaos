@@ -180,7 +180,12 @@ namespace Shaos.Services
                         }
                         else
                         {
-                            await CreateOrUpdatePlugInPackageAsync(plugIn, plugInFile, version, cancellationToken);
+                            await CreateOrUpdatePlugInPackageAsync(
+                                plugIn,
+                                fileName,
+                                plugInFile,
+                                version,
+                                cancellationToken);
                         }
                     }
                     else
@@ -199,6 +204,7 @@ namespace Shaos.Services
 
         private async Task CreateOrUpdatePlugInPackageAsync(
             PlugIn plugIn,
+            string fileName,
             string filePath,
             string version,
             CancellationToken cancellationToken)
@@ -212,6 +218,7 @@ namespace Shaos.Services
 
                 await _store.CreatePlugInPackageAsync(
                     plugIn,
+                    fileName,
                     filePath,
                     version,
                     cancellationToken);
@@ -225,6 +232,7 @@ namespace Shaos.Services
 
                 await _store.UpdatePlugInPackageAsync(
                     plugIn,
+                    fileName,
                     filePath,
                     version,
                     cancellationToken);
