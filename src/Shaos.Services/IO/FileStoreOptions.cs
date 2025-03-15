@@ -37,6 +37,6 @@ namespace Shaos.Services.IO
         /// <summary>
         /// The store path where PlugIn package binaries will be stored
         /// </summary>
-        public required string PackageBinariesPath { get; init; }
+        public required string BinariesPath { get; init; }
     }
 }

@@ -30,6 +30,7 @@ using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
+using System;
 
 namespace Shaos.Services
 {
@@ -169,6 +170,7 @@ namespace Shaos.Services
                         var files = _fileStoreService
                             .ExtractPackage(fileName, plugIn.Id.ToString())
                             .Where(_ => Path.GetExtension(_) == ".dll")
+                            .Where(_ => !string.Equals(_, "Shaos.Sdk.dll", StringComparison.OrdinalIgnoreCase))
                             .ToList();
 
                         if (!ValidPlugInFound(files, out var plugInFile, out var version))
@@ -189,7 +191,7 @@ namespace Shaos.Services
                     }
                 }
             },
-            true,
+            false,
             cancellationToken);
 
             return result;

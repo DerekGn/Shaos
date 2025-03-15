@@ -84,19 +84,6 @@ Content-Type: application/json
   "name": "string",
   "description": "Updated Description"
 }
-###
-
-# 
-PUT {{HostAddress}}/api/v1/plugins/{{PlugInId}}/nuget/download
-#Authorization: Bearer {{accessToken}}
-Accept: application/json
-Content-Type: application/json
-
-{
-  "package": "HexIO",
-  "preRelease": false,
-  "version": "5.0.1"
-}
 
 ###
 

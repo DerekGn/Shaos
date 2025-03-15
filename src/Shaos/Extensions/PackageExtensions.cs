@@ -22,21 +22,23 @@
 * SOFTWARE.
 */
 
-using ExecutingInstanceApi = Shaos.Api.Model.v1.ExecutingInstance;
-using ExecutinginstanceService = Shaos.Services.Runtime.ExecutingInstance;
-
-#warning TODO updated enumeration mapping
+using PackageApi = Shaos.Api.Model.v1.Package;
+using PlugInModel = Shaos.Repository.Models.Package;
 
 namespace Shaos.Extensions
 {
-    internal static class ExecutingPlugInExtension
+    internal static class PackageExtensions
     {
-        internal static ExecutingInstanceApi ToApi(this ExecutinginstanceService executingInstance)
+        internal static PackageApi ToApi(this PlugInModel package)
         {
-            return new ExecutingInstanceApi()
+            return new PackageApi()
             {
-                Id = executingInstance.Id,
-                Status = (Api.Model.v1.ExecutionState)executingInstance.State
+                AssemblyFile = package.AssemblyFile,
+                CreatedDate = package.CreatedDate,
+                FilePath = package.FilePath,
+                Id = package.Id,
+                UpdatedDate = package.UpdatedDate,
+                Version = package.Version
             };
         }
     }

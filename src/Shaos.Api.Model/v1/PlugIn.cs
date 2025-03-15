@@ -40,9 +40,9 @@ namespace Shaos.Api.Model.v1
         public string? Description { get; init; }
 
         /// <summary>
-        /// The set of <see cref="NuGetPackage"/> associated with this <see cref="PlugIn"/>
+        /// The <see cref="Package"/> associated with this <see cref="PlugIn"/>
         /// </summary>
-        public NuGetPackage? NuGetPackage { get; init; }
+        public Package? Package { get; init; }
 
         /// <summary>
         /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugIn"/>

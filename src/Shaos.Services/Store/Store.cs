@@ -109,7 +109,8 @@ namespace Shaos.Services.Store
             {
                 FilePath = filePath,
                 PlugIn = plugIn,
-                PlugInId = plugIn.Id
+                PlugInId = plugIn.Id,
+                Version = version
             };
 
             plugIn.Package = package;

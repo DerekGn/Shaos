@@ -25,18 +25,23 @@
 namespace Shaos.Api.Model.v1
 {
     /// <summary>
-    /// Represents a code file that implements a <see cref="PlugIn"/> functionality
+    /// Represents a package
     /// </summary>
-    public record NuGetPackage : Base
+    public record Package : Base
     {
         /// <summary>
-        /// The file name of the <see cref="NuGetPackage"/>
+        /// The fully qualified path to the PlugIn assembly extracted from the package
         /// </summary>
-        public required string FileName { get; init; }
+        public string AssemblyFile { get; set; } = string.Empty;
 
         /// <summary>
-        /// The version of the <see cref="NuGetPackage"/>
+        /// The file name of the <see cref="Package"/>
         /// </summary>
-        public required string Version { get; init; }
+        public string FilePath { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The version of the <see cref="Package"/>
+        /// </summary>
+        public string Version { get; init; } = string.Empty;
     }
 }

@@ -48,9 +48,10 @@ namespace Shaos.Services.IO
             sourcePackage.ThrowIfNullOrEmpty(nameof(sourcePackage));
             targetFolder.ThrowIfNullOrEmpty(nameof(targetFolder));
 
-            var targetPath = Path.Combine(_options.Value.PackagesPath, targetFolder);
+            var sourcePath = Path.Combine(_options.Value.PackagesPath, sourcePackage);
+            var targetPath = Path.Combine(_options.Value.BinariesPath, targetFolder);
 
-            ZipFile.ExtractToDirectory(sourcePackage, targetPath, true);
+            ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
 
             return Directory.EnumerateFiles(targetPath);
         }

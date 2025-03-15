@@ -30,7 +30,7 @@ namespace Shaos.Services.Validation
 {
     public class CodeFileValidationService : ICodeFileValidationService
     {
-        internal const string ContentType = "application/octet-stream";
+        internal const string ContentType = "application/x-zip-compressed";
         private readonly string[] permittedExtensions = { ".zip" };
 
         public FileValidationResult ValidateFile(IFormFile formFile)

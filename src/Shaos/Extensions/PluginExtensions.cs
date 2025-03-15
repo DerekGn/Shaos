@@ -39,6 +39,7 @@ namespace Shaos.Extensions
                 Instances = plugIn.Instances.Select(_ => _.ToApi()).ToList(),
                 Name = plugIn.Name,
                 UpdatedDate = plugIn.UpdatedDate,
+                Package = plugIn?.Package?.ToApi()
             };
         }
     }

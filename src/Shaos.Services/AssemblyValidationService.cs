@@ -24,6 +24,7 @@
 
 using Shaos.Services.Extensions;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace Shaos.Services
 {
@@ -41,7 +42,7 @@ namespace Shaos.Services
                 throw new FileNotFoundException("Assembly file not found", assemblyFile);
             }
 
-            var plugInAssembly = Assembly.Load(assemblyFile);
+            var plugInAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
 
             if (plugInAssembly != null)
             {
