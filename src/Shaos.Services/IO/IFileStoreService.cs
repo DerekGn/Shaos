@@ -29,6 +29,20 @@ namespace Shaos.Services.IO
     /// </summary>
     public interface IFileStoreService
     {
+        /// <summary>
+        /// Extract a package to a folder
+        /// </summary>
+        /// <param name="sourcePackage">The source package file</param>
+        /// <param name="targetFolder">The target package folder to write the source package folder</param>
+        IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder);
+
+        /// <summary>
+        /// Determine if a package file exists in the package store
+        /// </summary>
+        /// <param name="fileName">The filename of the package file</param>
+        /// <returns>True if the package file exists</returns>
+        bool PackageExists(string fileName);
+
         ///// <summary>
         ///// Deletes a <see cref="PlugIn"/> package folder
         ///// </summary>
@@ -47,7 +61,7 @@ namespace Shaos.Services.IO
         /// <param name="stream">The stream to be written to the <paramref name="folder"/> <paramref name="fileName"/> combination</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string?> WritePlugInArchiveFileStreamAsync(
+        Task<string> WritePlugInPackageFileStreamAsync(
             int plugInId,
             string fileName,
             Stream stream,

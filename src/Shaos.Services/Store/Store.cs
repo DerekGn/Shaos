@@ -26,6 +26,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Extensions;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Shaos.Services.Store
@@ -33,6 +35,7 @@ namespace Shaos.Services.Store
     /// <summary>
     /// The implementation of the <see cref="IStore"/>
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Store : IStore
     {
         private readonly ShaosDbContext _context;
@@ -50,6 +53,8 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken = default)
         {
+            name.ThrowIfNullOrEmpty(nameof(name));
+
             var plugIn = new PlugIn()
             {
                 Name = name,
@@ -72,6 +77,9 @@ namespace Shaos.Services.Store
             PlugIn plugIn,
             CancellationToken cancellationToken = default)
         {
+            name.ThrowIfNullOrEmpty(nameof(name));
+            description.ThrowIfNullOrEmpty(nameof(description));
+
             var plugInInstance = new PlugInInstance()
             {
                 Description = description,
@@ -88,27 +96,27 @@ namespace Shaos.Services.Store
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInNuGetPackageAsync(
-            string name,
-            string fileName,
-            string version,
+        public async Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
+            string filePath,
+            string version,
             CancellationToken cancellationToken = default)
         {
-            var nuGetPackage = new NuGetPackage()
+            filePath.ThrowIfNullOrEmpty(nameof(filePath));
+            version.ThrowIfNullOrEmpty(nameof(version));
+
+            var package = new Package()
             {
-                Name = name,
-                FileName = fileName,
-                Version = version.ToString(),
+                FilePath = filePath,
                 PlugIn = plugIn,
                 PlugInId = plugIn.Id
             };
 
-            plugIn.NuGetPackage = nuGetPackage;
+            plugIn.Package = package;
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return nuGetPackage.Id;
+            return package.Id;
         }
 
         /// <inheritdoc/>
@@ -131,7 +139,7 @@ namespace Shaos.Services.Store
         {
             var query = _context
                 .PlugIns
-                .Include(_ => _.NuGetPackage)
+                .Include(_ => _.Package)
                 .Include(_ => _.Instances)
                 .AsQueryable();
 
@@ -148,6 +156,8 @@ namespace Shaos.Services.Store
             string name,
             CancellationToken cancellationToken = default)
         {
+            name.ThrowIfNullOrEmpty(nameof(name));
+
             var plugin = await _context
                 .PlugIns
                 .AsNoTracking()
@@ -177,6 +187,8 @@ namespace Shaos.Services.Store
             string name,
             CancellationToken cancellationToken = default)
         {
+            name.ThrowIfNullOrEmpty(nameof(name));
+
             var plugInInstance = await _context
                 .PlugInInstances
                 .AsNoTracking()
@@ -190,7 +202,7 @@ namespace Shaos.Services.Store
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in _context.PlugIns
-                .Include(_ => _.NuGetPackage)
+                .Include(_ => _.Package)
                 .Include(_ => _.Instances)
                 .AsNoTracking()
                 .AsAsyncEnumerable()
@@ -213,6 +225,8 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken = default)
         {
+            name.ThrowIfNullOrEmpty(nameof(name));
+
             PlugIn? result = null;
 
             if(!await _context.PlugIns.AnyAsync(_ => _.Name == name && _.Id != id, cancellationToken))
@@ -228,6 +242,15 @@ namespace Shaos.Services.Store
             }
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdatePlugInPackageAsync(
+            PlugIn plugIn,
+            string filePath,
+            string version,
+            CancellationToken cancellationToken = default)
+        {
         }
     }
 }

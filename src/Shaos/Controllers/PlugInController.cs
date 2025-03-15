@@ -310,7 +310,7 @@ namespace Shaos.Controllers
 
                     Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
 
-                    await PlugInService.UploadPlugInArchiveAsync(
+                    await PlugInService.UploadPlugInPackageAsync(
                         plugIn.Id,
                         fileName,
                         formFile.OpenReadStream(),

@@ -24,22 +24,14 @@
 
 namespace Shaos.Services
 {
-    public enum DownloadPlugInNuGetStatus
+    public interface IAssemblyValidationService
     {
-        None,
-        Success,
         /// <summary>
-        /// The package was not downloaded
+        /// Validate an assembly to determine if contains a IPlugIn derived type
         /// </summary>
-        DownloadFailed,
-        /// <summary>
-        /// The package was not found in the download payload
-        /// </summary>
-        NotFound,
-        /// <summary>
-        /// 
-        /// </summary>
-        AssemblyNotFound,
-        PlugInValidationFailed,
+        /// <param name="assemblyFile">The assembly file path</param>
+        /// <param name="version">The version of the assembly</param>
+        /// <returns>true if a valid PlugIn assembly was found</returns>
+        bool ValidateContainsType<T>(string assemblyFile, out string version);
     }
 }

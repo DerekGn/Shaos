@@ -37,7 +37,7 @@ namespace Shaos.Services.UnitTests
     public class PlugInServiceTests : BaseTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
-        private readonly Mock<IPlugInValidationService> _mockPlugInValidationService;
+        private readonly Mock<IAssemblyValidationService> _mockPlugInValidationService;
         private readonly Mock<IRuntimeService> _mockRuntimeService;
         private readonly Mock<IStore> _mockStore;
         private readonly PlugInService _plugInService;
@@ -45,7 +45,7 @@ namespace Shaos.Services.UnitTests
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockPlugInValidationService = new Mock<IPlugInValidationService>();
+            _mockPlugInValidationService = new Mock<IAssemblyValidationService>();
             _mockRuntimeService = new Mock<IRuntimeService>();
             _mockStore = new Mock<IStore>();
 
@@ -55,6 +55,12 @@ namespace Shaos.Services.UnitTests
                 _mockRuntimeService.Object,
                 _mockFileStoreService.Object,
                 _mockPlugInValidationService.Object);
+        }
+
+        [Fact]
+        public void Test()
+        {
+
         }
     }
 }

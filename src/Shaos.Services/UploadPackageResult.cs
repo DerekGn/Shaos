@@ -22,44 +22,24 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
-
 namespace Shaos.Services
 {
-    public class NuGetSpecification
+    /// <summary>
+    /// The upload package result
+    /// </summary>
+    public enum UploadPackageResult
     {
         /// <summary>
-        /// The package identifier
+        /// The package upload was successful
         /// </summary>
-        public required string Id { get; init; }
-
+        Success,
         /// <summary>
-        /// Indicates if pre release packages can be resolved
+        /// The package already exists
         /// </summary>
-        public bool PreRelease { get; init; }
-
+        Exists,
         /// <summary>
-        /// The package version
+        /// No valid PlugIn assembly was found
         /// </summary>
-        /// <remarks>
-        /// Follows the semantic versioning specification
-        /// See https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort
-        /// See https://semver.org/
-        /// </remarks>
-        public required string Version { get; init; }
-
-        /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.Append($"{nameof(Id)}: {Id} ");
-            stringBuilder.Append($"{nameof(PreRelease)}: {PreRelease} ");
-            stringBuilder.Append($"{nameof(Version)}: {Version}");
-
-            return stringBuilder.ToString();
-        }
+        NoValidPlugIn,
     }
 }

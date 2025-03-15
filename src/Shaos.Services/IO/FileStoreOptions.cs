@@ -30,8 +30,13 @@ namespace Shaos.Services.IO
     public record FileStoreOptions
     {
         /// <summary>
-        /// The store path where PlugIn archives will be storeed
+        /// The store path where PlugIn package will be stored
         /// </summary>
-        public required string PlugInArchivesPath { get; init; }
+        public required string PackagesPath { get; init; }
+
+        /// <summary>
+        /// The store path where PlugIn package binaries will be stored
+        /// </summary>
+        public required string PackageBinariesPath { get; init; }
     }
 }

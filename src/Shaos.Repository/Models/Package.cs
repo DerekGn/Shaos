@@ -25,22 +25,22 @@
 namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// A <see cref="NuGetPackage"/> for a <see cref="PlugIn"/>
+    /// A <see cref="Package"/> for a <see cref="PlugIn"/>
     /// </summary>
-    public class NuGetPackage : PlugInChildBase
+    public class Package : PlugInChildBase
     {
         /// <summary>
-        /// The file name of the <see cref="NuGetPackage"/>
+        /// The fully qualified path to the PlugIn assembly
         /// </summary>
-        public string FileName { get; set; } = string.Empty;
+        public string AssemblyFile { get; set; } = string.Empty;
 
         /// <summary>
-        /// The name of the <see cref="NuGetPackage"/>
+        /// The file name of the <see cref="Package"/>
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string FilePath { get; set; } = string.Empty;
 
         /// <summary>
-        /// The version of the <see cref="NuGetPackage"/>
+        /// The version of the <see cref="Package"/>
         /// </summary>
         public string Version { get; set; } = string.Empty;
     }

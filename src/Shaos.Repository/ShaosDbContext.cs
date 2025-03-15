@@ -41,7 +41,7 @@ namespace Shaos.Repository
         public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>
-        public DbSet<NuGetPackage> NuGetPackages { get; set; }
+        public DbSet<Package> NuGetPackages { get; set; }
 
         /// <inheritdoc/>>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
@@ -71,9 +71,9 @@ namespace Shaos.Repository
 
             modelBuilder
                 .Entity<PlugIn>()
-                .HasOne(_ => _.NuGetPackage)
+                .HasOne(_ => _.Package)
                 .WithOne(_ => _.PlugIn)
-                .HasForeignKey<NuGetPackage>(_ => _.PlugInId)
+                .HasForeignKey<Package>(_ => _.PlugInId)
                 .IsRequired(false);
 
             modelBuilder
@@ -99,20 +99,20 @@ namespace Shaos.Repository
                 .HasIndex(_ => _.Name )
                 .HasDatabaseName("IX_PlugIn_Name_Ascending");
 
-            modelBuilder.Entity<NuGetPackage>()
+            modelBuilder.Entity<Package>()
                 .HasKey(_ => _.Id)
                 .HasName("PrimaryKey_NuGetId");
 
             modelBuilder
-                .Entity<NuGetPackage>()
-                .Property(_ => _.FileName)
-                .HasMaxLength(ModelConstants.MaxFileNameLength)
+                .Entity<Package>()
+                .Property(_ => _.FilePath)
+                .HasMaxLength(ModelConstants.MaxFilePathLength)
                 .IsRequired();
 
             modelBuilder
-                .Entity<NuGetPackage>()
+                .Entity<Package>()
                 .Property(_ => _.Version)
-                .HasMaxLength(10)
+                .HasMaxLength(ModelConstants.MaxVersionLength)
                 .IsRequired();
 
             modelBuilder.Entity<PlugInInstance>()

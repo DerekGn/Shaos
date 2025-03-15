@@ -24,6 +24,8 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shaos.Services.Extensions;
+using System.IO.Compression;
 
 namespace Shaos.Services.IO
 {
@@ -38,6 +40,27 @@ namespace Shaos.Services.IO
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options ?? throw new ArgumentNullException(nameof(options));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder)
+        {
+            sourcePackage.ThrowIfNullOrEmpty(nameof(sourcePackage));
+            targetFolder.ThrowIfNullOrEmpty(nameof(targetFolder));
+
+            var targetPath = Path.Combine(_options.Value.PackagesPath, targetFolder);
+
+            ZipFile.ExtractToDirectory(sourcePackage, targetPath, true);
+
+            return Directory.EnumerateFiles(targetPath);
+        }
+
+        /// <inheritdoc/>
+        public bool PackageExists(string fileName)
+        {
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+
+            return File.Exists(Path.Combine(_options.Value.PackagesPath, fileName));
         }
 
         ///// <inheritdoc/>
@@ -85,28 +108,30 @@ namespace Shaos.Services.IO
         //}
 
         /// <inheritdoc/>
-        public async Task<string?> WritePlugInArchiveFileStreamAsync(
+        public async Task<string> WritePlugInPackageFileStreamAsync(
             int plugInId,
             string fileName,
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            if (!Directory.Exists(_options.Value.PlugInArchivesPath))
-            {
-                _logger.LogDebug("Creating folder [{Folder}]", _options.Value.PlugInArchivesPath);
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
 
-                Directory.CreateDirectory(_options.Value.PlugInArchivesPath);
+            if (!Directory.Exists(_options.Value.PackagesPath))
+            {
+                _logger.LogDebug("Creating folder [{Folder}]", _options.Value.PackagesPath);
+
+                Directory.CreateDirectory(_options.Value.PackagesPath);
             }
 
-            _logger.LogInformation("Writing File: [{File}] To [{Folder}]", fileName, _options.Value.PlugInArchivesPath);
+            _logger.LogInformation("Writing File: [{File}] To [{Folder}]", fileName, _options.Value.PackagesPath);
 
-            var archiveFilePath = Path.Combine(_options.Value.PlugInArchivesPath, fileName);
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath, fileName);
 
-            using var outputStream = File.Open(archiveFilePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 
             await stream.CopyToAsync(outputStream, cancellationToken);
 
-            return archiveFilePath;
+            return packageFilePath;
         }
     }
 }

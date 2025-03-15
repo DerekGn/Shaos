@@ -24,6 +24,8 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
+using Shaos.Sdk;
+using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
@@ -34,7 +36,7 @@ namespace Shaos.Services
     {
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<PlugInService> _logger;
-        private readonly IPlugInValidationService _plugInValidationService;
+        private readonly IAssemblyValidationService _plugInValidationService;
         private readonly IRuntimeService _runtimeService;
         private readonly IStore _store;
 
@@ -43,7 +45,7 @@ namespace Shaos.Services
             IStore store,
             IRuntimeService runtimeService,
             IFileStoreService fileStoreService,
-            IPlugInValidationService plugInValidationService)
+            IAssemblyValidationService plugInValidationService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _store = store ?? throw new ArgumentNullException(nameof(store));
@@ -101,27 +103,6 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<DownloadPlugInNuGetResult> DownloadPlugInNuGetAsync(
-            int id,
-            NuGetSpecification specification,
-            CancellationToken cancellationToken = default)
-        {
-            DownloadPlugInNuGetResult result = new DownloadPlugInNuGetResult();
-
-            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
-            {
-                await ExecuteValidatePlugInInstanceExecutionStateAsync(plugIn, async () =>
-                {
-                },
-                cancellationToken);
-            },
-            true,
-            cancellationToken);
-
-            return result;
-        }
-
-        /// <inheritdoc/>
         public async Task SetPlugInInstanceEnableAsync(
             int id,
             bool enable,
@@ -155,42 +136,88 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task UploadPlugInArchiveAsync(
+        public async Task<UploadPackageResult> UploadPlugInPackageAsync(
             int id,
             string fileName,
             Stream stream,
             CancellationToken cancellationToken = default)
         {
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+
+            UploadPackageResult result = UploadPackageResult.Success;
+
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                _logger.LogDebug("Storing NuGet Package. PlugIn: [{Id}] FileName: [{FileName}]",
-                    id,
-                    fileName);
+                if (!_fileStoreService.PackageExists(fileName))
+                {
+                    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", fileName);
 
-                var filePath = await _fileStoreService.WritePlugInArchiveFileStreamAsync(
-                    plugIn.Id,
-                    fileName,
-                    stream,
-                    cancellationToken);
+                    await _fileStoreService.WritePlugInPackageFileStreamAsync(
+                        plugIn.Id,
+                        fileName,
+                        stream,
+                        cancellationToken);
 
-                //if (plugIn.NuGetPackage == null)
-                //{
-                //    plugIn.NuGetPackage = new NuGetPackage()
-                //    {
-                //        FileName = fileName,
-                //        Version = version.ToString(),
-                //    };
-                //}
-                //else
-                //{
-                //    plugIn.NuGetPackage.FileName = fileName;
-                //    plugIn.NuGetPackage.Version = version.ToString();
-                //}
+                    var files = _fileStoreService
+                        .ExtractPackage(fileName, plugIn.Id.ToString())
+                        .Where(_ => Path.GetExtension(_) == ".dll")
+                        .ToList();
 
-                //await _context.SaveChangesAsync(cancellationToken);
+                    if (!ValidPlugInFound(files, out var plugInFile, out var version))
+                    {
+                        _logger.LogWarning("No valid PlugIn implementation found");
+                        result = UploadPackageResult.NoValidPlugIn;
+                    }
+                    else
+                    {
+                        await CreateOrUpdatePlugInPackageAsync(plugIn, plugInFile, version, cancellationToken);
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("PlugIn Package file already exists [{FileName}]", fileName);
+
+                    result = UploadPackageResult.Exists;
+                }
             },
             true,
             cancellationToken);
+
+            return result;
+        }
+
+        private async Task CreateOrUpdatePlugInPackageAsync(
+            PlugIn plugIn,
+            string filePath,
+            string version,
+            CancellationToken cancellationToken)
+        {
+            if (plugIn.Package == null)
+            {
+                _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] FilePath: [{FilePath}] Version: [{Version}]",
+                    plugIn.Id,
+                    filePath,
+                    version);
+
+                await _store.CreatePlugInPackageAsync(
+                    plugIn,
+                    filePath,
+                    version,
+                    cancellationToken);
+            }
+            else
+            {
+                _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] FilePath: [{FilePath}] Version: [{Version}]",
+                    plugIn.Id,
+                    filePath,
+                    version);
+
+                await _store.UpdatePlugInPackageAsync(
+                    plugIn,
+                    filePath,
+                    version,
+                    cancellationToken);
+            }
         }
 
         private async Task ExecutePlugInOperationAsync(
@@ -214,22 +241,6 @@ namespace Shaos.Services
             }
         }
 
-        private async Task ExecuteValidatePlugInInstanceExecutionStateAsync(
-            PlugIn plugIn,
-            Func<Task> value,
-            CancellationToken cancellationToken)
-        {
-            foreach (var instance in plugIn.Instances)
-            {
-                var executingInstance = _runtimeService.GetExecutingInstance(instance.Id);
-                
-                if(executingInstance != null)
-                {
-                    _logger.LogDebug("Validating execution state of PlugInInstance: [{Instance}]", instance.ToString());
-                }
-            }
-        }
-
         private async Task<PlugInInstance?> UpdatePlugInInstanceAsync(
             int id,
             Action<PlugInInstance?> modify,
@@ -242,6 +253,28 @@ namespace Shaos.Services
             await _store.SaveChangesAsync(cancellationToken);
 
             return plugInInstance;
+        }
+
+        private bool ValidPlugInFound(
+            IList<string> files,
+            out string plugInFile,
+            out string version)
+        {
+            bool validPlugIn = false;
+            plugInFile = string.Empty;
+            version = string.Empty;
+
+            foreach (var file in files)
+            {
+                if (_plugInValidationService.ValidateContainsType<IPlugIn>(file, out version))
+                {
+                    plugInFile = file;
+                    validPlugIn = true;
+                    break;
+                }
+            }
+
+            return validPlugIn;
         }
     }
 }

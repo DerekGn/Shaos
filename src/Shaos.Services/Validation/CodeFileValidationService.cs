@@ -23,6 +23,8 @@
 */
 
 using Microsoft.AspNetCore.Http;
+using Shaos.Services.Extensions;
+using System.Xml.Linq;
 
 namespace Shaos.Services.Validation
 {
@@ -57,6 +59,8 @@ namespace Shaos.Services.Validation
 
         private bool ValidFileName(string fileName)
         {
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+
             var ext = Path
                 .GetExtension(fileName)
                 .ToLowerInvariant();

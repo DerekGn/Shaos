@@ -59,19 +59,17 @@ namespace Shaos.Services.Store
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Create a new <see cref="NuGetPackage"/> instance
+        /// Create a new <see cref="Package"/> instance
         /// </summary>
-        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="NuGetPackage"/></param>
-        /// <param name="name">The <see cref="NuGetPackage"/> name</param>
-        /// <param name="fileName">The <see cref="NuGetPackage"/> filename</param>
-        /// <param name="version">The <see cref="NuGetPackage"/> version</param>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
+        /// <param name="filePath">The fully qualified <see cref="Package"/> file path</param>
+        /// <param name="version">The <see cref="Package"/> version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="NuGetPackage"/> identifier</returns>
-        Task<int> CreatePlugInNuGetPackageAsync(
-            string name,
-            string fileName,
-            string version,
+        /// <returns>The <see cref="Package"/> identifier</returns>
+        Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
+            string filePath,
+            string version,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -149,6 +147,12 @@ namespace Shaos.Services.Store
             int id,
             string name,
             string? description,
+            CancellationToken cancellationToken = default);
+
+        Task UpdatePlugInPackageAsync(
+            PlugIn plugIn,
+            string filePath,
+            string version,
             CancellationToken cancellationToken = default);
     }
 }
