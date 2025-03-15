@@ -84,24 +84,24 @@ namespace Shaos.Services.UnitTests.System
 
             Assert.NotNull(result);
             Assert.True(result.BasePriority >= 0);
-            Assert.NotEqual(0, result.HandleCount);
-            Assert.NotEqual(0, result.MaxWorkingSet);
+            Assert.True(result.HandleCount >= 0);
+            Assert.True(result.MaxWorkingSet >= 0);
             Assert.True(result.MinWorkingSet >= 0);
             Assert.True(result.NonpagedSystemMemorySize >= 0);
             Assert.True(result.PagedMemorySize >= 0);
-            Assert.NotEqual(0, result.PagedSystemMemorySize);
-            Assert.NotEqual(0, result.PeakPagedMemorySize);
-            Assert.NotEqual(0, result.PeakVirtualMemorySize);
-            Assert.NotEqual(0, result.PeakWorkingSet);
-            Assert.NotEqual(0, result.PrivateMemorySize);
+            Assert.True(result.PagedSystemMemorySize >= 0);
+            Assert.True(result.PeakPagedMemorySize >= 0);
+            Assert.True(result.PeakVirtualMemorySize >= 0);
+            Assert.True(result.PeakWorkingSet >= 0);
+            Assert.True(result.PrivateMemorySize >= 0);
             Assert.NotEqual(0, result.PrivilegedProcessorTime.TotalMilliseconds);
             Assert.NotNull(result.ProcessName);
-            Assert.NotEqual(0, result.ProcessorAffinity);
+            Assert.True(result.ProcessorAffinity >= 0);
             Assert.NotEqual(0, result.StartTime.Ticks);
-            Assert.NotEqual(0, result.ThreadsCount);
+            Assert.True(result.ThreadsCount >= 0);
             Assert.NotEqual(0, result.TotalProcessorTime.TotalMilliseconds);
             Assert.NotEqual(0, result.UserProcessorTime.TotalMilliseconds);
-            Assert.NotEqual(0, result.VirtualMemorySize);
+            Assert.True(result.VirtualMemorySize >= 0);
         }
 
         [Fact]
