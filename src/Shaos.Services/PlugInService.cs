@@ -25,6 +25,7 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
@@ -148,36 +149,44 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if (!_fileStoreService.PackageExists(fileName))
+                if(VerifyPlugState(plugIn, ExecutionState.Active))
                 {
                     _logger.LogInformation("Writing PlugIn Package file [{FileName}]", fileName);
-
-                    await _fileStoreService.WritePlugInPackageFileStreamAsync(
-                        plugIn.Id,
-                        fileName,
-                        stream,
-                        cancellationToken);
-
-                    var files = _fileStoreService
-                        .ExtractPackage(fileName, plugIn.Id.ToString())
-                        .Where(_ => Path.GetExtension(_) == ".dll")
-                        .ToList();
-
-                    if (!ValidPlugInFound(files, out var plugInFile, out var version))
-                    {
-                        _logger.LogWarning("No valid PlugIn implementation found");
-                        result = UploadPackageResult.NoValidPlugIn;
-                    }
-                    else
-                    {
-                        await CreateOrUpdatePlugInPackageAsync(plugIn, plugInFile, version, cancellationToken);
-                    }
+                    result = UploadPackageResult.PlugInRunning;
                 }
                 else
                 {
-                    _logger.LogInformation("PlugIn Package file already exists [{FileName}]", fileName);
+                    if (!_fileStoreService.PackageExists(fileName))
+                    {
+                        _logger.LogInformation("Writing PlugIn Package file [{FileName}]", fileName);
 
-                    result = UploadPackageResult.Exists;
+                        await _fileStoreService.WritePlugInPackageFileStreamAsync(
+                            plugIn.Id,
+                            fileName,
+                            stream,
+                            cancellationToken);
+
+                        var files = _fileStoreService
+                            .ExtractPackage(fileName, plugIn.Id.ToString())
+                            .Where(_ => Path.GetExtension(_) == ".dll")
+                            .ToList();
+
+                        if (!ValidPlugInFound(files, out var plugInFile, out var version))
+                        {
+                            _logger.LogWarning("No valid PlugIn implementation found");
+                            result = UploadPackageResult.NoValidPlugIn;
+                        }
+                        else
+                        {
+                            await CreateOrUpdatePlugInPackageAsync(plugIn, plugInFile, version, cancellationToken);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogInformation("PlugIn Package file already exists [{FileName}]", fileName);
+
+                        result = UploadPackageResult.PackageExists;
+                    }
                 }
             },
             true,
@@ -238,6 +247,7 @@ namespace Shaos.Services
             else
             {
                 _logger.LogWarning("PlugIn: [{Id}] not found", id);
+                throw new PlugInNotFoundException($"PlugIn: [{id}] not found");
             }
         }
 
@@ -275,6 +285,24 @@ namespace Shaos.Services
             }
 
             return validPlugIn;
+        }
+
+        private bool VerifyPlugState(PlugIn plugIn, ExecutionState state)
+        {
+            bool result = false;
+
+            foreach (var instance in plugIn.Instances)
+            {
+                var executingInstance = _runtimeService.GetExecutingInstance(instance.Id);
+
+                if(executingInstance != null && executingInstance.State == state)
+                {
+                    result = true;
+                    break;
+                }
+            }
+
+            return result;
         }
     }
 }

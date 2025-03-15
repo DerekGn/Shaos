@@ -29,17 +29,8 @@ namespace Shaos.Services.Runtime
     /// </summary>
     public enum ExecutionState
     {
-        /// <summary>
-        /// The default <see cref="PlugIn"/> execution state
-        /// </summary>
-        InActive,
-        /// <summary>
-        /// The <see cref="PlugIn"/> code has been compiled successfully
-        /// </summary>
-        Compiled,
-        /// <summary>
-        /// The <see cref="PlugIn"/> code has been compiled with errors
-        /// </summary>
-        CompileFailed
+        Active,
+        Faulted,
+        InActive
     }
 }

@@ -36,10 +36,14 @@ namespace Shaos.Services
         /// <summary>
         /// The package already exists
         /// </summary>
-        Exists,
+        PackageExists,
         /// <summary>
         /// No valid PlugIn assembly was found
         /// </summary>
         NoValidPlugIn,
+        /// <summary>
+        /// The PlugIn is running
+        /// </summary>
+        PlugInRunning
     }
 }
