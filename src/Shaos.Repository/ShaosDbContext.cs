@@ -109,7 +109,6 @@ namespace Shaos.Repository
                 .HasMaxLength(ModelConstants.MaxFileNameLength)
                 .IsRequired();
 
-#warning TODO
             modelBuilder
                 .Entity<NuGetPackage>()
                 .Property(_ => _.Version)

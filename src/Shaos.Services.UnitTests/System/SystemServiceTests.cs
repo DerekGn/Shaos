@@ -83,7 +83,7 @@ namespace Shaos.Services.UnitTests.System
             var result = _systemService.GetProcessInformation();
 
             Assert.NotNull(result);
-            Assert.NotEqual(0, result.BasePriority);
+            Assert.True(result.BasePriority > 5);
             Assert.NotEqual(0, result.HandleCount);
             Assert.NotEqual(0, result.MaxWorkingSet);
             Assert.NotEqual(0, result.MinWorkingSet);
