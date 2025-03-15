@@ -74,7 +74,7 @@ namespace Shaos.Services
                     plugIn,
                     cancellationToken);
             },
-            true,
+            false,
             cancellationToken);
 
             return result;
