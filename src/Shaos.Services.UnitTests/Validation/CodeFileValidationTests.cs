@@ -31,11 +31,10 @@ namespace Shaos.Services.UnitTests.Validation
 {
     public class CodeFileValidationTests
     {
-        private const string ContentType = "application/octet-stream";
         private const string FileName = "filename.zip";
 
         private readonly CodeFileValidationService _codeFileValidationService;
-        private Mock<IFormFile> _mockFile;
+        private readonly Mock<IFormFile> _mockFile;
 
         public CodeFileValidationTests()
         {
@@ -67,7 +66,7 @@ namespace Shaos.Services.UnitTests.Validation
         public void TestValidateFileInvalidFileType()
         {
             _mockFile.Setup(_ => _.FileName).Returns("filename.exe");
-            _mockFile.Setup(_ => _.ContentType).Returns(ContentType);
+            _mockFile.Setup(_ => _.ContentType).Returns(CodeFileValidationService.ContentType);
 
             var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
 
@@ -78,7 +77,7 @@ namespace Shaos.Services.UnitTests.Validation
         public void TestValidateFileInvalidLength()
         {
             _mockFile.Setup(_ => _.FileName).Returns(FileName);
-            _mockFile.Setup(_ => _.ContentType).Returns(ContentType);
+            _mockFile.Setup(_ => _.ContentType).Returns(CodeFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(0);
 
             var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
@@ -90,7 +89,7 @@ namespace Shaos.Services.UnitTests.Validation
         public void TestValidateFileValid()
         {
             _mockFile.Setup(_ => _.FileName).Returns(FileName);
-            _mockFile.Setup(_ => _.ContentType).Returns(ContentType);
+            _mockFile.Setup(_ => _.ContentType).Returns(CodeFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(10);
             
             var result = _codeFileValidationService.ValidateFile(_mockFile.Object);

@@ -41,7 +41,7 @@ namespace Shaos.Repository
         public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>
-        public DbSet<Package> NuGetPackages { get; set; }
+        public DbSet<Package> Packages { get; set; }
 
         /// <inheritdoc/>>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }

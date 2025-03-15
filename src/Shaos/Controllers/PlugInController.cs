@@ -288,14 +288,14 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("{id}/upload")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest)]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn package is uploaded, extracted and verified", Type = typeof(UploadPackageResult))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Indicates if there was a problem with the upload file", Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "",
-            Description = "",
+            Summary = "Upload a Package for a PlugIn",
+            Description = "Upload a Package file for a PlugIn. A Package is a zip file that contains the executables and content for a PlugIn",
             OperationId = "UploadPlugInPackage")]
         public async Task<ActionResult> UploadPlugInPackageAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
@@ -308,15 +308,16 @@ namespace Shaos.Controllers
                 {
                     var fileName = Path.GetFileName(formFile.FileName);
 
-                    Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", fileName, plugIn.Id, plugIn.Name);
+                    Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", 
+                        fileName,
+                        plugIn.Id,
+                        plugIn.Name);
 
-                    await PlugInService.UploadPlugInPackageAsync(
+                    return Accepted(await PlugInService.UploadPlugInPackageAsync(
                         plugIn.Id,
                         fileName,
                         formFile.OpenReadStream(),
-                        cancellationToken);
-
-                    return Accepted();
+                        cancellationToken));
                 }
                 else
                 {
