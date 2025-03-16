@@ -99,7 +99,7 @@ namespace Shaos.Services.UnitTests.IO
         //    memoryStream.Position = 0;
 
         //    var result = await _fileStoreService.WriteCodeFileStreamAsync("CodeWriteFolder", "FileName.txt", memoryStream);
-            
+
         //    Assert.NotNull(result);
         //}
     }

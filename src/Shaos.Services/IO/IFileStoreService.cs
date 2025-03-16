@@ -29,6 +29,8 @@ namespace Shaos.Services.IO
     /// </summary>
     public interface IFileStoreService
     {
+        void DeletePlugInPackage(int id, string fileName);
+
         /// <summary>
         /// Extract a package to a folder
         /// </summary>

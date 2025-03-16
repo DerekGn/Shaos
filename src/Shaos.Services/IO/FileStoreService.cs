@@ -42,6 +42,11 @@ namespace Shaos.Services.IO
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
+        public void DeletePlugInPackage(int id, string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc/>
         public IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder)
         {

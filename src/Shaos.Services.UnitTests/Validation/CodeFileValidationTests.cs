@@ -91,7 +91,7 @@ namespace Shaos.Services.UnitTests.Validation
             _mockFile.Setup(_ => _.FileName).Returns(FileName);
             _mockFile.Setup(_ => _.ContentType).Returns(CodeFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(10);
-            
+
             var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
 
             Assert.Equal(FileValidationResult.Success, result);

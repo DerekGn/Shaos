@@ -22,35 +22,23 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Extensions;
-using System.Runtime.Loader;
-
-namespace Shaos.Services
+namespace Shaos.Services.Exceptions
 {
-    public class AssemblyValidationService : IAssemblyValidationService
+    public class PlugInInstanceRunningException : Exception
     {
-        public bool ValidateContainsType<T>(string assemblyFile, out string version)
+        public PlugInInstanceRunningException(int id)
         {
-            bool result = false;
-
-            assemblyFile.ThrowIfNullOrEmpty(nameof(assemblyFile));
-            version = string.Empty;
-
-            if (!File.Exists(assemblyFile))
-            {
-                throw new FileNotFoundException("Assembly file not found", assemblyFile);
-            }
-
-            var plugInAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
-
-            if (plugInAssembly != null)
-            {
-                version = plugInAssembly.GetName().Version!.ToString();
-
-                result = plugInAssembly.GetTypes().Any(t => typeof(T).IsAssignableFrom(t));
-            }
-
-            return result;
+            Id = id;
         }
+        public PlugInInstanceRunningException(int id, string message) : base(message)
+        {
+            Id = id;
+        }
+        public PlugInInstanceRunningException(int id, string message, Exception inner) : base(message, inner)
+        {
+            Id = id;
+        }
+
+        public int Id { get; }
     }
 }

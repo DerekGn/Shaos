@@ -23,6 +23,7 @@
 */
 
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
 
 namespace Shaos.Services
 {
@@ -58,6 +59,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInAsync(
             int id,
             CancellationToken cancellationToken = default);
@@ -67,7 +69,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
+        /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInInstanceAsync(
             int id,
             CancellationToken cancellationToken = default);

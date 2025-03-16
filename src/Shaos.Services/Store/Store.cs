@@ -95,7 +95,7 @@ namespace Shaos.Services.Store
 
             plugIn.Instances.Add(plugInInstance);
 
-            return await HandleDuplicatePlugInInstanceNameAsync(name, async () => 
+            return await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
             {
                 await _context.SaveChangesAsync(cancellationToken);
 
@@ -210,7 +210,7 @@ namespace Shaos.Services.Store
             name.ThrowIfNullOrEmpty(nameof(name));
 
             var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInNotFoundException(id);
-            
+
             return await HandleDuplicatePlugInNameAsync(name, async () =>
             {
                 plugIn.Name = name;
@@ -230,7 +230,7 @@ namespace Shaos.Services.Store
             CancellationToken cancellationToken)
         {
             var plugInInstance = await _context.PlugInInstances.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
-            
+
             await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
             {
                 plugInInstance.Name = name;

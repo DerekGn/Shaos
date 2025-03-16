@@ -30,7 +30,6 @@ using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
-using System;
 
 namespace Shaos.Services
 {
@@ -85,13 +84,25 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-#warning Check if plugin used and delete plugin archive and files
-            _logger.LogInformation("PlugIn [{Id}] Deleting", id);
+            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) => {
 
-            // Delete code and compiled assembly files
-            //_fileStoreService.DeletePlugInPackageFolder(id);
+                if(!CheckPlugInRunning(plugIn, out var plugInInstanceId))
+                {
+                    // Delete code and compiled assembly files
+                    if (plugIn.Package != null)
+                    {
+                        _fileStoreService.DeletePlugInPackage(id, plugIn.Package.FileName);
+                    }
 
-            await _store.DeleteAsync<PlugIn>(id, cancellationToken);
+                    await _store.DeleteAsync<PlugIn>(id, cancellationToken);
+                }
+                else
+                {
+                    _logger.LogWarning("PlugIn [{Id}] still running", id);
+                    throw new PlugInInstanceRunningException(plugInInstanceId);
+                }
+            },
+            cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -150,7 +161,7 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if(VerifyPlugState(plugIn, ExecutionState.Active))
+                if (VerifyPlugState(plugIn, ExecutionState.Active))
                 {
                     _logger.LogInformation("Writing PlugIn Package file [{FileName}]", fileName);
                     result = UploadPackageResult.PlugInRunning;
@@ -198,6 +209,27 @@ namespace Shaos.Services
             },
             false,
             cancellationToken);
+
+            return result;
+        }
+
+        private bool CheckPlugInRunning(PlugIn plugIn, out int plugInInstanceId)
+        {
+            bool result = false;
+
+            plugInInstanceId = 0;
+
+            if (plugIn != null)
+            {
+                foreach (var plugInInstance in plugIn.Instances)
+                {
+                    if(_runtimeService.GetExecutingInstance(plugInInstance.Id) != null)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
 
             return result;
         }
@@ -305,7 +337,7 @@ namespace Shaos.Services
             {
                 var executingInstance = _runtimeService.GetExecutingInstance(instance.Id);
 
-                if(executingInstance != null && executingInstance.State == state)
+                if (executingInstance != null && executingInstance.State == state)
                 {
                     result = true;
                     break;
