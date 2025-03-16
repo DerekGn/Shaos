@@ -110,18 +110,27 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
+            if(_runtimeService.GetExecutingInstance(id) != null)
+            {
+                _logger.LogWarning("PlugInInstance [{Id}] Running", id);
 
-            await _store.DeleteAsync<PlugIn>(id, cancellationToken);
+                throw new PlugInInstanceRunningException(id);
+            }
+            else
+            {
+                _logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
+
+                await _store.DeleteAsync<PlugInInstance>(id, cancellationToken);
+            }
         }
 
         /// <inheritdoc/>
-        public async Task SetPlugInInstanceEnableAsync(
+        public async Task<PlugInInstance?> SetPlugInInstanceEnableAsync(
             int id,
             bool enable,
             CancellationToken cancellationToken = default)
         {
-            await UpdatePlugInInstanceAsync(id, (plugInInstance) =>
+            return await UpdatePlugInInstanceAsync(id, (plugInInstance) =>
             {
                 if (plugInInstance != null)
                 {
@@ -300,11 +309,18 @@ namespace Shaos.Services
         {
             var plugInInstance = await _store.GetPlugInInstanceByIdAsync(id, cancellationToken);
 
-            modify(plugInInstance);
+            if (plugInInstance != null)
+            {
+                modify(plugInInstance);
 
-            await _store.SaveChangesAsync(cancellationToken);
+                await _store.SaveChangesAsync(cancellationToken);
 
-            return plugInInstance;
+                return plugInInstance;
+            }
+            else
+            {
+                throw new PlugInInstanceNotFoundException(id);
+            }
         }
 
         private bool ValidPlugInFound(

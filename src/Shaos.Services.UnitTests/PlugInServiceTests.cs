@@ -113,6 +113,28 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public async Task TestDeletePlugInInstanceRunningAsync()
+        {
+            _mockRuntimeService.Setup(_ => _.GetExecutingInstance(
+                It.IsAny<int>()))
+                .Returns(new ExecutingInstance());
+
+            await Assert.ThrowsAsync<PlugInInstanceRunningException>(async () =>
+                await _plugInService.DeletePlugInInstanceAsync(12));
+        }
+
+        [Fact]
+        public async Task TestDeletePlugInInstanceSuccessAsync()
+        {
+            await _plugInService.DeletePlugInInstanceAsync(12);
+
+            _mockStore.Verify(_ => _.DeleteAsync<PlugInInstance>(
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
         public async Task TestDeletePlugInNotFoundAsync()
         {
             await Assert.ThrowsAsync<PlugInNotFoundException>(async () =>
@@ -168,6 +190,22 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<int>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task TestSetPlugInInstanceEnableSuccessAsync(bool state)
+        {
+            _mockStore.Setup(_ => _.GetPlugInInstanceByIdAsync(
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugInInstance());
+
+            await _plugInService.SetPlugInInstanceEnableAsync(10, state);
+
+            _mockStore.Setup(_ => _.SaveChangesAsync(
+                It.IsAny<CancellationToken>()));
         }
 
         [Fact]
