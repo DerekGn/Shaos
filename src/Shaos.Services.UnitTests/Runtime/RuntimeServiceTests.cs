@@ -27,6 +27,7 @@ using Moq;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -47,11 +48,11 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public async Task TestGetExecutingInstanceFound()
+        public void TestGetExecutingInstanceFound()
         {
             _runtimeService._executingInstances.Add(new ExecutingInstance()
             {
-                Id = 1,
+                Id = 1
             });
 
             var executingInstance = _runtimeService.GetExecutingInstance(1);
@@ -60,7 +61,7 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public async Task TestGetExecutingInstanceNotFound()
+        public void TestGetExecutingInstanceNotFound()
         {
             var executingInstance = _runtimeService.GetExecutingInstance(1);
 
@@ -70,7 +71,49 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public async Task TestStartInstanceAsync()
         {
-            await _runtimeService.StartInstanceAsync(1, "name", "");
+            _mockFileStoreService.Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
+                .Returns("F:\\Git\\Shaos\\src\\Shaos.Test.PlugIn\\bin\\Debug\\net8.0");
+
+            var result = await _runtimeService.StartInstanceAsync(1, 2, "name", "Shaos.Test.PlugIn.dll");
+
+            Assert.NotNull(result);
+            Assert.Equal(ExecutionState.Starting, result.State);
+
+            await Task.Delay(100);
+
+            var executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
+
+            Assert.NotNull(executingInstance);
+            Assert.NotNull(executingInstance.PlugIn);
+            Assert.NotNull(executingInstance.Assembly);
+            Assert.NotNull(executingInstance.AssemblyLoadContext);
+            Assert.Equal(ExecutionState.Active, executingInstance.State);
+        }
+
+        [Fact]
+        public async Task TestStartInstanceRunningAsync()
+        {
+            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            {
+                Id = 2,
+                State = ExecutionState.Active
+            });
+
+            var result = await _runtimeService.StartInstanceAsync(1, 2, "name", "Shaos.Test.PlugIn.dll");
+
+            Assert.NotNull(result);
+            Assert.Equal(ExecutionState.Active, result.State);
+        }
+
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetExecutingAssembly().Location;
+                UriBuilder uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
         }
     }
 }

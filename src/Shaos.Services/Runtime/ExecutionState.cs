@@ -31,6 +31,8 @@ namespace Shaos.Services.Runtime
     {
         Active,
         Faulted,
-        InActive
+        InActive,
+        Starting,
+        LoadFailure
     }
 }

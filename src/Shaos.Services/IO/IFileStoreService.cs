@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
+
 namespace Shaos.Services.IO
 {
     /// <summary>
@@ -29,6 +31,11 @@ namespace Shaos.Services.IO
     /// </summary>
     public interface IFileStoreService
     {
+        /// <summary>
+        /// Delete a <see cref="PlugInPackage"/> from the file store
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="fileName"></param>
         void DeletePlugInPackage(int id, string fileName);
 
         /// <summary>
@@ -37,6 +44,13 @@ namespace Shaos.Services.IO
         /// <param name="sourcePackage">The source package file</param>
         /// <param name="targetFolder">The target package folder to write the source package folder</param>
         IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        string GetAssemblyPathForPlugIn(int id);
 
         /// <summary>
         /// Determine if a package file exists in the package store
@@ -48,13 +62,13 @@ namespace Shaos.Services.IO
         /// <summary>
         /// Write the contents of a stream to a <paramref name="folder"/> <paramref name="fileName"/> combination
         /// </summary>
-        /// <param name="plugInId">The <see cref="PlugIn"/> identifier</param>
+        /// <param name="id">The <see cref="PlugIn"/> identifier</param>
         /// <param name="packageFileName">The package filename to write too</param>
         /// <param name="stream">The stream to be written to the <paramref name="folder"/> <paramref name="fileName"/> combination</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
         Task<string> WritePlugInPackageFileStreamAsync(
-            int plugInId,
+            int id,
             string packageFileName,
             Stream stream,
             CancellationToken cancellationToken = default);

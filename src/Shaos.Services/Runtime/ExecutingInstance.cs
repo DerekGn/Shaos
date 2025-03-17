@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
+using System.Reflection;
+
 namespace Shaos.Services.Runtime
 {
     /// <summary>
@@ -53,5 +56,15 @@ namespace Shaos.Services.Runtime
         /// The <see cref="RuntimeAssemblyLoadContext"/>
         /// </summary>
         public RuntimeAssemblyLoadContext? AssemblyLoadContext { get; set; }
+
+        /// <summary>
+        /// The PlugIn assembly
+        /// </summary>
+        public Assembly? Assembly { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IPlugIn? PlugIn { get; set; }
     }
 }

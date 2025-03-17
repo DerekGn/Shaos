@@ -48,10 +48,11 @@ namespace Shaos.Services.Runtime
         /// Start the execution of a <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task StartInstanceAsync(
-            int id,
+        Task<ExecutingInstance> StartInstanceAsync(
+            int plugInId,
+            int plugInInstanceId,
             string name,
-            string plugInAssemblyPath,
+            string assemblyFileName,
             CancellationToken cancellationToken = default);
 
         /// <summary>

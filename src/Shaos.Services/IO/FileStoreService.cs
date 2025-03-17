@@ -61,6 +61,11 @@ namespace Shaos.Services.IO
             return Directory.EnumerateFiles(targetPath);
         }
 
+        public string GetAssemblyPathForPlugIn(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc/>
         public bool PackageExists(string fileName)
         {
@@ -71,7 +76,7 @@ namespace Shaos.Services.IO
 
         /// <inheritdoc/>
         public async Task<string> WritePlugInPackageFileStreamAsync(
-            int plugInId,
+            int id,
             string packageFileName,
             Stream stream,
             CancellationToken cancellationToken = default)

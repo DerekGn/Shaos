@@ -24,7 +24,12 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
+using Shaos.Sdk;
 using Shaos.Services.IO;
+using System.Reflection;
+using System.Runtime.Loader;
+using System.Windows.Input;
+using System.Linq;
 
 #warning Limit number of executing plugins
 
@@ -62,24 +67,25 @@ namespace Shaos.Services.Runtime
         }
 
         /// <inheritdoc/>
-        public async Task StartInstanceAsync(
-            int id,
+        public async Task<ExecutingInstance> StartInstanceAsync(
+            int plugInId,
+            int plugInInstanceId,
             string name,
-            string plugInAssemblyPath,
+            string assemblyFileName,
             CancellationToken cancellationToken = default)
         {
             var executingInstance = _executingInstances
-                .FirstOrDefault(_ => _.Id == id);
+                .FirstOrDefault(_ => _.Id == plugInInstanceId);
 
             if (executingInstance == null)
             {
                 _logger.LogInformation("Creating ExecutingInstance: [{Id}] Name: [{Name}]",
-                    id, name);
+                    plugInInstanceId, name);
 
                 executingInstance = new ExecutingInstance()
                 {
-                    Id = id,
-                    State = ExecutionState.InActive
+                    Id = plugInInstanceId,
+                    State = ExecutionState.Starting,
                 };
 
                 _executingInstances.Add(executingInstance);
@@ -87,18 +93,22 @@ namespace Shaos.Services.Runtime
 
             if (executingInstance.State == ExecutionState.Active)
             {
-                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", id, name);
+                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", plugInInstanceId, name);
             }
             else
             {
                 _ = Task
                     .Run(async () => await StartExecutingInstanceAsync(
-                        id,
+                        plugInId,
+                        plugInInstanceId,
                         name,
+                        assemblyFileName,
                         executingInstance,
                         cancellationToken),
                         cancellationToken);
             }
+
+            return executingInstance;
         }
 
         /// <inheritdoc/>
@@ -128,15 +138,51 @@ namespace Shaos.Services.Runtime
             }
         }
 
+        private static IPlugIn? LoadPlugIn(Assembly assembly)
+        {
+            IPlugIn? result = null;
+            foreach (var type in from Type type in assembly.GetTypes()
+                                 where typeof(IPlugIn).IsAssignableFrom(type)
+                                 select type)
+            {
+                result = Activator.CreateInstance(type) as IPlugIn;
+                if (result != null)
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         private async Task StartExecutingInstanceAsync(
-            int id,
+            int plugInId,
+            int plugInInstanceId,
             string name,
+            string assemblyFile,
             ExecutingInstance executingInstance,
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}]",
-                id,
-                name);
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFile);
+
+            _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}] Assembly: [{Assembly}]",
+                plugInInstanceId,
+                name,
+                assemblyFile);
+
+            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+            executingInstance.AssemblyLoadContext = new RuntimeAssemblyLoadContext(assemblyPath);
+            executingInstance.Assembly = executingInstance.AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
+            executingInstance.PlugIn = LoadPlugIn(executingInstance.Assembly);
+
+            if (executingInstance.PlugIn == null)
+            {
+                executingInstance.State = ExecutionState.LoadFailure;
+            }
+            else
+            {
+                executingInstance.State = ExecutionState.Active;
+            }
         }
 
         private async Task StopExecutingInstanceAsync(
