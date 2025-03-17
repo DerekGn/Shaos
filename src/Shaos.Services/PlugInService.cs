@@ -143,11 +143,11 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task<UploadPackageResult> UploadPlugInPackageAsync(
             int id,
-            string fileName,
+            string packageFileName,
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+            packageFileName.ThrowIfNullOrEmpty(nameof(packageFileName));
 
             UploadPackageResult result = UploadPackageResult.Success;
 
@@ -155,28 +155,28 @@ namespace Shaos.Services
             {
                 if (VerifyPlugState(plugIn, ExecutionState.Active))
                 {
-                    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", fileName);
+                    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
                     result = UploadPackageResult.PlugInRunning;
                 }
                 else
                 {
-                    if (!_fileStoreService.PackageExists(fileName))
+                    if (!_fileStoreService.PackageExists(packageFileName))
                     {
-                        _logger.LogInformation("Writing PlugIn Package file [{FileName}]", fileName);
+                        _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
 
                         await _fileStoreService.WritePlugInPackageFileStreamAsync(
                             plugIn.Id,
-                            fileName,
+                            packageFileName,
                             stream,
                             cancellationToken);
 
                         var files = _fileStoreService
-                            .ExtractPackage(fileName, plugIn.Id.ToString())
+                            .ExtractPackage(packageFileName, plugIn.Id.ToString())
                             .Where(_ => Path.GetExtension(_) == ".dll")
                             .Where(_ => !string.Equals(_, "Shaos.Sdk.dll", StringComparison.OrdinalIgnoreCase))
                             .ToList();
 
-                        if (!ValidPlugInFound(files, out var plugInFile, out var version))
+                        if (!ValidPlugInFound(files, out var assemblyFileName, out var version))
                         {
                             _logger.LogWarning("No valid PlugIn implementation found");
                             result = UploadPackageResult.NoValidPlugIn;
@@ -185,15 +185,15 @@ namespace Shaos.Services
                         {
                             await CreateOrUpdatePlugInPackageAsync(
                                 plugIn,
-                                fileName,
-                                plugInFile,
+                                packageFileName,
+                                Path.GetFileName(assemblyFileName),
                                 version,
                                 cancellationToken);
                         }
                     }
                     else
                     {
-                        _logger.LogInformation("PlugIn Package file already exists [{FileName}]", fileName);
+                        _logger.LogInformation("PlugIn Package file already exists [{FileName}]", packageFileName);
 
                         result = UploadPackageResult.PackageExists;
                     }
@@ -228,36 +228,36 @@ namespace Shaos.Services
 
         private async Task CreateOrUpdatePlugInPackageAsync(
             PlugIn plugIn,
-            string fileName,
-            string filePath,
+            string packagFileName,
+            string assemblyFileName,
             string version,
             CancellationToken cancellationToken)
         {
             if (plugIn.Package == null)
             {
-                _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] FilePath: [{FilePath}] Version: [{Version}]",
+                _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{Version}]",
                     plugIn.Id,
-                    filePath,
+                    assemblyFileName,
                     version);
 
                 await _store.CreatePlugInPackageAsync(
                     plugIn,
-                    fileName,
-                    filePath,
+                    packagFileName,
+                    assemblyFileName,
                     version,
                     cancellationToken);
             }
             else
             {
-                _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] FilePath: [{FilePath}] Version: [{Version}]",
+                _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{Version}]",
                     plugIn.Id,
-                    filePath,
+                    assemblyFileName,
                     version);
 
                 await _store.UpdatePlugInPackageAsync(
                     plugIn,
-                    fileName,
-                    filePath,
+                    packagFileName,
+                    assemblyFileName,
                     version,
                     cancellationToken);
             }

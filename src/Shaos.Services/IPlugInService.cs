@@ -45,12 +45,12 @@ namespace Shaos.Services
         /// Upload the package binaries for a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to update the NuGet package</param>
-        /// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
+        /// <param name="packageFileName">The file name for the <see cref="PlugIn"/></param>
         /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task<UploadPackageResult> UploadPlugInPackageAsync(
             int id,
-            string fileName,
+            string packageFileName,
             Stream stream,
             CancellationToken cancellationToken = default);
 

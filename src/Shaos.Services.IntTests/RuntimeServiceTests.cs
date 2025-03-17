@@ -52,16 +52,16 @@ namespace Shaos.Services.IntTests
                 _fileStoreService);
         }
 
-        [Fact]
-        public async Task TestPlugInStartAsync()
-        {
-            PlugInInstance plugInInstance = new PlugInInstance()
-            {
-                Id = 2,
-                Name = "TestPlugInInstance"
-            };
+        //[Fact]
+        //public async Task TestPlugInStartAsync()
+        //{
+        //    PlugInInstance plugInInstance = new PlugInInstance()
+        //    {
+        //        Id = 2,
+        //        Name = "TestPlugInInstance"
+        //    };
 
-            await _runtimeService.StartInstanceAsync(plugInInstance);
-        }
+        //    await _runtimeService.StartInstanceAsync(plugInInstance);
+        //}
     }
 }

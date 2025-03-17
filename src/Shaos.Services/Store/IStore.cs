@@ -67,15 +67,15 @@ namespace Shaos.Services.Store
         /// Create a new <see cref="Package"/> instance
         /// </summary>
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
-        /// <param name="filename">The file name of the <see cref="Package"/></param>
-        /// <param name="filePath">The fully qualified file path to the PlugIn assembly</param>
+        /// <param name="fileName">The file name of the <see cref="Package"/></param>
+        /// <param name="assemblyFile">The <see cref="PlugIn"/> assembly</param>
         /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="Package"/> identifier</returns>
         Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
             string fileName,
-            string filePath,
+            string assemblyFile,
             string version,
             CancellationToken cancellationToken = default);
 
@@ -154,17 +154,17 @@ namespace Shaos.Services.Store
             CancellationToken cancellationToken);
 
         /// <summary>
-        ///
+        /// Update a <see cref="Package"/> instance
         /// </summary>
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
-        /// <param name="filename">The file name of the <see cref="Package"/></param>
-        /// <param name="filePath">The fully qualified file path to the PlugIn assembly</param>
+        /// <param name="fileName">The file name of the <see cref="Package"/></param>
+        /// <param name="assemblyFile">The <see cref="PlugIn"/> assembly</param>
         /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task UpdatePlugInPackageAsync(
             PlugIn plugIn,
             string fileName,
-            string filePath,
+            string assemblyFile,
             string version,
             CancellationToken cancellationToken = default);
     }

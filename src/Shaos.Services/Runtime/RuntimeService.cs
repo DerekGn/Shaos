@@ -61,86 +61,93 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        /// </inheritdoc>
+        /// <inheritdoc/>
         public async Task StartInstanceAsync(
-            PlugInInstance plugInInstance,
-            CancellationToken cancellationToken = default)
-        {
-            var executingPlugIn = _executingInstances
-                .FirstOrDefault(_ => _.Id == plugInInstance.Id);
-
-            if (executingPlugIn == null)
-            {
-                _logger.LogInformation("Creating ExecutingInstance: [{Id}] Name: [{Name}]",
-                    plugInInstance.Id, plugInInstance.Name);
-
-                executingPlugIn = new ExecutingInstance()
-                {
-                    Id = plugInInstance.Id,
-                    State = ExecutionState.InActive
-                };
-
-                _executingInstances.Add(executingPlugIn);
-            }
-
-            if (executingPlugIn.State == ExecutionState.InActive)
-            {
-                _ = Task
-                    .Run(async () => await StartExecutingInstanceAsync(
-                        plugInInstance,
-                        executingPlugIn,
-                        cancellationToken),
-                        cancellationToken);
-            }
-            else
-            {
-                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", plugInInstance.Id, plugInInstance.Name);
-            }
-        }
-
-        /// </inheritdoc>
-        public async Task StopInstanceAsync(
-            PlugInInstance plugInInstance,
+            int id,
+            string name,
+            string plugInAssemblyPath,
             CancellationToken cancellationToken = default)
         {
             var executingInstance = _executingInstances
-                .FirstOrDefault(_ => _.Id == plugInInstance.Id);
+                .FirstOrDefault(_ => _.Id == id);
 
-            if (executingInstance != null)
+            if (executingInstance == null)
+            {
+                _logger.LogInformation("Creating ExecutingInstance: [{Id}] Name: [{Name}]",
+                    id, name);
+
+                executingInstance = new ExecutingInstance()
+                {
+                    Id = id,
+                    State = ExecutionState.InActive
+                };
+
+                _executingInstances.Add(executingInstance);
+            }
+
+            if (executingInstance.State == ExecutionState.Active)
+            {
+                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", id, name);
+            }
+            else
             {
                 _ = Task
-                    .Run(async () => await StopExecutingInstanceAsync(
-                        plugInInstance,
+                    .Run(async () => await StartExecutingInstanceAsync(
+                        id,
+                        name,
                         executingInstance,
                         cancellationToken),
                         cancellationToken);
             }
-            else
+        }
+
+        /// <inheritdoc/>
+        public async Task StopInstanceAsync(
+            int id,
+            string name,
+            CancellationToken cancellationToken = default)
+        {
+            var executingInstance = _executingInstances
+                .FirstOrDefault(_ => _.Id == id);
+
+            if (executingInstance == null)
             {
                 _logger.LogInformation("ExecutingInstance: [{Id}] Name: [{Name}] Not Found",
-                    plugInInstance.Id,
-                    plugInInstance.Name);
+                    id,
+                    name);
+            }
+            else
+            {
+                _ = Task
+                    .Run(async () => await StopExecutingInstanceAsync(
+                        id,
+                        name,
+                        executingInstance,
+                        cancellationToken),
+                        cancellationToken);
             }
         }
 
         private async Task StartExecutingInstanceAsync(
-            PlugInInstance plugInInstance,
+            int id,
+            string name,
             ExecutingInstance executingInstance,
             CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}]",
-                plugInInstance.Id,
-                plugInInstance.Name);
+                id,
+                name);
         }
 
         private async Task StopExecutingInstanceAsync(
-            PlugInInstance plugInInstance,
+            int id,
+            string name,
             ExecutingInstance executingInstance,
             CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
-                plugInInstance.Id,
-                plugInInstance.Name);
+                id,
+                name);
         }
     }
 }

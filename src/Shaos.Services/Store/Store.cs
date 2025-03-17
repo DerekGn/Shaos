@@ -107,18 +107,18 @@ namespace Shaos.Services.Store
         public async Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
             string fileName,
-            string filePath,
+            string assemblyFile,
             string version,
             CancellationToken cancellationToken = default)
         {
             fileName.ThrowIfNullOrEmpty(nameof(fileName));
-            filePath.ThrowIfNullOrEmpty(nameof(filePath));
+            assemblyFile.ThrowIfNullOrEmpty(nameof(assemblyFile));
             version.ThrowIfNullOrEmpty(nameof(version));
 
             var package = new Package()
             {
                 FileName = fileName,
-                AssemblyFile = filePath,
+                AssemblyFile = assemblyFile,
                 PlugIn = plugIn,
                 PlugInId = plugIn.Id,
                 Version = version
@@ -173,8 +173,7 @@ namespace Shaos.Services.Store
                .Include(_ => _.PlugIn)
                .Include(_ => _.PlugIn.Package)
                .AsNoTracking()
-               .FirstOrDefaultAsync(_ => _.Id == id,
-               cancellationToken);
+               .FirstOrDefaultAsync(_ => _.Id == id, cancellationToken);
 
             return plugInInstance;
         }
@@ -246,18 +245,18 @@ namespace Shaos.Services.Store
         public async Task UpdatePlugInPackageAsync(
             PlugIn plugIn,
             string fileName,
-            string filePath,
+            string assemblyFile,
             string version,
             CancellationToken cancellationToken = default)
         {
             fileName.ThrowIfNullOrEmpty(nameof(fileName));
-            filePath.ThrowIfNullOrEmpty(nameof(filePath));
+            assemblyFile.ThrowIfNullOrEmpty(nameof(assemblyFile));
             version.ThrowIfNullOrEmpty(nameof(version));
 
             if (plugIn.Package != null)
             {
                 plugIn.Package.FileName = fileName;
-                plugIn.Package.AssemblyFile = filePath;
+                plugIn.Package.AssemblyFile = assemblyFile;
                 plugIn.Package.Version = version;
 
                 await _context.SaveChangesAsync(cancellationToken);
