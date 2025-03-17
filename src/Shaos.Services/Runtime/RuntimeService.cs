@@ -32,7 +32,7 @@ namespace Shaos.Services.Runtime
 {
     public class RuntimeService : IRuntimeService
     {
-        private readonly List<ExecutingInstance> _executingInstances;
+        internal readonly List<ExecutingInstance> _executingInstances;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<RuntimeService> _logger;
 

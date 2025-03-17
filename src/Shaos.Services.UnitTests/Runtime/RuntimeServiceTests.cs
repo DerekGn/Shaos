@@ -47,6 +47,27 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
+        public async Task TestGetExecutingInstanceFound()
+        {
+            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            {
+                Id = 1,
+            });
+
+            var executingInstance = _runtimeService.GetExecutingInstance(1);
+
+            Assert.NotNull(executingInstance);
+        }
+
+        [Fact]
+        public async Task TestGetExecutingInstanceNotFound()
+        {
+            var executingInstance = _runtimeService.GetExecutingInstance(1);
+
+            Assert.Null(executingInstance);
+        }
+
+        [Fact]
         public async Task TestStartInstanceAsync()
         {
             await _runtimeService.StartInstanceAsync(1, "name", "");
