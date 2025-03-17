@@ -141,23 +141,6 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task UpdatePlugInInstanceAsync(
-            int id,
-            UpdatePlugInInstance update,
-            CancellationToken cancellationToken = default)
-        {
-            await UpdatePlugInInstanceAsync(id, (plugInInstance) =>
-            {
-                if (plugInInstance != null)
-                {
-                    plugInInstance.Description = update.Description;
-                    plugInInstance.Name = update.Name;
-                }
-            },
-            cancellationToken);
-        }
-
-        /// <inheritdoc/>
         public async Task<UploadPackageResult> UploadPlugInPackageAsync(
             int id,
             string fileName,

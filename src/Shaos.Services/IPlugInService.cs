@@ -86,16 +86,5 @@ namespace Shaos.Services
             int id,
             bool enable,
             CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Update the properties of a <see cref="PlugInInstance"/>
-        /// </summary>
-        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
-        /// <param name="update">The <see cref="UpdatePlugInInstance"/> properties to update</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task UpdatePlugInInstanceAsync(
-            int id,
-            UpdatePlugInInstance update,
-            CancellationToken cancellationToken = default);
     }
 }

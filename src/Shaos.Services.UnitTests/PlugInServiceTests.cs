@@ -192,6 +192,13 @@ namespace Shaos.Services.UnitTests
                 Times.Once);
         }
 
+        [Fact]
+        public async Task TestSetPlugInInstanceEnableNotFoundAsync()
+        {
+            await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(async () =>
+                await _plugInService.SetPlugInInstanceEnableAsync(10, true));
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -202,10 +209,14 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PlugInInstance());
 
-            await _plugInService.SetPlugInInstanceEnableAsync(10, state);
+            var result = await _plugInService.SetPlugInInstanceEnableAsync(10, state);
 
-            _mockStore.Setup(_ => _.SaveChangesAsync(
-                It.IsAny<CancellationToken>()));
+            Assert.NotNull(result);
+            Assert.Equal(state, result.Enabled);
+
+            _mockStore.Verify(_ => _.SaveChangesAsync(
+                It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
