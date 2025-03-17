@@ -22,44 +22,21 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
-
-namespace Shaos.Services
+namespace Shaos.Services.IO
 {
-    public class NuGetSpecification
+    /// <summary>
+    /// The file store options
+    /// </summary>
+    public record FileStoreOptions
     {
         /// <summary>
-        /// The package identifier
+        /// The store path where PlugIn package will be stored
         /// </summary>
-        public required string Id { get; init; }
+        public required string PackagesPath { get; init; }
 
         /// <summary>
-        /// Indicates if pre release packages can be resolved
+        /// The store path where PlugIn package binaries will be stored
         /// </summary>
-        public bool PreRelease { get; init; }
-
-        /// <summary>
-        /// The package version
-        /// </summary>
-        /// <remarks>
-        /// Follows the semantic versioning specification
-        /// See https://learn.microsoft.com/en-us/nuget/concepts/package-versioning?tabs=semver20sort
-        /// See https://semver.org/
-        /// </remarks>
-        public required string Version { get; init; }
-
-        /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.Append($"{nameof(Id)}: {Id} ");
-            stringBuilder.Append($"{nameof(PreRelease)}: {PreRelease} ");
-            stringBuilder.Append($"{nameof(Version)}: {Version}");
-
-            return stringBuilder.ToString();
-        }
+        public required string BinariesPath { get; init; }
     }
 }

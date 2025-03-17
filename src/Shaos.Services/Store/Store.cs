@@ -22,10 +22,14 @@
 * SOFTWARE.
 */
 
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Shaos.Services.Store
@@ -33,6 +37,7 @@ namespace Shaos.Services.Store
     /// <summary>
     /// The implementation of the <see cref="IStore"/>
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class Store : IStore
     {
         private readonly ShaosDbContext _context;
@@ -50,19 +55,24 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken = default)
         {
+            name.ThrowIfNullOrEmpty(nameof(name));
+
             var plugIn = new PlugIn()
             {
                 Name = name,
                 Description = description
             };
 
-            await _context.PlugIns.AddAsync(plugIn, cancellationToken);
+            return await HandleDuplicatePlugInNameAsync(name, async () =>
+            {
+                await _context.PlugIns.AddAsync(plugIn, cancellationToken);
 
-            await _context.SaveChangesAsync(cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
+                _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
 
-            return plugIn.Id;
+                return plugIn.Id;
+            });
         }
 
         /// <inheritdoc/>
@@ -72,6 +82,9 @@ namespace Shaos.Services.Store
             PlugIn plugIn,
             CancellationToken cancellationToken = default)
         {
+            name.ThrowIfNullOrEmpty(nameof(name));
+            description.ThrowIfNullOrEmpty(nameof(description));
+
             var plugInInstance = new PlugInInstance()
             {
                 Description = description,
@@ -82,33 +95,40 @@ namespace Shaos.Services.Store
 
             plugIn.Instances.Add(plugInInstance);
 
-            await _context.SaveChangesAsync(cancellationToken);
+            return await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
+            {
+                await _context.SaveChangesAsync(cancellationToken);
 
-            return plugInInstance.Id;
+                return plugInInstance.Id;
+            });
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInNuGetPackageAsync(
-            string name,
-            string fileName,
-            string version,
+        public async Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
+            string fileName,
+            string filePath,
+            string version,
             CancellationToken cancellationToken = default)
         {
-            var nuGetPackage = new NuGetPackage()
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+            filePath.ThrowIfNullOrEmpty(nameof(filePath));
+            version.ThrowIfNullOrEmpty(nameof(version));
+
+            var package = new Package()
             {
-                Name = name,
                 FileName = fileName,
-                Version = version.ToString(),
+                AssemblyFile = filePath,
                 PlugIn = plugIn,
-                PlugInId = plugIn.Id
+                PlugInId = plugIn.Id,
+                Version = version
             };
 
-            plugIn.NuGetPackage = nuGetPackage;
+            plugIn.Package = package;
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return nuGetPackage.Id;
+            return package.Id;
         }
 
         /// <inheritdoc/>
@@ -131,7 +151,7 @@ namespace Shaos.Services.Store
         {
             var query = _context
                 .PlugIns
-                .Include(_ => _.NuGetPackage)
+                .Include(_ => _.Package)
                 .Include(_ => _.Instances)
                 .AsQueryable();
 
@@ -144,43 +164,17 @@ namespace Shaos.Services.Store
         }
 
         /// <inheritdoc/>
-        public async Task<PlugIn?> GetPlugInByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default)
-        {
-            var plugin = await _context
-                .PlugIns
-                .AsNoTracking()
-                .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
-
-            return plugin;
-        }
-
-        /// <inheritdoc/>
         public async Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
             int id,
             CancellationToken cancellationToken = default)
         {
             var plugInInstance = await _context
                .PlugInInstances
-               //.Include(_ => _.PlugIn)
-               //.Include(_ => _.PlugIn.NuGetPackage)
+               .Include(_ => _.PlugIn)
+               .Include(_ => _.PlugIn.Package)
                .AsNoTracking()
                .FirstOrDefaultAsync(_ => _.Id == id,
                cancellationToken);
-
-            return plugInInstance;
-        }
-
-        /// <inheritdoc/>
-        public async Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default)
-        {
-            var plugInInstance = await _context
-                .PlugInInstances
-                .AsNoTracking()
-                .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
 
             return plugInInstance;
         }
@@ -190,7 +184,7 @@ namespace Shaos.Services.Store
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in _context.PlugIns
-                .Include(_ => _.NuGetPackage)
+                .Include(_ => _.Package)
                 .Include(_ => _.Instances)
                 .AsNoTracking()
                 .AsAsyncEnumerable()
@@ -213,21 +207,99 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken = default)
         {
-            PlugIn? result = null;
+            name.ThrowIfNullOrEmpty(nameof(name));
 
-            if(!await _context.PlugIns.AnyAsync(_ => _.Name == name && _.Id != id, cancellationToken))
+            var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInNotFoundException(id);
+
+            return await HandleDuplicatePlugInNameAsync(name, async () =>
             {
-                var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken);
-
                 plugIn.Name = name;
                 plugIn.Description = description;
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                result = plugIn;
-            }
+                return plugIn;
+            });
+        }
 
-            return result;
+        /// <inheritdoc/>
+        public async Task UpdatePlugInInstanceAsync(
+            int id,
+            string name,
+            string? description,
+            CancellationToken cancellationToken)
+        {
+            var plugInInstance = await _context.PlugInInstances.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+
+            await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
+            {
+                plugInInstance.Name = name;
+                plugInInstance.Description = description;
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return plugInInstance;
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdatePlugInPackageAsync(
+            PlugIn plugIn,
+            string fileName,
+            string filePath,
+            string version,
+            CancellationToken cancellationToken = default)
+        {
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+            filePath.ThrowIfNullOrEmpty(nameof(filePath));
+            version.ThrowIfNullOrEmpty(nameof(version));
+
+            if (plugIn.Package != null)
+            {
+                plugIn.Package.FileName = fileName;
+                plugIn.Package.AssemblyFile = filePath;
+                plugIn.Package.Version = version;
+
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        private async Task<T> HandleDuplicatePlugInInstanceNameAsync<T>(string name, Func<Task<T>> operation)
+        {
+            try
+            {
+                return await operation();
+            }
+            catch (DbUpdateException exception) when (exception.InnerException is SqliteException sqliteException)
+            {
+                if (sqliteException.SqliteErrorCode == 0x13)
+                {
+                    _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
+
+                    throw new PlugInInstanceNameExistsException(name);
+                }
+
+                throw;
+            }
+        }
+
+        private async Task<T> HandleDuplicatePlugInNameAsync<T>(string name, Func<Task<T>> operation)
+        {
+            try
+            {
+                return await operation();
+            }
+            catch (DbUpdateException exception) when (exception.InnerException is SqliteException sqliteException)
+            {
+                if (sqliteException.SqliteErrorCode == 0x13)
+                {
+                    _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
+
+                    throw new PlugInNameExistsException(name);
+                }
+
+                throw;
+            }
         }
     }
 }

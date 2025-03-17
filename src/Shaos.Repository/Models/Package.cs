@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,33 +22,26 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Package
+namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// Represents a package download result
+    /// A <see cref="Package"/> for a <see cref="PlugIn"/>
     /// </summary>
-    public record PackageDownload
+    public class Package : PlugInChildBase
     {
-        public PackageDownload(PackageSpecification specification)
-        {
-            Specification = specification;
-            ExtractedFiles = new List<string>();
-        }
-
-#warning //TODO mask downloaded files path before presenting to UI or controller
         /// <summary>
-        /// The list of extracted package files
+        /// The fully qualified path to the PlugIn assembly
         /// </summary>
-        public IList<string> ExtractedFiles { get; }
+        public string AssemblyFile { get; set; } = string.Empty;
 
         /// <summary>
-        /// The <see cref="PackageSpecification"/> that was downloaded
+        /// The file name of the <see cref="Package"/>
         /// </summary>
-        public PackageSpecification Specification { get; }
+        public string FileName { get; set; } = string.Empty;
 
         /// <summary>
-        /// The <see cref="DownloadStatus"/> of the download
+        /// The version of the <see cref="Package"/>
         /// </summary>
-        public DownloadStatus Status { get; internal set; }
+        public string Version { get; set; } = string.Empty;
     }
 }

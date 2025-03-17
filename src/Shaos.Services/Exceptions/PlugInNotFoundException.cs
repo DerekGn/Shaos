@@ -22,10 +22,25 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.Exceptions
 {
-    public interface IPlugInValidationService
+    public class PlugInNotFoundException : Exception
     {
-        bool ValidatePlugIn(string assemblyFile);
+        public PlugInNotFoundException(int id)
+        {
+            Id = id;
+        }
+
+        public PlugInNotFoundException(int id, string message) : base(message)
+        {
+            Id = id;
+        }
+
+        public PlugInNotFoundException(int id, string message, Exception inner) : base(message, inner)
+        {
+            Id = id;
+        }
+
+        public int Id { get; }
     }
 }

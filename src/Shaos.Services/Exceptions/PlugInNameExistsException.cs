@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,26 +22,25 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models
+namespace Shaos.Services.Exceptions
 {
-    /// <summary>
-    /// A <see cref="NuGetPackage"/> for a <see cref="PlugIn"/>
-    /// </summary>
-    public class NuGetPackage : PlugInChildBase
+    public class PlugInNameExistsException : Exception
     {
-        /// <summary>
-        /// The file name of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string FileName { get; set; } = string.Empty;
+        public PlugInNameExistsException(string name)
+        {
+            Name = name;
+        }
 
-        /// <summary>
-        /// The name of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public PlugInNameExistsException(string name, string message) : base(message)
+        {
+            Name = name;
+        }
 
-        /// <summary>
-        /// The version of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public string Version { get; set; } = string.Empty;
+        public PlugInNameExistsException(string name, string message, Exception inner) : base(message, inner)
+        {
+            Name = name;
+        }
+
+        public string? Name { get; }
     }
 }

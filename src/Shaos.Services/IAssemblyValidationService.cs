@@ -22,24 +22,16 @@
 * SOFTWARE.
 */
 
-using NuGet.Packaging.Core;
-using NuGet.Protocol.Core.Types;
-using Shaos.Services.Package;
-
-namespace Shaos.Services.Processing
+namespace Shaos.Services
 {
-    internal class DownloadNuGetContext
+    public interface IAssemblyValidationService
     {
-        public DownloadNuGetContext(NuGetSpecification nuGetSpecification)
-        {
-            Specification = nuGetSpecification;
-            Dependencies = new List<SourcePackageDependencyInfo>();
-            Downloads = new List<PackageDownload>();
-        }
-
-        public IList<SourcePackageDependencyInfo> Dependencies { get; }
-        public IList<PackageDownload> Downloads { get; }
-        public PackageIdentity? Identity { get; internal set; }
-        public NuGetSpecification Specification { get; }
+        /// <summary>
+        /// Validate an assembly to determine if contains a IPlugIn derived type
+        /// </summary>
+        /// <param name="assemblyFile">The assembly file path</param>
+        /// <param name="version">The version of the assembly</param>
+        /// <returns>true if a valid PlugIn assembly was found</returns>
+        bool ValidateContainsType<T>(string assemblyFile, out string version);
     }
 }

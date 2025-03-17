@@ -24,6 +24,7 @@
 
 using Shaos.Repository.Models;
 using System.Runtime.CompilerServices;
+using Shaos.Services.Exceptions;
 
 namespace Shaos.Services.Store
 {
@@ -39,6 +40,8 @@ namespace Shaos.Services.Store
         /// <param name="description">The <see cref="PlugIn"/> description</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<int> CreatePlugInAsync(
             string name,
             string? description,
@@ -52,6 +55,8 @@ namespace Shaos.Services.Store
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="PlugInInstance"/> identifier</returns>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
         Task<int> CreatePlugInInstanceAsync(
             string name,
             string description,
@@ -59,19 +64,19 @@ namespace Shaos.Services.Store
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Create a new <see cref="NuGetPackage"/> instance
+        /// Create a new <see cref="Package"/> instance
         /// </summary>
-        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="NuGetPackage"/></param>
-        /// <param name="name">The <see cref="NuGetPackage"/> name</param>
-        /// <param name="fileName">The <see cref="NuGetPackage"/> filename</param>
-        /// <param name="version">The <see cref="NuGetPackage"/> version</param>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
+        /// <param name="filename">The file name of the <see cref="Package"/></param>
+        /// <param name="filePath">The fully qualified file path to the PlugIn assembly</param>
+        /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="NuGetPackage"/> identifier</returns>
-        Task<int> CreatePlugInNuGetPackageAsync(
-            string name,
-            string fileName,
-            string version,
+        /// <returns>The <see cref="Package"/> identifier</returns>
+        Task<int> CreatePlugInPackageAsync(
             PlugIn plugIn,
+            string fileName,
+            string filePath,
+            string version,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -94,16 +99,6 @@ namespace Shaos.Services.Store
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Get a <see cref="PlugIn"/> instance by its name
-        /// </summary>
-        /// <param name="name">The name of the <see cref="PlugIn"/> to search for</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="PlugIn"/> if found</returns>
-        Task<PlugIn?> GetPlugInByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Get a <see cref="PlugInInstance"/> by its identifier
         /// </summary>
         /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
@@ -111,16 +106,6 @@ namespace Shaos.Services.Store
         /// <returns>The <see cref="PlugInInstance"/> if found</returns>
         Task<PlugInInstance?> GetPlugInInstanceByIdAsync(
             int id,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get a <see cref="PlugInInstance"/> instance by its name
-        /// </summary>
-        /// <param name="name">The name of the <see cref="PlugInInstance"/> to search for</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="PlugInInstance"/> if found</returns>
-        Task<PlugInInstance?> GetPlugInInstanceByNameAsync(
-            string name,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -145,10 +130,42 @@ namespace Shaos.Services.Store
         /// <param name="description">The <see cref="PlugIn"/> description</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="PlugIn"/> if found and updates are applied</returns>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<PlugIn?> UpdatePlugInAsync(
             int id,
             string name,
             string? description,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update a <see cref="PlugInInstance"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
+        /// <param name="name">The updated name for the <see cref="PlugInInstance"/></param>
+        /// <param name="description">The updated description of the <see cref="PlugInInstance"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
+        Task UpdatePlugInInstanceAsync(
+            int id,
+            string name,
+            string? description,
+            CancellationToken cancellationToken);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
+        /// <param name="filename">The file name of the <see cref="Package"/></param>
+        /// <param name="filePath">The fully qualified file path to the PlugIn assembly</param>
+        /// <param name="version">The <see cref="Package"/> assembly version</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task UpdatePlugInPackageAsync(
+            PlugIn plugIn,
+            string fileName,
+            string filePath,
+            string version,
             CancellationToken cancellationToken = default);
     }
 }

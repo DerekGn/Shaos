@@ -22,34 +22,24 @@
 * SOFTWARE.
 */
 
-using NuGet.Packaging.Core;
-using NuGet.Protocol.Core.Types;
-
-namespace Shaos.Services.Package
+namespace Shaos.Services.Exceptions
 {
-    /// <summary>
-    /// The result of a <see cref="NuGetSpecification"/> resolve result
-    /// </summary>
-    public record NuGetSpecificationResolveResult
+
+    public class PlugInInstanceNameExistsException : Exception
     {
-        public NuGetSpecificationResolveResult(bool resolved)
+        public PlugInInstanceNameExistsException(string name)
         {
-            Resolved = resolved;
+            Name = name;
+        }
+        public PlugInInstanceNameExistsException(string name, string message) : base(message)
+        {
+            Name = name;
+        }
+        public PlugInInstanceNameExistsException(string name, string message, Exception inner) : base(message, inner)
+        {
+            Name = name;
         }
 
-        /// <summary>
-        /// The set of <see cref="SourcePackageDependencyInfo"/> for the NuGet package
-        /// </summary>
-        public IList<SourcePackageDependencyInfo> Dependencies { get; } = new List<SourcePackageDependencyInfo>();
-
-        /// <summary>
-        /// The <see cref="PackageIdentity"/> of the resolved package
-        /// </summary>
-        public PackageIdentity? Identity { get; internal set; }
-
-        /// <summary>
-        /// The <see cref="ResolveStatus"/>
-        /// </summary>
-        public bool Resolved { get; }
+        public string? Name { get; }
     }
 }

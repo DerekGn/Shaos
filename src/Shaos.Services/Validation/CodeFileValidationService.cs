@@ -23,13 +23,14 @@
 */
 
 using Microsoft.AspNetCore.Http;
+using Shaos.Services.Extensions;
 
 namespace Shaos.Services.Validation
 {
     public class CodeFileValidationService : ICodeFileValidationService
     {
-        internal const string ContentType = "application/octet-stream";
-        private readonly string[] permittedExtensions = { ".nupkg" };
+        internal const string ContentType = "application/x-zip-compressed";
+        private readonly string[] permittedExtensions = { ".zip" };
 
         public FileValidationResult ValidateFile(IFormFile formFile)
         {
@@ -57,6 +58,8 @@ namespace Shaos.Services.Validation
 
         private bool ValidFileName(string fileName)
         {
+            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+
             var ext = Path
                 .GetExtension(fileName)
                 .ToLowerInvariant();

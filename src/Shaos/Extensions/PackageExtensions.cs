@@ -22,20 +22,24 @@
 * SOFTWARE.
 */
 
-using NuGet.Protocol.Core.Types;
-using Shaos.Services.Package;
+using PackageApi = Shaos.Api.Model.v1.Package;
+using PlugInModel = Shaos.Repository.Models.Package;
 
-namespace Shaos.Services.Extensions
+namespace Shaos.Extensions
 {
-    public static class NuGetPackageDownloadStatusExtensions
+    internal static class PackageExtensions
     {
-        public static DownloadStatus ToDownloadStatus(this DownloadResourceResultStatus downloadResourceResultStatus) => downloadResourceResultStatus switch
+        internal static PackageApi ToApi(this PlugInModel package)
         {
-            DownloadResourceResultStatus.Available => DownloadStatus.Success,
-            DownloadResourceResultStatus.AvailableWithoutStream => DownloadStatus.AvailableWithoutStream,
-            DownloadResourceResultStatus.NotFound => DownloadStatus.NotFound,
-            DownloadResourceResultStatus.Cancelled => DownloadStatus.Cancelled,
-            _ => throw new ArgumentOutOfRangeException(nameof(downloadResourceResultStatus), $"Not expected direction value: {downloadResourceResultStatus}")
-        };
+            return new PackageApi()
+            {
+                AssemblyFile = package.AssemblyFile,
+                CreatedDate = package.CreatedDate,
+                FilePath = package.FileName,
+                Id = package.Id,
+                UpdatedDate = package.UpdatedDate,
+                Version = package.Version
+            };
+        }
     }
 }

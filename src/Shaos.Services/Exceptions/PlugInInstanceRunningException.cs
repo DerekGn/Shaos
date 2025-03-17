@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,21 +22,23 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Api.Model.v1
+namespace Shaos.Services.Exceptions
 {
-    /// <summary>
-    /// Represents a code file that implements a <see cref="PlugIn"/> functionality
-    /// </summary>
-    public record NuGetPackage : Base
+    public class PlugInInstanceRunningException : Exception
     {
-        /// <summary>
-        /// The file name of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public required string FileName { get; init; }
+        public PlugInInstanceRunningException(int id)
+        {
+            Id = id;
+        }
+        public PlugInInstanceRunningException(int id, string message) : base(message)
+        {
+            Id = id;
+        }
+        public PlugInInstanceRunningException(int id, string message, Exception inner) : base(message, inner)
+        {
+            Id = id;
+        }
 
-        /// <summary>
-        /// The version of the <see cref="NuGetPackage"/>
-        /// </summary>
-        public required string Version { get; init; }
+        public int Id { get; }
     }
 }

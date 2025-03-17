@@ -22,27 +22,22 @@
 * SOFTWARE.
 */
 
-using System.ComponentModel.DataAnnotations;
+using ExecutingInstanceApi = Shaos.Api.Model.v1.ExecutingInstance;
+using ExecutinginstanceService = Shaos.Services.Runtime.ExecutingInstance;
 
-namespace Shaos.Services.Options
+#warning TODO updated enumeration mapping
+
+namespace Shaos.Extensions
 {
-    public class NuGetPackageServiceOptions
+    internal static class ExecutingPlugInExtensions
     {
-        public string FrameworkFolder { get; init; } = "net8.0";
-
-        /// <summary>
-        /// The folder to which packages will be downloaded too.
-        /// </summary>
-        [Required]
-        public required string PackageFolder { get; init; }
-
-        /// <summary>
-        /// The list of package sources to resolve nuget packages
-        /// </summary>
-        [Required]
-        public required IList<Uri> PackageSources { get; init; } = new List<Uri>()
+        internal static ExecutingInstanceApi ToApi(this ExecutinginstanceService executingInstance)
         {
-            new Uri("https://api.nuget.org/v3/index.json")
-        };
+            return new ExecutingInstanceApi()
+            {
+                Id = executingInstance.Id,
+                Status = (Api.Model.v1.ExecutionState)executingInstance.State
+            };
+        }
     }
 }

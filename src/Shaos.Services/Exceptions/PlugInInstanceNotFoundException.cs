@@ -22,24 +22,25 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.Exceptions
 {
-    public enum DownloadPlugInNuGetStatus
+    public class PlugInInstanceNotFoundException : Exception
     {
-        None,
-        Success,
-        /// <summary>
-        /// The package was not downloaded
-        /// </summary>
-        DownloadFailed,
-        /// <summary>
-        /// The package was not found in the download payload
-        /// </summary>
-        NotFound,
-        /// <summary>
-        /// 
-        /// </summary>
-        AssemblyNotFound,
-        PlugInValidationFailed,
+        public PlugInInstanceNotFoundException(int id)
+        {
+            Id = id;
+        }
+
+        public PlugInInstanceNotFoundException(int id, string message) : base(message)
+        {
+            Id = id;
+        }
+
+        public PlugInInstanceNotFoundException(int id, string message, Exception inner) : base(message, inner)
+        {
+            Id = id;
+        }
+
+        public int Id { get; }
     }
 }

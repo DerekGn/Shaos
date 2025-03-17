@@ -41,7 +41,7 @@ namespace Shaos.Repository
         public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>
-        public DbSet<NuGetPackage> NuGetPackages { get; set; }
+        public DbSet<Package> Packages { get; set; }
 
         /// <inheritdoc/>>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
@@ -71,9 +71,9 @@ namespace Shaos.Repository
 
             modelBuilder
                 .Entity<PlugIn>()
-                .HasOne(_ => _.NuGetPackage)
+                .HasOne(_ => _.Package)
                 .WithOne(_ => _.PlugIn)
-                .HasForeignKey<NuGetPackage>(_ => _.PlugInId)
+                .HasForeignKey<Package>(_ => _.PlugInId)
                 .IsRequired(false);
 
             modelBuilder
@@ -97,22 +97,29 @@ namespace Shaos.Repository
             modelBuilder
                 .Entity<PlugIn>()
                 .HasIndex(_ => _.Name )
-                .HasDatabaseName("IX_PlugIn_Name_Ascending");
+                .HasDatabaseName("IX_PlugIn_Name_Ascending")
+                .IsUnique(true);
 
-            modelBuilder.Entity<NuGetPackage>()
+            modelBuilder.Entity<Package>()
                 .HasKey(_ => _.Id)
-                .HasName("PrimaryKey_NuGetId");
+                .HasName("PrimaryKey_PackageId");
 
             modelBuilder
-                .Entity<NuGetPackage>()
-                .Property(_ => _.FileName)
-                .HasMaxLength(ModelConstants.MaxFileNameLength)
+                .Entity<Package>()
+                .Property(_ => _.AssemblyFile)
+                .HasMaxLength(ModelConstants.MaxFilePathLength)
                 .IsRequired();
 
             modelBuilder
-                .Entity<NuGetPackage>()
+                .Entity<Package>()
+                .Property(_ => _.FileName)
+                .HasMaxLength(ModelConstants.MaxNameLength)
+                .IsRequired();
+
+            modelBuilder
+                .Entity<Package>()
                 .Property(_ => _.Version)
-                .HasMaxLength(10)
+                .HasMaxLength(ModelConstants.MaxVersionLength)
                 .IsRequired();
 
             modelBuilder.Entity<PlugInInstance>()
@@ -127,8 +134,15 @@ namespace Shaos.Repository
 
             modelBuilder
                .Entity<PlugInInstance>()
+               .Property(_ => _.Description)
+               .IsRequired(false)
+               .HasMaxLength(ModelConstants.MaxDescriptionLength);
+
+            modelBuilder
+               .Entity<PlugInInstance>()
                .HasIndex(_ => _.Name)
-               .HasDatabaseName("IX_PlugInInstance_Name_Ascending");
+               .HasDatabaseName("IX_PlugInInstance_Name_Ascending")
+               .IsUnique(true);
         }
     }
 }

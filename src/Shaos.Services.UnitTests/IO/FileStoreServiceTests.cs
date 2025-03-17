@@ -26,7 +26,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
-using Shaos.Services.Options;
 using Shaos.Services.Shared.Tests;
 using Xunit.Abstractions;
 
@@ -100,7 +99,7 @@ namespace Shaos.Services.UnitTests.IO
         //    memoryStream.Position = 0;
 
         //    var result = await _fileStoreService.WriteCodeFileStreamAsync("CodeWriteFolder", "FileName.txt", memoryStream);
-            
+
         //    Assert.NotNull(result);
         //}
     }

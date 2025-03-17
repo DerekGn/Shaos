@@ -22,13 +22,35 @@
 * SOFTWARE.
 */
 
+using Shaos.Services.Extensions;
+using System.Runtime.Loader;
 
 namespace Shaos.Services
 {
-    public class PlugInNuGetPackage
+    public class AssemblyValidationService : IAssemblyValidationService
     {
-        public string Package { get; internal set; }
-        public string Version { get; internal set; }
-        public IEnumerable<string>? ExtractedFiles { get; internal set; }
+        public bool ValidateContainsType<T>(string assemblyFile, out string version)
+        {
+            bool result = false;
+
+            assemblyFile.ThrowIfNullOrEmpty(nameof(assemblyFile));
+            version = string.Empty;
+
+            if (!File.Exists(assemblyFile))
+            {
+                throw new FileNotFoundException("Assembly file not found", assemblyFile);
+            }
+
+            var plugInAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
+
+            if (plugInAssembly != null)
+            {
+                version = plugInAssembly.GetName().Version!.ToString();
+
+                result = plugInAssembly.GetTypes().Any(t => typeof(T).IsAssignableFrom(t));
+            }
+
+            return result;
+        }
     }
 }

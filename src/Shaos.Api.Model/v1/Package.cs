@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -24,10 +24,24 @@
 
 namespace Shaos.Api.Model.v1
 {
-    public class PlugInNuGetPackage
+    /// <summary>
+    /// Represents a package
+    /// </summary>
+    public record Package : Base
     {
-        public string Package { get; init; }
-        public string Version { get; init; }
-        public IEnumerable<string>? ExtractedFiles { get; init; }
+        /// <summary>
+        /// The fully qualified path to the PlugIn assembly extracted from the package
+        /// </summary>
+        public string AssemblyFile { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The file name of the <see cref="Package"/>
+        /// </summary>
+        public string FilePath { get; init; } = string.Empty;
+
+        /// <summary>
+        /// The version of the <see cref="Package"/>
+        /// </summary>
+        public string Version { get; init; } = string.Empty;
     }
 }

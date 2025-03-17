@@ -45,7 +45,7 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The description of the <see cref="PlugInInstance"/>
         /// </summary>
-        public string Description {  get; set; } = string.Empty;
+        public string? Description {  get; set; }
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
@@ -54,7 +54,7 @@ namespace Shaos.Repository.Models
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.Append($"{nameof(Name)}: {Name} ");
-            stringBuilder.Append($"{nameof(Description)}: {Description} ");
+            stringBuilder.Append($"{nameof(Description)}: {Description??string.Empty} ");
             stringBuilder.Append($"{nameof(Enabled)}: {Enabled}");
 
             return stringBuilder.ToString();

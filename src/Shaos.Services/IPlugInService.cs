@@ -23,6 +23,7 @@
 */
 
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
 
 namespace Shaos.Services
 {
@@ -41,13 +42,13 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Upload a NuGet package directly to a <see cref="PlugIn"/>
+        /// Upload the package binaries for a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to update the NuGet package</param>
         /// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
         /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task UploadPlugInNuGetAsync(
+        Task<UploadPackageResult> UploadPlugInPackageAsync(
             int id,
             string fileName,
             Stream stream,
@@ -58,6 +59,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInAsync(
             int id,
             CancellationToken cancellationToken = default);
@@ -67,7 +69,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
+        /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInInstanceAsync(
             int id,
             CancellationToken cancellationToken = default);
@@ -78,26 +80,11 @@ namespace Shaos.Services
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="enable">The enable state to set</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task SetPlugInInstanceEnableAsync(
+        /// <exception cref="PlugInInstanceNotFoundException">Thrown if a <see cref="PlugInInstance"/> is not found</exception>
+        /// <returns>The updated <see cref="PlugInInstance"/></returns>
+        Task<PlugInInstance?> SetPlugInInstanceEnableAsync(
             int id,
             bool enable,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Update the properties of a <see cref="PlugInInstance"/>
-        /// </summary>
-        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
-        /// <param name="update">The <see cref="UpdatePlugInInstance"/> properties to update</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
-        Task UpdatePlugInInstanceAsync(
-            int id,
-            UpdatePlugInInstance update,
-            CancellationToken cancellationToken = default);
-
-        Task<DownloadPlugInNuGetResult> DownloadPlugInNuGetAsync(
-            int id,
-            NuGetSpecification specification,
             CancellationToken cancellationToken = default);
     }
 }

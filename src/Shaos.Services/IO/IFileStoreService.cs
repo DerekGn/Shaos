@@ -29,15 +29,31 @@ namespace Shaos.Services.IO
     /// </summary>
     public interface IFileStoreService
     {
+        void DeletePlugInPackage(int id, string fileName);
+
         /// <summary>
-        /// Deletes a <see cref="PlugIn"/> package folder
+        /// Extract a package to a folder
         /// </summary>
-        /// <param name="plugInId">The <see cref="PlugIn"/> identifier</param>
-        void DeletePlugInPackageFolder(int plugInId);
+        /// <param name="sourcePackage">The source package file</param>
+        /// <param name="targetFolder">The target package folder to write the source package folder</param>
+        IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder);
 
-        Stream? GetNuGetPackageStream(int id, string fileName);
+        /// <summary>
+        /// Determine if a package file exists in the package store
+        /// </summary>
+        /// <param name="fileName">The filename of the package file</param>
+        /// <returns>True if the package file exists</returns>
+        bool PackageExists(string fileName);
 
-        string GetPlugInNuGetPackagePath(int id, string fileName);
+        ///// <summary>
+        ///// Deletes a <see cref="PlugIn"/> package folder
+        ///// </summary>
+        ///// <param name="plugInId">The <see cref="PlugIn"/> identifier</param>
+        //void DeletePlugInPackageFolder(int plugInId);
+
+        //Stream? GetNuGetPackageStream(int id, string fileName);
+
+        //string GetPlugInNuGetPackagePath(int id, string fileName);
 
         /// <summary>
         /// Write the contents of a stream to a <paramref name="folder"/> <paramref name="fileName"/> combination
@@ -47,7 +63,7 @@ namespace Shaos.Services.IO
         /// <param name="stream">The stream to be written to the <paramref name="folder"/> <paramref name="fileName"/> combination</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string?> WritePlugInNuGetPackageFileStreamAsync(
+        Task<string> WritePlugInPackageFileStreamAsync(
             int plugInId,
             string fileName,
             Stream stream,

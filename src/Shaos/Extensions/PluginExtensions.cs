@@ -38,8 +38,8 @@ namespace Shaos.Extensions
                 Id = plugIn.Id,
                 Instances = plugIn.Instances.Select(_ => _.ToApi()).ToList(),
                 Name = plugIn.Name,
-                NuGetPackage = plugIn.NuGetPackage?.ToApi(),
                 UpdatedDate = plugIn.UpdatedDate,
+                Package = plugIn?.Package?.ToApi()
             };
         }
     }

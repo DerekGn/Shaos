@@ -22,12 +22,28 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Processing
+namespace Shaos.Services
 {
-    public interface INuGetProcessingService
+    /// <summary>
+    /// The upload package result
+    /// </summary>
+    public enum UploadPackageResult
     {
-        Task<DownloadNuGetResult> DownloadNuGetAsync(
-            NuGetSpecification specification,
-            CancellationToken cancellationToken = default);
+        /// <summary>
+        /// The package upload was successful
+        /// </summary>
+        Success,
+        /// <summary>
+        /// The package already exists
+        /// </summary>
+        PackageExists,
+        /// <summary>
+        /// No valid PlugIn assembly was found
+        /// </summary>
+        NoValidPlugIn,
+        /// <summary>
+        /// The PlugIn is running
+        /// </summary>
+        PlugInRunning
     }
 }
