@@ -68,11 +68,11 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.Null(executingInstance);
         }
 
-        [Fact(Skip = "need to load from plugin bin folder")]
+        [Fact]
         public async Task TestStartInstanceAsync()
         {
             _mockFileStoreService.Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
-                .Returns("F:\\Git\\Shaos\\src\\Shaos.Test.PlugIn\\bin\\Debug\\net8.0");
+                .Returns(AssemblyDirectory.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn"));
 
             var result = await _runtimeService.StartInstanceAsync(1, 2, "name", "Shaos.Test.PlugIn.dll");
 
