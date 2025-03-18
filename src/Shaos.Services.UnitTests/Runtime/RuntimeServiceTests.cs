@@ -79,7 +79,8 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Starting, result.State);
 
-            await Task.Delay(100);
+#warning would be better to sync on event rather than an absolute wait
+            await Task.Delay(1000);
 
             var executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
 
