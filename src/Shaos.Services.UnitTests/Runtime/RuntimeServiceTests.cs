@@ -71,8 +71,12 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public async Task TestStartInstanceAsync()
         {
+            var assemblyDirectory = AssemblyDirectory.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn");
+
+            OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
+
             _mockFileStoreService.Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
-                .Returns(AssemblyDirectory.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn"));
+                .Returns(assemblyDirectory);
 
             var result = await _runtimeService.StartInstanceAsync(1, 2, "name", "Shaos.Test.PlugIn.dll");
 
@@ -80,7 +84,7 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.Equal(ExecutionState.Starting, result.State);
 
 #warning would be better to sync on event rather than an absolute wait
-            await Task.Delay(1000);
+            await Task.Delay(100);
 
             var executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
 

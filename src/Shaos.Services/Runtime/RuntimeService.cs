@@ -164,13 +164,20 @@ namespace Shaos.Services.Runtime
             CancellationToken cancellationToken = default)
         {
             var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFile);
+            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
-            _logger.LogInformation("Starting ExecutingInstance PlugInInstance: [{Id}] Name: [{Name}] Assembly: [{Assembly}]",
+            _logger.LogInformation("Starting ExecutingInstance " +
+                "PlugInInstance: [{Id}] " +
+                "Name: [{Name}] " +
+                "Assembly: [{Assembly}] " +
+                "Name: [{AssemblyName}] " +
+                "Path: [{AssemblyPath}] ",
                 plugInInstanceId,
                 name,
-                assemblyFile);
+                assemblyFile,
+                assemblyName,
+                assemblyPath);
 
-            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
             executingInstance.AssemblyLoadContext = new RuntimeAssemblyLoadContext(assemblyPath);
             executingInstance.Assembly = executingInstance.AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
             executingInstance.PlugIn = LoadPlugIn(executingInstance.Assembly);
