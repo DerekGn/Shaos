@@ -12,4 +12,17 @@
         <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
     </ItemGroup>
 
+    <Target Name="CopyDLLs" AfterTargets="Build">
+        <Message Text="Executing CopyDLLs task" Importance="High" />
+
+        <ItemGroup>
+            <OutputFiles Include="$(TargetDir)\*.*"/>
+        </ItemGroup>
+        
+        <Copy
+          SourceFiles="@(OutputFiles)"
+          DestinationFolder="$(TargetDir)\1" />
+
+        <Message Text="Copied build files" Importance="High" />
+    </Target>
 </Project>

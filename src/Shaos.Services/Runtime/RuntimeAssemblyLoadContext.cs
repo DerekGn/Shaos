@@ -31,7 +31,7 @@ namespace Shaos.Services.Runtime
     {
         private readonly AssemblyDependencyResolver _resolver;
 
-        public RuntimeAssemblyLoadContext(string plugInPath) : base(true)
+        public RuntimeAssemblyLoadContext(string name, string plugInPath) : base(name, true)
         {
             _resolver = new AssemblyDependencyResolver(plugInPath);
         }

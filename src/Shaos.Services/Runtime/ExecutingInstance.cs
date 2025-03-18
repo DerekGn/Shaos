@@ -24,6 +24,8 @@
 
 using Shaos.Sdk;
 using System.Reflection;
+using System.Text;
+using System.Xml.Linq;
 
 namespace Shaos.Services.Runtime
 {
@@ -33,9 +35,29 @@ namespace Shaos.Services.Runtime
     public class ExecutingInstance()
     {
         /// <summary>
+        /// The PlugIn assembly
+        /// </summary>
+        public Assembly? Assembly { get; set; }
+
+        /// <summary>
+        /// The <see cref="RuntimeAssemblyLoadContext"/>
+        /// </summary>
+        public RuntimeAssemblyLoadContext? AssemblyLoadContext { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Exception? Exception { get; internal set; }
+
+        /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int Id { get; init; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IPlugIn? PlugIn { get; set; }
 
         /// <summary>
         /// The <see cref="ExecutingState"/> of the <see cref="ExecutingInstance"/>
@@ -52,19 +74,20 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public CancellationToken? Token { get; init; }
 
-        /// <summary>
-        /// The <see cref="RuntimeAssemblyLoadContext"/>
-        /// </summary>
-        public RuntimeAssemblyLoadContext? AssemblyLoadContext { get; set; }
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
 
-        /// <summary>
-        /// The PlugIn assembly
-        /// </summary>
-        public Assembly? Assembly { get; set; }
+            stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
+            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
+            stringBuilder.AppendLine($"{nameof(Token)}: {(Token == null ? "Empty" : Token.Value.IsCancellationRequested)}");
+            stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
+            stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.FullName) } ");
+            stringBuilder.AppendLine($"{nameof(AssemblyLoadContext)}: {(AssemblyLoadContext == null ? "Empty" : AssemblyLoadContext.Name )} ");
+            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public IPlugIn? PlugIn { get; set; }
+            return stringBuilder.ToString();
+        }
     }
 }

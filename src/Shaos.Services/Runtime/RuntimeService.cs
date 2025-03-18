@@ -163,32 +163,48 @@ namespace Shaos.Services.Runtime
             ExecutingInstance executingInstance,
             CancellationToken cancellationToken = default)
         {
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFile);
-            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-
-            _logger.LogInformation("Starting ExecutingInstance " +
-                "PlugInInstance: [{Id}] " +
-                "Name: [{Name}] " +
-                "Assembly: [{Assembly}] " +
-                "Name: [{AssemblyName}] " +
-                "Path: [{AssemblyPath}] ",
-                plugInInstanceId,
-                name,
-                assemblyFile,
-                assemblyName,
-                assemblyPath);
-
-            executingInstance.AssemblyLoadContext = new RuntimeAssemblyLoadContext(assemblyPath);
-            executingInstance.Assembly = executingInstance.AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
-            executingInstance.PlugIn = LoadPlugIn(executingInstance.Assembly);
-
-            if (executingInstance.PlugIn == null)
+            try
             {
-                executingInstance.State = ExecutionState.LoadFailure;
+                var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFile);
+                var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+
+                _logger.LogInformation("Starting ExecutingInstance " +
+                    "PlugInInstance: [{Id}] " +
+                    "Name: [{Name}] " +
+                    "Assembly: [{Assembly}] " +
+                    "Name: [{AssemblyName}] " +
+                    "Path: [{AssemblyPath}] ",
+                    plugInInstanceId,
+                    name,
+                    assemblyFile,
+                    assemblyName,
+                    assemblyPath);
+
+                executingInstance.AssemblyLoadContext = new RuntimeAssemblyLoadContext(name, assemblyPath);
+                executingInstance.Assembly = executingInstance.AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
+                executingInstance.PlugIn = LoadPlugIn(executingInstance.Assembly);
+
+                if (executingInstance.PlugIn == null)
+                {
+                    executingInstance.State = ExecutionState.LoadFailure;
+                }
+                else
+                {
+                    executingInstance.State = ExecutionState.Active;
+                }
             }
-            else
+            catch (Exception exception)
             {
-                executingInstance.State = ExecutionState.Active;
+                _logger.LogError(exception, "An exception occurred starting " +
+                    "PlugInInstance: [{Id}] " +
+                    "Name: [{Name}] " +
+                    "Assembly: [{Assembly}]",
+                    plugInInstanceId,
+                    name,
+                    assemblyFile);
+
+                executingInstance.Exception = exception;
+                executingInstance.State = ExecutionState.StartupFault;
             }
         }
 

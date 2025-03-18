@@ -32,7 +32,8 @@ namespace Shaos.Services.Runtime
         Active,
         Faulted,
         InActive,
+        LoadFailure,
         Starting,
-        LoadFailure
+        StartupFault
     }
 }

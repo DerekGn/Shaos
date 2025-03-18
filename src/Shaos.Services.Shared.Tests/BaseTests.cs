@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.Shared.Tests
@@ -39,11 +40,17 @@ namespace Shaos.Services.Shared.Tests
             ServiceProvider = serviceCollection.BuildServiceProvider();
 
             Factory = ServiceProvider.GetService<ILoggerFactory>();
+
+            AssemblyDirectory = Path
+                .GetDirectoryName(
+                Assembly.GetExecutingAssembly().Location);
+
             OutputHelper = outputHelper;
         }
 
-        public ServiceProvider ServiceProvider { get; }
+        public string? AssemblyDirectory { get; }
         public ILoggerFactory? Factory { get; }
         public ITestOutputHelper OutputHelper { get; }
+        public ServiceProvider ServiceProvider { get; }
     }
 }

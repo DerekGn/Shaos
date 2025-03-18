@@ -22,10 +22,8 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shaos.Repository.Models;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
@@ -41,7 +39,13 @@ namespace Shaos.Services.IntTests
 
         public RuntimeServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
-            var options = ServiceProvider.GetService<IOptions<FileStoreOptions>>();
+            var optionsInstance = new FileStoreOptions()
+            {
+                BinariesPath = AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"),
+                PackagesPath = ""
+            };
+
+            IOptions<FileStoreOptions> options = Options.Create(optionsInstance);
 
             _fileStoreService = new FileStoreService(
                 Factory!.CreateLogger<FileStoreService>(),
@@ -52,16 +56,26 @@ namespace Shaos.Services.IntTests
                 _fileStoreService);
         }
 
-        //[Fact]
-        //public async Task TestPlugInStartAsync()
-        //{
-        //    PlugInInstance plugInInstance = new PlugInInstance()
-        //    {
-        //        Id = 2,
-        //        Name = "TestPlugInInstance"
-        //    };
+        [Fact]
+        public async Task TestPlugInStartThenStop()
+        {
+            var result = await _runtimeService
+                .StartInstanceAsync(1, 2, "PlugInName", "Shaos.Test.PlugIn.dll");
 
-        //    await _runtimeService.StartInstanceAsync(plugInInstance);
-        //}
+            Assert.NotNull(result);
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            if(result.State == ExecutionState.Active)
+            {
+                await _runtimeService.StopInstanceAsync(2, "name");
+            }
+            else
+            {
+                OutputHelper.WriteLine(result.ToString());
+
+                Assert.Equal(ExecutionState.Active, result.State);
+            }
+        }
     }
 }

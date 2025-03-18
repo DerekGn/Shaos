@@ -44,7 +44,7 @@ namespace Shaos.Services.IO
 
         public void DeletePlugInPackage(int id, string fileName)
         {
-            throw new NotImplementedException();
+            Path.Combine(_options.Value.PackagesPath, id.ToString());
         }
 
         /// <inheritdoc/>
@@ -63,7 +63,7 @@ namespace Shaos.Services.IO
 
         public string GetAssemblyPathForPlugIn(int id)
         {
-            throw new NotImplementedException();
+            return Path.Combine(_options.Value.BinariesPath, id.ToString());
         }
 
         /// <inheritdoc/>

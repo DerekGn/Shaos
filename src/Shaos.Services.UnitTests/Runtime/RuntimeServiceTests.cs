@@ -71,14 +71,16 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public async Task TestStartInstanceAsync()
         {
-            var assemblyDirectory = AssemblyDirectory.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn");
+            var assemblyDirectory = AssemblyDirectory!.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn");
 
             OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
 
             _mockFileStoreService.Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
                 .Returns(assemblyDirectory);
 
-            var result = await _runtimeService.StartInstanceAsync(1, 2, "name", "Shaos.Test.PlugIn.dll");
+            var result = await _runtimeService.StartInstanceAsync(1, 2,
+                "PlugInName",
+                "Shaos.Test.PlugIn.dll");
 
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Starting, result.State);
@@ -93,6 +95,8 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(executingInstance.Assembly);
             Assert.NotNull(executingInstance.AssemblyLoadContext);
             Assert.Equal(ExecutionState.Active, executingInstance.State);
+
+            OutputHelper.WriteLine(executingInstance.ToString());
         }
 
         [Fact]
@@ -108,15 +112,6 @@ namespace Shaos.Services.UnitTests.Runtime
 
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Active, result.State);
-        }
-
-        public static string AssemblyDirectory
-        {
-            get
-            {
-                string codeBase = Assembly.GetExecutingAssembly().Location;
-                return Path.GetDirectoryName(codeBase);
-            }
         }
     }
 }
