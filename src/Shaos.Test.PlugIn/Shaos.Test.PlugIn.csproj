@@ -9,7 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
+        <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </ProjectReference>
     </ItemGroup>
 
     <Target Name="CopyDLLs" AfterTargets="Build">
@@ -18,7 +21,7 @@
         <ItemGroup>
             <OutputFiles Include="$(TargetDir)\*.*"/>
         </ItemGroup>
-        
+
         <Copy
           SourceFiles="@(OutputFiles)"
           DestinationFolder="$(TargetDir)\1" />
