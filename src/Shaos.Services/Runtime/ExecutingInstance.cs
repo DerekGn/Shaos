@@ -23,9 +23,10 @@
 */
 
 using Shaos.Sdk;
+using Shaos.Repository.Models;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
-using System.Xml.Linq;
 
 namespace Shaos.Services.Runtime
 {
@@ -37,17 +38,12 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The PlugIn assembly
         /// </summary>
-        public Assembly? Assembly { get; set; }
+        public Assembly? Assembly { get; private set; }
 
         /// <summary>
         /// The <see cref="RuntimeAssemblyLoadContext"/>
         /// </summary>
-        public RuntimeAssemblyLoadContext? AssemblyLoadContext { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Exception? Exception { get; internal set; }
+        public RuntimeAssemblyLoadContext? AssemblyLoadContext { get; private set; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
@@ -55,39 +51,87 @@ namespace Shaos.Services.Runtime
         public int Id { get; init; }
 
         /// <summary>
-        /// 
+        /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public IPlugIn? PlugIn { get; set; }
+        public string Name { get; init; }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public IPlugIn? PlugIn { get; private set; }
 
         /// <summary>
         /// The <see cref="ExecutingState"/> of the <see cref="ExecutingInstance"/>
         /// </summary>
-        public ExecutionState State { get; set; }
+        public ExecutionState State { get; internal set; }
 
         /// <summary>
         /// The <see cref="Task"/> that is executing the <see cref="ExecutingInstance"/>
         /// </summary>
-        public Task? Task { get; init; }
+        public Task? Task { get; private set; }
 
         /// <summary>
-        /// The <see cref="CancellationToken"/> used to cancel the executing <see cref="ExecutingInstance"/>
+        /// The <see cref="CancellationTokenSource"/> used to cancel the executing <see cref="ExecutingInstance"/>
         /// </summary>
-        public CancellationToken? Token { get; init; }
+        public CancellationTokenSource? TokenSource { get; private set; }
 
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
             stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
-            stringBuilder.AppendLine($"{nameof(Token)}: {(Token == null ? "Empty" : Token.Value.IsCancellationRequested)}");
+            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
             stringBuilder.AppendLine($"{nameof(State)}: {State}");
             stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
-            stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.FullName) } ");
-            stringBuilder.AppendLine($"{nameof(AssemblyLoadContext)}: {(AssemblyLoadContext == null ? "Empty" : AssemblyLoadContext.Name )} ");
-            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.FullName)} ");
+            stringBuilder.AppendLine($"{nameof(AssemblyLoadContext)}: {(AssemblyLoadContext == null ? "Empty" : AssemblyLoadContext.Name)} ");
 
             return stringBuilder.ToString();
+        }
+
+        internal void Load(string name, AssemblyName assemblyName, string assemblyPath)
+        {
+            try
+            {
+                State = ExecutionState.PlugInLoading;
+                AssemblyLoadContext = new RuntimeAssemblyLoadContext(name, assemblyPath);
+                Assembly = AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
+                PlugIn = LoadPlugIn(Assembly);
+                State = ExecutionState.PlugInLoaded;
+            }
+            catch (Exception)
+            {
+                State = ExecutionState.PlugInLoadFailure;
+                throw;
+            }
+        }
+
+        internal void Start()
+        {
+            State = ExecutionState.Starting;
+            TokenSource = new CancellationTokenSource();
+            Task = Task.Run(async () => await PlugIn!.ExecuteAsync(TokenSource.Token));
+            State = ExecutionState.Active;
+        }
+
+        private static IPlugIn? LoadPlugIn(Assembly assembly)
+        {
+            IPlugIn? result = null;
+            foreach (var type in from Type type in assembly.GetTypes()
+                                 where typeof(IPlugIn).IsAssignableFrom(type)
+                                 select type)
+            {
+                result = Activator.CreateInstance(type) as IPlugIn;
+                if (result != null)
+                {
+                    break;
+                }
+            }
+
+            return result;
         }
     }
 }

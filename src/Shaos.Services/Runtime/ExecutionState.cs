@@ -29,11 +29,11 @@ namespace Shaos.Services.Runtime
     /// </summary>
     public enum ExecutionState
     {
+        None,
+        PlugInLoaded,
+        PlugInLoadFailure,
+        PlugInLoading,
         Active,
-        Faulted,
-        InActive,
-        LoadFailure,
-        Starting,
-        StartupFault
+        Starting
     }
 }

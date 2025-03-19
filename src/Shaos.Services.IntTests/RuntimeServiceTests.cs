@@ -59,8 +59,8 @@ namespace Shaos.Services.IntTests
         [Fact]
         public async Task TestPlugInStartThenStop()
         {
-            var result = await _runtimeService
-                .StartInstanceAsync(1, 2, "PlugInName", "Shaos.Test.PlugIn.dll");
+            var result = _runtimeService
+                .StartInstance(1, 2, "PlugInName", "Shaos.Test.PlugIn.dll");
 
             Assert.NotNull(result);
 

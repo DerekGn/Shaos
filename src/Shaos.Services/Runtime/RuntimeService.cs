@@ -23,13 +23,9 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Shaos.Repository.Models;
-using Shaos.Sdk;
+using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using System.Reflection;
-using System.Runtime.Loader;
-using System.Windows.Input;
-using System.Linq;
 
 #warning Limit number of executing plugins
 
@@ -67,48 +63,44 @@ namespace Shaos.Services.Runtime
         }
 
         /// <inheritdoc/>
-        public async Task<ExecutingInstance> StartInstanceAsync(
+        public ExecutingInstance StartInstance(
             int plugInId,
             int plugInInstanceId,
             string name,
-            string assemblyFileName,
-            CancellationToken cancellationToken = default)
+            string assemblyFileName)
         {
-            var executingInstance = _executingInstances
+            name.ThrowIfNullOrEmpty(nameof(name));
+            assemblyFileName.ThrowIfNullOrEmpty(nameof(assemblyFileName));
+
+            var instance = _executingInstances
                 .FirstOrDefault(_ => _.Id == plugInInstanceId);
 
-            if (executingInstance == null)
+            if (instance == null)
             {
                 _logger.LogInformation("Creating ExecutingInstance: [{Id}] Name: [{Name}]",
                     plugInInstanceId, name);
 
-                executingInstance = new ExecutingInstance()
+                instance = new ExecutingInstance()
                 {
                     Id = plugInInstanceId,
-                    State = ExecutionState.Starting,
+                    Name = name,
                 };
 
-                _executingInstances.Add(executingInstance);
+                _executingInstances.Add(instance);
             }
 
-            if (executingInstance.State == ExecutionState.Active)
+            if (instance.State == ExecutionState.Active)
             {
                 _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", plugInInstanceId, name);
             }
             else
             {
-                _ = Task
-                    .Run(async () => await StartExecutingInstanceAsync(
-                        plugInId,
-                        plugInInstanceId,
-                        name,
-                        assemblyFileName,
-                        executingInstance,
-                        cancellationToken),
-                        cancellationToken);
+                LoadInstance(instance, plugInId, name, assemblyFileName);
+
+                StartInstance(instance);
             }
 
-            return executingInstance;
+            return instance;
         }
 
         /// <inheritdoc/>
@@ -138,76 +130,36 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private static IPlugIn? LoadPlugIn(Assembly assembly)
-        {
-            IPlugIn? result = null;
-            foreach (var type in from Type type in assembly.GetTypes()
-                                 where typeof(IPlugIn).IsAssignableFrom(type)
-                                 select type)
-            {
-                result = Activator.CreateInstance(type) as IPlugIn;
-                if (result != null)
-                {
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        private async Task StartExecutingInstanceAsync(
+        private void LoadInstance(
+            ExecutingInstance instance,
             int plugInId,
-            int plugInInstanceId,
             string name,
-            string assemblyFile,
-            ExecutingInstance executingInstance,
-            CancellationToken cancellationToken = default)
+            string assemblyFileName)
         {
-            try
-            {
-                var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFile);
-                var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFileName);
+            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
-                _logger.LogInformation("Starting ExecutingInstance " +
-                    "PlugInInstance: [{Id}] " +
+            _logger.LogInformation("Loading ExecutingInstance " +
+                    "Id: [{Id}] " +
                     "Name: [{Name}] " +
                     "Assembly: [{Assembly}] " +
-                    "Name: [{AssemblyName}] " +
                     "Path: [{AssemblyPath}] ",
-                    plugInInstanceId,
+                    instance.Id,
                     name,
-                    assemblyFile,
                     assemblyName,
                     assemblyPath);
 
-                executingInstance.AssemblyLoadContext = new RuntimeAssemblyLoadContext(name, assemblyPath);
-                executingInstance.Assembly = executingInstance.AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
-                executingInstance.PlugIn = LoadPlugIn(executingInstance.Assembly);
-
-                if (executingInstance.PlugIn == null)
-                {
-                    executingInstance.State = ExecutionState.LoadFailure;
-                }
-                else
-                {
-                    executingInstance.State = ExecutionState.Active;
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception, "An exception occurred starting " +
-                    "PlugInInstance: [{Id}] " +
-                    "Name: [{Name}] " +
-                    "Assembly: [{Assembly}]",
-                    plugInInstanceId,
-                    name,
-                    assemblyFile);
-
-                executingInstance.Exception = exception;
-                executingInstance.State = ExecutionState.StartupFault;
-            }
+            instance.Load(name, assemblyName, assemblyPath);
         }
 
+        private void StartInstance(ExecutingInstance instance)
+        {
+            _logger.LogInformation("Starting ExecutingInstance: [{Id}] Name: [{Name}]",
+                instance.Id,
+                instance.Name);
+
+            instance.Start();
+        }
         private async Task StopExecutingInstanceAsync(
             int id,
             string name,

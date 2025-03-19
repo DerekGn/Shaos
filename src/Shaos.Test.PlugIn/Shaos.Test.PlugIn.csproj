@@ -22,10 +22,16 @@
             <OutputFiles Include="$(TargetDir)\*.*"/>
         </ItemGroup>
 
+        <Message Text="Copied build files" Importance="High" />
+        
         <Copy
           SourceFiles="@(OutputFiles)"
           DestinationFolder="$(TargetDir)\1" />
 
-        <Message Text="Copied build files" Importance="High" />
+        <Message Text="Copied build files to $(CopyToDir). Now zipping it up." Importance="High" />
+
+        <ZipDirectory SourceDirectory="$(TargetDir)" DestinationFile="$(MSBuildProjectName).zip" />
+
+        <Message Text="CopyDLLs task completed" Importance="High" />
     </Target>
 </Project>

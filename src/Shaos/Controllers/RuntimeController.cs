@@ -106,13 +106,12 @@ namespace Shaos.Controllers
             {
                 var plugIn = plugInInstance.PlugIn;
 
-                await _runtimeService
-                    .StartInstanceAsync(
+                _runtimeService
+                    .StartInstance(
                         plugIn.Id,
                         plugInInstance.Id,
                         plugInInstance.Name,
-                        plugInInstance.PlugIn.Package.AssemblyFile,
-                        cancellationToken);
+                        plugInInstance.PlugIn.Package.AssemblyFile);
             }
 
             return Accepted();
