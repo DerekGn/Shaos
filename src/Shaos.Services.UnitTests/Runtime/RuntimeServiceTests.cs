@@ -85,10 +85,7 @@ namespace Shaos.Services.UnitTests.Runtime
                 "Shaos.Test.PlugIn.dll");
 
             Assert.NotNull(result);
-            //Assert.Equal(ExecutionState.Starting, result.State);
-
-#warning would be better to sync on event rather than an absolute wait
-            await Task.Delay(100);
+            Assert.Equal(ExecutionState.Active, result.State);
 
             var executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
 
@@ -102,7 +99,7 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public async Task TestStartInstanceRunningAsync()
+        public void TestStartInstanceRunningAsync()
         {
             _runtimeService._executingInstances.Add(new ExecutingInstance()
             {
