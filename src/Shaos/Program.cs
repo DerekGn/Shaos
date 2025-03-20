@@ -45,9 +45,16 @@ namespace Shaos
     {
         public static void Main(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
+                .Build();
+
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .CreateBootstrapLogger();
+                .ReadFrom
+                .Configuration(configuration)
+                .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddSerilog();
@@ -124,9 +131,10 @@ namespace Shaos
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IStore, Store>();
 
+            builder.Services.AddSingleton<IAssemblyValidationService, AssemblyValidationService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<IAssemblyValidationService, AssemblyValidationService>();
+            builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 

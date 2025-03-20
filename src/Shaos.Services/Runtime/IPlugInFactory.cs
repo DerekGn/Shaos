@@ -22,19 +22,13 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
+using System.Reflection;
+
 namespace Shaos.Services.Runtime
 {
-    /// <summary>
-    /// The execution state of a <see cref="PlugIn"/>
-    /// </summary>
-    public enum ExecutionState
+    public interface IPlugInFactory
     {
-        None,
-        Activating,
-        ActivationFailed,
-        Active,
-        PlugInLoaded,
-        PlugInLoadFailure,
-        PlugInLoading
+        IPlugIn? CreateInstance(Assembly assembly);
     }
 }

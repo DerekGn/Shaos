@@ -75,6 +75,42 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public CancellationTokenSource? TokenSource { get; private set; }
 
+        public void LoadPlugInAssembly(
+            string name,
+            string assemblyPath,
+            AssemblyName assemblyName,
+            IPlugInFactory plugInFactory)
+        {
+            try
+            {
+                State = ExecutionState.PlugInLoading;
+                AssemblyLoadContext = new RuntimeAssemblyLoadContext(name, assemblyPath);
+                Assembly = AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
+                PlugIn = plugInFactory.CreateInstance(Assembly);
+            }
+            catch (Exception)
+            {
+                State = ExecutionState.PlugInLoadFailure;
+                throw;
+            }
+        }
+
+        public void StartPlugInExecution()
+        {
+            try
+            {
+                State = ExecutionState.Activating;
+                TokenSource = new CancellationTokenSource();
+                Task = Task.Run(async () => await PlugIn!.ExecuteAsync(TokenSource.Token));
+                State = ExecutionState.Active;
+            }
+            catch (Exception)
+            {
+                State = ExecutionState.ActivationFailed;
+                throw;
+            }
+        }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -90,48 +126,6 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(AssemblyLoadContext)}: {(AssemblyLoadContext == null ? "Empty" : AssemblyLoadContext.Name)} ");
 
             return stringBuilder.ToString();
-        }
-
-        internal void Load(string name, AssemblyName assemblyName, string assemblyPath)
-        {
-            try
-            {
-                State = ExecutionState.PlugInLoading;
-                AssemblyLoadContext = new RuntimeAssemblyLoadContext(name, assemblyPath);
-                Assembly = AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
-                PlugIn = LoadPlugIn(Assembly);
-                State = ExecutionState.PlugInLoaded;
-            }
-            catch (Exception)
-            {
-                State = ExecutionState.PlugInLoadFailure;
-                throw;
-            }
-        }
-
-        internal void Start()
-        {
-            State = ExecutionState.Starting;
-            TokenSource = new CancellationTokenSource();
-            Task = Task.Run(async () => await PlugIn!.ExecuteAsync(TokenSource.Token));
-            State = ExecutionState.Active;
-        }
-
-        private static IPlugIn? LoadPlugIn(Assembly assembly)
-        {
-            IPlugIn? result = null;
-            foreach (var type in from Type type in assembly.GetTypes()
-                                 where typeof(IPlugIn).IsAssignableFrom(type)
-                                 select type)
-            {
-                result = Activator.CreateInstance(type) as IPlugIn;
-                if (result != null)
-                {
-                    break;
-                }
-            }
-
-            return result;
         }
     }
 }

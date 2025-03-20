@@ -42,7 +42,7 @@ namespace Shaos.Services.UnitTests.System
             _mockHostApplicationLifetime = new Mock<IHostApplicationLifetime>();
 
             _systemService = new SystemService(
-                Factory!.CreateLogger<SystemService>(),
+                LoggerFactory!.CreateLogger<SystemService>(),
                 _mockHostApplicationLifetime.Object);
         }
 

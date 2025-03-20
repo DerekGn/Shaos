@@ -22,19 +22,36 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
+using Shaos.Sdk;
+using System.Reflection;
+
 namespace Shaos.Services.Runtime
 {
-    /// <summary>
-    /// The execution state of a <see cref="PlugIn"/>
-    /// </summary>
-    public enum ExecutionState
+    public class PlugInFactory : IPlugInFactory
     {
-        None,
-        Activating,
-        ActivationFailed,
-        Active,
-        PlugInLoaded,
-        PlugInLoadFailure,
-        PlugInLoading
+        private readonly ILoggerFactory _loggerFactory;
+
+        public PlugInFactory(ILoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
+        }
+
+        public IPlugIn? CreateInstance(Assembly assembly)
+        {
+            IPlugIn? result = null;
+            foreach (var type in from Type type in assembly.GetTypes()
+                                 where typeof(IPlugIn).IsAssignableFrom(type)
+                                 select type)
+            {
+                result = Activator.CreateInstance(type) as IPlugIn;
+                if (result != null)
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
     }
 }

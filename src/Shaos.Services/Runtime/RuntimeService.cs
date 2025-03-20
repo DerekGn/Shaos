@@ -36,12 +36,15 @@ namespace Shaos.Services.Runtime
         internal readonly List<ExecutingInstance> _executingInstances;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<RuntimeService> _logger;
+        private readonly IPlugInFactory _plugInFactory;
 
         public RuntimeService(
             ILogger<RuntimeService> logger,
+            IPlugInFactory plugInFactory,
             IFileStoreService fileStoreService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _plugInFactory = plugInFactory ?? throw new ArgumentNullException(nameof(plugInFactory));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
 
             _executingInstances = new List<ExecutingInstance>();
@@ -95,9 +98,30 @@ namespace Shaos.Services.Runtime
             }
             else
             {
-                LoadInstance(instance, plugInId, name, assemblyFileName);
+                var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFileName);
+                var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
-                StartInstance(instance);
+                _logger.LogInformation("Loading ExecutingInstance" +
+                        "Id: [{Id}] " +
+                        "Name: [{Name}] " +
+                        "Assembly: [{Assembly}] " +
+                        "Path: [{AssemblyPath}] ",
+                        instance.Id,
+                        name,
+                        assemblyName,
+                        assemblyPath);
+
+                instance.LoadPlugInAssembly(
+                    name,
+                    assemblyPath,
+                    assemblyName,
+                    _plugInFactory);
+
+                _logger.LogInformation("Starting ExecutingInstance " +
+                    "Id:[{Id}]",
+                    instance.Id);
+
+                instance.StartPlugInExecution();
             }
 
             return instance;
@@ -130,36 +154,6 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private void LoadInstance(
-            ExecutingInstance instance,
-            int plugInId,
-            string name,
-            string assemblyFileName)
-        {
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFileName);
-            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-
-            _logger.LogInformation("Loading ExecutingInstance " +
-                    "Id: [{Id}] " +
-                    "Name: [{Name}] " +
-                    "Assembly: [{Assembly}] " +
-                    "Path: [{AssemblyPath}] ",
-                    instance.Id,
-                    name,
-                    assemblyName,
-                    assemblyPath);
-
-            instance.Load(name, assemblyName, assemblyPath);
-        }
-
-        private void StartInstance(ExecutingInstance instance)
-        {
-            _logger.LogInformation("Starting ExecutingInstance: [{Id}] Name: [{Name}]",
-                instance.Id,
-                instance.Name);
-
-            instance.Start();
-        }
         private async Task StopExecutingInstanceAsync(
             int id,
             string name,

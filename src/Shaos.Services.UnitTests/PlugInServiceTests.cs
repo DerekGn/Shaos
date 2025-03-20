@@ -52,7 +52,7 @@ namespace Shaos.Services.UnitTests
             _mockStore = new Mock<IStore>();
 
             _plugInService = new PlugInService(
-                Factory!.CreateLogger<PlugInService>(),
+                LoggerFactory!.CreateLogger<PlugInService>(),
                 _mockStore.Object,
                 _mockRuntimeService.Object,
                 _mockFileStoreService.Object,

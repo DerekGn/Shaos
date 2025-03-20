@@ -36,23 +36,27 @@ namespace Shaos.Services.IntTests
     {
         private readonly FileStoreService _fileStoreService;
         private readonly RuntimeService _runtimeService;
+        private readonly PlugInFactory _plugInFactory;
 
         public RuntimeServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             var optionsInstance = new FileStoreOptions()
             {
-                BinariesPath = AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"),
+                BinariesPath = string.Concat(AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"), "\\output"),
                 PackagesPath = ""
             };
 
             IOptions<FileStoreOptions> options = Options.Create(optionsInstance);
 
             _fileStoreService = new FileStoreService(
-                Factory!.CreateLogger<FileStoreService>(),
+                LoggerFactory!.CreateLogger<FileStoreService>(),
                 options!);
 
+            _plugInFactory = new PlugInFactory(LoggerFactory!);
+
             _runtimeService = new RuntimeService(
-                Factory!.CreateLogger<RuntimeService>(),
+                LoggerFactory!.CreateLogger<RuntimeService>(),
+                _plugInFactory,
                 _fileStoreService);
         }
 
@@ -63,8 +67,6 @@ namespace Shaos.Services.IntTests
                 .StartInstance(1, 2, "PlugInName", "Shaos.Test.PlugIn.dll");
 
             Assert.NotNull(result);
-
-            await Task.Delay(TimeSpan.FromSeconds(1));
 
             if(result.State == ExecutionState.Active)
             {

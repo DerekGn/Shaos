@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Sdk;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
@@ -36,14 +37,17 @@ namespace Shaos.Services.UnitTests.Runtime
     public class RuntimeServiceTests : BaseTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
+        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly RuntimeService _runtimeService;
 
         public RuntimeServiceTests(ITestOutputHelper output) : base(output)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
+            _mockPlugInFactory = new Mock<IPlugInFactory>();
 
             _runtimeService = new RuntimeService(
-                Factory!.CreateLogger<RuntimeService>(),
+                LoggerFactory!.CreateLogger<RuntimeService>(),
+                _mockPlugInFactory.Object,
                 _mockFileStoreService.Object);
         }
 
@@ -75,8 +79,15 @@ namespace Shaos.Services.UnitTests.Runtime
 
             OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
 
-            _mockFileStoreService.Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
                 .Returns(assemblyDirectory);
+
+            var mockPlugIn = new Mock<IPlugIn>();
+            
+            _mockPlugInFactory
+                .Setup(_ => _.CreateInstance(It.IsAny<Assembly>()))
+                .Returns(mockPlugIn.Object);
 
             var result = _runtimeService.StartInstance(
                 1,
@@ -94,6 +105,13 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(executingInstance.Assembly);
             Assert.NotNull(executingInstance.AssemblyLoadContext);
             Assert.Equal(ExecutionState.Active, executingInstance.State);
+
+            _mockPlugInFactory
+                .Verify(_ => _.CreateInstance(It.IsAny<Assembly>()), Times.Once);
+
+            mockPlugIn
+                .Verify(_ => _.ExecuteAsync(It.IsAny<CancellationToken>()), Times.Once);
+
 
             OutputHelper.WriteLine(executingInstance.ToString());
         }

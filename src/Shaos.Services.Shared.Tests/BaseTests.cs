@@ -39,7 +39,7 @@ namespace Shaos.Services.Shared.Tests
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
 
-            Factory = ServiceProvider.GetService<ILoggerFactory>();
+            LoggerFactory = ServiceProvider.GetService<ILoggerFactory>();
 
             AssemblyDirectory = Path
                 .GetDirectoryName(
@@ -49,7 +49,7 @@ namespace Shaos.Services.Shared.Tests
         }
 
         public string? AssemblyDirectory { get; }
-        public ILoggerFactory? Factory { get; }
+        public ILoggerFactory? LoggerFactory { get; }
         public ITestOutputHelper OutputHelper { get; }
         public ServiceProvider ServiceProvider { get; }
     }
