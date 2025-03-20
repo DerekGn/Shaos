@@ -98,7 +98,17 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Active, result.State);
 
-            var executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
+            int i = 0;
+            ExecutingInstance? executingInstance;
+
+            do {
+                executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
+
+                await Task.Delay(10);
+                
+                i++;
+
+            } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 10);
 
             Assert.NotNull(executingInstance);
             Assert.NotNull(executingInstance.PlugIn);
