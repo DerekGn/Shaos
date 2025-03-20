@@ -9,6 +9,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
@@ -19,18 +23,18 @@
         <Message Text="Executing CopyDLLs task" Importance="High" />
 
         <ItemGroup>
-            <OutputFiles Include="$(TargetDir)\*.*"/>
+            <OutputFiles Include="$(TargetDir)\*.*" />
         </ItemGroup>
 
         <Message Text="Copied build files" Importance="High" />
-        
-        <Copy
-          SourceFiles="@(OutputFiles)"
-          DestinationFolder="$(TargetDir)\1" />
+
+        <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(TargetDir)\output\1" />
 
         <Message Text="Copied build files to $(CopyToDir). Now zipping it up." Importance="High" />
 
-        <ZipDirectory SourceDirectory="$(TargetDir)" DestinationFile="$(MSBuildProjectName).zip" />
+        <MakeDir Directories="$(TargetDir)\Output\"></MakeDir>
+
+        <ZipDirectory SourceDirectory="$(TargetDir)\output\1" DestinationFile="$(TargetDir)\Output\$(MSBuildProjectName).zip" overwrite="true" />
 
         <Message Text="CopyDLLs task completed" Importance="High" />
     </Target>
