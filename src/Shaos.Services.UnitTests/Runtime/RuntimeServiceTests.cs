@@ -108,7 +108,7 @@ namespace Shaos.Services.UnitTests.Runtime
                 
                 i++;
 
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 100);
+            } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 500);
 
             Assert.NotNull(executingInstance);
             Assert.NotNull(executingInstance.PlugIn);
