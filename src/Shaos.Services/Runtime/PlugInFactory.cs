@@ -31,14 +31,11 @@ namespace Shaos.Services.Runtime
     public class PlugInFactory : IPlugInFactory
     {
         private readonly ILogger<PlugInFactory> _logger;
-        private readonly ILoggerFactory _loggerFactory;
 
         public PlugInFactory(
-            ILogger<PlugInFactory> logger,
-            ILoggerFactory loggerFactory)
+            ILogger<PlugInFactory> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public IPlugIn? CreateInstance(Assembly assembly, IRuntimeAssemblyLoadContext assemblyLoadContext)

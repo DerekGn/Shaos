@@ -84,9 +84,9 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) => {
-
-                if(!CheckPlugInRunning(plugIn, out var plugInInstanceId))
+            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
+            {
+                if (!CheckPlugInRunning(plugIn, out var plugInInstanceId))
                 {
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
@@ -110,7 +110,7 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            if(_runtimeService.GetExecutingInstance(id) != null)
+            if (_runtimeService.GetExecutingInstance(id) != null)
             {
                 _logger.LogWarning("PlugInInstance [{Id}] Running", id);
 
@@ -215,7 +215,7 @@ namespace Shaos.Services
             {
                 foreach (var plugInInstance in plugIn.Instances)
                 {
-                    if(_runtimeService.GetExecutingInstance(plugInInstance.Id) != null)
+                    if (_runtimeService.GetExecutingInstance(plugInInstance.Id) != null)
                     {
                         result = true;
                         break;

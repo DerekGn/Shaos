@@ -54,7 +54,7 @@ namespace Shaos.Services.IntTests
                 LoggerFactory!.CreateLogger<FileStoreService>(),
                 options!);
 
-            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>(), LoggerFactory!);
+            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
         }
 
         [Fact]

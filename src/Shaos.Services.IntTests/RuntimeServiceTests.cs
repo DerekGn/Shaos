@@ -56,8 +56,7 @@ namespace Shaos.Services.IntTests
                 options!);
 
             _plugInFactory = new PlugInFactory(
-                LoggerFactory!.CreateLogger<PlugInFactory>(),
-                LoggerFactory!);
+                LoggerFactory!.CreateLogger<PlugInFactory>());
 
             _runtimeService = new RuntimeService(
                 LoggerFactory!.CreateLogger<RuntimeService>(),

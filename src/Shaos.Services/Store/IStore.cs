@@ -23,8 +23,8 @@
 */
 
 using Shaos.Repository.Models;
-using System.Runtime.CompilerServices;
 using Shaos.Services.Exceptions;
+using System.Runtime.CompilerServices;
 
 namespace Shaos.Services.Store
 {

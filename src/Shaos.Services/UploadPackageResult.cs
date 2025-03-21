@@ -33,14 +33,17 @@ namespace Shaos.Services
         /// The package upload was successful
         /// </summary>
         Success,
+
         /// <summary>
         /// The package already exists
         /// </summary>
         PackageExists,
+
         /// <summary>
         /// No valid PlugIn assembly was found
         /// </summary>
         NoValidPlugIn,
+
         /// <summary>
         /// The PlugIn is running
         /// </summary>
