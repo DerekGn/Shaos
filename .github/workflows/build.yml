@@ -34,6 +34,4 @@ jobs:
       if: success() || failure()        # run this step even if previous step failed
       with:
         name: test-results
-        path: |
-        /home/runner/work/Shaos/Shaos/src/Shaos.Services.UnitTests/TestResults/test-results.trx
-        /home/runner/work/Shaos/Shaos/src/Shaos.Services.IntTests/TestResults/test-results.trx
+        path: /home/runner/work/Shaos/Shaos/src/Shaos.Services.**/TestResults/test-results.trx
