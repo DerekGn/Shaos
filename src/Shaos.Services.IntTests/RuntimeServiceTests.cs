@@ -43,7 +43,7 @@ namespace Shaos.Services.IntTests
         {
             var optionsInstance = new FileStoreOptions()
             {
-                BinariesPath = string.Concat(AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"), "\\output"),
+                BinariesPath = Path.Combine(AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"), "output"),
                 PackagesPath = ""
             };
 
