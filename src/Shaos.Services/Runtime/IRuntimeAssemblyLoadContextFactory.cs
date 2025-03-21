@@ -22,13 +22,10 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
-using System.Reflection;
-
 namespace Shaos.Services.Runtime
 {
-    public interface IPlugInFactory
+    public interface IRuntimeAssemblyLoadContextFactory
     {
-        IPlugIn? CreateInstance(Assembly assembly, IRuntimeAssemblyLoadContext assemblyLoadContext);
+        IRuntimeAssemblyLoadContext Create(string name, string assemblyPath);
     }
 }

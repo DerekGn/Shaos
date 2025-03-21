@@ -36,19 +36,24 @@ namespace Shaos.Services.UnitTests.Runtime
 {
     public class RuntimeServiceTests : BaseTests
     {
+        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly RuntimeService _runtimeService;
 
         public RuntimeServiceTests(ITestOutputHelper output) : base(output)
         {
+            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockPlugInFactory = new Mock<IPlugInFactory>();
 
             _runtimeService = new RuntimeService(
                 LoggerFactory!.CreateLogger<RuntimeService>(),
                 _mockPlugInFactory.Object,
-                _mockFileStoreService.Object);
+                _mockFileStoreService.Object,
+                _mockRuntimeAssemblyLoadContextFactory.Object);
         }
 
         [Fact]
@@ -84,9 +89,22 @@ namespace Shaos.Services.UnitTests.Runtime
                 .Returns(assemblyDirectory);
 
             var mockPlugIn = new Mock<IPlugIn>();
-            
+
+            _mockRuntimeAssemblyLoadContextFactory
+                .Setup(_ => _.Create(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+
+            _mockRuntimeAssemblyLoadContext
+                .Setup(_ => _.LoadFromAssemblyName(
+                    It.IsAny<AssemblyName>()))
+                .Returns(typeof(object).Assembly);
+
             _mockPlugInFactory
-                .Setup(_ => _.CreateInstance(It.IsAny<Assembly>()))
+                .Setup(_ => _.CreateInstance(
+                    It.IsAny<Assembly>(),
+                    It.IsAny<IRuntimeAssemblyLoadContext>()))
                 .Returns(mockPlugIn.Object);
 
             var result = _runtimeService.StartInstance(
@@ -112,15 +130,18 @@ namespace Shaos.Services.UnitTests.Runtime
 
             Assert.NotNull(executingInstance);
             Assert.NotNull(executingInstance.PlugIn);
-            Assert.NotNull(executingInstance.Assembly);
-            Assert.NotNull(executingInstance.AssemblyLoadContext);
             Assert.Equal(ExecutionState.Active, executingInstance.State);
 
             _mockPlugInFactory
-                .Verify(_ => _.CreateInstance(It.IsAny<Assembly>()), Times.Once);
+                .Verify(_ => _.CreateInstance(
+                    It.IsAny<Assembly>(),
+                    It.IsAny<IRuntimeAssemblyLoadContext>()),
+                    Times.Once);
 
             mockPlugIn
-                .Verify(_ => _.ExecuteAsync(It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(_ => _.ExecuteAsync(
+                    It.IsAny<CancellationToken>()),
+                    Times.Once);
 
 
             OutputHelper.WriteLine(executingInstance.ToString());

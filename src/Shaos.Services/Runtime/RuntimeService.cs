@@ -35,18 +35,20 @@ namespace Shaos.Services.Runtime
     {
         internal readonly List<ExecutingInstance> _executingInstances;
         private readonly IFileStoreService _fileStoreService;
+        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly ILogger<RuntimeService> _logger;
         private readonly IPlugInFactory _plugInFactory;
 
         public RuntimeService(
             ILogger<RuntimeService> logger,
             IPlugInFactory plugInFactory,
-            IFileStoreService fileStoreService)
+            IFileStoreService fileStoreService,
+            IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _plugInFactory = plugInFactory ?? throw new ArgumentNullException(nameof(plugInFactory));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
-
+            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
             _executingInstances = new List<ExecutingInstance>();
         }
 
@@ -98,6 +100,8 @@ namespace Shaos.Services.Runtime
             }
             else
             {
+                instance.SetState(ExecutionState.PlugInLoading);
+
                 var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFileName);
                 var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
@@ -111,11 +115,11 @@ namespace Shaos.Services.Runtime
                         assemblyName,
                         assemblyPath);
 
-                instance.LoadPlugInAssembly(
-                    name,
-                    assemblyPath,
-                    assemblyName,
-                    _plugInFactory);
+                var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(name, assemblyPath);
+                var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
+                var plugIn = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
+
+                instance.UpdatePlugIn(plugIn);
 
                 _logger.LogInformation("Starting ExecutingInstance " +
                     "Id:[{Id}]",

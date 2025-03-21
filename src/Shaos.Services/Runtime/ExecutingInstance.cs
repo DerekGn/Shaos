@@ -36,16 +36,6 @@ namespace Shaos.Services.Runtime
     public class ExecutingInstance()
     {
         /// <summary>
-        /// The PlugIn assembly
-        /// </summary>
-        public Assembly? Assembly { get; private set; }
-
-        /// <summary>
-        /// The <see cref="RuntimeAssemblyLoadContext"/>
-        /// </summary>
-        public RuntimeAssemblyLoadContext? AssemblyLoadContext { get; private set; }
-
-        /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int Id { get; init; }
@@ -75,27 +65,28 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public CancellationTokenSource? TokenSource { get; private set; }
 
-        public void LoadPlugInAssembly(
-            string name,
-            string assemblyPath,
-            AssemblyName assemblyName,
-            IPlugInFactory plugInFactory)
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
         {
-            try
-            {
-                State = ExecutionState.PlugInLoading;
-                AssemblyLoadContext = new RuntimeAssemblyLoadContext(name, assemblyPath);
-                Assembly = AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
-                PlugIn = plugInFactory.CreateInstance(Assembly);
-            }
-            catch (Exception)
-            {
-                State = ExecutionState.PlugInLoadFailure;
-                throw;
-            }
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
+            stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
+            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
+            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
+            stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
+
+            return stringBuilder.ToString();
         }
 
-        public void StartPlugInExecution()
+        internal void SetState(ExecutionState state)
+        {
+            State = state;
+        }
+
+        internal void StartPlugInExecution()
         {
             try
             {
@@ -110,22 +101,10 @@ namespace Shaos.Services.Runtime
                 throw;
             }
         }
-
-        /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        public override string ToString()
+        internal void UpdatePlugIn(IPlugIn? plugIn)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
-            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
-            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
-            stringBuilder.AppendLine($"{nameof(State)}: {State}");
-            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
-            stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.FullName)} ");
-            stringBuilder.AppendLine($"{nameof(AssemblyLoadContext)}: {(AssemblyLoadContext == null ? "Empty" : AssemblyLoadContext.Name)} ");
-
-            return stringBuilder.ToString();
+            State = ExecutionState.PlugInLoading;
+            PlugIn = plugIn;
         }
     }
 }
