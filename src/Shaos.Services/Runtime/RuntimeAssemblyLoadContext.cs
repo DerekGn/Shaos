@@ -22,11 +22,13 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Loader;
 
 namespace Shaos.Services.Runtime
 {
+    [ExcludeFromCodeCoverage]
     public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _resolver;

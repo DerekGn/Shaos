@@ -28,8 +28,6 @@ using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using System.Reflection;
-using System.Runtime.Loader;
-using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 

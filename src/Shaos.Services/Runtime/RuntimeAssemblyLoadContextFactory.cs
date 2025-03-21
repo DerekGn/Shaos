@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Runtime
 {
+    [ExcludeFromCodeCoverage]
     public class RuntimeAssemblyLoadContextFactory : IRuntimeAssemblyLoadContextFactory
     {
         public IRuntimeAssemblyLoadContext Create(string name, string assemblyPath)
