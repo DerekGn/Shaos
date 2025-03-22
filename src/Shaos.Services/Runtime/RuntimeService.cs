@@ -173,6 +173,8 @@ namespace Shaos.Services.Runtime
                 instance.Id,
                 instance.Name);
 
+#warning sorten wait or make config 
+#warning unlad assembly and remove instance
             await instance.TokenSource!.CancelAsync();
             instance.Task!.Wait();
         }

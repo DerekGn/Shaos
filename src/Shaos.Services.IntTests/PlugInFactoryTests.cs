@@ -52,13 +52,15 @@ namespace Shaos.Services.IntTests
         [Fact]
         public void TestCreateInstance()
         {
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(1), TestFixture.PlugInAssembly);
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(1), TestFixture.AssemblyFileName);
             var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
             var assemblyLoadContext = new RuntimeAssemblyLoadContext("PlugInName", assemblyPath);
             var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
 
             var result = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
+
+            assemblyLoadContext.Unload();
 
             Assert.NotNull(result);
         }
