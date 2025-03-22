@@ -126,7 +126,7 @@ namespace Shaos.Services.UnitTests.Runtime
                 
                 i++;
 
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 500);
+            } while (executingInstance != null && executingInstance.State != ExecutionState.Complete && i <= 500);
 
             Assert.NotNull(executingInstance);
             Assert.NotNull(executingInstance.PlugIn);
@@ -143,6 +143,81 @@ namespace Shaos.Services.UnitTests.Runtime
                     It.IsAny<CancellationToken>()),
                     Times.Once);
 
+
+            OutputHelper.WriteLine(executingInstance.ToString());
+        }
+        
+        [Fact]
+        public async Task TestStartInstancePlugInFaultedAsync()
+        {
+            var assemblyDirectory = AssemblyDirectory!.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn");
+
+            OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
+
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
+                .Returns(assemblyDirectory);
+
+            var mockPlugIn = new Mock<IPlugIn>();
+
+            _mockRuntimeAssemblyLoadContextFactory
+                .Setup(_ => _.Create(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+
+            _mockRuntimeAssemblyLoadContext
+                .Setup(_ => _.LoadFromAssemblyName(
+                    It.IsAny<AssemblyName>()))
+                .Returns(typeof(object).Assembly);
+
+            _mockPlugInFactory
+                .Setup(_ => _.CreateInstance(
+                    It.IsAny<Assembly>(),
+                    It.IsAny<IRuntimeAssemblyLoadContext>()))
+                .Returns(mockPlugIn.Object);
+
+            mockPlugIn
+                .Setup(_ => _.ExecuteAsync(It.IsAny<CancellationToken>()))
+                .Throws<Exception>();
+
+            var result = _runtimeService.StartInstance(
+                1,
+                2,
+                "PlugInName",
+                "Shaos.Test.PlugIn.dll");
+
+            Assert.NotNull(result);
+            Assert.Equal(ExecutionState.Active, result.State);
+
+            int i = 0;
+            ExecutingInstance? executingInstance;
+
+            do {
+                executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
+
+                await Task.Delay(10);
+                
+                i++;
+
+            } while (executingInstance != null && executingInstance.State != ExecutionState.Faulted && i <= 500);
+
+            
+            Assert.NotNull(executingInstance);
+            Assert.NotNull(executingInstance.Exception);
+            Assert.NotNull(executingInstance.PlugIn);
+            Assert.Equal(ExecutionState.Faulted, executingInstance.State);
+
+            _mockPlugInFactory
+                .Verify(_ => _.CreateInstance(
+                    It.IsAny<Assembly>(),
+                    It.IsAny<IRuntimeAssemblyLoadContext>()),
+                    Times.Once);
+
+            mockPlugIn
+                .Verify(_ => _.ExecuteAsync(
+                    It.IsAny<CancellationToken>()),
+                    Times.Once);
 
             OutputHelper.WriteLine(executingInstance.ToString());
         }
