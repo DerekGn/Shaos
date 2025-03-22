@@ -109,25 +109,25 @@ namespace Shaos.Services.Runtime
         /// <inheritdoc/>
         public void StopInstance(int id)
         {
-            var executingInstance = _executingInstances
+            var instance = _executingInstances
                 .FirstOrDefault(_ => _.Id == id);
 
-            if (executingInstance == null)
+            if (instance == null)
             {
-                _logger.LogWarning("ExecutingInstance: [{Id}] Not Found", id);
+                _logger.LogWarning("Instance: [{Id}] Not Found", id);
             }
             else
             {
-                if(executingInstance.State != ExecutionState.Active)
+                if(instance.State != ExecutionState.Active)
                 {
-                    _logger.LogWarning("ExecutingInstance: [{Id}] Name: [{Name}] Not Running",
-                        executingInstance.Id,
-                        executingInstance.Name);
+                    _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
+                        instance.Id,
+                        instance.Name);
                 }
                 else
                 {
                     _ = Task
-                        .Run(async () => await StopExecutingInstanceAsync(executingInstance));
+                        .Run(async () => await StopExecutingInstanceAsync(instance));
                 }
             }
         }
@@ -167,14 +167,14 @@ namespace Shaos.Services.Runtime
         }
 
         private async Task StopExecutingInstanceAsync(
-            ExecutingInstance executingInstance)
+            ExecutingInstance instance)
         {
             _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
-                executingInstance.Id,
-                executingInstance.Name);
+                instance.Id,
+                instance.Name);
 
-            await executingInstance.TokenSource.CancelAsync();
-            executingInstance.Task.Wait();
+            await instance.TokenSource!.CancelAsync();
+            instance.Task!.Wait();
         }
     }
 }
