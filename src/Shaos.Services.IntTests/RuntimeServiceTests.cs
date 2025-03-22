@@ -94,7 +94,7 @@ namespace Shaos.Services.IntTests
             }
             else
             {
-                await _runtimeService.StopInstanceAsync(2, "name");
+                _runtimeService.StopInstance(2);
             }
         }
     }

@@ -35,9 +35,9 @@ namespace Shaos.Services.Runtime
     {
         internal readonly List<ExecutingInstance> _executingInstances;
         private readonly IFileStoreService _fileStoreService;
-        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly ILogger<RuntimeService> _logger;
         private readonly IPlugInFactory _plugInFactory;
+        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public RuntimeService(
             ILogger<RuntimeService> logger,
@@ -100,73 +100,81 @@ namespace Shaos.Services.Runtime
             }
             else
             {
-                instance.SetState(ExecutionState.PlugInLoading);
-
-                var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(plugInId), assemblyFileName);
-                var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-
-                _logger.LogInformation("Loading ExecutingInstance" +
-                        "Id: [{Id}] " +
-                        "Name: [{Name}] " +
-                        "Assembly: [{Assembly}] " +
-                        "Path: [{AssemblyPath}] ",
-                        instance.Id,
-                        name,
-                        assemblyName,
-                        assemblyPath);
-
-                var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(name, assemblyPath);
-                var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
-                var plugIn = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
-
-                instance.UpdatePlugIn(plugIn);
-
-                _logger.LogInformation("Starting ExecutingInstance " +
-                    "Id:[{Id}]",
-                    instance.Id);
-
-                instance.StartPlugInExecution();
+                _ = Task.Run(() => StartExecutingInstance(plugInId, name, assemblyFileName, instance));
             }
 
             return instance;
         }
 
         /// <inheritdoc/>
-        public async Task StopInstanceAsync(
-            int id,
-            string name,
-            CancellationToken cancellationToken = default)
+        public void StopInstance(int id)
         {
             var executingInstance = _executingInstances
                 .FirstOrDefault(_ => _.Id == id);
 
             if (executingInstance == null)
             {
-                _logger.LogInformation("ExecutingInstance: [{Id}] Name: [{Name}] Not Found",
-                    id,
-                    name);
+                _logger.LogWarning("ExecutingInstance: [{Id}] Not Found", id);
             }
             else
             {
-                _ = Task
-                    .Run(async () => await StopExecutingInstanceAsync(
-                        id,
-                        name,
-                        executingInstance,
-                        cancellationToken),
-                        cancellationToken);
+                if(executingInstance.State != ExecutionState.Active)
+                {
+                    _logger.LogWarning("ExecutingInstance: [{Id}] Name: [{Name}] Not Running",
+                        executingInstance.Id,
+                        executingInstance.Name);
+                }
+                else
+                {
+                    _ = Task
+                        .Run(async () => await StopExecutingInstanceAsync(executingInstance));
+                }
             }
         }
 
-        private async Task StopExecutingInstanceAsync(
+        private void StartExecutingInstance(
             int id,
             string name,
-            ExecutingInstance executingInstance,
-            CancellationToken cancellationToken = default)
+            string assemblyFileName,
+            ExecutingInstance instance)
+        {
+            instance.SetState(ExecutionState.PlugInLoading);
+
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(id), assemblyFileName);
+            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+
+            _logger.LogInformation("Loading ExecutingInstance" +
+                    "Id: [{Id}] " +
+                    "Name: [{Name}] " +
+                    "Assembly: [{Assembly}] " +
+                    "Path: [{AssemblyPath}] ",
+                    instance.Id,
+                    name,
+                    assemblyName,
+                    assemblyPath);
+
+            var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(name, assemblyPath);
+            var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
+            var plugIn = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
+
+            instance.UpdatePlugIn(plugIn);
+
+            _logger.LogInformation("Starting ExecutingInstance " +
+                "Id:[{Id}]",
+                instance.Id);
+
+            instance.StartPlugInExecution();
+        }
+
+        private async Task StopExecutingInstanceAsync(
+            ExecutingInstance executingInstance)
         {
             _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
-                id,
-                name);
+                executingInstance.Id,
+                executingInstance.Name);
+
+            await executingInstance.TokenSource.CancelAsync();
+            executingInstance.Task.Wait();
         }
     }
 }

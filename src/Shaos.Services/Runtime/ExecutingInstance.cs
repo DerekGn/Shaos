@@ -57,12 +57,12 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The <see cref="Task"/> that is executing the <see cref="ExecutingInstance"/>
         /// </summary>
-        public Task? Task { get; private set; }
+        public Task? Task { get; internal set; }
 
         /// <summary>
         /// The <see cref="CancellationTokenSource"/> used to cancel the executing <see cref="ExecutingInstance"/>
         /// </summary>
-        public CancellationTokenSource? TokenSource { get; private set; }
+        public CancellationTokenSource? TokenSource { get; internal set; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution

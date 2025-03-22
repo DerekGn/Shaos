@@ -36,10 +36,13 @@ namespace Shaos.Services.UnitTests.Runtime
 {
     public class RuntimeServiceTests : BaseTests
     {
-        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
+        private const int WaitDelay = 10;
+        private const int WaitItterations = 500;
+
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
+        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly RuntimeService _runtimeService;
 
         public RuntimeServiceTests(ITestOutputHelper output) : base(output)
@@ -75,6 +78,30 @@ namespace Shaos.Services.UnitTests.Runtime
             var executingInstance = _runtimeService.GetExecutingInstance(1);
 
             Assert.Null(executingInstance);
+        }
+
+        [Fact]
+        public void TestGetInstances()
+        {
+            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            {
+                Id = 1
+            });
+
+            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            {
+                Id = 2
+            });
+
+            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            {
+                Id = 3
+            });
+
+            var result = _runtimeService.GetExecutingInstances();
+
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Count());
         }
 
         [Fact]
@@ -114,19 +141,19 @@ namespace Shaos.Services.UnitTests.Runtime
                 "Shaos.Test.PlugIn.dll");
 
             Assert.NotNull(result);
-            Assert.Equal(ExecutionState.Active, result.State);
+            Assert.Equal(ExecutionState.None, result.State);
 
             int i = 0;
             ExecutingInstance? executingInstance;
 
-            do {
+            do
+            {
                 executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
 
-                await Task.Delay(10);
-                
-                i++;
+                await Task.Delay(WaitDelay);
 
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Complete && i <= 500);
+                i++;
+            } while (executingInstance != null && executingInstance.State != ExecutionState.Complete && i <= WaitItterations);
 
             Assert.NotNull(executingInstance);
             Assert.NotNull(executingInstance.PlugIn);
@@ -143,10 +170,9 @@ namespace Shaos.Services.UnitTests.Runtime
                     It.IsAny<CancellationToken>()),
                     Times.Once);
 
-
             OutputHelper.WriteLine(executingInstance.ToString());
         }
-        
+
         [Fact]
         public async Task TestStartInstancePlugInFaultedAsync()
         {
@@ -188,21 +214,20 @@ namespace Shaos.Services.UnitTests.Runtime
                 "Shaos.Test.PlugIn.dll");
 
             Assert.NotNull(result);
-            Assert.Equal(ExecutionState.Active, result.State);
+            Assert.Equal(ExecutionState.None, result.State);
 
             int i = 0;
             ExecutingInstance? executingInstance;
 
-            do {
+            do
+            {
                 executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
 
-                await Task.Delay(10);
-                
+                await Task.Delay(WaitDelay);
+
                 i++;
+            } while (executingInstance != null && executingInstance.State != ExecutionState.Faulted && i <= WaitItterations);
 
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Faulted && i <= 500);
-
-            
             Assert.NotNull(executingInstance);
             Assert.NotNull(executingInstance.Exception);
             Assert.NotNull(executingInstance.PlugIn);
@@ -235,6 +260,61 @@ namespace Shaos.Services.UnitTests.Runtime
 
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Active, result.State);
+        }
+
+        [Fact]
+        public async Task TestStopInstanceAsync()
+        {
+            var tokenSource = new CancellationTokenSource();
+
+            var instance = new ExecutingInstance()
+            {
+                Id = 1,
+                Name = "InstanceName",
+                State = ExecutionState.Active,
+                TokenSource = tokenSource
+            };
+
+            instance.Task = Task.Run(async () => await WaitTaskAsync(tokenSource.Token)).ContinueWith((antecedent) => UpdateState(antecedent, instance));
+
+            _runtimeService._executingInstances.Add(instance);
+
+            _runtimeService.StopInstance(1);
+
+            int i = 0;
+            ExecutingInstance? executingInstance;
+
+            do
+            {
+                executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 1);
+
+                await Task.Delay(WaitDelay);
+
+                i++;
+            } while (executingInstance != null && executingInstance.State != ExecutionState.Complete && i <= WaitItterations);
+
+            Assert.NotNull(executingInstance);
+            Assert.Equal(ExecutionState.Complete, executingInstance.State);
+        }
+
+        private void UpdateState(
+            Task antecedent,
+            ExecutingInstance executingInstance)
+        {
+            OutputHelper.WriteLine("Waiting Task complete");
+            executingInstance.State = ExecutionState.Complete;
+        }
+
+        private async Task WaitTaskAsync(
+            CancellationToken cancellationToken)
+        {
+            do
+            {
+                OutputHelper.WriteLine("Executing Waiting Task");
+
+                await Task.Delay(100, cancellationToken);
+            }
+            while (cancellationToken.IsCancellationRequested);
         }
     }
 }

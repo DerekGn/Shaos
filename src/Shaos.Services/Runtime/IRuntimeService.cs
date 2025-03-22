@@ -54,12 +54,9 @@ namespace Shaos.Services.Runtime
             string assemblyFileName);
 
         /// <summary>
-        /// Stop an executing <see cref="PlugInInstance"/>
+        /// 
         /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task StopInstanceAsync(
-            int id,
-            string name,
-            CancellationToken cancellationToken = default);
+        /// <param name="id"></param>
+        void StopInstance(int id);
     }
 }
