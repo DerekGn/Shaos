@@ -42,19 +42,6 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Upload the package binaries for a <see cref="PlugIn"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/> to update the NuGet package</param>
-        /// <param name="fileName">The file name for the <see cref="PlugIn"/></param>
-        /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task<UploadPackageResult> UploadPlugInPackageAsync(
-            int id,
-            string fileName,
-            Stream stream,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Delete a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
@@ -85,6 +72,19 @@ namespace Shaos.Services
         Task<PlugInInstance?> SetPlugInInstanceEnableAsync(
             int id,
             bool enable,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Upload the package binaries for a <see cref="PlugIn"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/> to update the NuGet package</param>
+        /// <param name="packageFileName">The file name for the <see cref="PlugIn"/></param>
+        /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task<UploadPackageResult> UploadPlugInPackageAsync(
+            int id,
+            string packageFileName,
+            Stream stream,
             CancellationToken cancellationToken = default);
     }
 }

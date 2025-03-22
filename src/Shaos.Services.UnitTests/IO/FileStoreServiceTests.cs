@@ -41,7 +41,7 @@ namespace Shaos.Services.UnitTests.IO
             _options = ServiceProvider.GetService<IOptions<FileStoreOptions>>();
 
             _fileStoreService = new FileStoreService(
-                Factory!.CreateLogger<FileStoreService>(),
+                LoggerFactory!.CreateLogger<FileStoreService>(),
                 _options!);
         }
 

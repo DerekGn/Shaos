@@ -22,46 +22,13 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
+using Shaos.Sdk;
 using System.Reflection;
-using System.Runtime.Loader;
 
 namespace Shaos.Services.Runtime
 {
-    [ExcludeFromCodeCoverage]
-    public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
+    public interface IPlugInFactory
     {
-        private readonly AssemblyDependencyResolver _resolver;
-
-        public RuntimeAssemblyLoadContext(string name, string plugInPath) : base(name, true)
-        {
-            _resolver = new AssemblyDependencyResolver(plugInPath);
-        }
-
-        protected override Assembly? Load(AssemblyName assemblyName)
-        {
-            string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            Assembly? result = null;
-
-            if (assemblyPath != null)
-            {
-                result = LoadFromAssemblyPath(assemblyPath);
-            }
-
-            return result;
-        }
-
-        protected override nint LoadUnmanagedDll(string unmanagedDllName)
-        {
-            string? libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            IntPtr result = IntPtr.Zero;
-
-            if (libraryPath != null)
-            {
-                result = LoadUnmanagedDllFromPath(libraryPath);
-            }
-
-            return result;
-        }
+        IPlugIn? CreateInstance(Assembly assembly, IRuntimeAssemblyLoadContext assemblyLoadContext);
     }
 }

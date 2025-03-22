@@ -24,17 +24,18 @@
 
 namespace Shaos.Services.Exceptions
 {
-
     public class PlugInInstanceNameExistsException : Exception
     {
         public PlugInInstanceNameExistsException(string name)
         {
             Name = name;
         }
+
         public PlugInInstanceNameExistsException(string name, string message) : base(message)
         {
             Name = name;
         }
+
         public PlugInInstanceNameExistsException(string name, string message, Exception inner) : base(message, inner)
         {
             Name = name;

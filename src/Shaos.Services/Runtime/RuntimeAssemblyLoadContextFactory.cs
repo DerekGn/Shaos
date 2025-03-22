@@ -23,45 +23,15 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.Loader;
 
 namespace Shaos.Services.Runtime
 {
     [ExcludeFromCodeCoverage]
-    public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
+    public class RuntimeAssemblyLoadContextFactory : IRuntimeAssemblyLoadContextFactory
     {
-        private readonly AssemblyDependencyResolver _resolver;
-
-        public RuntimeAssemblyLoadContext(string name, string plugInPath) : base(name, true)
+        public IRuntimeAssemblyLoadContext Create(string name, string assemblyPath)
         {
-            _resolver = new AssemblyDependencyResolver(plugInPath);
-        }
-
-        protected override Assembly? Load(AssemblyName assemblyName)
-        {
-            string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            Assembly? result = null;
-
-            if (assemblyPath != null)
-            {
-                result = LoadFromAssemblyPath(assemblyPath);
-            }
-
-            return result;
-        }
-
-        protected override nint LoadUnmanagedDll(string unmanagedDllName)
-        {
-            string? libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            IntPtr result = IntPtr.Zero;
-
-            if (libraryPath != null)
-            {
-                result = LoadUnmanagedDllFromPath(libraryPath);
-            }
-
-            return result;
+            return new RuntimeAssemblyLoadContext(name, assemblyPath);
         }
     }
 }

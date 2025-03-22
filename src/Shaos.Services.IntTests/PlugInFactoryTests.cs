@@ -27,75 +27,46 @@ using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.IntTests
 {
-    public class RuntimeServiceTests : BaseTests
+    public class PlugInFactoryTests : BaseTests
     {
-        private readonly RuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly FileStoreService _fileStoreService;
-        private readonly RuntimeService _runtimeService;
         private readonly PlugInFactory _plugInFactory;
 
-        public RuntimeServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        public PlugInFactoryTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             var optionsInstance = new FileStoreOptions()
             {
-                BinariesPath = Path.Combine(AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"), "output"),
+                BinariesPath = string.Concat(AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"), "\\output"),
                 PackagesPath = ""
             };
 
             IOptions<FileStoreOptions> options = Options.Create(optionsInstance);
-            
-            _runtimeAssemblyLoadContextFactory = new RuntimeAssemblyLoadContextFactory();
 
             _fileStoreService = new FileStoreService(
                 LoggerFactory!.CreateLogger<FileStoreService>(),
                 options!);
 
-            _plugInFactory = new PlugInFactory(
-                LoggerFactory!.CreateLogger<PlugInFactory>());
-
-            _runtimeService = new RuntimeService(
-                LoggerFactory!.CreateLogger<RuntimeService>(),
-                _plugInFactory,
-                _fileStoreService,
-                _runtimeAssemblyLoadContextFactory);
+            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
         }
 
         [Fact]
-        public async Task TestPlugInStartThenStop()
+        public void TestCreateInstance()
         {
-            var result = _runtimeService
-                .StartInstance(1, 2, "PlugInName", "Shaos.Test.PlugIn.dll");
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(1), "Shaos.Test.PlugIn.dll");
+            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext("PlugInName", assemblyPath);
+            var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
+            
+            var result = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
 
             Assert.NotNull(result);
-
-            int i = 0;
-            ExecutingInstance? executingInstance;
-
-            do
-            {
-                executingInstance = _runtimeService.GetExecutingInstance(result.Id);
-
-                await Task.Delay(10);
-
-                i++;
-
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 500);
-
-            OutputHelper.WriteLine(result.ToString());
-
-            if (result.State != ExecutionState.Active)
-            {
-                Assert.Equal(ExecutionState.Active, result.State);
-            }
-            else
-            {
-                _runtimeService.StopInstance(2);
-            }
         }
     }
 }

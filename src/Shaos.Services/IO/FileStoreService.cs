@@ -44,7 +44,7 @@ namespace Shaos.Services.IO
 
         public void DeletePlugInPackage(int id, string fileName)
         {
-            throw new NotImplementedException();
+            Path.Combine(_options.Value.PackagesPath, id.ToString());
         }
 
         /// <inheritdoc/>
@@ -61,6 +61,11 @@ namespace Shaos.Services.IO
             return Directory.EnumerateFiles(targetPath);
         }
 
+        public string GetAssemblyPathForPlugIn(int id)
+        {
+            return Path.Combine(_options.Value.BinariesPath, id.ToString());
+        }
+
         /// <inheritdoc/>
         public bool PackageExists(string fileName)
         {
@@ -69,58 +74,14 @@ namespace Shaos.Services.IO
             return File.Exists(Path.Combine(_options.Value.PackagesPath, fileName));
         }
 
-        ///// <inheritdoc/>
-        //public void DeletePlugInPackageFolder(int plugInId)
-        //{
-        //    var packageFolder = Path.Combine(_options.Value.PlugInArchivesPath, plugInId.ToString());
-
-        //    if (!Directory.Exists(packageFolder))
-        //    {
-        //        _logger.LogDebug("Deleting folder [{Folder}]", packageFolder);
-        //        Directory.Delete(packageFolder, true);
-        //    }
-        //    else
-        //    {
-        //        _logger.LogDebug("Folder [{Folder}] Does Not Exist", packageFolder);
-        //    }
-        //}
-
-        ///// <inheritdoc/>
-        //public Stream? GetNuGetPackageStream(int id, string fileName)
-        //{
-        //    Stream? stream = null;
-
-        //    var nugetFilePath = GetPlugInNuGetPackagePath(id, fileName);
-
-        //    if (Path.Exists(nugetFilePath))
-        //    {
-        //        _logger.LogDebug("Opening File Stream: [{File}]", nugetFilePath);
-        //        stream = File.Open(nugetFilePath, FileMode.Open, FileAccess.Read);
-        //    }
-        //    else
-        //    {
-        //        _logger.LogWarning("File not Found [{File}]", nugetFilePath);
-        //    }
-
-        //    return stream;
-        //}
-
-        ///// <inheritdoc/>
-        //public string GetPlugInNuGetPackagePath(int id, string fileName)
-        //{
-        //    var packageFolder = Path.Combine(_options.Value.NuGetPackagesPath, id.ToString());
-
-        //    return Path.Combine(packageFolder, fileName);
-        //}
-
         /// <inheritdoc/>
         public async Task<string> WritePlugInPackageFileStreamAsync(
-            int plugInId,
-            string fileName,
+            int id,
+            string packageFileName,
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+            packageFileName.ThrowIfNullOrEmpty(nameof(packageFileName));
 
             if (!Directory.Exists(_options.Value.PackagesPath))
             {
@@ -129,9 +90,9 @@ namespace Shaos.Services.IO
                 Directory.CreateDirectory(_options.Value.PackagesPath);
             }
 
-            _logger.LogInformation("Writing File: [{File}] To [{Folder}]", fileName, _options.Value.PackagesPath);
+            _logger.LogInformation("Writing Package File: [{File}] To [{Folder}]", packageFileName, _options.Value.PackagesPath);
 
-            var packageFilePath = Path.Combine(_options.Value.PackagesPath, fileName);
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath, packageFileName);
 
             using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 

@@ -95,7 +95,8 @@ namespace Shaos.Controllers
                 [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
                 CancellationToken cancellationToken)
         {
-            var plugInInstance = await Store.GetPlugInInstanceByIdAsync(id, cancellationToken);
+            var plugInInstance = await Store
+                .GetPlugInInstanceByIdAsync(id, cancellationToken);
 
             if (plugInInstance == null)
             {
@@ -103,8 +104,14 @@ namespace Shaos.Controllers
             }
             else
             {
-                await _runtimeService
-                    .StartInstanceAsync(plugInInstance, cancellationToken);
+                var plugIn = plugInInstance.PlugIn;
+
+                _runtimeService
+                    .StartInstance(
+                        plugIn.Id,
+                        plugInInstance.Id,
+                        plugInInstance.Name,
+                        plugInInstance.PlugIn.Package.AssemblyFile);
             }
 
             return Accepted();

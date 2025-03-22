@@ -403,3 +403,4 @@ FodyWeavers.xsd
 /src/Shaos/shaos.db
 /src/Shaos/shaos.db-shm
 /src/Shaos/shaos.db-wal
+src/Shaos.Test.PlugIn/Shaos.Test.PlugIn.zip

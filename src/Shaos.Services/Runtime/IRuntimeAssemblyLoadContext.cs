@@ -22,18 +22,12 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
+using System.Reflection;
 
-namespace Shaos.TestPlugIn
+namespace Shaos.Services.Runtime
 {
-    public class TestPlugIn : IPlugIn
+    public interface IRuntimeAssemblyLoadContext
     {
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            do
-            {
-                await Task.Delay(1000, cancellationToken);
-            } while (!cancellationToken.IsCancellationRequested);
-        }
+        Assembly LoadFromAssemblyName(AssemblyName assemblyName);
     }
 }

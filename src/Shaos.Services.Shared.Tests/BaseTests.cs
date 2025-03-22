@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.Shared.Tests
@@ -33,15 +34,25 @@ namespace Shaos.Services.Shared.Tests
         protected BaseTests(ITestOutputHelper outputHelper)
         {
             var serviceCollection = new ServiceCollection()
-                .AddLogging((builder) => builder.AddXUnit(outputHelper))
-                .AddOptions();
+                .AddLogging((builder) => {
+                    builder.AddXUnit(outputHelper);
+                    builder.SetMinimumLevel(LogLevel.Debug);
+                }).AddOptions();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
 
-            Factory = ServiceProvider.GetService<ILoggerFactory>();
+            LoggerFactory = ServiceProvider.GetService<ILoggerFactory>();
+
+            AssemblyDirectory = Path
+                .GetDirectoryName(
+                Assembly.GetExecutingAssembly().Location);
+
+            OutputHelper = outputHelper;
         }
 
+        public string? AssemblyDirectory { get; }
+        public ILoggerFactory? LoggerFactory { get; }
+        public ITestOutputHelper OutputHelper { get; }
         public ServiceProvider ServiceProvider { get; }
-        public ILoggerFactory? Factory { get; }
     }
 }
