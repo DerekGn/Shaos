@@ -44,7 +44,7 @@ namespace Shaos.Test.PlugIn
             {
                 await Task.Delay(100, cancellationToken);
                 _logger.LogInformation("Executing [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
-            } while (cancellationToken.IsCancellationRequested);
+            } while (!cancellationToken.IsCancellationRequested);
 
             _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
         }

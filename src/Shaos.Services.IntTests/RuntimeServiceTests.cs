@@ -60,24 +60,14 @@ namespace Shaos.Services.IntTests
         }
 
         [Fact]
-        public async Task TestPlugInStartThenStop()
+        public async Task TestStartThenStop()
         {
             var result = _runtimeService
                 .StartInstance(2, 2, "PlugInName", TestFixture.PlugInAssembly);
 
             Assert.NotNull(result);
 
-            int i = 0;
-            ExecutingInstance? executingInstance;
-
-            do
-            {
-                executingInstance = _runtimeService.GetExecutingInstance(result.Id);
-
-                await Task.Delay(10);
-
-                i++;
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 500);
+            await WaitForState(2, ExecutionState.Active);
 
             OutputHelper.WriteLine(result.ToString());
 
@@ -87,8 +77,31 @@ namespace Shaos.Services.IntTests
             }
             else
             {
-                _runtimeService.StopInstance(2);
+                await Task.Delay(1000);
+
+                _runtimeService.StopInstance(result.Id);
+
+                var instance = await WaitForState(result.Id, ExecutionState.Complete);
+
+                Assert.Equal(ExecutionState.Complete, instance.State);
             }
+        }
+
+        private async Task<ExecutingInstance?> WaitForState(int id, ExecutionState state)
+        {
+            int i = 0;
+            ExecutingInstance? executingInstance;
+
+            do
+            {
+                executingInstance = _runtimeService.GetExecutingInstance(id);
+
+                await Task.Delay(10);
+
+                i++;
+            } while (executingInstance != null && executingInstance.State != state && i <= 500);
+
+            return executingInstance;
         }
     }
 }
