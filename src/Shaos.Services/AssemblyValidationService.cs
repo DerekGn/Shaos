@@ -41,7 +41,8 @@ namespace Shaos.Services
                 throw new FileNotFoundException("Assembly file not found", assemblyFile);
             }
 
-            var plugInAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFile);
+            var assemblyLoadContext = new AssemblyLoadContext("test", true);
+            var plugInAssembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
 
             if (plugInAssembly != null)
             {
@@ -50,6 +51,7 @@ namespace Shaos.Services
                 result = plugInAssembly.GetTypes().Any(t => typeof(T).IsAssignableFrom(t));
             }
 
+            assemblyLoadContext.Unload();
             return result;
         }
     }

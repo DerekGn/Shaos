@@ -22,24 +22,32 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Shared.Tests.Extensions
+using Shaos.Sdk;
+using Xunit;
+
+namespace Shaos.Services.UnitTests
 {
-    public static class StringExtensions
+    public class AssemblyValidationServiceTests : IClassFixture<TestFixture>
     {
-        public static void CreateDirectory(this string value) {
-            
-            if (value != null && !Directory.Exists(value))
-            {
-                Directory.CreateDirectory(value);
-            }
+        private readonly AssemblyValidationService _assemblyValidationService;
+        private readonly TestFixture _fixture;
+
+        public AssemblyValidationServiceTests(TestFixture fixture)
+        {
+            _assemblyValidationService = new AssemblyValidationService();
+            _fixture = fixture;
         }
 
-        public static void DeleteDirectory(this string value)
+        [Fact(Skip = "needs to unload assemblt")]
+        public void TestValidateContainsType()
         {
-            if (value != null && Directory.Exists(value))
-            {
-                Directory.Delete(value, true);
-            }
+            var assemblyFilePath = Path.Combine(Path.Combine(_fixture.SourcePath, TestFixture.ValidationFolder), TestFixture.AssemblyFileName);
+
+            var result = _assemblyValidationService.ValidateContainsType<IPlugIn>(assemblyFilePath, out var version);
+
+            Assert.True(result);
+            Assert.NotNull(version);
+            Assert.NotEmpty(version);
         }
     }
 }

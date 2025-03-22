@@ -16,4 +16,8 @@
     <ItemGroup>
         <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shaos.Services\Shaos.Services.csproj" />
+    </ItemGroup>
 </Project>

@@ -22,24 +22,14 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Shared.Tests.Extensions
-{
-    public static class StringExtensions
-    {
-        public static void CreateDirectory(this string value) {
-            
-            if (value != null && !Directory.Exists(value))
-            {
-                Directory.CreateDirectory(value);
-            }
-        }
+using Shaos.Services.Shared.Tests;
 
-        public static void DeleteDirectory(this string value)
+namespace Shaos.Services.UnitTests
+{
+    public class TestFixture : BaseTestFixture
+    {
+        public TestFixture() : base("Shaos.Services.UnitTests", "Shaos.Test.PlugIn")
         {
-            if (value != null && Directory.Exists(value))
-            {
-                Directory.Delete(value, true);
-            }
         }
     }
 }
