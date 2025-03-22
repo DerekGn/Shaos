@@ -36,7 +36,7 @@ namespace Shaos.Services.IO
         /// </summary>
         /// <param name="id"></param>
         /// <param name="fileName"></param>
-        void DeletePlugInPackage(int id, string fileName);
+        void DeletePackage(int id, string fileName);
 
         /// <summary>
         /// Extract a package to a folder
@@ -50,7 +50,7 @@ namespace Shaos.Services.IO
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        string GetAssemblyPathForPlugIn(int id);
+        string GetAssemblyPath(int id);
 
         /// <summary>
         /// Determine if a package file exists in the package store
@@ -60,14 +60,13 @@ namespace Shaos.Services.IO
         bool PackageExists(string fileName);
 
         /// <summary>
-        /// Write the contents of a stream to a <paramref name="folder"/> <paramref name="fileName"/> combination
         /// </summary>
         /// <param name="id">The <see cref="PlugIn"/> identifier</param>
         /// <param name="packageFileName">The package filename to write too</param>
-        /// <param name="stream">The stream to be written to the <paramref name="folder"/> <paramref name="fileName"/> combination</param>
+        /// <param name="stream">The stream to be written</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string> WritePlugInPackageFileStreamAsync(
+        Task<string> WritePackageFileStreamAsync(
             int id,
             string packageFileName,
             Stream stream,

@@ -22,85 +22,85 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
 using Shaos.Services.Shared.Tests;
+using Shaos.Services.UnitTests.Extensions;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.IO
 {
-    public class FileStoreServiceTests : BaseTests
+    public class FileStoreServiceTests : BaseTests, IClassFixture<FileStoreFixture>
     {
         private readonly FileStoreService _fileStoreService;
-        private readonly IOptions<FileStoreOptions>? _options;
+        private readonly FileStoreFixture _fixture;
 
-        public FileStoreServiceTests(ITestOutputHelper output) : base(output)
+        public FileStoreServiceTests(ITestOutputHelper output, FileStoreFixture fixture) : base(output)
         {
-            _options = ServiceProvider.GetService<IOptions<FileStoreOptions>>();
+            _fixture = fixture;
 
             _fileStoreService = new FileStoreService(
                 LoggerFactory!.CreateLogger<FileStoreService>(),
-                _options!);
+                _fixture.FileStoreOptions);
         }
 
-        //[Theory]
-        //[InlineData("TestCodeFile.txt")]
-        //public void GetCodeFileStream(string file)
-        //{
-        //    var filePath = Path.Combine(_options!.Value.CodeFilesPath, file);
+        [Fact]
+        public void TestDeletePackage()
+        {
+            var targetPath = Path.Combine(_fixture.SourcePath, 1.ToString());
+            var targetFilePath = Path.Combine(targetPath, FileStoreFixture.PackageFileName);
+            
+            targetPath.CreateFolder();
 
-        //    var result = _fileStoreService.GetCodeFileStream(filePath);
+            File.Copy(_fixture.SourceFilePath, targetFilePath, true);
 
-        //    Assert.NotNull(result);
-        //}
+            _fileStoreService.DeletePackage(1, FileStoreFixture.PackageFileName);
 
-        //[Fact]
-        //public void TestCreateAssemblyFileStream()
-        //{
-        //    using var result = _fileStoreService
-        //        .CreateAssemblyFileStream(
-        //        "folder", "assemblyFileName",
-        //        out var assemblyFilePath);
+            Assert.False(File.Exists(targetFilePath));
+        }
 
-        //    Assert.NotNull(result);
-        //    Assert.NotNull(assemblyFilePath);
-        //    Assert.True(File.Exists(assemblyFilePath));
-        //}
+        [Fact]
+        public void TestExtractPackage()
+        {
+            var result = _fileStoreService.ExtractPackage(
+                FileStoreFixture.PackageFileName,
+                FileStoreFixture.ExtractionFolder);
 
-        //[Theory]
-        //[InlineData("./Files/TestFile.txt")]
-        //public void TestDeleteCodeFile(string filePath)
-        //{
-        //    _fileStoreService.DeleteCodeFile(filePath);
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
 
-        //    Assert.False(File.Exists(filePath));
-        //}
+        [Fact]
+        public void TestGetAssemblyPath()
+        {
+            var expectedPath = Path.Combine(_fixture.SourcePath, "1");
 
-        //[Theory]
-        //[InlineData("TestFolder")]
-        //public void TestDeleteCodeFolder(string folder)
-        //{
-        //    var folderPath = Path.Combine(_options!.Value.CodeFilesPath, folder);
+            var result = _fileStoreService.GetAssemblyPath(1);
 
-        //    Directory.CreateDirectory(folderPath);
+            Assert.NotNull(result);
+            Assert.Equal(expectedPath, result);
+        }
 
-        //    _fileStoreService.DeleteCodeFolder(folder);
+        [Fact]
+        public void TestPackageExists()
+        {
+            var exists = _fileStoreService.PackageExists(FileStoreFixture.PackageFileName);
 
-        //    Assert.False(Directory.Exists(folderPath));
-        //}
+            Assert.True(exists);
+        }
 
-        //[Fact]
-        //public async Task TestWriteCodeFileStreamAsync()
-        //{
-        //    using var memoryStream = new MemoryStream();
-        //    memoryStream.Write([0xAA, 0x55]);
-        //    memoryStream.Position = 0;
+        [Fact]
+        public async Task TestWritePackageFileStreamAsync()
+        {
+            using var memoryStream = new MemoryStream();
+            memoryStream.Write([0xAA, 0x55]);
+            memoryStream.Position = 0;
 
-        //    var result = await _fileStoreService.WriteCodeFileStreamAsync("CodeWriteFolder", "FileName.txt", memoryStream);
+            var result = await _fileStoreService.WritePackageFileStreamAsync(1, "FileName.txt", memoryStream);
 
-        //    Assert.NotNull(result);
-        //}
+            Assert.NotNull(result);
+        }
     }
 }

@@ -181,7 +181,7 @@ namespace Shaos.Services.UnitTests
 
             await _plugInService.DeletePlugInAsync(1);
 
-            _mockFileStoreService.Verify(_ => _.DeletePlugInPackage(
+            _mockFileStoreService.Verify(_ => _.DeletePackage(
                 It.IsAny<int>(),
                 It.IsAny<string>()),
                 Times.Once);
@@ -238,7 +238,7 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(UploadPackageResult.PackageExists, result);
 
             _mockFileStoreService
-                .Verify(_ => _.WritePlugInPackageFileStreamAsync(
+                .Verify(_ => _.WritePackageFileStreamAsync(
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<Stream>(),
@@ -290,7 +290,7 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(UploadPackageResult.NoValidPlugIn, result);
 
             _mockFileStoreService
-                .Verify(_ => _.WritePlugInPackageFileStreamAsync(
+                .Verify(_ => _.WritePackageFileStreamAsync(
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<Stream>(),
@@ -339,7 +339,7 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(UploadPackageResult.PlugInRunning, result);
 
             _mockFileStoreService
-                .Verify(_ => _.WritePlugInPackageFileStreamAsync(
+                .Verify(_ => _.WritePackageFileStreamAsync(
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<Stream>(),
@@ -395,7 +395,7 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(UploadPackageResult.Success, result);
 
             _mockFileStoreService
-                .Verify(_ => _.WritePlugInPackageFileStreamAsync(
+                .Verify(_ => _.WritePackageFileStreamAsync(
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<Stream>(),

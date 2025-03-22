@@ -58,7 +58,7 @@ namespace Shaos.Services.IntTests
         [Fact]
         public void TestCreateInstance()
         {
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(1), "Shaos.Test.PlugIn.dll");
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(1), "Shaos.Test.PlugIn.dll");
             var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
             var assemblyLoadContext = new RuntimeAssemblyLoadContext("PlugInName", assemblyPath);

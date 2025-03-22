@@ -112,7 +112,7 @@ namespace Shaos.Services.UnitTests.Runtime
             OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
 
             _mockFileStoreService
-                .Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
                 .Returns(assemblyDirectory);
 
             var mockPlugIn = new Mock<IPlugIn>();
@@ -181,7 +181,7 @@ namespace Shaos.Services.UnitTests.Runtime
             OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
 
             _mockFileStoreService
-                .Setup(_ => _.GetAssemblyPathForPlugIn(It.IsAny<int>()))
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
                 .Returns(assemblyDirectory);
 
             var mockPlugIn = new Mock<IPlugIn>();

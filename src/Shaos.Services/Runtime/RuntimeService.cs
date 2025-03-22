@@ -140,7 +140,7 @@ namespace Shaos.Services.Runtime
         {
             instance.SetState(ExecutionState.PlugInLoading);
 
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPathForPlugIn(id), assemblyFileName);
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(id), assemblyFileName);
             var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
             _logger.LogInformation("Loading ExecutingInstance" +

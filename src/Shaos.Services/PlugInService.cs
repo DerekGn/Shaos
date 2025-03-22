@@ -91,7 +91,7 @@ namespace Shaos.Services
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
                     {
-                        _fileStoreService.DeletePlugInPackage(id, plugIn.Package.FileName);
+                        _fileStoreService.DeletePackage(id, plugIn.Package.FileName);
                     }
 
                     await _store.DeleteAsync<PlugIn>(id, cancellationToken);
@@ -164,7 +164,7 @@ namespace Shaos.Services
                     {
                         _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
 
-                        await _fileStoreService.WritePlugInPackageFileStreamAsync(
+                        await _fileStoreService.WritePackageFileStreamAsync(
                             plugIn.Id,
                             packageFileName,
                             stream,
