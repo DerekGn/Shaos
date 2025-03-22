@@ -23,7 +23,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
@@ -33,24 +32,19 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.IntTests
 {
-    public class PlugInFactoryTests : BaseTests
+    public class PlugInFactoryTests : BaseTests, IClassFixture<TestFixture>
     {
         private readonly FileStoreService _fileStoreService;
+        private readonly TestFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
 
-        public PlugInFactoryTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        public PlugInFactoryTests(ITestOutputHelper output, TestFixture fixture) : base(output)
         {
-            var optionsInstance = new FileStoreOptions()
-            {
-                BinariesPath = string.Concat(AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"), "\\output"),
-                PackagesPath = ""
-            };
-
-            IOptions<FileStoreOptions> options = Options.Create(optionsInstance);
+            _fixture = fixture;
 
             _fileStoreService = new FileStoreService(
                 LoggerFactory!.CreateLogger<FileStoreService>(),
-                options!);
+                _fixture.FileStoreOptions);
 
             _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
         }
@@ -58,12 +52,12 @@ namespace Shaos.Services.IntTests
         [Fact]
         public void TestCreateInstance()
         {
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(1), "Shaos.Test.PlugIn.dll");
+            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(1), TestFixture.PlugInAssembly);
             var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
             var assemblyLoadContext = new RuntimeAssemblyLoadContext("PlugInName", assemblyPath);
             var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
-            
+
             var result = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
 
             Assert.NotNull(result);

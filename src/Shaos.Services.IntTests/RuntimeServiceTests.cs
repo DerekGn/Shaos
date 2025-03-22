@@ -23,7 +23,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
@@ -32,28 +31,23 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.IntTests
 {
-    public class RuntimeServiceTests : BaseTests
+    public class RuntimeServiceTests : BaseTests, IClassFixture<TestFixture>
     {
-        private readonly RuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly FileStoreService _fileStoreService;
-        private readonly RuntimeService _runtimeService;
+        private readonly TestFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
+        private readonly RuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
+        private readonly RuntimeService _runtimeService;
 
-        public RuntimeServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        public RuntimeServiceTests(ITestOutputHelper outputHelper, TestFixture fixture) : base(outputHelper)
         {
-            var optionsInstance = new FileStoreOptions()
-            {
-                BinariesPath = Path.Combine(AssemblyDirectory!.Replace("Shaos.Services.IntTests", "Shaos.Test.PlugIn"), "output"),
-                PackagesPath = ""
-            };
+            _fixture = fixture;
 
-            IOptions<FileStoreOptions> options = Options.Create(optionsInstance);
-            
             _runtimeAssemblyLoadContextFactory = new RuntimeAssemblyLoadContextFactory();
 
             _fileStoreService = new FileStoreService(
                 LoggerFactory!.CreateLogger<FileStoreService>(),
-                options!);
+                _fixture.FileStoreOptions);
 
             _plugInFactory = new PlugInFactory(
                 LoggerFactory!.CreateLogger<PlugInFactory>());
@@ -69,7 +63,7 @@ namespace Shaos.Services.IntTests
         public async Task TestPlugInStartThenStop()
         {
             var result = _runtimeService
-                .StartInstance(1, 2, "PlugInName", "Shaos.Test.PlugIn.dll");
+                .StartInstance(2, 2, "PlugInName", TestFixture.PlugInAssembly);
 
             Assert.NotNull(result);
 
@@ -83,7 +77,6 @@ namespace Shaos.Services.IntTests
                 await Task.Delay(10);
 
                 i++;
-
             } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 500);
 
             OutputHelper.WriteLine(result.ToString());

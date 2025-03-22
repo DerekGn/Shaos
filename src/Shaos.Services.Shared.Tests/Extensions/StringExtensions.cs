@@ -22,19 +22,16 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.IntTests
+namespace Shaos.Services.Shared.Tests.Extensions
 {
-    internal class PlugInFactoryFixture : IDisposable
+    public static class StringExtensions
     {
-        public const string PackageFileName = "Shaos.Test.PlugIn.zip";
-
-        public PlugInFactoryFixture()
-        {
-
-        }
-
-        public void Dispose()
-        {
+        public static void CreateFolder(this string value) {
+            
+            if (value != null && !Directory.Exists(value))
+            {
+                Directory.CreateDirectory(value);
+            }
         }
     }
 }

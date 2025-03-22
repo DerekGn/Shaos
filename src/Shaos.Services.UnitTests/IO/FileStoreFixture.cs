@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
-using Shaos.Services.UnitTests.Extensions;
+using Shaos.Services.Shared.Tests.Extensions;
 using System.Reflection;
 
 namespace Shaos.Services.UnitTests.IO
@@ -44,6 +44,7 @@ namespace Shaos.Services.UnitTests.IO
         public IOptions<FileStoreOptions> FileStoreOptions { get; }
 
         public string SourceFilePath { get; }
+
         public string SourcePath { get; }
 
         public void Dispose()
