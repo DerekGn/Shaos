@@ -26,11 +26,19 @@ namespace Shaos.Services.Shared.Tests.Extensions
 {
     public static class StringExtensions
     {
-        public static void CreateFolder(this string value) {
+        public static void CreateDirectory(this string value) {
             
             if (value != null && !Directory.Exists(value))
             {
                 Directory.CreateDirectory(value);
+            }
+        }
+
+        public static void DeleteDirectory(this string value)
+        {
+            if (value != null && Directory.Exists(value))
+            {
+                Directory.Delete(value, true);
             }
         }
     }

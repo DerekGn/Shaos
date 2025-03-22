@@ -63,7 +63,7 @@ namespace Shaos.Services.IntTests
         public async Task TestStartThenStop()
         {
             var result = _runtimeService
-                .StartInstance(2, 2, "PlugInName", TestFixture.PlugInAssembly);
+                .StartInstance(2, 2, "PlugInName", TestFixture.AssemblyFileName);
 
             Assert.NotNull(result);
 

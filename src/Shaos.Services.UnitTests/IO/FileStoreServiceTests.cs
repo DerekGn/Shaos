@@ -31,12 +31,12 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.IO
 {
-    public class FileStoreServiceTests : BaseTests, IClassFixture<FileStoreFixture>
+    public class FileStoreServiceTests : BaseTests, IClassFixture<TestFixture>
     {
         private readonly FileStoreService _fileStoreService;
-        private readonly FileStoreFixture _fixture;
+        private readonly TestFixture _fixture;
 
-        public FileStoreServiceTests(ITestOutputHelper output, FileStoreFixture fixture) : base(output)
+        public FileStoreServiceTests(ITestOutputHelper output, TestFixture fixture) : base(output)
         {
             _fixture = fixture;
 
@@ -49,13 +49,13 @@ namespace Shaos.Services.UnitTests.IO
         public void TestDeletePackage()
         {
             var targetPath = Path.Combine(_fixture.SourcePath, 1.ToString());
-            var targetFilePath = Path.Combine(targetPath, FileStoreFixture.PackageFileName);
+            var targetFilePath = Path.Combine(targetPath, TestFixture.PackageFileName);
             
-            targetPath.CreateFolder();
+            targetPath.CreateDirectory();
 
             File.Copy(_fixture.SourceFilePath, targetFilePath, true);
 
-            _fileStoreService.DeletePackage(1, FileStoreFixture.PackageFileName);
+            _fileStoreService.DeletePackage(1, TestFixture.PackageFileName);
 
             Assert.False(File.Exists(targetFilePath));
         }
@@ -64,8 +64,8 @@ namespace Shaos.Services.UnitTests.IO
         public void TestExtractPackage()
         {
             var result = _fileStoreService.ExtractPackage(
-                FileStoreFixture.PackageFileName,
-                FileStoreFixture.ExtractionFolder);
+                TestFixture.PackageFileName,
+                TestFixture.ExtractionFolder);
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
@@ -85,7 +85,7 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestPackageExists()
         {
-            var exists = _fileStoreService.PackageExists(FileStoreFixture.PackageFileName);
+            var exists = _fileStoreService.PackageExists(TestFixture.PackageFileName);
 
             Assert.True(exists);
         }

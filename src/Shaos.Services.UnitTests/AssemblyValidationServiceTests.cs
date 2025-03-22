@@ -22,14 +22,32 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Shared.Tests;
+using Shaos.Sdk;
+using Xunit;
 
-namespace Shaos.Services.IntTests
+namespace Shaos.Services.UnitTests
 {
-    public class TestFixture : BaseTestFixture
+    public class AssemblyValidationServiceTests : IClassFixture<TestFixture>
     {
-        public TestFixture() : base("Shaos.Services.IntTests", "Shaos.Test.PlugIn")
+        private readonly AssemblyValidationService _assemblyValidationService;
+        private readonly TestFixture _fixture;
+
+        public AssemblyValidationServiceTests(TestFixture fixture)
         {
+            _assemblyValidationService = new AssemblyValidationService();
+            _fixture = fixture;
+        }
+
+        [Fact(Skip = "needs to unload assemblt")]
+        public void TestValidateContainsType()
+        {
+            var assemblyFilePath = Path.Combine(Path.Combine(_fixture.SourcePath, TestFixture.ValidationFolder), TestFixture.AssemblyFileName);
+
+            var result = _assemblyValidationService.ValidateContainsType<IPlugIn>(assemblyFilePath, out var version);
+
+            Assert.True(result);
+            Assert.NotNull(version);
+            Assert.NotEmpty(version);
         }
     }
 }
