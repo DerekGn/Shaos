@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
+
 namespace Shaos.Services.Runtime
 {
     /// <summary>
@@ -29,12 +31,47 @@ namespace Shaos.Services.Runtime
     /// </summary>
     public enum ExecutionState
     {
+        /// <summary>
+        /// The initial <see cref="ExecutingInstance"/> state
+        /// </summary>
         None,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is activating
+        /// </summary>
         Activating,
-        ActivationFailed,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is activation faulted
+        /// </summary>
+        ActivationFaulted,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is activate
+        /// </summary>
         Active,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is complete.
+        /// </summary>
+        /// <remarks>
+        /// This is the result of the <see cref="ExecutingInstance"/> self terminating or <see cref="ExecutingInstance"/> being stopped.
+        /// </remarks>
+        Complete,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is faulted
+        /// </summary>
+        /// <remarks>
+        /// This is the result of the <see cref="ExecutingInstance"/> self terminating due to an exception.
+        /// </remarks>
+        Faulted,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> <see cref="IPlugIn"/> was loaded from its <see cref="Assembly"/>
+        /// </summary>
         PlugInLoaded,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> <see cref="IPlugIn"/> load failed.
+        /// </summary>
         PlugInLoadFailure,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> <see cref="IPlugIn"/> is loading from its <see cref="Assembly"/>
+        /// </summary>
         PlugInLoading
     }
 }

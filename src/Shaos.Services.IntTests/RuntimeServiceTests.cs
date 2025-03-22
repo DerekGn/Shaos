@@ -86,11 +86,10 @@ namespace Shaos.Services.IntTests
 
             } while (executingInstance != null && executingInstance.State != ExecutionState.Active && i <= 500);
 
+            OutputHelper.WriteLine(result.ToString());
 
             if (result.State != ExecutionState.Active)
             {
-                OutputHelper.WriteLine(result.ToString());
-
                 Assert.Equal(ExecutionState.Active, result.State);
             }
             else

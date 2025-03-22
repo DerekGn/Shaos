@@ -130,7 +130,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             Assert.NotNull(executingInstance);
             Assert.NotNull(executingInstance.PlugIn);
-            Assert.Equal(ExecutionState.Active, executingInstance.State);
+            Assert.Equal(ExecutionState.Complete, executingInstance.State);
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
