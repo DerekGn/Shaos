@@ -42,9 +42,16 @@ namespace Shaos.Services.IO
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public void DeletePlugInPackage(int id, string fileName)
+        public void DeletePackage(int id, string fileName)
         {
-            Path.Combine(_options.Value.PackagesPath, id.ToString());
+            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), fileName);
+
+            if(File.Exists(filePath))
+            {
+                _logger.LogInformation("Deleting file [{Path}]", filePath);
+
+                File.Delete(filePath);
+            }
         }
 
         /// <inheritdoc/>
@@ -61,7 +68,7 @@ namespace Shaos.Services.IO
             return Directory.EnumerateFiles(targetPath);
         }
 
-        public string GetAssemblyPathForPlugIn(int id)
+        public string GetAssemblyPath(int id)
         {
             return Path.Combine(_options.Value.BinariesPath, id.ToString());
         }
@@ -75,7 +82,7 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public async Task<string> WritePlugInPackageFileStreamAsync(
+        public async Task<string> WritePackageFileStreamAsync(
             int id,
             string packageFileName,
             Stream stream,
