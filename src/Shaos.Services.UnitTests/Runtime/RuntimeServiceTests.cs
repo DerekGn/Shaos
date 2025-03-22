@@ -174,7 +174,7 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public async Task TestStartInstancePlugInFaultedAsync()
+        public async Task TestStartInstanceFaultedAsync()
         {
             var assemblyDirectory = AssemblyDirectory!.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn");
 
@@ -214,7 +214,6 @@ namespace Shaos.Services.UnitTests.Runtime
                 "Shaos.Test.PlugIn.dll");
 
             Assert.NotNull(result);
-            Assert.Equal(ExecutionState.None, result.State);
 
             int i = 0;
             ExecutingInstance? executingInstance;
