@@ -131,6 +131,7 @@ namespace Shaos
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IStore, Store>();
 
+            builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<IAssemblyValidationService, AssemblyValidationService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
