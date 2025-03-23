@@ -117,7 +117,7 @@ namespace Shaos.Services.UnitTests
         {
             _mockRuntimeService.Setup(_ => _.GetExecutingInstance(
                 It.IsAny<int>()))
-                .Returns(new ExecutingInstance());
+                .Returns(new ExecutingInstance() { Name = "Test" });
 
             await Assert.ThrowsAsync<PlugInInstanceRunningException>(async () =>
                 await _plugInService.DeletePlugInInstanceAsync(12));
@@ -157,7 +157,8 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<int>()))
                 .Returns(new ExecutingInstance()
                 {
-                    Id = 10
+                    Id = 10,
+                    Name = "Test"
                 });
 
             await Assert.ThrowsAsync<PlugInInstanceRunningException>(async () =>
@@ -330,7 +331,8 @@ namespace Shaos.Services.UnitTests
                     It.IsAny<int>()))
                 .Returns(new ExecutingInstance()
                 {
-                    State = ExecutionState.Active
+                    State = ExecutionState.Active,
+                    Name = "Test"
                 });
 
             var result = await _plugInService

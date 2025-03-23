@@ -42,7 +42,7 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public string Name { get; init; }
+        public required string Name { get; init; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance that executes its functions

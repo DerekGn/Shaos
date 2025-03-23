@@ -28,8 +28,8 @@ using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using System.Reflection;
-
-#warning Limit number of executing plugins
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Shaos.Services.Runtime
 {
@@ -182,10 +182,16 @@ namespace Shaos.Services.Runtime
                 instance.Id,
                 instance.Name);
 
-#warning sorten wait or make config
-#warning unlad assembly and remove instance
             await instance.TokenSource!.CancelAsync();
-            instance.Task!.Wait();
+
+            if (await Task.WhenAny(instance.Task!, Task.Delay(_options.Value.TaskStopTimeout)) == instance.Task)
+            {
+                _logger.LogInformation("Stopped execution [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+            }
+            else
+            {
+                _logger.LogWarning("Instance not stopped within timeout [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+            }
         }
 
         private void VerifyInstanceCount()

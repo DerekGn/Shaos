@@ -78,7 +78,8 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             _runtimeService._executingInstances.Add(new ExecutingInstance()
             {
-                Id = 1
+                Id = 1,
+                Name = "Test",
             });
 
             var executingInstance = _runtimeService.GetExecutingInstance(1);
@@ -101,7 +102,8 @@ namespace Shaos.Services.UnitTests.Runtime
             {
                 _runtimeService._executingInstances.Add(new ExecutingInstance()
                 {
-                    Id = i
+                    Id = i,
+                    Name = "Test"
                 });
             }
 
@@ -230,7 +232,8 @@ namespace Shaos.Services.UnitTests.Runtime
             {
                 _runtimeService._executingInstances.Add(new ExecutingInstance()
                 {
-                    Id = i
+                    Id = i,
+                    Name = i.ToString()
                 });
             }
 
@@ -245,6 +248,7 @@ namespace Shaos.Services.UnitTests.Runtime
             _runtimeService._executingInstances.Add(new ExecutingInstance()
             {
                 Id = 2,
+                Name = "Test", 
                 State = ExecutionState.Active
             });
 
