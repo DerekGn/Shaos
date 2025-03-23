@@ -26,7 +26,7 @@ namespace Shaos.Api.Model.v1
 {
     /// <summary>
     /// Represents the currently executing <see cref="PlugInInstance"/>
-    /// </summary> 
+    /// </summary>
     public class ExecutingInstance
     {
         /// <summary>
@@ -35,8 +35,18 @@ namespace Shaos.Api.Model.v1
         public int Id { get; init; }
 
         /// <summary>
-        /// The state of the <see cref="PlugInInstance"/> 
+        /// The PlugIn name
+        /// </summary>
+        public string Name { get; init; }
+
+        /// <summary>
+        /// The state of the <see cref="PlugInInstance"/>
         /// </summary>
         public ExecutionState Status { get; init; }
+
+        /// <summary>
+        /// The last exception if any occurred
+        /// </summary>
+        public string? Exception { get; init; }
     }
 }
