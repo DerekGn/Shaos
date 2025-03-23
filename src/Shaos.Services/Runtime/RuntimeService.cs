@@ -141,7 +141,7 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private void LoadInstancePlugInFromAssembly(
+        private bool LoadInstancePlugInFromAssembly(
             int id,
             string assemblyFileName,
             ExecutingInstance instance)
@@ -166,7 +166,10 @@ namespace Shaos.Services.Runtime
                     instance.Name);
 
                 instance.State = ExecutionState.PlugInLoadFailure;
+                instance.Exception = exception;
             }
+
+            return instance.State == ExecutionState.PlugInLoaded;
         }
 
         private void StartExecutingInstance(
@@ -179,13 +182,14 @@ namespace Shaos.Services.Runtime
                     instance.Name,
                     assemblyFileName);
 
-            LoadInstancePlugInFromAssembly(id, assemblyFileName, instance);
-
-            _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
+            if(LoadInstancePlugInFromAssembly(id, assemblyFileName, instance))
+            {
+                _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
                 instance.Id,
                 instance.Name);
 
-            StartInstanceExecution(instance);
+                StartInstanceExecution(instance);
+            }
         }
 
         private void StartInstanceExecution(ExecutingInstance instance)
