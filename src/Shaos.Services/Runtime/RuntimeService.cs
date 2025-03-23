@@ -141,20 +141,6 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private async Task HandlePlugInExceptionOperationAsync(ExecutingInstance instance)
-        {
-            try
-            {
-                await instance.PlugIn!.ExecuteAsync(instance.TokenSource!.Token);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogCritical(exception, "Exception occurred during PlugIn execution. Id: [{Id}] Name: [{Name}]",
-                    instance.Id,
-                    instance.Name);
-            }
-        }
-
         private void LoadInstancePlugInFromAssembly(
             int id,
             string assemblyFileName,
@@ -208,7 +194,9 @@ namespace Shaos.Services.Runtime
             {
                 instance.State = ExecutionState.Activating;
                 instance.TokenSource = new CancellationTokenSource();
-                instance.Task = StartInstancePlugInExecutionAsync(instance);
+                instance.Task = Task.Run(
+                    async () => await instance.PlugIn!.ExecuteAsync(instance.TokenSource!.Token))
+                    .ContinueWith((antecedent) => UpdatePlugInStateOnCompletion(instance, antecedent));
                 instance.State = ExecutionState.Active;
             }
             catch (Exception exception)
@@ -220,12 +208,6 @@ namespace Shaos.Services.Runtime
                 instance.State = ExecutionState.ActivationFaulted;
                 instance.Exception = exception;
             }
-        }
-
-        private Task? StartInstancePlugInExecutionAsync(ExecutingInstance instance)
-        {
-            return Task.Run(async () => await HandlePlugInExceptionOperationAsync(instance))
-                .ContinueWith((antecedent) => UpdatePlugInStateOnCompletion(instance, antecedent));
         }
 
         private async Task StopExecutingInstanceAsync(ExecutingInstance instance)
