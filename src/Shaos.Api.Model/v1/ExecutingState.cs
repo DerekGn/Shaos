@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.Reflection;
+
 namespace Shaos.Api.Model.v1
 {
     /// <summary>
@@ -30,16 +32,46 @@ namespace Shaos.Api.Model.v1
     public enum ExecutionState
     {
         /// <summary>
-        /// The default <see cref="PlugIn"/> execution state
+        /// The initial <see cref="ExecutingInstance"/> state
         /// </summary>
-        InActive,
+        None,
         /// <summary>
-        /// The <see cref="PlugIn"/> code has been compiled successfully
+        /// The <see cref="ExecutingInstance"/> is activating
         /// </summary>
-        Compiled,
+        Activating,
         /// <summary>
-        /// The <see cref="PlugIn"/> code has been compiled with errors
+        /// The <see cref="ExecutingInstance"/> is activation faulted
         /// </summary>
-        CompileFailed
+        ActivationFaulted,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is activate
+        /// </summary>
+        Active,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is complete.
+        /// </summary>
+        /// <remarks>
+        /// This is the result of the <see cref="ExecutingInstance"/> self terminating or <see cref="ExecutingInstance"/> being stopped.
+        /// </remarks>
+        Complete,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> is faulted
+        /// </summary>
+        /// <remarks>
+        /// This is the result of the <see cref="ExecutingInstance"/> self terminating due to an exception.
+        /// </remarks>
+        Faulted,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> <see cref="PlugIn"/> was loaded from its <see cref="Assembly"/>
+        /// </summary>
+        PlugInLoaded,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> <see cref="PlugIn"/> load failed.
+        /// </summary>
+        PlugInLoadFailure,
+        /// <summary>
+        /// The <see cref="ExecutingInstance"/> <see cref="PlugIn"/> is loading from its <see cref="Assembly"/>
+        /// </summary>
+        PlugInLoading
     }
 }

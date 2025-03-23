@@ -224,12 +224,19 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter("The PlugIn Instance state", Required = true)] bool state,
             CancellationToken cancellationToken)
         {
-            await PlugInService.SetPlugInInstanceEnableAsync(
+            try
+            {
+                await PlugInService.SetPlugInInstanceEnableAsync(
                 id,
                 state,
                 cancellationToken);
 
-            return Ok();
+                return Ok();
+            }
+            catch (PlugInInstanceNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPut("{id}")]

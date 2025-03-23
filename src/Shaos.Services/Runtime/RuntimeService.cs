@@ -23,7 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Shaos.Services.Extensions;
+using Shaos.Repository.Models;
 using Shaos.Services.IO;
 using System.Reflection;
 
@@ -69,26 +69,28 @@ namespace Shaos.Services.Runtime
 
         /// <inheritdoc/>
         public ExecutingInstance StartInstance(
-            int plugInId,
-            int plugInInstanceId,
-            string name,
-            string assemblyFileName)
+            PlugIn plugIn,
+            PlugInInstance plugInInstance)
         {
-            name.ThrowIfNullOrEmpty(nameof(name));
-            assemblyFileName.ThrowIfNullOrEmpty(nameof(assemblyFileName));
+            ArgumentNullException.ThrowIfNull(nameof(plugIn));
+            ArgumentNullException.ThrowIfNull(nameof(plugInInstance));
+
+            ArgumentNullException.ThrowIfNull(plugIn.Package);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugIn.Package.AssemblyFile);
 
             var instance = _executingInstances
-                .FirstOrDefault(_ => _.Id == plugInInstanceId);
+                .FirstOrDefault(_ => _.Id == plugInInstance.Id);
 
             if (instance == null)
             {
                 _logger.LogInformation("Creating ExecutingInstance: [{Id}] Name: [{Name}]",
-                    plugInInstanceId, name);
+                    plugInInstance.Id,
+                    plugInInstance.Name);
 
                 instance = new ExecutingInstance()
                 {
-                    Id = plugInInstanceId,
-                    Name = name,
+                    Id = plugInInstance.Id,
+                    Name = plugInInstance.Name
                 };
 
                 _executingInstances.Add(instance);
@@ -96,11 +98,11 @@ namespace Shaos.Services.Runtime
 
             if (instance.State == ExecutionState.Active)
             {
-                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", plugInInstanceId, name);
+                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", plugInInstance.Id, plugInInstance.Name);
             }
             else
             {
-                _ = Task.Run(() => StartExecutingInstance(plugInId, name, assemblyFileName, instance));
+                _ = Task.Run(() => StartExecutingInstance(plugIn.Id, plugInInstance.Name, plugIn.Package.AssemblyFile, instance));
             }
 
             return instance;

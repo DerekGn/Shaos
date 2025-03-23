@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Repository.Models;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
@@ -62,8 +63,19 @@ namespace Shaos.Services.IntTests
         [Fact]
         public async Task TestStartThenStop()
         {
+            var plugIn = new PlugIn()
+            {
+                Id = 2
+            };
+
+            var plugInInstance = new PlugInInstance()
+            {
+                Id = 2,
+                Name = "test"
+            };
+
             var result = _runtimeService
-                .StartInstance(2, 2, "PlugInName", TestFixture.AssemblyFileName);
+                .StartInstance(plugIn,plugInInstance);
 
             Assert.NotNull(result);
 

@@ -63,7 +63,7 @@ namespace Shaos.Controllers
         {
             var executingInstance = _runtimeService.GetExecutingInstance(id);
 
-            return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance);
+            return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance.ToApi());
         }
 
         [HttpGet()]
@@ -108,10 +108,8 @@ namespace Shaos.Controllers
 
                 _runtimeService
                     .StartInstance(
-                        plugIn.Id,
-                        plugInInstance.Id,
-                        plugInInstance.Name,
-                        plugInInstance.PlugIn.Package.AssemblyFile);
+                        plugIn,
+                        plugInInstance);
             }
 
             return Accepted();
@@ -129,15 +127,20 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter(ExecutingInstanceIdentifier, Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            //return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
-            //{
-            //    await _plugInRuntime.StopInstanceAsync(plugIn, cancellationToken);
+            var plugInInstance = await Store
+                .GetPlugInInstanceByIdAsync(id, cancellationToken);
 
-            //    return Accepted();
-            //},
-            //cancellationToken);
+            if (plugInInstance == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _runtimeService
+                    .StopInstance(plugInInstance.Id);
+            }
 
-            return Ok();
+            return Accepted();
         }
     }
 }

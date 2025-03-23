@@ -30,7 +30,6 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
 using Shaos.Hosting;
-using Shaos.Json;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
@@ -38,6 +37,7 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
+using System.Text.Json.Serialization;
 
 namespace Shaos
 {
@@ -96,11 +96,11 @@ namespace Shaos
             });
 
             builder.Services.AddRazorPages();
-            builder.Services.AddControllers()
-                .AddJsonOptions(_ =>
-                {
-                    JsonSerializerOptionsDefault.Configure(_.JsonSerializerOptions);
-                });
+            builder.Services.AddControllers().AddJsonOptions(_ =>
+            {
+                _.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                _.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
 
             builder.Services.AddSwaggerGen(options =>
             {

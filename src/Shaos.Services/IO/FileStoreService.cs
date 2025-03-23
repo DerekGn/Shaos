@@ -24,7 +24,6 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shaos.Services.Extensions;
 using System.IO.Compression;
 
 namespace Shaos.Services.IO
@@ -57,8 +56,8 @@ namespace Shaos.Services.IO
         /// <inheritdoc/>
         public IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder)
         {
-            sourcePackage.ThrowIfNullOrEmpty(nameof(sourcePackage));
-            targetFolder.ThrowIfNullOrEmpty(nameof(targetFolder));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(sourcePackage);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(targetFolder);
 
             var sourcePath = Path.Combine(_options.Value.PackagesPath, sourcePackage);
             var targetPath = Path.Combine(_options.Value.BinariesPath, targetFolder);
@@ -76,7 +75,7 @@ namespace Shaos.Services.IO
         /// <inheritdoc/>
         public bool PackageExists(string fileName)
         {
-            fileName.ThrowIfNullOrEmpty(nameof(fileName));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(fileName);
 
             return File.Exists(Path.Combine(_options.Value.PackagesPath, fileName));
         }
@@ -88,7 +87,7 @@ namespace Shaos.Services.IO
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            packageFileName.ThrowIfNullOrEmpty(nameof(packageFileName));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             if (!Directory.Exists(_options.Value.PackagesPath))
             {
