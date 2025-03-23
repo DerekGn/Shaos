@@ -172,6 +172,53 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
+        public async Task TestStartInstancePlugInLoadFailureAsync()
+        {
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
+                .Returns(AssemblyDirectory!);
+
+            _mockRuntimeAssemblyLoadContextFactory
+                .Setup(_ => _.Create(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+
+            _mockRuntimeAssemblyLoadContext
+                .Setup(_ => _.LoadFromAssemblyName(
+                    It.IsAny<AssemblyName>()))
+                .Returns(typeof(object).Assembly);
+
+            _mockPlugInFactory
+                .Setup(_ => _.CreateInstance(
+                    It.IsAny<Assembly>(),
+                    It.IsAny<IRuntimeAssemblyLoadContext>()))
+                .Throws(new Exception());
+
+            SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
+
+            var result = _runtimeService
+                .StartInstance(plugIn, plugInInstance);
+
+            Assert.NotNull(result);
+
+            var instance = await WaitForState(2, ExecutionState.PlugInLoadFailure);
+
+            Assert.NotNull(instance);
+            Assert.NotNull(instance.Exception);
+            Assert.Null(instance.PlugIn);
+            Assert.Equal(ExecutionState.PlugInLoadFailure, instance.State);
+
+            _mockPlugInFactory
+                .Verify(_ => _.CreateInstance(
+                    It.IsAny<Assembly>(),
+                    It.IsAny<IRuntimeAssemblyLoadContext>()),
+                    Times.Once);
+
+            OutputHelper.WriteLine(instance.ToString());
+        }
+
+        [Fact]
         public async Task TestStartInstanceAsync()
         {
             _mockFileStoreService
