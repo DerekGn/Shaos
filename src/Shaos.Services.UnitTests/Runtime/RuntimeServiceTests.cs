@@ -226,7 +226,7 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public async Task TestStartInstanceMaxRunningAsync()
+        public void TestStartInstanceMaxRunning()
         {
             for (int i = 1; i < 6; i++)
             {
@@ -239,7 +239,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
 
-            Assert.Throws<RuntimeMaxInstancesRunningException>( () => _runtimeService.StartInstance(plugIn, plugInInstance));
+            Assert.Throws<RuntimeMaxInstancesRunningException>(() => _runtimeService.StartInstance(plugIn, plugInInstance));
         }
 
         [Fact]
@@ -248,7 +248,7 @@ namespace Shaos.Services.UnitTests.Runtime
             _runtimeService._executingInstances.Add(new ExecutingInstance()
             {
                 Id = 2,
-                Name = "Test", 
+                Name = "Test",
                 State = ExecutionState.Active
             });
 
@@ -260,6 +260,7 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Active, result.State);
         }
+
         [Fact]
         public async Task TestStopInstanceAsync()
         {
@@ -302,6 +303,7 @@ namespace Shaos.Services.UnitTests.Runtime
                 Name = "test"
             };
         }
+
         private void UpdateState(
             Task antecedent,
             ExecutingInstance executingInstance)

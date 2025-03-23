@@ -113,8 +113,7 @@ namespace Shaos.Services.Store
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/></returns>
-        IAsyncEnumerable<PlugIn> GetPlugInsAsync(
-            [EnumeratorCancellation] CancellationToken cancellationToken = default);
+        IAsyncEnumerable<PlugIn> GetPlugInsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Save changes to the context

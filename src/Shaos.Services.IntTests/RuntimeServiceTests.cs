@@ -101,7 +101,7 @@ namespace Shaos.Services.IntTests
 
                 var instance = await WaitForState(result.Id, ExecutionState.Complete);
 
-                Assert.Equal(ExecutionState.Complete, instance.State);
+                Assert.Equal(ExecutionState.Complete, instance!.State);
             }
         }
 

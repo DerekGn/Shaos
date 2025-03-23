@@ -22,21 +22,24 @@
 * SOFTWARE.
 */
 
-using UpdatePlugInInstanceApi = Shaos.Api.Model.v1.UpdatePlugInInstance;
-using UpdatePlugInInstanceModel = Shaos.Services.UpdatePlugInInstance;
+using System.Text;
 
-namespace Shaos.Extensions
+namespace Shaos.Services.Extensions
 {
-    internal static class UpdatePlugInInstanceExtensions
+    public static class TaskExtensions
     {
-        internal static UpdatePlugInInstanceModel ToModel(
-            this UpdatePlugInInstanceApi updatePlugInInstanceApi)
+        public static string ToLoggingString(this Task task)
         {
-            return new UpdatePlugInInstanceModel()
-            {
-                Description = updatePlugInInstanceApi.Description,
-                Name = updatePlugInInstanceApi.Name
-            };
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine($"{nameof(task.Id)}: {task.Id}");
+            stringBuilder.AppendLine($"{nameof(task.Status)}: {task.Status}");
+            stringBuilder.AppendLine($"{nameof(task.IsFaulted)}: {task.IsFaulted}");
+            stringBuilder.AppendLine($"{nameof(task.IsCanceled)}: {task.IsCanceled}");
+            stringBuilder.AppendLine($"{nameof(task.IsCompleted)}: {task.IsCompleted}");
+            stringBuilder.AppendLine($"{nameof(task.IsCompletedSuccessfully)}: {task.IsCompletedSuccessfully}");
+
+            return stringBuilder.ToString();
         }
     }
 }
