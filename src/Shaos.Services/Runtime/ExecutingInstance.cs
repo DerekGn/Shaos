@@ -26,6 +26,7 @@ using Shaos.Sdk;
 using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Reflection;
 
 namespace Shaos.Services.Runtime
 {
@@ -35,6 +36,21 @@ namespace Shaos.Services.Runtime
     public class ExecutingInstance()
     {
         /// <summary>
+        /// The <see cref="Assembly"/> the <see cref="PlugIn"/> was loaded
+        /// </summary>
+        public Assembly? Assembly { get; internal set; }
+
+        /// <summary>
+        /// The <see cref="IRuntimeAssemblyLoadContext"/> for the loaded <see cref="PlugIn"/>
+        /// </summary>
+        public IRuntimeAssemblyLoadContext? AssemblyLoadContext { get; internal set; }
+
+        /// <summary>
+        /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
+        /// </summary>
+        public Exception? Exception { get; internal set; }
+
+        /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int Id { get; init; }
@@ -42,12 +58,12 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public string Name { get; init; }
+        public required string Name { get; init; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance that executes its functions
         /// </summary>
-        public IPlugIn? PlugIn { get; private set; }
+        public IPlugIn? PlugIn { get; internal set; }
 
         /// <summary>
         /// The <see cref="ExecutingState"/> of the <see cref="ExecutingInstance"/>
@@ -64,11 +80,6 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public CancellationTokenSource? TokenSource { get; internal set; }
 
-        /// <summary>
-        /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
-        /// </summary>
-        public Exception? Exception { get; private set; }
-
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -77,54 +88,15 @@ namespace Shaos.Services.Runtime
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
             stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
-            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
             stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
+            stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.ToString())}");
             stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
             stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(AssemblyLoadContext)}: {(AssemblyLoadContext == null ? "Empty" : AssemblyLoadContext.Name)}");
 
             return stringBuilder.ToString();
-        }
-
-        internal void SetState(ExecutionState state)
-        {
-            State = state;
-        }
-
-        internal void StartPlugInExecution()
-        {
-            try
-            {
-                State = ExecutionState.Activating;
-                TokenSource = new CancellationTokenSource();
-                Task = Task.Run(async () => await PlugIn!.ExecuteAsync(TokenSource.Token))
-                    .ContinueWith((antecedent) => UpdatePlugInStateOnCompletion(antecedent));
-                State = ExecutionState.Active;
-            }
-            catch (Exception)
-            {
-                State = ExecutionState.ActivationFaulted;
-                throw;
-            }
-        }
-
-        internal void UpdatePlugIn(IPlugIn? plugIn)
-        {
-            State = ExecutionState.PlugInLoading;
-            PlugIn = plugIn;
-        }
-
-        private void UpdatePlugInStateOnCompletion(Task antecedent)
-        {
-            if ((antecedent.Status == TaskStatus.RanToCompletion) || (antecedent.Status == TaskStatus.Canceled))
-            {
-                State = ExecutionState.Complete;
-            }
-            else if (antecedent.Status == TaskStatus.Faulted)
-            {
-                State = ExecutionState.Faulted;
-                Exception = antecedent.Exception;
-            }
         }
     }
 }

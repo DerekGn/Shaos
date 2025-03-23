@@ -38,6 +38,8 @@ namespace Shaos.Services.Runtime
             _resolver = new AssemblyDependencyResolver(plugInPath);
         }
 
+
+
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);

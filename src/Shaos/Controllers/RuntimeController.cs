@@ -106,7 +106,7 @@ namespace Shaos.Controllers
             {
                 _runtimeService
                     .StartInstance(
-                        plugInInstance.PlugIn,
+                        plugInInstance.PlugIn!,
                         plugInInstance);
             }
 

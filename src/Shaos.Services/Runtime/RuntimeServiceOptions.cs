@@ -22,21 +22,27 @@
 * SOFTWARE.
 */
 
-using UpdatePlugInInstanceApi = Shaos.Api.Model.v1.UpdatePlugInInstance;
-using UpdatePlugInInstanceModel = Shaos.Services.UpdatePlugInInstance;
-
-namespace Shaos.Extensions
+namespace Shaos.Services.Runtime
 {
-    internal static class UpdatePlugInInstanceExtensions
+    /// <summary>
+    /// The runtime configuration options
+    /// </summary>
+    public class RuntimeServiceOptions
     {
-        internal static UpdatePlugInInstanceModel ToModel(
-            this UpdatePlugInInstanceApi updatePlugInInstanceApi)
-        {
-            return new UpdatePlugInInstanceModel()
-            {
-                Description = updatePlugInInstanceApi.Description,
-                Name = updatePlugInInstanceApi.Name
-            };
-        }
+        /// <summary>
+        /// The maximum number of <see cref="ExecutingInstance"/> that can be executed in parallel
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 50
+        /// </remarks>
+        public int MaxExecutingInstances { get; init; } = 50;
+
+        /// <summary>
+        /// The wait time for a <see cref="PlugIn"/> stop request
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 1 second
+        /// </remarks>
+        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
     }
 }

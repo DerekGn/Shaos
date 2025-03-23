@@ -23,11 +23,12 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using System.Reflection;
-
-#warning Limit number of executing plugins
 
 namespace Shaos.Services.Runtime
 {
@@ -36,16 +37,19 @@ namespace Shaos.Services.Runtime
         internal readonly List<ExecutingInstance> _executingInstances;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<RuntimeService> _logger;
+        private readonly IOptions<RuntimeServiceOptions> _options;
         private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public RuntimeService(
             ILogger<RuntimeService> logger,
+            IOptions<RuntimeServiceOptions> options,
             IPlugInFactory plugInFactory,
             IFileStoreService fileStoreService,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _plugInFactory = plugInFactory ?? throw new ArgumentNullException(nameof(plugInFactory));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
@@ -78,6 +82,8 @@ namespace Shaos.Services.Runtime
             ArgumentNullException.ThrowIfNull(plugIn.Package);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plugIn.Package.AssemblyFile);
 
+            VerifyInstanceCount();
+
             var instance = _executingInstances
                 .FirstOrDefault(_ => _.Id == plugInInstance.Id);
 
@@ -98,11 +104,13 @@ namespace Shaos.Services.Runtime
 
             if (instance.State == ExecutionState.Active)
             {
-                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", plugInInstance.Id, plugInInstance.Name);
+                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", 
+                    plugInInstance.Id,
+                    plugInInstance.Name);
             }
             else
             {
-                _ = Task.Run(() => StartExecutingInstance(plugIn.Id, plugInInstance.Name, plugIn.Package.AssemblyFile, instance));
+                _ = Task.Run(() => StartExecutingInstance(plugIn.Id, plugIn.Package.AssemblyFile, instance));
             }
 
             return instance;
@@ -120,7 +128,7 @@ namespace Shaos.Services.Runtime
             }
             else
             {
-                if(instance.State != ExecutionState.Active)
+                if (instance.State != ExecutionState.Active)
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
                         instance.Id,
@@ -128,57 +136,145 @@ namespace Shaos.Services.Runtime
                 }
                 else
                 {
-                    _ = Task
-                        .Run(async () => await StopExecutingInstanceAsync(instance));
+                    _ = Task.Run(async () => await StopExecutingInstanceAsync(instance));
                 }
+            }
+        }
+
+        private void LoadInstancePlugInFromAssembly(
+            int id,
+            string assemblyFileName,
+            ExecutingInstance instance)
+        {
+            try
+            {
+                instance.State = ExecutionState.PlugInLoading;
+
+                var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(id), assemblyFileName);
+                var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+
+                instance.AssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(instance.Name, assemblyPath);
+                instance.Assembly = instance.AssemblyLoadContext.LoadFromAssemblyName(assemblyName);
+                instance.PlugIn = _plugInFactory.CreateInstance(instance.Assembly, instance.AssemblyLoadContext);
+
+                instance.State = ExecutionState.PlugInLoaded;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogCritical(exception, "Exception occurred during PlugIn load and create from Assembly. Id: [{Id}] Name: [{Name}]",
+                    instance.Id,
+                    instance.Name);
+
+                instance.State = ExecutionState.PlugInLoadFailure;
             }
         }
 
         private void StartExecutingInstance(
             int id,
-            string name,
             string assemblyFileName,
             ExecutingInstance instance)
         {
-            instance.SetState(ExecutionState.PlugInLoading);
-
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(id), assemblyFileName);
-            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-
-            _logger.LogInformation("Loading ExecutingInstance" +
-                    "Id: [{Id}] " +
-                    "Name: [{Name}] " +
-                    "Assembly: [{Assembly}] " +
-                    "Path: [{AssemblyPath}] ",
+            _logger.LogInformation("Loading PlugIn from assembly Id: [{Id}] Name: [{Name}] Assembly: [{Assembly}]",
                     instance.Id,
-                    name,
-                    assemblyName,
-                    assemblyPath);
+                    instance.Name,
+                    assemblyFileName);
 
-            var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(name, assemblyPath);
-            var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
-            var plugIn = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
+            LoadInstancePlugInFromAssembly(id, assemblyFileName, instance);
 
-            instance.UpdatePlugIn(plugIn);
+            _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
+                instance.Id,
+                instance.Name);
 
-            _logger.LogInformation("Starting ExecutingInstance " +
-                "Id:[{Id}]",
-                instance.Id);
-
-            instance.StartPlugInExecution();
+            StartInstanceExecution(instance);
         }
 
-        private async Task StopExecutingInstanceAsync(
-            ExecutingInstance instance)
+        private void StartInstanceExecution(ExecutingInstance instance)
+        {
+            try
+            {
+                instance.State = ExecutionState.Activating;
+                instance.TokenSource = new CancellationTokenSource();
+                instance.Task = Task.Run(
+                    async () => await instance.PlugIn!.ExecuteAsync(instance.TokenSource!.Token))
+                    .ContinueWith((antecedent) => UpdatePlugInStateOnCompletion(instance, antecedent));
+                instance.State = ExecutionState.Active;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogCritical(exception, "Exception occurred during instance execution start. Id: [{Id}] Name: [{Name}]",
+                    instance.Id,
+                    instance.Name);
+
+                instance.State = ExecutionState.ActivationFaulted;
+                instance.Exception = exception;
+            }
+        }
+
+        private async Task StopExecutingInstanceAsync(ExecutingInstance instance)
         {
             _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
                 instance.Id,
                 instance.Name);
 
-#warning sorten wait or make config 
-#warning unlad assembly and remove instance
             await instance.TokenSource!.CancelAsync();
-            instance.Task!.Wait();
+
+            if (await Task.WhenAny(instance.Task!, Task.Delay(_options.Value.TaskStopTimeout)) == instance.Task)
+            {
+                _logger.LogInformation("Stopped execution. Id: [{Id}] Name: [{Name}]",
+                    instance.Id,
+                    instance.Name);
+            }
+            else
+            {
+                _logger.LogWarning("Instance not stopped within timeout. Id: [{Id}] Name: [{Name}]",
+                    instance.Id,
+                    instance.Name);
+            }
+        }
+
+        private void UpdatePlugInStateOnCompletion(ExecutingInstance instance, Task antecedent)
+        {
+            _logger.LogDebug("Completed PlugIn Task: {NewLine}{Task}",
+                Environment.NewLine,
+                antecedent.ToLoggingString());
+
+            if ((antecedent.Status == TaskStatus.RanToCompletion) || (antecedent.Status == TaskStatus.Canceled))
+            {
+                instance.State = ExecutionState.Complete;
+
+                _logger.LogInformation("Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
+                    instance.Id,
+                    instance.Name,
+                    antecedent.Status);
+            }
+            else if (antecedent.Status == TaskStatus.Faulted)
+            {
+                instance.State = ExecutionState.Faulted;
+                instance.Exception = antecedent.Exception;
+
+                _logger.LogError(antecedent.Exception, "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
+                    instance.Id,
+                    instance.Name,
+                    antecedent.Status);
+            }
+        }
+
+        private void VerifyInstanceCount()
+        {
+            if (_executingInstances.Count == _options.Value.MaxExecutingInstances)
+            {
+                _logger.LogWarning("Execution Instance count exceeded. Count: [{Count}] Max: [{Max}]",
+                    _executingInstances.Count,
+                    _options.Value.MaxExecutingInstances);
+
+                throw new RuntimeMaxInstancesRunningException();
+            }
+            else
+            {
+                _logger.LogInformation("Execution Instance Count: [{Count}] Max: [{Max}]",
+                    _executingInstances.Count,
+                    _options.Value.MaxExecutingInstances);
+            }
         }
     }
 }

@@ -22,14 +22,12 @@
 * SOFTWARE.
 */
 
-using System.Reflection;
-
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Exceptions
 {
-    public interface IRuntimeAssemblyLoadContext
-    {
-        string? Name { get; }
-
-        Assembly LoadFromAssemblyName(AssemblyName assemblyName);
-    }
+	public class RuntimeMaxInstancesRunningException : Exception
+	{
+		public RuntimeMaxInstancesRunningException() { }
+		public RuntimeMaxInstancesRunningException(string message) : base(message) { }
+		public RuntimeMaxInstancesRunningException(string message, Exception inner) : base(message, inner) { }
+	}
 }

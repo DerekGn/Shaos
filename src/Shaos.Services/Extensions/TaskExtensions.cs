@@ -22,14 +22,24 @@
 * SOFTWARE.
 */
 
-using System.Reflection;
+using System.Text;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Extensions
 {
-    public interface IRuntimeAssemblyLoadContext
+    public static class TaskExtensions
     {
-        string? Name { get; }
+        public static string ToLoggingString(this Task task)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
 
-        Assembly LoadFromAssemblyName(AssemblyName assemblyName);
+            stringBuilder.AppendLine($"{nameof(task.Id)}: {task.Id}");
+            stringBuilder.AppendLine($"{nameof(task.Status)}: {task.Status}");
+            stringBuilder.AppendLine($"{nameof(task.IsFaulted)}: {task.IsFaulted}");
+            stringBuilder.AppendLine($"{nameof(task.IsCanceled)}: {task.IsCanceled}");
+            stringBuilder.AppendLine($"{nameof(task.IsCompleted)}: {task.IsCompleted}");
+            stringBuilder.AppendLine($"{nameof(task.IsCompletedSuccessfully)}: {task.IsCompletedSuccessfully}");
+
+            return stringBuilder.ToString();
+        }
     }
 }
