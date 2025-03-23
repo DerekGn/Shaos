@@ -104,11 +104,9 @@ namespace Shaos.Controllers
             }
             else
             {
-                var plugIn = plugInInstance.PlugIn;
-
                 _runtimeService
                     .StartInstance(
-                        plugIn,
+                        plugInInstance.PlugIn,
                         plugInInstance);
             }
 

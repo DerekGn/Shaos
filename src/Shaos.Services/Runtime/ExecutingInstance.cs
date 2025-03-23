@@ -116,7 +116,7 @@ namespace Shaos.Services.Runtime
 
         private void UpdatePlugInStateOnCompletion(Task antecedent)
         {
-            if (antecedent.Status == TaskStatus.RanToCompletion)
+            if ((antecedent.Status == TaskStatus.RanToCompletion) || (antecedent.Status == TaskStatus.Canceled))
             {
                 State = ExecutionState.Complete;
             }
