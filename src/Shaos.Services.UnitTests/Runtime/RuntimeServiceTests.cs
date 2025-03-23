@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
@@ -34,19 +35,22 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime
 {
-    public class RuntimeServiceTests : BaseTests
+    public class RuntimeServiceTests : BaseTests, IClassFixture<TestFixture>
     {
         private const int WaitDelay = 10;
         private const int WaitItterations = 500;
 
+        private readonly TestFixture _fixture;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly RuntimeService _runtimeService;
 
-        public RuntimeServiceTests(ITestOutputHelper output) : base(output)
+        public RuntimeServiceTests(ITestOutputHelper output, TestFixture fixture) : base(output)
         {
+            _fixture = fixture;
+
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockFileStoreService = new Mock<IFileStoreService>();
@@ -107,13 +111,9 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public async Task TestStartInstanceAsync()
         {
-            var assemblyDirectory = AssemblyDirectory!.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn");
-
-            OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
-
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
-                .Returns(assemblyDirectory);
+                .Returns(_fixture.AssemblyDirectory);
 
             var mockPlugIn = new Mock<IPlugIn>();
 
@@ -134,11 +134,10 @@ namespace Shaos.Services.UnitTests.Runtime
                     It.IsAny<IRuntimeAssemblyLoadContext>()))
                 .Returns(mockPlugIn.Object);
 
-            var result = _runtimeService.StartInstance(
-                1,
-                2,
-                "PlugInName",
-                "Shaos.Test.PlugIn.dll");
+            SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
+
+            var result = _runtimeService
+                .StartInstance(plugIn, plugInInstance);
 
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.None, result.State);
@@ -173,16 +172,30 @@ namespace Shaos.Services.UnitTests.Runtime
             OutputHelper.WriteLine(executingInstance.ToString());
         }
 
+        private static void SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
+        {
+            plugIn = new PlugIn()
+            {
+                Id = 1
+            };
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = TestFixture.AssemblyFileName
+            };
+
+            plugInInstance = new PlugInInstance()
+            {
+                Id = 2,
+                Name = "test"
+            };
+        }
+
         [Fact]
         public async Task TestStartInstanceFaultedAsync()
         {
-            var assemblyDirectory = AssemblyDirectory!.Replace("Shaos.Services.UnitTests", "Shaos.Test.PlugIn");
-
-            OutputHelper.WriteLine("AssemblyDirectory: [{0}]", assemblyDirectory);
-
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
-                .Returns(assemblyDirectory);
+                .Returns(AssemblyDirectory);
 
             var mockPlugIn = new Mock<IPlugIn>();
 
@@ -207,11 +220,10 @@ namespace Shaos.Services.UnitTests.Runtime
                 .Setup(_ => _.ExecuteAsync(It.IsAny<CancellationToken>()))
                 .Throws<Exception>();
 
-            var result = _runtimeService.StartInstance(
-                1,
-                2,
-                "PlugInName",
-                "Shaos.Test.PlugIn.dll");
+            SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
+
+            var result = _runtimeService
+                .StartInstance(plugIn, plugInInstance);
 
             Assert.NotNull(result);
 
@@ -255,7 +267,10 @@ namespace Shaos.Services.UnitTests.Runtime
                 State = ExecutionState.Active
             });
 
-            var result = _runtimeService.StartInstance(1, 2, "name", "Shaos.Test.PlugIn.dll");
+            SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
+
+            var result = _runtimeService
+                .StartInstance(plugIn, plugInInstance);
 
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Active, result.State);

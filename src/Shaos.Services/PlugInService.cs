@@ -26,7 +26,6 @@ using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
@@ -147,7 +146,7 @@ namespace Shaos.Services
             Stream stream,
             CancellationToken cancellationToken = default)
         {
-            packageFileName.ThrowIfNullOrEmpty(nameof(packageFileName));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             UploadPackageResult result = UploadPackageResult.Success;
 

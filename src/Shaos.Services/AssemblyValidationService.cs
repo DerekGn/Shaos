@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Extensions;
 using System.Runtime.Loader;
 
 namespace Shaos.Services
@@ -33,7 +32,8 @@ namespace Shaos.Services
         {
             bool result = false;
 
-            assemblyFile.ThrowIfNullOrEmpty(nameof(assemblyFile));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFile);
+
             version = string.Empty;
 
             if (!File.Exists(assemblyFile))

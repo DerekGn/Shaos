@@ -28,7 +28,6 @@ using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -55,7 +54,7 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken = default)
         {
-            name.ThrowIfNullOrEmpty(nameof(name));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
 
             var plugIn = new PlugIn()
             {
@@ -82,8 +81,8 @@ namespace Shaos.Services.Store
             PlugIn plugIn,
             CancellationToken cancellationToken = default)
         {
-            name.ThrowIfNullOrEmpty(nameof(name));
-            description.ThrowIfNullOrEmpty(nameof(description));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
 
             var plugInInstance = new PlugInInstance()
             {
@@ -111,9 +110,9 @@ namespace Shaos.Services.Store
             string version,
             CancellationToken cancellationToken = default)
         {
-            fileName.ThrowIfNullOrEmpty(nameof(fileName));
-            assemblyFile.ThrowIfNullOrEmpty(nameof(assemblyFile));
-            version.ThrowIfNullOrEmpty(nameof(version));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(fileName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFile);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(version);
 
             var package = new Package()
             {
@@ -206,7 +205,7 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken = default)
         {
-            name.ThrowIfNullOrEmpty(nameof(name));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
 
             var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInNotFoundException(id);
 
@@ -228,7 +227,7 @@ namespace Shaos.Services.Store
             string? description,
             CancellationToken cancellationToken)
         {
-            var plugInInstance = await _context.PlugInInstances.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+            var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
             await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
             {
@@ -249,9 +248,9 @@ namespace Shaos.Services.Store
             string version,
             CancellationToken cancellationToken = default)
         {
-            fileName.ThrowIfNullOrEmpty(nameof(fileName));
-            assemblyFile.ThrowIfNullOrEmpty(nameof(assemblyFile));
-            version.ThrowIfNullOrEmpty(nameof(version));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(fileName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFile);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(version);
 
             if (plugIn.Package != null)
             {

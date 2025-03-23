@@ -6,24 +6,28 @@
 
 ###
 
+# Get executing instance by id
 GET {{HostAddress}}/api/v1/runtime/{{id}}
 #Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 ###
 
+# Get all executing instances
 GET {{HostAddress}}/api/v1/runtime
 #Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 ###
 
+# Start an instance executing
 PUT {{HostAddress}}/api/v1/runtime/{{id}}/start
 #Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 ###
 
+# Stop an instance executing
 PUT {{HostAddress}}/api/v1/runtime/{{id}}/stop
 #Authorization: Bearer {{accessToken}}
 Accept: application/json

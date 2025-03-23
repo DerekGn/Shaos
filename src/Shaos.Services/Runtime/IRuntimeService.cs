@@ -47,11 +47,12 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// Start the execution of a <see cref="PlugInInstance"/>
         /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/></param>
+        /// <param name="plugInInstance">The <see cref="PlugInInstance"/></param>
+        /// <returns>An <see cref="ExecutingInstance"/></returns>
         ExecutingInstance StartInstance(
-            int plugInId,
-            int plugInInstanceId,
-            string name,
-            string assemblyFileName);
+            PlugIn plugIn,
+            PlugInInstance plugInInstance);
 
         /// <summary>
         /// 
