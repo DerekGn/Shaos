@@ -23,20 +23,20 @@
 */
 
 using ExecutingInstanceApi = Shaos.Api.Model.v1.ExecutingInstance;
-using ExecutinginstanceService = Shaos.Services.Runtime.ExecutingInstance;
-
-#warning TODO updated enumeration mapping
+using ExecutinginstanceModel = Shaos.Services.Runtime.ExecutingInstance;
 
 namespace Shaos.Extensions
 {
     internal static class ExecutingPlugInExtensions
     {
-        internal static ExecutingInstanceApi ToApi(this ExecutinginstanceService executingInstance)
+        internal static ExecutingInstanceApi ToApi(this ExecutinginstanceModel instance)
         {
             return new ExecutingInstanceApi()
             {
-                Id = executingInstance.Id,
-                Status = (Api.Model.v1.ExecutionState)executingInstance.State
+                Id = instance.Id,
+                Name = instance.Name,
+                Status = Enum.Parse<Api.Model.v1.ExecutionState>(instance.State.ToString()),
+                Exception = instance.Exception == null ? null : instance.Exception.ToString(),
             };
         }
     }
