@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Repository.Models;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
@@ -53,8 +54,13 @@ namespace Shaos.Services.IntTests
             _plugInFactory = new PlugInFactory(
                 LoggerFactory!.CreateLogger<PlugInFactory>());
 
+            var optionsInstance = new RuntimeServiceOptions();
+
+            var options = Options.Create(optionsInstance);
+
             _runtimeService = new RuntimeService(
                 LoggerFactory!.CreateLogger<RuntimeService>(),
+                options,
                 _plugInFactory,
                 _fileStoreService,
                 _runtimeAssemblyLoadContextFactory);

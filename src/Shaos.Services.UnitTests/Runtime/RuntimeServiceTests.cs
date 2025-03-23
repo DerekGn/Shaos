@@ -23,9 +23,11 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
+using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
@@ -56,8 +58,16 @@ namespace Shaos.Services.UnitTests.Runtime
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockPlugInFactory = new Mock<IPlugInFactory>();
 
+            var optionsInstance = new RuntimeServiceOptions()
+            {
+                MaxExecutingInstances = 5
+            };
+
+            var options = Options.Create(optionsInstance);
+
             _runtimeService = new RuntimeService(
                 LoggerFactory!.CreateLogger<RuntimeService>(),
+                options,
                 _mockPlugInFactory.Object,
                 _mockFileStoreService.Object,
                 _mockRuntimeAssemblyLoadContextFactory.Object);
@@ -87,20 +97,13 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestGetInstances()
         {
-            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            for (int i = 1; i < 4; i++)
             {
-                Id = 1
-            });
-
-            _runtimeService._executingInstances.Add(new ExecutingInstance()
-            {
-                Id = 2
-            });
-
-            _runtimeService._executingInstances.Add(new ExecutingInstance()
-            {
-                Id = 3
-            });
+                _runtimeService._executingInstances.Add(new ExecutingInstance()
+                {
+                    Id = i
+                });
+            }
 
             var result = _runtimeService.GetExecutingInstances();
 
@@ -113,7 +116,7 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
-                .Returns(_fixture.AssemblyDirectory);
+                .Returns(_fixture.AssemblyDirectory!);
 
             var mockPlugIn = new Mock<IPlugIn>();
 
@@ -142,21 +145,11 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.None, result.State);
 
-            int i = 0;
-            ExecutingInstance? executingInstance;
+            var instance = await WaitForState(2, ExecutionState.Complete);
 
-            do
-            {
-                executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
-
-                await Task.Delay(WaitDelay);
-
-                i++;
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Complete && i <= WaitItterations);
-
-            Assert.NotNull(executingInstance);
-            Assert.NotNull(executingInstance.PlugIn);
-            Assert.Equal(ExecutionState.Complete, executingInstance.State);
+            Assert.NotNull(instance);
+            Assert.NotNull(instance.PlugIn);
+            Assert.Equal(ExecutionState.Complete, instance.State);
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
@@ -169,25 +162,7 @@ namespace Shaos.Services.UnitTests.Runtime
                     It.IsAny<CancellationToken>()),
                     Times.Once);
 
-            OutputHelper.WriteLine(executingInstance.ToString());
-        }
-
-        private static void SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
-        {
-            plugIn = new PlugIn()
-            {
-                Id = 1
-            };
-            plugIn.Package = new Package()
-            {
-                AssemblyFile = TestFixture.AssemblyFileName
-            };
-
-            plugInInstance = new PlugInInstance()
-            {
-                Id = 2,
-                Name = "test"
-            };
+            OutputHelper.WriteLine(instance.ToString());
         }
 
         [Fact]
@@ -195,7 +170,7 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
-                .Returns(AssemblyDirectory);
+                .Returns(AssemblyDirectory!);
 
             var mockPlugIn = new Mock<IPlugIn>();
 
@@ -227,22 +202,12 @@ namespace Shaos.Services.UnitTests.Runtime
 
             Assert.NotNull(result);
 
-            int i = 0;
-            ExecutingInstance? executingInstance;
+            var instance = await WaitForState(2, ExecutionState.Faulted);
 
-            do
-            {
-                executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 2);
-
-                await Task.Delay(WaitDelay);
-
-                i++;
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Faulted && i <= WaitItterations);
-
-            Assert.NotNull(executingInstance);
-            Assert.NotNull(executingInstance.Exception);
-            Assert.NotNull(executingInstance.PlugIn);
-            Assert.Equal(ExecutionState.Faulted, executingInstance.State);
+            Assert.NotNull(instance);
+            Assert.NotNull(instance.Exception);
+            Assert.NotNull(instance.PlugIn);
+            Assert.Equal(ExecutionState.Faulted, instance.State);
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
@@ -255,7 +220,23 @@ namespace Shaos.Services.UnitTests.Runtime
                     It.IsAny<CancellationToken>()),
                     Times.Once);
 
-            OutputHelper.WriteLine(executingInstance.ToString());
+            OutputHelper.WriteLine(instance.ToString());
+        }
+
+        [Fact]
+        public async Task TestStartInstanceMaxRunningAsync()
+        {
+            for (int i = 1; i < 6; i++)
+            {
+                _runtimeService._executingInstances.Add(new ExecutingInstance()
+                {
+                    Id = i
+                });
+            }
+
+            SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
+
+            Assert.Throws<RuntimeMaxInstancesRunningException>( () => _runtimeService.StartInstance(plugIn, plugInInstance));
         }
 
         [Fact]
@@ -275,7 +256,6 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(result);
             Assert.Equal(ExecutionState.Active, result.State);
         }
-
         [Fact]
         public async Task TestStopInstanceAsync()
         {
@@ -295,22 +275,29 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _runtimeService.StopInstance(1);
 
-            int i = 0;
-            ExecutingInstance? executingInstance;
-
-            do
-            {
-                executingInstance = _runtimeService._executingInstances.FirstOrDefault(_ => _.Id == 1);
-
-                await Task.Delay(WaitDelay);
-
-                i++;
-            } while (executingInstance != null && executingInstance.State != ExecutionState.Complete && i <= WaitItterations);
+            var executingInstance = await WaitForState(1, ExecutionState.Complete);
 
             Assert.NotNull(executingInstance);
             Assert.Equal(ExecutionState.Complete, executingInstance.State);
         }
 
+        private static void SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
+        {
+            plugIn = new PlugIn()
+            {
+                Id = 1
+            };
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = TestFixture.AssemblyFileName
+            };
+
+            plugInInstance = new PlugInInstance()
+            {
+                Id = 2,
+                Name = "test"
+            };
+        }
         private void UpdateState(
             Task antecedent,
             ExecutingInstance executingInstance)
@@ -319,8 +306,24 @@ namespace Shaos.Services.UnitTests.Runtime
             executingInstance.State = ExecutionState.Complete;
         }
 
-        private async Task WaitTaskAsync(
-            CancellationToken cancellationToken)
+        private async Task<ExecutingInstance?> WaitForState(int id, ExecutionState state)
+        {
+            int i = 0;
+            ExecutingInstance? executingInstance;
+
+            do
+            {
+                executingInstance = _runtimeService.GetExecutingInstance(id);
+
+                await Task.Delay(WaitDelay);
+
+                i++;
+            } while (executingInstance != null && executingInstance.State != state && i <= WaitItterations);
+
+            return executingInstance;
+        }
+
+        private async Task WaitTaskAsync(CancellationToken cancellationToken)
         {
             do
             {

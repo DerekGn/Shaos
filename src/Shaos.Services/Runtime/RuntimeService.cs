@@ -23,7 +23,9 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using System.Reflection;
 
@@ -36,16 +38,19 @@ namespace Shaos.Services.Runtime
         internal readonly List<ExecutingInstance> _executingInstances;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<RuntimeService> _logger;
+        private readonly IOptions<RuntimeServiceOptions> _options;
         private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public RuntimeService(
             ILogger<RuntimeService> logger,
+            IOptions<RuntimeServiceOptions> options,
             IPlugInFactory plugInFactory,
             IFileStoreService fileStoreService,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _plugInFactory = plugInFactory ?? throw new ArgumentNullException(nameof(plugInFactory));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
@@ -77,6 +82,8 @@ namespace Shaos.Services.Runtime
 
             ArgumentNullException.ThrowIfNull(plugIn.Package);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plugIn.Package.AssemblyFile);
+
+            VerifyInstanceCount();
 
             var instance = _executingInstances
                 .FirstOrDefault(_ => _.Id == plugInInstance.Id);
@@ -120,7 +127,7 @@ namespace Shaos.Services.Runtime
             }
             else
             {
-                if(instance.State != ExecutionState.Active)
+                if (instance.State != ExecutionState.Active)
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
                         instance.Id,
@@ -175,10 +182,18 @@ namespace Shaos.Services.Runtime
                 instance.Id,
                 instance.Name);
 
-#warning sorten wait or make config 
+#warning sorten wait or make config
 #warning unlad assembly and remove instance
             await instance.TokenSource!.CancelAsync();
             instance.Task!.Wait();
+        }
+
+        private void VerifyInstanceCount()
+        {
+            if(_executingInstances.Count == _options.Value.MaxExecutingInstances)
+            {
+                throw new RuntimeMaxInstancesRunningException();
+            }
         }
     }
 }
