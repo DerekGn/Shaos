@@ -48,12 +48,12 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestDeletePackage()
         {
-            var targetPath = Path.Combine(_fixture.SourcePath, 1.ToString());
+            var targetPath = Path.Combine(_fixture.BinariesPath, 1.ToString());
             var targetFilePath = Path.Combine(targetPath, TestFixture.PackageFileName);
             
             targetPath.CreateDirectory();
 
-            File.Copy(_fixture.SourceFilePath, targetFilePath, true);
+            File.Copy(_fixture.PackageFilePath, targetFilePath, true);
 
             _fileStoreService.DeletePackage(1, TestFixture.PackageFileName);
 
@@ -74,7 +74,7 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestGetAssemblyPath()
         {
-            var expectedPath = Path.Combine(_fixture.SourcePath, "1");
+            var expectedPath = Path.Combine(_fixture.BinariesPath, "1");
 
             var result = _fileStoreService.GetAssemblyPath(1);
 

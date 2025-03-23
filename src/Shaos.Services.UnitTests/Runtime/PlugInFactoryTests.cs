@@ -22,46 +22,40 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
+using Shaos.Services.Runtime;
+using Shaos.Services.Shared.Tests;
 using System.Reflection;
-using System.Runtime.Loader;
+using Xunit;
+using Xunit.Abstractions;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.UnitTests.Runtime
 {
-    [ExcludeFromCodeCoverage]
-    public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
+    public class PlugInFactoryTests : BaseTests, IClassFixture<TestFixture>
     {
-        private readonly AssemblyDependencyResolver _resolver;
+        private readonly TestFixture _fixture;
+        private readonly PlugInFactory _plugInFactory;
 
-        public RuntimeAssemblyLoadContext(string name, string plugInPath) : base(name, true)
+        public PlugInFactoryTests(ITestOutputHelper output, TestFixture fixture) : base(output)
         {
-            _resolver = new AssemblyDependencyResolver(plugInPath);
+            _fixture = fixture;
+
+            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
         }
 
-        protected override Assembly? Load(AssemblyName assemblyName)
+        [Fact]
+        public void TestCreateInstance()
         {
-            string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            Assembly? result = null;
+            var assemblyPath = Path.Combine(_fixture.BinariesValidationPath, TestFixture.AssemblyFileName);
+            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext("test", _fixture.BinariesValidationPath);
+            var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
 
-            if (assemblyPath != null)
-            {
-                result = LoadFromAssemblyPath(assemblyPath);
-            }
+            var plugIn = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
 
-            return result;
-        }
+            Assert.NotNull(plugIn);
 
-        protected override nint LoadUnmanagedDll(string unmanagedDllName)
-        {
-            string? libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            IntPtr result = IntPtr.Zero;
-
-            if (libraryPath != null)
-            {
-                result = LoadUnmanagedDllFromPath(libraryPath);
-            }
-
-            return result;
+            assemblyLoadContext.Unload();
         }
     }
 }

@@ -223,7 +223,7 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
-                .Returns(_fixture.AssemblyDirectory!);
+                .Returns(_fixture.BinariesPath!);
 
             var mockPlugIn = new Mock<IPlugIn>();
 
