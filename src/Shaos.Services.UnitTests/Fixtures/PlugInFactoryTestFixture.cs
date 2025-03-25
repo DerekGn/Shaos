@@ -22,40 +22,37 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Logging;
 using Shaos.Services.Runtime;
-using Shaos.Services.Shared.Tests;
-using Shaos.Services.UnitTests.Fixtures;
 using System.Reflection;
-using System.Runtime.Loader;
-using Xunit;
-using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests.Runtime
+namespace Shaos.Services.UnitTests.Fixtures
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
+    public class PlugInFactoryTestFixture : TestFixture
     {
-        private readonly PlugInFactoryTestFixture _fixture;
-        private readonly PlugInFactory _plugInFactory;
-
-        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
+        public PlugInFactoryTestFixture()
         {
-            _fixture = fixture;
+            var assemblyPath = Path.Combine(BinariesValidationPath, AssemblyFileName);
+            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(nameof(PlugInFactoryTestFixture), assemblyPath);
 
-            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
+            AssemblyLoadContextReference = new WeakReference(assemblyLoadContext);
         }
 
-        [Fact]
-        public void TestCreateInstance()
+        public AssemblyName AssemblyName { get; }
+        public WeakReference AssemblyLoadContextReference { get; }
+
+        public override void Dispose()
         {
-            var context = ((RuntimeAssemblyLoadContext)_fixture.AssemblyLoadContextReference.Target!);
-            var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
+            if (AssemblyLoadContextReference != null)
+            {
+                for (int i = 0; AssemblyLoadContextReference.IsAlive && i < 10; i++)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+            }
 
-            var plugIn = _plugInFactory.CreateInstance(assembly, context);
-
-            Assert.NotNull(plugIn);
-
-            context.Unload();
+            base.Dispose();
         }
     }
 }

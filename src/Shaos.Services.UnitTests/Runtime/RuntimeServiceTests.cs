@@ -31,6 +31,7 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
+using Shaos.Services.UnitTests.Fixtures;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;

@@ -24,7 +24,7 @@
 
 using Shaos.Services.Shared.Tests;
 
-namespace Shaos.Services.UnitTests
+namespace Shaos.Services.UnitTests.Fixtures
 {
     public class TestFixture : BaseTestFixture
     {

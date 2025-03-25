@@ -23,6 +23,7 @@
 */
 
 using Shaos.Sdk;
+using Shaos.Services.UnitTests.Fixtures;
 using Xunit;
 
 namespace Shaos.Services.UnitTests
