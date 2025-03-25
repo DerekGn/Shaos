@@ -77,7 +77,7 @@ namespace Shaos.Services.Shared.Tests
 
         public string BinariesValidationPath { get; }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             BinariesPath.DeleteDirectory();
         }

@@ -26,17 +26,18 @@ using Microsoft.Extensions.Logging;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using System.Reflection;
+using System.Runtime.Loader;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<TestFixture>
+    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
     {
-        private readonly TestFixture _fixture;
+        private readonly PlugInFactoryTestFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
 
-        public PlugInFactoryTests(ITestOutputHelper output, TestFixture fixture) : base(output)
+        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
         {
             _fixture = fixture;
 
@@ -46,16 +47,14 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestCreateInstance()
         {
-            var assemblyPath = Path.Combine(_fixture.BinariesValidationPath, TestFixture.AssemblyFileName);
-            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext("test", _fixture.BinariesValidationPath);
-            var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
+            var context = ((RuntimeAssemblyLoadContext)_fixture.AssemblyLoadContextReference.Target!);
+            var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
 
-            var plugIn = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
+            var plugIn = _plugInFactory.CreateInstance(assembly, context);
 
             Assert.NotNull(plugIn);
 
-            assemblyLoadContext.Unload();
+            context.Unload();
         }
     }
 }
