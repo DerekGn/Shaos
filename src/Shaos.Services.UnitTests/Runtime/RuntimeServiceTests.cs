@@ -31,6 +31,7 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
+using Shaos.Services.UnitTests.Fixtures;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
@@ -223,7 +224,7 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
-                .Returns(_fixture.AssemblyDirectory!);
+                .Returns(_fixture.BinariesPath!);
 
             var mockPlugIn = new Mock<IPlugIn>();
 

@@ -22,46 +22,37 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
+using Shaos.Services.Runtime;
 using System.Reflection;
-using System.Runtime.Loader;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.UnitTests.Fixtures
 {
-    [ExcludeFromCodeCoverage]
-    public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
+    public class PlugInFactoryTestFixture : TestFixture
     {
-        private readonly AssemblyDependencyResolver _resolver;
-
-        public RuntimeAssemblyLoadContext(string name, string plugInPath) : base(name, true)
+        public PlugInFactoryTestFixture()
         {
-            _resolver = new AssemblyDependencyResolver(plugInPath);
+            var assemblyPath = Path.Combine(BinariesValidationPath, AssemblyFileName);
+            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(nameof(PlugInFactoryTestFixture), assemblyPath);
+
+            AssemblyLoadContextReference = new WeakReference(assemblyLoadContext);
         }
 
-        protected override Assembly? Load(AssemblyName assemblyName)
-        {
-            string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            Assembly? result = null;
+        public AssemblyName AssemblyName { get; }
+        public WeakReference AssemblyLoadContextReference { get; }
 
-            if (assemblyPath != null)
+        public override void Dispose()
+        {
+            if (AssemblyLoadContextReference != null)
             {
-                result = LoadFromAssemblyPath(assemblyPath);
+                for (int i = 0; AssemblyLoadContextReference.IsAlive && i < 10; i++)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
             }
 
-            return result;
-        }
-
-        protected override nint LoadUnmanagedDll(string unmanagedDllName)
-        {
-            string? libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-            IntPtr result = IntPtr.Zero;
-
-            if (libraryPath != null)
-            {
-                result = LoadUnmanagedDllFromPath(libraryPath);
-            }
-
-            return result;
+            base.Dispose();
         }
     }
 }

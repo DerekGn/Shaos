@@ -40,45 +40,46 @@ namespace Shaos.Services.Shared.Tests
 
         public BaseTestFixture(string testProjectName, string plugInProjectName)
         {
-            AssemblyDirectory = Path
+            var assemblyDirectory = Path
                 .GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location);
 
-            var sourcePackageDirectory = AssemblyDirectory!.Replace(testProjectName, plugInProjectName).Replace("net8.0", string.Empty);
+            var sourcePackageDirectory = assemblyDirectory!.Replace(testProjectName, plugInProjectName).Replace("net8.0", string.Empty);
             var sourcePackageFilePath = Path.Combine(sourcePackageDirectory, PackageFileName);
 
-            var targetPackageDirectory = Path.Combine(Path.Combine(AssemblyDirectory, "testing"), Guid.NewGuid().ToString());
+            var targetPackageDirectory = Path.Combine(Path.Combine(assemblyDirectory, "testing"), Guid.NewGuid().ToString());
             var targetPackageFilePath = Path.Combine(targetPackageDirectory, PackageFileName);
 
             targetPackageDirectory.CreateDirectory();
 
             File.Copy(sourcePackageFilePath, targetPackageFilePath, true);
 
-            SourcePath = targetPackageDirectory;
-            SourceFilePath = targetPackageFilePath;
+            BinariesPath = targetPackageDirectory;
+            PackageFilePath = targetPackageFilePath;
 
             var optionsInstance = new FileStoreOptions()
             {
-                BinariesPath = SourcePath,
-                PackagesPath = SourcePath
+                BinariesPath = BinariesPath,
+                PackagesPath = BinariesPath
             };
 
             FileStoreOptions = Options.Create(optionsInstance);
 
-            ZipFile.ExtractToDirectory(SourceFilePath, Path.Combine(SourcePath, ValidationFolder), true);
+            BinariesValidationPath = Path.Combine(BinariesPath, ValidationFolder);
+            ZipFile.ExtractToDirectory(PackageFilePath, BinariesValidationPath, true);
         }
-
-        public string? AssemblyDirectory { get; }
 
         public IOptions<FileStoreOptions> FileStoreOptions { get; }
 
-        public string SourceFilePath { get; }
+        public string PackageFilePath { get; }
 
-        public string SourcePath { get; }
+        public string BinariesPath { get; }
 
-        public void Dispose()
+        public string BinariesValidationPath { get; }
+
+        public virtual void Dispose()
         {
-            SourcePath.DeleteDirectory();
+            BinariesPath.DeleteDirectory();
         }
     }
 }

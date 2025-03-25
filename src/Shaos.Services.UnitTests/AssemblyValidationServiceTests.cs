@@ -23,6 +23,7 @@
 */
 
 using Shaos.Sdk;
+using Shaos.Services.UnitTests.Fixtures;
 using Xunit;
 
 namespace Shaos.Services.UnitTests
@@ -41,7 +42,7 @@ namespace Shaos.Services.UnitTests
         [Fact(Skip = "needs to unload assemblt")]
         public void TestValidateContainsType()
         {
-            var assemblyFilePath = Path.Combine(Path.Combine(_fixture.SourcePath, TestFixture.ValidationFolder), TestFixture.AssemblyFileName);
+            var assemblyFilePath = Path.Combine(Path.Combine(_fixture.BinariesPath, TestFixture.ValidationFolder), TestFixture.AssemblyFileName);
 
             var result = _assemblyValidationService.ValidateContainsType<IPlugIn>(assemblyFilePath, out var version);
 

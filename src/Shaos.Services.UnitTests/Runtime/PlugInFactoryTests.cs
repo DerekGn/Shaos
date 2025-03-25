@@ -22,14 +22,40 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
+using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
+using Shaos.Services.UnitTests.Fixtures;
+using System.Reflection;
+using System.Runtime.Loader;
+using Xunit;
+using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests
+namespace Shaos.Services.UnitTests.Runtime
 {
-    public class TestFixture : BaseTestFixture
+    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
     {
-        public TestFixture() : base("Shaos.Services.UnitTests", "Shaos.Test.PlugIn")
+        private readonly PlugInFactoryTestFixture _fixture;
+        private readonly PlugInFactory _plugInFactory;
+
+        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
         {
+            _fixture = fixture;
+
+            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
+        }
+
+        [Fact]
+        public void TestCreateInstance()
+        {
+            var context = ((RuntimeAssemblyLoadContext)_fixture.AssemblyLoadContextReference.Target!);
+            var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
+
+            var plugIn = _plugInFactory.CreateInstance(assembly, context);
+
+            Assert.NotNull(plugIn);
+
+            context.Unload();
         }
     }
 }

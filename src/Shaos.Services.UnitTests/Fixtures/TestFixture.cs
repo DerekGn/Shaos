@@ -22,16 +22,14 @@
 * SOFTWARE.
 */
 
-using System.Reflection;
+using Shaos.Services.Shared.Tests;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.UnitTests.Fixtures
 {
-    public interface IRuntimeAssemblyLoadContext
+    public class TestFixture : BaseTestFixture
     {
-        string? Name { get; }
-
-        Assembly LoadFromAssemblyName(AssemblyName assemblyName);
-
-        void Unload();
+        public TestFixture() : base("Shaos.Services.UnitTests", "Shaos.Test.PlugIn")
+        {
+        }
     }
 }
