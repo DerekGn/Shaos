@@ -29,6 +29,7 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
+using System.Reflection;
 
 namespace Shaos.Services
 {
@@ -36,7 +37,7 @@ namespace Shaos.Services
     {
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<PlugInService> _logger;
-        private readonly IAssemblyValidationService _plugInValidationService;
+        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly IRuntimeService _runtimeService;
         private readonly IStore _store;
 
@@ -45,13 +46,13 @@ namespace Shaos.Services
             IStore store,
             IRuntimeService runtimeService,
             IFileStoreService fileStoreService,
-            IAssemblyValidationService plugInValidationService)
+            IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
-            _plugInValidationService = plugInValidationService ?? throw new ArgumentNullException(nameof(plugInValidationService));
+            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
         }
 
         /// <inheritdoc/>
@@ -169,25 +170,26 @@ namespace Shaos.Services
                             stream,
                             cancellationToken);
 
-                        var files = _fileStoreService
+                        var plugInFile = _fileStoreService
                             .ExtractPackage(packageFileName, plugIn.Id.ToString())
-                            .Where(_ => Path.GetExtension(_) == ".dll")
-                            .Where(_ => !string.Equals(_, "Shaos.Sdk.dll", StringComparison.OrdinalIgnoreCase))
-                            .ToList();
+                            .FirstOrDefault(_ => _.EndsWith(".PlugIn.dll", StringComparison.OrdinalIgnoreCase));
 
-                        if (!ValidPlugInFound(files, out var assemblyFileName, out var version))
+                        if(plugInFile == null)
                         {
                             _logger.LogWarning("No valid PlugIn implementation found");
                             result = UploadPackageResult.NoValidPlugIn;
                         }
                         else
                         {
-                            await CreateOrUpdatePlugInPackageAsync(
-                                plugIn,
-                                packageFileName,
-                                Path.GetFileName(assemblyFileName),
-                                version,
-                                cancellationToken);
+                            if(AssemblyContainsPlugIn(plugInFile, out var version))
+                            {
+                                await CreateOrUpdatePlugInPackageAsync(
+                                    plugIn,
+                                    packageFileName,
+                                    Path.GetFileName(plugInFile),
+                                    version,
+                                    cancellationToken);
+                            }
                         }
                     }
                     else
@@ -200,6 +202,25 @@ namespace Shaos.Services
             },
             false,
             cancellationToken);
+
+            return result;
+        }
+
+        private bool AssemblyContainsPlugIn(string assemblyFile, out string version)
+        {
+            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyFile));
+            var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(nameof(PlugInService), assemblyFile);
+            var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
+
+            bool result = false;
+
+            var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyName(assemblyName);
+
+            version = plugInAssembly.GetName().Version!.ToString();
+
+            result = plugInAssembly.GetTypes().Any(t => typeof(IPlugIn).IsAssignableFrom(t));
+
+            unloadingWeakReference.Dispose();
 
             return result;
         }
@@ -304,29 +325,6 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotFoundException(id);
             }
         }
-
-        private bool ValidPlugInFound(
-            IList<string> files,
-            out string plugInFile,
-            out string version)
-        {
-            bool validPlugIn = false;
-            plugInFile = string.Empty;
-            version = string.Empty;
-
-            foreach (var file in files)
-            {
-                if (_plugInValidationService.ValidateContainsType<IPlugIn>(file, out version))
-                {
-                    plugInFile = file;
-                    validPlugIn = true;
-                    break;
-                }
-            }
-
-            return validPlugIn;
-        }
-
         private bool VerifyPlugState(PlugIn plugIn, ExecutionState state)
         {
             bool result = false;

@@ -24,9 +24,11 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Test.PlugIn
 {
+    [ExcludeFromCodeCoverage]
     public class TestPlugIn : IPlugIn
     {
         private readonly ILogger<TestPlugIn> _logger;
