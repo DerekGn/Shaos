@@ -35,22 +35,15 @@ namespace Shaos.Services.UnitTests.Fixtures
             AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
             var assemblyLoadContext = new RuntimeAssemblyLoadContext(nameof(PlugInFactoryTestFixture), assemblyPath);
 
-            AssemblyLoadContextReference = new WeakReference(assemblyLoadContext);
+            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
 
         public AssemblyName AssemblyName { get; }
-        public WeakReference AssemblyLoadContextReference { get; }
+        public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
 
         public override void Dispose()
         {
-            if (AssemblyLoadContextReference != null)
-            {
-                for (int i = 0; AssemblyLoadContextReference.IsAlive && i < 10; i++)
-                {
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                }
-            }
+            AssemblyLoadContextReference.Dispose();
 
             base.Dispose();
         }

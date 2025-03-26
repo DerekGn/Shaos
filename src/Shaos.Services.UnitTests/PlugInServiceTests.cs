@@ -25,12 +25,13 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using Shaos.Services.Store;
+using Shaos.Test.PlugIn;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -38,7 +39,8 @@ namespace Shaos.Services.UnitTests
 {
     public class PlugInServiceTests : BaseTests
     {
-        private readonly Mock<IAssemblyValidationService> _mockAssemblyValidationService;
+        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IRuntimeService> _mockRuntimeService;
         private readonly Mock<IStore> _mockStore;
@@ -47,7 +49,8 @@ namespace Shaos.Services.UnitTests
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockAssemblyValidationService = new Mock<IAssemblyValidationService>();
+            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockRuntimeService = new Mock<IRuntimeService>();
             _mockStore = new Mock<IStore>();
 
@@ -56,7 +59,7 @@ namespace Shaos.Services.UnitTests
                 _mockStore.Object,
                 _mockRuntimeService.Object,
                 _mockFileStoreService.Object,
-                _mockAssemblyValidationService.Object);
+                _mockRuntimeAssemblyLoadContextFactory.Object);
         }
 
         [Fact]
@@ -277,14 +280,6 @@ namespace Shaos.Services.UnitTests
                     "file.dll"
                 });
 
-            var version = "1.0.0.0";
-
-            _mockAssemblyValidationService
-                .Setup(_ => _.ValidateContainsType<IPlugIn>(
-                    It.IsAny<string>(),
-                    out version))
-                .Returns(false);
-
             var result = await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
 
@@ -380,16 +375,17 @@ namespace Shaos.Services.UnitTests
                     It.IsAny<string>()))
                 .Returns(new List<string>()
                 {
-                    "file.dll"
+                    ".PlugIn.dll"
                 });
 
-            var version = "1.0.0.0";
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
+                It.IsAny<string>(),
+                It.IsAny<string>()))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
-            _mockAssemblyValidationService
-                .Setup(_ => _.ValidateContainsType<IPlugIn>(
-                    It.IsAny<string>(),
-                    out version))
-                .Returns(true);
+            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyName(
+                It.IsAny<AssemblyName>()))
+                .Returns(typeof(TestPlugIn).Assembly);
 
             var result = await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
