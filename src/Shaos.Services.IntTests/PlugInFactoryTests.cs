@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Services.IntTests.Fixtures;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
@@ -32,13 +33,13 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.IntTests
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<TestFixture>
+    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
     {
         private readonly FileStoreService _fileStoreService;
-        private readonly TestFixture _fixture;
+        private readonly PlugInFactoryTestFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
 
-        public PlugInFactoryTests(ITestOutputHelper output, TestFixture fixture) : base(output)
+        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
         {
             _fixture = fixture;
 
@@ -52,17 +53,14 @@ namespace Shaos.Services.IntTests
         [Fact]
         public void TestCreateInstance()
         {
-            var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(1), TestFixture.AssemblyFileName);
-            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
+            var context = _fixture.AssemblyLoadContextReference.Target;
+            var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
 
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext("PlugInName", assemblyPath);
-            var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
+            var plugIn = _plugInFactory.CreateInstance(assembly, _fixture.AssemblyLoadContextReference.Target);
 
-            var result = _plugInFactory.CreateInstance(assembly, assemblyLoadContext);
+            Assert.NotNull(plugIn);
 
-            assemblyLoadContext.Unload();
-
-            Assert.NotNull(result);
+            context.Unload();
         }
     }
 }
