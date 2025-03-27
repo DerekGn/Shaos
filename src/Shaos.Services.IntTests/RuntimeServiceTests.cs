@@ -86,13 +86,13 @@ namespace Shaos.Services.IntTests
 
             Assert.NotNull(result);
 
-            await WaitForState(2, ExecutionState.Active);
+            await WaitForState(2, InstanceState.Active);
 
             OutputHelper.WriteLine(result.ToString());
 
-            if (result.State != ExecutionState.Active)
+            if (result.State != InstanceState.Active)
             {
-                Assert.Equal(ExecutionState.Active, result.State);
+                Assert.Equal(InstanceState.Active, result.State);
             }
             else
             {
@@ -100,20 +100,20 @@ namespace Shaos.Services.IntTests
 
                 _runtimeService.StopInstance(result.Id);
 
-                var instance = await WaitForState(result.Id, ExecutionState.Complete);
+                var instance = await WaitForState(result.Id, InstanceState.Complete);
 
-                Assert.Equal(ExecutionState.Complete, instance!.State);
+                Assert.Equal(InstanceState.Complete, instance!.State);
             }
         }
 
-        private async Task<ExecutingInstance?> WaitForState(int id, ExecutionState state)
+        private async Task<Instance?> WaitForState(int id, InstanceState state)
         {
             int i = 0;
-            ExecutingInstance? executingInstance;
+            Instance? executingInstance;
 
             do
             {
-                executingInstance = _runtimeService.GetExecutingInstance(id);
+                executingInstance = _runtimeService.GetInstance(id);
 
                 await Task.Delay(10);
 

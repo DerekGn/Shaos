@@ -22,22 +22,29 @@
 * SOFTWARE.
 */
 
-using InstanceApi = Shaos.Api.Model.v1.Instance;
-using InstanceModel = Shaos.Services.Runtime.Instance;
-
-namespace Shaos.Extensions
+namespace Shaos.Services.Runtime
 {
-    internal static class ExecutingPlugInExtensions
+    /// <summary>
+    /// An event that represents an <see cref="Instance"/> state change
+    /// </summary>
+    public class InstanceStateEventArgs : EventArgs
     {
-        internal static InstanceApi ToApi(this InstanceModel instance)
+        public InstanceStateEventArgs(
+            int id,
+            InstanceState state)
         {
-            return new InstanceApi()
-            {
-                Id = instance.Id,
-                Name = instance.Name,
-                Status = Enum.Parse<Api.Model.v1.InstanceState>(instance.State.ToString()),
-                Exception = instance.Exception == null ? null : instance.Exception.ToString(),
-            };
+            Id = id;
+            State = state;
         }
+
+        /// <summary>
+        /// The <see cref="Instance"/> identifier
+        /// </summary>
+        public int Id { get; init; }
+
+        /// <summary>
+        /// The <see cref="Instance"/> state change
+        /// </summary>
+        public InstanceState State { get; init; }
     }
 }

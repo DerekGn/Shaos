@@ -77,13 +77,13 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestGetExecutingInstanceFound()
         {
-            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            _runtimeService._executingInstances.Add(new Instance()
             {
                 Id = 1,
                 Name = "Test",
             });
 
-            var executingInstance = _runtimeService.GetExecutingInstance(1);
+            var executingInstance = _runtimeService.GetInstance(1);
 
             Assert.NotNull(executingInstance);
         }
@@ -91,7 +91,7 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestGetExecutingInstanceNotFound()
         {
-            var executingInstance = _runtimeService.GetExecutingInstance(1);
+            var executingInstance = _runtimeService.GetInstance(1);
 
             Assert.Null(executingInstance);
         }
@@ -101,14 +101,14 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             for (int i = 1; i < 4; i++)
             {
-                _runtimeService._executingInstances.Add(new ExecutingInstance()
+                _runtimeService._executingInstances.Add(new Instance()
                 {
                     Id = i,
                     Name = "Test"
                 });
             }
 
-            var result = _runtimeService.GetExecutingInstances();
+            var result = _runtimeService.GetInstances();
 
             Assert.NotNull(result);
             Assert.Equal(3, result.Count());
@@ -151,12 +151,12 @@ namespace Shaos.Services.UnitTests.Runtime
 
             Assert.NotNull(result);
 
-            var instance = await WaitForState(2, ExecutionState.Faulted);
+            var instance = await WaitForState(2, InstanceState.Faulted);
 
             Assert.NotNull(instance);
             Assert.NotNull(instance.Exception);
             Assert.NotNull(instance.PlugIn);
-            Assert.Equal(ExecutionState.Faulted, instance.State);
+            Assert.Equal(InstanceState.Faulted, instance.State);
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
@@ -203,12 +203,12 @@ namespace Shaos.Services.UnitTests.Runtime
 
             Assert.NotNull(result);
 
-            var instance = await WaitForState(2, ExecutionState.PlugInLoadFailure);
+            var instance = await WaitForState(2, InstanceState.PlugInLoadFailure);
 
             Assert.NotNull(instance);
             Assert.NotNull(instance.Exception);
             Assert.Null(instance.PlugIn);
-            Assert.Equal(ExecutionState.PlugInLoadFailure, instance.State);
+            Assert.Equal(InstanceState.PlugInLoadFailure, instance.State);
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
@@ -251,13 +251,13 @@ namespace Shaos.Services.UnitTests.Runtime
                 .StartInstance(plugIn, plugInInstance);
 
             Assert.NotNull(result);
-            Assert.Equal(ExecutionState.None, result.State);
+            Assert.Equal(InstanceState.None, result.State);
 
-            var instance = await WaitForState(2, ExecutionState.Complete);
+            var instance = await WaitForState(2, InstanceState.Complete);
 
             Assert.NotNull(instance);
             Assert.NotNull(instance.PlugIn);
-            Assert.Equal(ExecutionState.Complete, instance.State);
+            Assert.Equal(InstanceState.Complete, instance.State);
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
@@ -277,7 +277,7 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             for (int i = 1; i < 6; i++)
             {
-                _runtimeService._executingInstances.Add(new ExecutingInstance()
+                _runtimeService._executingInstances.Add(new Instance()
                 {
                     Id = i,
                     Name = i.ToString()
@@ -292,11 +292,11 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestStartInstanceRunningAsync()
         {
-            _runtimeService._executingInstances.Add(new ExecutingInstance()
+            _runtimeService._executingInstances.Add(new Instance()
             {
                 Id = 2,
                 Name = "Test",
-                State = ExecutionState.Active
+                State = InstanceState.Active
             });
 
             SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
@@ -305,7 +305,7 @@ namespace Shaos.Services.UnitTests.Runtime
                 .StartInstance(plugIn, plugInInstance);
 
             Assert.NotNull(result);
-            Assert.Equal(ExecutionState.Active, result.State);
+            Assert.Equal(InstanceState.Active, result.State);
         }
 
         [Fact]
@@ -313,11 +313,11 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             var tokenSource = new CancellationTokenSource();
 
-            var instance = new ExecutingInstance()
+            var instance = new Instance()
             {
                 Id = 1,
                 Name = "InstanceName",
-                State = ExecutionState.Active,
+                State = InstanceState.Active,
                 TokenSource = tokenSource
             };
 
@@ -327,10 +327,10 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _runtimeService.StopInstance(1);
 
-            var executingInstance = await WaitForState(1, ExecutionState.Complete);
+            var executingInstance = await WaitForState(1, InstanceState.Complete);
 
             Assert.NotNull(executingInstance);
-            Assert.Equal(ExecutionState.Complete, executingInstance.State);
+            Assert.Equal(InstanceState.Complete, executingInstance.State);
         }
 
         private static void SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
@@ -353,20 +353,20 @@ namespace Shaos.Services.UnitTests.Runtime
 
         private void UpdateState(
             Task antecedent,
-            ExecutingInstance executingInstance)
+            Instance executingInstance)
         {
             OutputHelper.WriteLine("Waiting Task complete");
-            executingInstance.State = ExecutionState.Complete;
+            executingInstance.State = InstanceState.Complete;
         }
 
-        private async Task<ExecutingInstance?> WaitForState(int id, ExecutionState state)
+        private async Task<Instance?> WaitForState(int id, InstanceState state)
         {
             int i = 0;
-            ExecutingInstance? executingInstance;
+            Instance? executingInstance;
 
             do
             {
-                executingInstance = _runtimeService.GetExecutingInstance(id);
+                executingInstance = _runtimeService.GetInstance(id);
 
                 await Task.Delay(WaitDelay);
 

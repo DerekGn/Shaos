@@ -33,7 +33,7 @@ namespace Shaos.Services.Runtime
     /// <summary>
     /// An executing <see cref="PlugIn"/> instance
     /// </summary>
-    public class ExecutingInstance()
+    public class Instance()
     {
         /// <summary>
         /// The <see cref="Assembly"/> the <see cref="PlugIn"/> was loaded
@@ -61,17 +61,17 @@ namespace Shaos.Services.Runtime
         public IPlugIn? PlugIn { get; internal set; }
 
         /// <summary>
-        /// The <see cref="ExecutingState"/> of the <see cref="ExecutingInstance"/>
+        /// The <see cref="ExecutingState"/> of the <see cref="Instance"/>
         /// </summary>
-        public ExecutionState State { get; internal set; }
+        public InstanceState State { get; internal set; }
 
         /// <summary>
-        /// The <see cref="Task"/> that is executing the <see cref="ExecutingInstance"/>
+        /// The <see cref="Task"/> that is executing the <see cref="Instance"/>
         /// </summary>
         public Task? Task { get; internal set; }
 
         /// <summary>
-        /// The <see cref="CancellationTokenSource"/> used to cancel the executing <see cref="ExecutingInstance"/>
+        /// The <see cref="CancellationTokenSource"/> used to cancel the executing <see cref="Instance"/>
         /// </summary>
         public CancellationTokenSource? TokenSource { get; internal set; }
 
@@ -97,6 +97,16 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(UnloadingContext)}: {(UnloadingContext == null ? "Empty" : UnloadingContext.Target.Name)}");
 
             return stringBuilder.ToString();
+        }
+
+        internal void CleanUp()
+        {
+            Assembly = null;
+            PlugIn = null;
+            Task = null;
+            TokenSource = null;
+
+            UnloadingContext?.Dispose();
         }
     }
 }

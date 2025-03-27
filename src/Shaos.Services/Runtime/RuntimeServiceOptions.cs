@@ -30,7 +30,7 @@ namespace Shaos.Services.Runtime
     public class RuntimeServiceOptions
     {
         /// <summary>
-        /// The maximum number of <see cref="ExecutingInstance"/> that can be executed in parallel
+        /// The maximum number of <see cref="Instance"/> that can be executed in parallel
         /// </summary>
         /// <remarks>
         /// Defaults to 50
