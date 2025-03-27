@@ -25,6 +25,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Repository.Models;
+using Shaos.Services.IntTests.Fixtures;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;

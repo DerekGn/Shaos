@@ -41,11 +41,6 @@ namespace Shaos.Services.Runtime
         public Assembly? Assembly { get; internal set; }
 
         /// <summary>
-        /// The <see cref="IRuntimeAssemblyLoadContext"/> for the loaded <see cref="PlugIn"/>
-        /// </summary>
-        public IRuntimeAssemblyLoadContext? AssemblyLoadContext { get; internal set; }
-
-        /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
         /// </summary>
         public Exception? Exception { get; internal set; }
@@ -58,7 +53,7 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public required string Name { get; init; }
+        public string Name { get; init; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance that executes its functions
@@ -80,6 +75,11 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public CancellationTokenSource? TokenSource { get; internal set; }
 
+        /// <summary>
+        /// The <see cref="IRuntimeAssemblyLoadContext"/> for the loaded <see cref="PlugIn"/>
+        /// </summary>
+        public UnloadingWeakReference<IRuntimeAssemblyLoadContext>? UnloadingContext { get; internal set; }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -94,7 +94,7 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
             stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
-            stringBuilder.AppendLine($"{nameof(AssemblyLoadContext)}: {(AssemblyLoadContext == null ? "Empty" : AssemblyLoadContext.Name)}");
+            stringBuilder.AppendLine($"{nameof(UnloadingContext)}: {(UnloadingContext == null ? "Empty" : UnloadingContext.Target.Name)}");
 
             return stringBuilder.ToString();
         }
