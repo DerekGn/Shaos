@@ -32,32 +32,37 @@ namespace Shaos.Services.Runtime
     public interface IRuntimeService
     {
         /// <summary>
-        /// Get a <see cref="ExecutingInstance"/>
+        /// An event that is raised when an <see cref="Instance"/> state changes
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="ExecutingInstance"/></param>
-        /// <returns>The <see cref="ExecutingInstance"/> if found else null</returns>
-        ExecutingInstance? GetExecutingInstance(int id);
+        event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
 
         /// <summary>
-        /// Get the <see cref="IEnumerable{T}"/> of <see cref="ExecutingInstance"/>
+        /// Get a <see cref="Instance"/>
         /// </summary>
-        /// <returns>The <see cref="IEnumerable{T}"/> of <see cref="ExecutingInstance"/></returns>
-        public IEnumerable<ExecutingInstance> GetExecutingInstances();
+        /// <param name="id">The identifier of the <see cref="Instance"/></param>
+        /// <returns>The <see cref="Instance"/> if found else null</returns>
+        Instance? GetInstance(int id);
+
+        /// <summary>
+        /// Get the <see cref="IEnumerable{T}"/> of <see cref="Instance"/>
+        /// </summary>
+        /// <returns>The <see cref="IEnumerable{T}"/> of <see cref="Instance"/></returns>
+        public IEnumerable<Instance> GetInstances();
 
         /// <summary>
         /// Start the execution of a <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="plugIn">The <see cref="PlugIn"/></param>
         /// <param name="plugInInstance">The <see cref="PlugInInstance"/></param>
-        /// <returns>An <see cref="ExecutingInstance"/></returns>
-        ExecutingInstance StartInstance(
+        /// <returns>An <see cref="Instance"/></returns>
+        Instance StartInstance(
             PlugIn plugIn,
             PlugInInstance plugInInstance);
 
         /// <summary>
-        /// 
+        /// Stop a running instance
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The identifier of the instance that is to be stopped</param>
         void StopInstance(int id);
     }
 }

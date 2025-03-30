@@ -110,7 +110,7 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            if (_runtimeService.GetExecutingInstance(id) != null)
+            if (_runtimeService.GetInstance(id) != null)
             {
                 _logger.LogWarning("PlugInInstance [{Id}] Running", id);
 
@@ -153,7 +153,7 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if (VerifyPlugState(plugIn, ExecutionState.Active))
+                if (VerifyPlugState(plugIn, InstanceState.Active))
                 {
                     _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
                     result = UploadPackageResult.PlugInRunning;
@@ -235,7 +235,7 @@ namespace Shaos.Services
             {
                 foreach (var plugInInstance in plugIn.Instances)
                 {
-                    if (_runtimeService.GetExecutingInstance(plugInInstance.Id) != null)
+                    if (_runtimeService.GetInstance(plugInInstance.Id) != null)
                     {
                         result = true;
                         break;
@@ -325,13 +325,13 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotFoundException(id);
             }
         }
-        private bool VerifyPlugState(PlugIn plugIn, ExecutionState state)
+        private bool VerifyPlugState(PlugIn plugIn, InstanceState state)
         {
             bool result = false;
 
             foreach (var instance in plugIn.Instances)
             {
-                var executingInstance = _runtimeService.GetExecutingInstance(instance.Id);
+                var executingInstance = _runtimeService.GetInstance(instance.Id);
 
                 if (executingInstance != null && executingInstance.State == state)
                 {

@@ -29,15 +29,14 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Swashbuckle.AspNetCore.Annotations;
 
-using ExecutingInstanceApi = Shaos.Api.Model.v1.ExecutingInstance;
+using InstanceApi = Shaos.Api.Model.v1.Instance;
 
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/runtime")]
     public class RuntimeController : BasePlugInController
     {
-        private const string ExecutingInstanceIdentifier = "The ExecutingInstance identifier";
-        private const string PlugInInstanceIdentifier = "The PlugInInstance identifier";
+        private const string InstanceIdentifier = "The Instance identifier";
         private readonly IRuntimeService _runtimeService;
 
         public RuntimeController(
@@ -50,33 +49,33 @@ namespace Shaos.Controllers
         }
 
         [HttpGet("{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The ExecutingInstance", Type = typeof(ExecutingInstanceApi))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugInInstance is not currently executing")]
+        [SwaggerResponse(StatusCodes.Status200OK, "The Instance", Type = typeof(InstanceApi))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "The Instance is not currently executing")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Get an ExecutingInstance",
-            Description = "Returns an ExecutingInstance",
-            OperationId = "GetExecutingInstance")]
-        public ActionResult<ExecutingInstanceApi> GetExecutingInstance(
-            [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id)
+            Summary = "Get an Instance",
+            Description = "Returns an Instance",
+            OperationId = "GetInstance")]
+        public ActionResult<InstanceApi> GetInstance(
+            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
         {
-            var executingInstance = _runtimeService.GetExecutingInstance(id);
+            var executingInstance = _runtimeService.GetInstance(id);
 
             return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance.ToApi());
         }
 
         [HttpGet()]
-        [SwaggerResponse(StatusCodes.Status200OK, "The list of ExecutingInstances", Type = typeof(IEnumerable<ExecutingInstanceApi>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "The list of Instances", Type = typeof(IEnumerable<InstanceApi>))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Gets the list of ExecutingInstances",
-            Description = "The list of ExecutingInstances",
-            OperationId = "GetExecutingInstances")]
-        public IEnumerable<ExecutingInstanceApi> GetExecutingInstancesAsync()
+            Summary = "Gets the list of Instances",
+            Description = "The list of Instances",
+            OperationId = "GetInstances")]
+        public IEnumerable<InstanceApi> GetInstancesAsync()
         {
-            foreach (var item in _runtimeService.GetExecutingInstances())
+            foreach (var item in _runtimeService.GetInstances())
             {
                 yield return item.ToApi();
             }
@@ -92,7 +91,7 @@ namespace Shaos.Controllers
             Description = "Start a PlugInInstance executing",
             OperationId = "StartInstance")]
         public async Task<ActionResult> StartInstanceAsync(
-                [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
+                [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id,
                 CancellationToken cancellationToken)
         {
             var plugInInstance = await Store
@@ -119,10 +118,10 @@ namespace Shaos.Controllers
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Stop an ExecutingInstance",
-            Description = "Stop an ExecutingInstance", OperationId = "StopInstance")]
+            Summary = "Stop an Instance",
+            Description = "Stop an Instance", OperationId = "StopInstance")]
         public async Task<ActionResult> StopInstanceAsync(
-            [FromRoute, SwaggerParameter(ExecutingInstanceIdentifier, Required = true)] int id,
+            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id,
             CancellationToken cancellationToken)
         {
             var plugInInstance = await Store

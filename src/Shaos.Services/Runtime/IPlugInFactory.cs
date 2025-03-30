@@ -27,8 +27,17 @@ using System.Reflection;
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// A <see cref="PlugInFactory"/> interface definition
+    /// </summary>
     public interface IPlugInFactory
     {
+        /// <summary>
+        /// Create a new <see cref="IPlugIn"/> instance
+        /// </summary>
+        /// <param name="assembly">The <see cref="Assembly"/> to load the </param>
+        /// <param name="assemblyLoadContext">The <see cref="IRuntimeAssemblyLoadContext"/> load context to load the <paramref name="assembly"/> dependencies</param>
+        /// <returns>A <see cref="IPlugIn"/> instance</returns>
         IPlugIn? CreateInstance(Assembly assembly, IRuntimeAssemblyLoadContext assemblyLoadContext);
     }
 }

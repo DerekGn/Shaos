@@ -41,6 +41,7 @@ namespace Shaos.Services.IO
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
+        /// <inheritdoc/>
         public void DeletePackage(int id, string fileName)
         {
             var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), fileName);
@@ -67,6 +68,7 @@ namespace Shaos.Services.IO
             return Directory.EnumerateFiles(targetPath);
         }
 
+        /// <inheritdoc/>
         public string GetAssemblyPath(int id)
         {
             return Path.Combine(_options.Value.BinariesPath, id.ToString());

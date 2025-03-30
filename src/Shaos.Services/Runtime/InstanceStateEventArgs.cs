@@ -22,38 +22,29 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Logging;
-using Shaos.Services.IntTests.Fixtures;
-using Shaos.Services.Runtime;
-using Shaos.Services.Shared.Tests;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Shaos.Services.IntTests
+namespace Shaos.Services.Runtime
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
+    /// <summary>
+    /// An event that represents an <see cref="Instance"/> state change
+    /// </summary>
+    public class InstanceStateEventArgs : EventArgs
     {
-        private readonly PlugInFactoryTestFixture _fixture;
-        private readonly PlugInFactory _plugInFactory;
-
-        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
+        public InstanceStateEventArgs(
+            int id,
+            InstanceState state)
         {
-            _fixture = fixture;
-
-            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
+            Id = id;
+            State = state;
         }
 
-        [Fact]
-        public void TestCreateInstance()
-        {
-            var context = _fixture.AssemblyLoadContextReference.Target;
-            var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
+        /// <summary>
+        /// The <see cref="Instance"/> identifier
+        /// </summary>
+        public int Id { get; init; }
 
-            var plugIn = _plugInFactory.CreateInstance(assembly, _fixture.AssemblyLoadContextReference.Target);
-
-            Assert.NotNull(plugIn);
-
-            context.Unload();
-        }
+        /// <summary>
+        /// The <see cref="Instance"/> state change
+        /// </summary>
+        public InstanceState State { get; init; }
     }
 }

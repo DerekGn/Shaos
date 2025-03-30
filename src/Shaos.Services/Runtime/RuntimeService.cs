@@ -34,7 +34,7 @@ namespace Shaos.Services.Runtime
 {
     public class RuntimeService : IRuntimeService
     {
-        internal readonly List<ExecutingInstance> _executingInstances;
+        internal readonly List<Instance> _executingInstances;
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<RuntimeService> _logger;
         private readonly IOptions<RuntimeServiceOptions> _options;
@@ -53,17 +53,20 @@ namespace Shaos.Services.Runtime
             _plugInFactory = plugInFactory ?? throw new ArgumentNullException(nameof(plugInFactory));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
-            _executingInstances = new List<ExecutingInstance>();
+            _executingInstances = new List<Instance>();
         }
 
         /// </inheritdoc>
-        public ExecutingInstance? GetExecutingInstance(int id)
+        public event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
+
+        /// </inheritdoc>
+        public Instance? GetInstance(int id)
         {
             return _executingInstances.FirstOrDefault(_ => _.Id == id);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ExecutingInstance> GetExecutingInstances()
+        public IEnumerable<Instance> GetInstances()
         {
             foreach (var executingInstance in _executingInstances)
             {
@@ -72,7 +75,7 @@ namespace Shaos.Services.Runtime
         }
 
         /// <inheritdoc/>
-        public ExecutingInstance StartInstance(
+        public Instance StartInstance(
             PlugIn plugIn,
             PlugInInstance plugInInstance)
         {
@@ -93,16 +96,20 @@ namespace Shaos.Services.Runtime
                     plugInInstance.Id,
                     plugInInstance.Name);
 
-                instance = new ExecutingInstance()
+                instance = new Instance()
                 {
                     Id = plugInInstance.Id,
-                    Name = plugInInstance.Name
+                    Name = plugInInstance.Name,
+                    State = InstanceState.None
                 };
 
                 _executingInstances.Add(instance);
+
+                InstanceStateChanged?.Invoke(this, 
+                    new InstanceStateEventArgs(instance.Id, instance.State));
             }
 
-            if (instance.State == ExecutionState.Active)
+            if (instance.State == InstanceState.Active)
             {
                 _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Started", 
                     plugInInstance.Id,
@@ -110,7 +117,10 @@ namespace Shaos.Services.Runtime
             }
             else
             {
-                _ = Task.Run(() => StartExecutingInstance(plugIn.Id, plugIn.Package.AssemblyFile, instance));
+                _ = Task.Run(() => StartExecutingInstance(
+                    plugIn.Id,
+                    plugIn.Package.AssemblyFile,
+                    instance));
             }
 
             return instance;
@@ -128,7 +138,7 @@ namespace Shaos.Services.Runtime
             }
             else
             {
-                if (instance.State != ExecutionState.Active)
+                if (instance.State != InstanceState.Active)
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
                         instance.Id,
@@ -144,11 +154,11 @@ namespace Shaos.Services.Runtime
         private bool LoadInstancePlugInFromAssembly(
             int id,
             string assemblyFileName,
-            ExecutingInstance instance)
+            Instance instance)
         {
             try
             {
-                instance.State = ExecutionState.PlugInLoading;
+                instance.State = InstanceState.PlugInLoading;
 
                 var assemblyPath = Path.Combine(_fileStoreService.GetAssemblyPath(id), assemblyFileName);
                 var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
@@ -158,7 +168,10 @@ namespace Shaos.Services.Runtime
                 instance.Assembly = instance.UnloadingContext.Target.LoadFromAssemblyName(assemblyName);
                 instance.PlugIn = _plugInFactory.CreateInstance(instance.Assembly, instance.UnloadingContext.Target);
 
-                instance.State = ExecutionState.PlugInLoaded;
+                instance.State = InstanceState.PlugInLoaded;
+
+                InstanceStateChanged?.Invoke(this,
+                    new InstanceStateEventArgs(instance.Id, instance.State));
             }
             catch (Exception exception)
             {
@@ -166,17 +179,20 @@ namespace Shaos.Services.Runtime
                     instance.Id,
                     instance.Name);
 
-                instance.State = ExecutionState.PlugInLoadFailure;
+                instance.State = InstanceState.PlugInLoadFailure;
                 instance.Exception = exception;
+
+                InstanceStateChanged?.Invoke(this,
+                    new InstanceStateEventArgs(instance.Id, instance.State));
             }
 
-            return instance.State == ExecutionState.PlugInLoaded;
+            return instance.State == InstanceState.PlugInLoaded;
         }
 
         private void StartExecutingInstance(
             int id,
             string assemblyFileName,
-            ExecutingInstance instance)
+            Instance instance)
         {
             _logger.LogInformation("Loading PlugIn from assembly Id: [{Id}] Name: [{Name}] Assembly: [{Assembly}]",
                     instance.Id,
@@ -193,16 +209,19 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private void StartInstanceExecution(ExecutingInstance instance)
+        private void StartInstanceExecution(Instance instance)
         {
             try
             {
-                instance.State = ExecutionState.Activating;
+                instance.State = InstanceState.Activating;
                 instance.TokenSource = new CancellationTokenSource();
                 instance.Task = Task.Run(
                     async () => await instance.PlugIn!.ExecuteAsync(instance.TokenSource!.Token))
                     .ContinueWith((antecedent) => UpdatePlugInStateOnCompletion(instance, antecedent));
-                instance.State = ExecutionState.Active;
+                instance.State = InstanceState.Active;
+
+                InstanceStateChanged?.Invoke(this,
+                    new InstanceStateEventArgs(instance.Id, instance.State));
             }
             catch (Exception exception)
             {
@@ -210,12 +229,15 @@ namespace Shaos.Services.Runtime
                     instance.Id,
                     instance.Name);
 
-                instance.State = ExecutionState.ActivationFaulted;
+                instance.State = InstanceState.ActivationFaulted;
                 instance.Exception = exception;
+
+                InstanceStateChanged?.Invoke(this,
+                    new InstanceStateEventArgs(instance.Id, instance.State));
             }
         }
 
-        private async Task StopExecutingInstanceAsync(ExecutingInstance instance)
+        private async Task StopExecutingInstanceAsync(Instance instance)
         {
             _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
                 instance.Id,
@@ -228,6 +250,8 @@ namespace Shaos.Services.Runtime
                 _logger.LogInformation("Stopped execution. Id: [{Id}] Name: [{Name}]",
                     instance.Id,
                     instance.Name);
+
+                instance.CleanUp();
             }
             else
             {
@@ -237,7 +261,7 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private void UpdatePlugInStateOnCompletion(ExecutingInstance instance, Task antecedent)
+        private void UpdatePlugInStateOnCompletion(Instance instance, Task antecedent)
         {
             _logger.LogDebug("Completed PlugIn Task: {NewLine}{Task}",
                 Environment.NewLine,
@@ -245,7 +269,7 @@ namespace Shaos.Services.Runtime
 
             if ((antecedent.Status == TaskStatus.RanToCompletion) || (antecedent.Status == TaskStatus.Canceled))
             {
-                instance.State = ExecutionState.Complete;
+                instance.State = InstanceState.Complete;
 
                 _logger.LogInformation("Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
                     instance.Id,
@@ -254,7 +278,7 @@ namespace Shaos.Services.Runtime
             }
             else if (antecedent.Status == TaskStatus.Faulted)
             {
-                instance.State = ExecutionState.Faulted;
+                instance.State = InstanceState.Faulted;
                 instance.Exception = antecedent.Exception;
 
                 _logger.LogError(antecedent.Exception, "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
@@ -262,6 +286,9 @@ namespace Shaos.Services.Runtime
                     instance.Name,
                     antecedent.Status);
             }
+
+            InstanceStateChanged?.Invoke(this,
+                    new InstanceStateEventArgs(instance.Id, instance.State));
         }
 
         private void VerifyInstanceCount()

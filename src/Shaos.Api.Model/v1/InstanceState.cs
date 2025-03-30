@@ -22,55 +22,55 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
+using System.Reflection;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Api.Model.v1
 {
     /// <summary>
     /// The execution state of a <see cref="PlugIn"/>
     /// </summary>
-    public enum ExecutionState
+    public enum InstanceState
     {
         /// <summary>
-        /// The initial <see cref="ExecutingInstance"/> state
+        /// The initial <see cref="Instance"/> state
         /// </summary>
         None,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> is activating
+        /// The <see cref="Instance"/> is activating
         /// </summary>
         Activating,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> is activation faulted
+        /// The <see cref="Instance"/> is activation faulted
         /// </summary>
         ActivationFaulted,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> is activate
+        /// The <see cref="Instance"/> is activate
         /// </summary>
         Active,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> is complete.
+        /// The <see cref="Instance"/> is complete.
         /// </summary>
         /// <remarks>
-        /// This is the result of the <see cref="ExecutingInstance"/> self terminating or <see cref="ExecutingInstance"/> being stopped.
+        /// This is the result of the <see cref="Instance"/> self terminating or <see cref="Instance"/> being stopped.
         /// </remarks>
         Complete,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> is faulted
+        /// The <see cref="Instance"/> is faulted
         /// </summary>
         /// <remarks>
-        /// This is the result of the <see cref="ExecutingInstance"/> self terminating due to an exception.
+        /// This is the result of the <see cref="Instance"/> self terminating due to an exception.
         /// </remarks>
         Faulted,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> <see cref="IPlugIn"/> was loaded from its <see cref="Assembly"/>
+        /// The <see cref="Instance"/> <see cref="PlugIn"/> was loaded from its <see cref="Assembly"/>
         /// </summary>
         PlugInLoaded,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> <see cref="IPlugIn"/> load failed.
+        /// The <see cref="Instance"/> <see cref="PlugIn"/> load failed.
         /// </summary>
         PlugInLoadFailure,
         /// <summary>
-        /// The <see cref="ExecutingInstance"/> <see cref="IPlugIn"/> is loading from its <see cref="Assembly"/>
+        /// The <see cref="Instance"/> <see cref="PlugIn"/> is loading from its <see cref="Assembly"/>
         /// </summary>
         PlugInLoading
     }
