@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.*" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.*" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>

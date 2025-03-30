@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Serilog.Extensions.Logging;
 using Shaos.Sdk;
 using System.Reflection;
 
@@ -46,24 +47,27 @@ namespace Shaos.Services.Runtime
             var plugInType = ResolvePlugInType(assembly);
             var loggerType = typeof(Logger<>);
             var loggerFactoryType = typeof(LoggerFactory);
+            var serilogLoggerProviderType = typeof(SerilogLoggerProvider);
 
             var loggerAssembly = ResolveAssemblyForType(loggerType, assemblyLoadContext);
             var loggerFactoryAssembly = ResolveAssemblyForType(loggerFactoryType, assemblyLoadContext);
+            var serilogLoggerProviderAssembly = ResolveAssemblyForType(serilogLoggerProviderType, assemblyLoadContext);
 
             var resolvedLoggerType = ResolveTypeFromAssembly(loggerType, loggerAssembly);
             var resolvedLoggerFactoryType = ResolveTypeFromAssembly(loggerFactoryType, loggerFactoryAssembly);
+            var resolvedSerilogLoggerProviderType = ResolveTypeFromAssembly(serilogLoggerProviderType, serilogLoggerProviderAssembly);
 
             Type[] typeArgs = { plugInType };
             Type genericLoggerType = resolvedLoggerType.MakeGenericType(typeArgs);
 
             object? loggerFactory = Activator.CreateInstance(resolvedLoggerFactoryType);
+            object? serilogloggingProviderFactory = Activator.CreateInstance(resolvedSerilogLoggerProviderType, [null, false]);
+
+            resolvedLoggerFactoryType.GetMethod(nameof(LoggerFactory.AddProvider))!.Invoke(loggerFactory, [serilogloggingProviderFactory]);
+
             object? logger = Activator.CreateInstance(genericLoggerType, loggerFactory) ?? throw new InvalidOperationException($"Unable to create instance of type [{genericLoggerType}]");
 
-            IPlugIn? result = null;
-
-            result = Activator.CreateInstance(plugInType, logger) as IPlugIn;
-
-            return result;
+            return Activator.CreateInstance(plugInType, logger) as IPlugIn;
         }
 
         private void DumpTypeConstructor(Type type)
