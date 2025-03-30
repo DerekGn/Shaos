@@ -24,10 +24,8 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Services.IntTests.Fixtures;
-using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,17 +33,12 @@ namespace Shaos.Services.IntTests
 {
     public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
     {
-        private readonly FileStoreService _fileStoreService;
         private readonly PlugInFactoryTestFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
 
         public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
         {
             _fixture = fixture;
-
-            _fileStoreService = new FileStoreService(
-                LoggerFactory!.CreateLogger<FileStoreService>(),
-                _fixture.FileStoreOptions);
 
             _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
         }

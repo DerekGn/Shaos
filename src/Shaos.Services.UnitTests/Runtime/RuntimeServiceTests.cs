@@ -38,25 +38,20 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime
 {
-    public class RuntimeServiceTests : BaseTests, IClassFixture<TestFixture>, IDisposable
+    public class RuntimeServiceTests : BaseRuntimeServiceTests, IClassFixture<TestFixture>, IDisposable
     {
         private const int WaitDelay = 10;
         private const int WaitItterations = 500;
-
-        private readonly AutoResetEvent _autoResetEvent;
         private readonly TestFixture _fixture;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly RuntimeService _runtimeService;
-        private InstanceState _waitingState;
 
         public RuntimeServiceTests(ITestOutputHelper output, TestFixture fixture) : base(output)
         {
             _fixture = fixture;
-
-            _autoResetEvent = new AutoResetEvent(false);
 
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
@@ -254,7 +249,7 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public async Task TestStartInstancePlugInLoadFailureAsync()
+        public void TestStartInstancePlugInLoadFailureAsync()
         {
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>()))
@@ -344,39 +339,6 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.Equal(InstanceState.Complete, executingInstance.State);
         }
 
-        private static void SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
-        {
-            plugIn = new PlugIn()
-            {
-                Id = 1
-            };
-            plugIn.Package = new Package()
-            {
-                AssemblyFile = TestFixture.AssemblyFileName
-            };
-
-            plugInInstance = new PlugInInstance()
-            {
-                Id = 2,
-                Name = "test"
-            };
-        }
-
-        private void RuntimeServiceInstanceStateChanged(object? sender, InstanceStateEventArgs e)
-        {
-            if (e.State == _waitingState)
-            {
-                _autoResetEvent.Set();
-            }
-        }
-
-        private void SetupStateWait(InstanceState state)
-        {
-            _autoResetEvent.Reset();
-
-            _waitingState = state;
-        }
-
         private void UpdateState(
             Task antecedent,
             Instance executingInstance)
@@ -400,11 +362,6 @@ namespace Shaos.Services.UnitTests.Runtime
             } while (executingInstance != null && executingInstance.State != state && i <= WaitItterations);
 
             return executingInstance;
-        }
-
-        private bool WaitForStateChange()
-        {
-            return _autoResetEvent.WaitOne(TimeSpan.FromMilliseconds(1000));
         }
 
         private async Task WaitTaskAsync(CancellationToken cancellationToken)

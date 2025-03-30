@@ -34,15 +34,15 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.IntTests
 {
-    public class RuntimeServiceTests : BaseTests, IClassFixture<TestFixture>
+    public class RuntimeServiceTests : BaseRuntimeServiceTests, IClassFixture<RuntimeServiceFixture>, IDisposable
     {
         private readonly FileStoreService _fileStoreService;
-        private readonly TestFixture _fixture;
+        private readonly RuntimeServiceFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
         private readonly RuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly RuntimeService _runtimeService;
 
-        public RuntimeServiceTests(ITestOutputHelper outputHelper, TestFixture fixture) : base(outputHelper)
+        public RuntimeServiceTests(ITestOutputHelper outputHelper, RuntimeServiceFixture fixture) : base(outputHelper)
         {
             _fixture = fixture;
 
@@ -65,30 +65,28 @@ namespace Shaos.Services.IntTests
                 _plugInFactory,
                 _fileStoreService,
                 _runtimeAssemblyLoadContextFactory);
+
+            _runtimeService.InstanceStateChanged += RuntimeServiceInstanceStateChanged;
+        }
+
+        public void Dispose()
+        {
+            _runtimeService.InstanceStateChanged -= RuntimeServiceInstanceStateChanged;
         }
 
         [Fact]
         public async Task TestStartThenStop()
         {
-            var plugIn = new PlugIn()
-            {
-                Id = 2
-            };
+            SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
 
-            var plugInInstance = new PlugInInstance()
-            {
-                Id = 2,
-                Name = "test"
-            };
+            SetupStateWait(InstanceState.Active);
 
             var result = _runtimeService
-                .StartInstance(plugIn,plugInInstance);
+                .StartInstance(plugIn, plugInInstance);
+
+            Assert.True(WaitForStateChange());
 
             Assert.NotNull(result);
-
-            await WaitForState(2, InstanceState.Active);
-
-            OutputHelper.WriteLine(result.ToString());
 
             if (result.State != InstanceState.Active)
             {
@@ -98,29 +96,14 @@ namespace Shaos.Services.IntTests
             {
                 await Task.Delay(1000);
 
+                SetupStateWait(InstanceState.Complete);
+
                 _runtimeService.StopInstance(result.Id);
 
-                var instance = await WaitForState(result.Id, InstanceState.Complete);
+                Assert.True(WaitForStateChange());
 
-                Assert.Equal(InstanceState.Complete, instance!.State);
+                Assert.Equal(InstanceState.Complete, result!.State);
             }
-        }
-
-        private async Task<Instance?> WaitForState(int id, InstanceState state)
-        {
-            int i = 0;
-            Instance? executingInstance;
-
-            do
-            {
-                executingInstance = _runtimeService.GetInstance(id);
-
-                await Task.Delay(10);
-
-                i++;
-            } while (executingInstance != null && executingInstance.State != state && i <= 500);
-
-            return executingInstance;
         }
     }
 }
