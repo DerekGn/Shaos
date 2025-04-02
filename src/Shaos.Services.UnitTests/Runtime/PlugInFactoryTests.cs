@@ -40,7 +40,9 @@ namespace Shaos.Services.UnitTests.Runtime
         {
             _fixture = fixture;
 
-            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
+            _plugInFactory = new PlugInFactory(
+                LoggerFactory!,
+                LoggerFactory!.CreateLogger<PlugInFactory>());
         }
 
         [Fact]

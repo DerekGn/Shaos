@@ -31,7 +31,7 @@ namespace Shaos.Services.Runtime
     {
         public IRuntimeAssemblyLoadContext Create(string name, string assemblyPath)
         {
-            return new RuntimeAssemblyLoadContext(name, assemblyPath);
+            return new RuntimeAssemblyLoadContext(assemblyPath, true);
         }
     }
 }

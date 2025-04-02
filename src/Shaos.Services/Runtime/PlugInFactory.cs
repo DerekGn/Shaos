@@ -31,10 +31,13 @@ namespace Shaos.Services.Runtime
     public class PlugInFactory : IPlugInFactory
     {
         private readonly ILogger<PlugInFactory> _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public PlugInFactory(
+            ILoggerFactory loggerFactory,
             ILogger<PlugInFactory> logger)
         {
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -44,26 +47,13 @@ namespace Shaos.Services.Runtime
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
             var plugInType = ResolvePlugInType(assembly);
-            var loggerType = typeof(Logger<>);
-            var loggerFactoryType = typeof(LoggerFactory);
-
-            var loggerAssembly = ResolveAssemblyForType(loggerType, assemblyLoadContext);
-            var loggerFactoryAssembly = ResolveAssemblyForType(loggerFactoryType, assemblyLoadContext);
-
-            var resolvedLoggerType = ResolveTypeFromAssembly(loggerType, loggerAssembly);
-            var resolvedLoggerFactoryType = ResolveTypeFromAssembly(loggerFactoryType, loggerFactoryAssembly);
 
             Type[] typeArgs = { plugInType };
-            Type genericLoggerType = resolvedLoggerType.MakeGenericType(typeArgs);
+            Type genericLoggerType = typeof(Logger<>).MakeGenericType(typeArgs);
 
-            object? loggerFactory = Activator.CreateInstance(resolvedLoggerFactoryType);
-            object? logger = Activator.CreateInstance(genericLoggerType, loggerFactory) ?? throw new InvalidOperationException($"Unable to create instance of type [{genericLoggerType}]");
+            object? logger = Activator.CreateInstance(genericLoggerType, _loggerFactory);
 
-            IPlugIn? result = null;
-
-            result = Activator.CreateInstance(plugInType, logger) as IPlugIn;
-
-            return result;
+            return Activator.CreateInstance(plugInType, logger) as IPlugIn;
         }
 
         private void DumpTypeConstructor(Type type)

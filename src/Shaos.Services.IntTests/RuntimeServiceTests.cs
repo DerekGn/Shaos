@@ -53,6 +53,7 @@ namespace Shaos.Services.IntTests
                 _fixture.FileStoreOptions);
 
             _plugInFactory = new PlugInFactory(
+                LoggerFactory!,
                 LoggerFactory!.CreateLogger<PlugInFactory>());
 
             var optionsInstance = new RuntimeServiceOptions();

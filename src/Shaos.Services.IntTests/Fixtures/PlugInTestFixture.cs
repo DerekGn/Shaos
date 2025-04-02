@@ -39,7 +39,7 @@ namespace Shaos.Services.IntTests.Fixtures
             var assemblyFilePath = Path.Combine(assemblyDirectory, AssemblyFileName);
 
             AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyFilePath));
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(nameof(PlugInFactoryTestFixture), assemblyFilePath);
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(assemblyFilePath, true);
 
             AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
