@@ -208,13 +208,12 @@ namespace Shaos.Services
 
         private bool AssemblyContainsPlugIn(string assemblyFile, out string version)
         {
-            var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyFile));
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
 
             bool result = false;
 
-            var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyName(assemblyName);
+            var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
 
             version = plugInAssembly.GetName().Version!.ToString();
 

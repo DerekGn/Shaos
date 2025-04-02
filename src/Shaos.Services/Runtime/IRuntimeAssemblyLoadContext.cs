@@ -30,7 +30,7 @@ namespace Shaos.Services.Runtime
     {
         string? Name { get; }
 
-        Assembly LoadFromAssemblyName(AssemblyName assemblyName);
+        Assembly LoadFromAssemblyPath(string assemblyPath);
 
         void Unload();
     }
