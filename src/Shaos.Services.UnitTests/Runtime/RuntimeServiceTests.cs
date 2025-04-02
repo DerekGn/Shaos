@@ -131,7 +131,6 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockRuntimeAssemblyLoadContextFactory
                 .Setup(_ => _.Create(
-                    It.IsAny<string>(),
                     It.IsAny<string>()))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
@@ -142,8 +141,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockPlugInFactory
                 .Setup(_ => _.CreateInstance(
-                    It.IsAny<Assembly>(),
-                    It.IsAny<IRuntimeAssemblyLoadContext>()))
+                    It.IsAny<Assembly>()))
                 .Returns(mockPlugIn.Object);
 
             SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
@@ -161,8 +159,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
-                    It.IsAny<Assembly>(),
-                    It.IsAny<IRuntimeAssemblyLoadContext>()),
+                    It.IsAny<Assembly>()),
                     Times.Once);
 
             mockPlugIn
@@ -184,7 +181,6 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockRuntimeAssemblyLoadContextFactory
                 .Setup(_ => _.Create(
-                    It.IsAny<string>(),
                     It.IsAny<string>()))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
@@ -195,8 +191,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockPlugInFactory
                 .Setup(_ => _.CreateInstance(
-                    It.IsAny<Assembly>(),
-                    It.IsAny<IRuntimeAssemblyLoadContext>()))
+                    It.IsAny<Assembly>()))
                 .Returns(mockPlugIn.Object);
 
             mockPlugIn
@@ -219,8 +214,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
-                    It.IsAny<Assembly>(),
-                    It.IsAny<IRuntimeAssemblyLoadContext>()),
+                    It.IsAny<Assembly>()),
                     Times.Once);
 
             mockPlugIn
@@ -257,7 +251,6 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockRuntimeAssemblyLoadContextFactory
                 .Setup(_ => _.Create(
-                    It.IsAny<string>(),
                     It.IsAny<string>()))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
@@ -268,8 +261,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockPlugInFactory
                 .Setup(_ => _.CreateInstance(
-                    It.IsAny<Assembly>(),
-                    It.IsAny<IRuntimeAssemblyLoadContext>()))
+                    It.IsAny<Assembly>()))
                 .Throws(new Exception());
 
             SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance);
@@ -288,8 +280,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockPlugInFactory
                 .Verify(_ => _.CreateInstance(
-                    It.IsAny<Assembly>(),
-                    It.IsAny<IRuntimeAssemblyLoadContext>()),
+                    It.IsAny<Assembly>()),
                     Times.Once);
 
             OutputHelper.WriteLine(result.ToString());

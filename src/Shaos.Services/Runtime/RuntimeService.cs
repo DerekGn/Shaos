@@ -164,9 +164,9 @@ namespace Shaos.Services.Runtime
                 var assemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
 
                 instance.UnloadingContext = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(
-                    _runtimeAssemblyLoadContextFactory.Create(instance.Name, assemblyPath));
+                    _runtimeAssemblyLoadContextFactory.Create(assemblyPath));
                 instance.Assembly = instance.UnloadingContext.Target.LoadFromAssemblyName(assemblyName);
-                instance.PlugIn = _plugInFactory.CreateInstance(instance.Assembly, instance.UnloadingContext.Target);
+                instance.PlugIn = _plugInFactory.CreateInstance(instance.Assembly);
 
                 instance.State = InstanceState.PlugInLoaded;
 

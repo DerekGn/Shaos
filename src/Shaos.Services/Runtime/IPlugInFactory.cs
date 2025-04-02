@@ -36,8 +36,7 @@ namespace Shaos.Services.Runtime
         /// Create a new <see cref="IPlugIn"/> instance
         /// </summary>
         /// <param name="assembly">The <see cref="Assembly"/> to load the </param>
-        /// <param name="assemblyLoadContext">The <see cref="IRuntimeAssemblyLoadContext"/> load context to load the <paramref name="assembly"/> dependencies</param>
         /// <returns>A <see cref="IPlugIn"/> instance</returns>
-        IPlugIn? CreateInstance(Assembly assembly, IRuntimeAssemblyLoadContext assemblyLoadContext);
+        IPlugIn? CreateInstance(Assembly assembly);
     }
 }

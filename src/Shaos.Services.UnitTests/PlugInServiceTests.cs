@@ -379,7 +379,6 @@ namespace Shaos.Services.UnitTests
                 });
 
             _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
-                It.IsAny<string>(),
                 It.IsAny<string>()))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
