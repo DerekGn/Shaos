@@ -24,8 +24,17 @@
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// A <see cref="IRuntimeAssemblyLoadContext"/> factory.
+    /// Used for creation of <see cref="IRuntimeAssemblyLoadContext"/> instances
+    /// </summary>
     public interface IRuntimeAssemblyLoadContextFactory
     {
-        IRuntimeAssemblyLoadContext Create(string name, string assemblyPath);
+        /// <summary>
+        /// Create a new <see cref="IRuntimeAssemblyLoadContext"/>
+        /// </summary>
+        /// <param name="assemblyFilePath">The assembly file path</param>
+        /// <returns>A new instance <see cref="IRuntimeAssemblyLoadContext"/></returns>
+        IRuntimeAssemblyLoadContext Create(string assemblyFilePath);
     }
 }

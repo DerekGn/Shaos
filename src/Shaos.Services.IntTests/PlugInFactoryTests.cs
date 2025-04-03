@@ -40,16 +40,18 @@ namespace Shaos.Services.IntTests
         {
             _fixture = fixture;
 
-            _plugInFactory = new PlugInFactory(LoggerFactory!.CreateLogger<PlugInFactory>());
+            _plugInFactory = new PlugInFactory(
+                LoggerFactory!,
+                LoggerFactory!.CreateLogger<PlugInFactory>());
         }
 
         [Fact]
         public void TestCreateInstance()
         {
             var context = _fixture.AssemblyLoadContextReference.Target;
-            var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
+            var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var plugIn = _plugInFactory.CreateInstance(assembly, _fixture.AssemblyLoadContextReference.Target);
+            var plugIn = _plugInFactory.CreateInstance(assembly);
 
             Assert.NotNull(plugIn);
 

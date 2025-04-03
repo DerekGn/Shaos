@@ -33,7 +33,7 @@ namespace Shaos.Services.UnitTests.Fixtures
         {
             var assemblyPath = Path.Combine(BinariesValidationPath, AssemblyFileName);
             AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(nameof(PlugInFactoryTestFixture), assemblyPath);
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(assemblyPath);
 
             AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }

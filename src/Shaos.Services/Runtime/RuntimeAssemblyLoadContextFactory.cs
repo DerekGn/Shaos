@@ -26,12 +26,16 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// A <see cref="IRuntimeAssemblyLoadContextFactory"/> implementation
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class RuntimeAssemblyLoadContextFactory : IRuntimeAssemblyLoadContextFactory
     {
-        public IRuntimeAssemblyLoadContext Create(string name, string assemblyPath)
+        /// <inheritdoc/>
+        public IRuntimeAssemblyLoadContext Create(string assemblyFilePath)
         {
-            return new RuntimeAssemblyLoadContext(name, assemblyPath);
+            return new RuntimeAssemblyLoadContext(assemblyFilePath, true);
         }
     }
 }

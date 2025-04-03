@@ -25,70 +25,38 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace Shaos.Services.Runtime
 {
     public class PlugInFactory : IPlugInFactory
     {
         private readonly ILogger<PlugInFactory> _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public PlugInFactory(
+            ILoggerFactory loggerFactory,
             ILogger<PlugInFactory> logger)
         {
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public IPlugIn? CreateInstance(Assembly assembly, IRuntimeAssemblyLoadContext assemblyLoadContext)
+        public IPlugIn? CreateInstance(Assembly assembly)
         {
             ArgumentNullException.ThrowIfNull(assembly);
-            ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
             var plugInType = ResolvePlugInType(assembly);
-            var loggerType = typeof(Logger<>);
-            var loggerFactoryType = typeof(LoggerFactory);
-
-            var loggerAssembly = ResolveAssemblyForType(loggerType, assemblyLoadContext);
-            var loggerFactoryAssembly = ResolveAssemblyForType(loggerFactoryType, assemblyLoadContext);
-
-            var resolvedLoggerType = ResolveTypeFromAssembly(loggerType, loggerAssembly);
-            var resolvedLoggerFactoryType = ResolveTypeFromAssembly(loggerFactoryType, loggerFactoryAssembly);
 
             Type[] typeArgs = { plugInType };
-            Type genericLoggerType = resolvedLoggerType.MakeGenericType(typeArgs);
+            Type genericLoggerType = typeof(Logger<>).MakeGenericType(typeArgs);
 
-            object? loggerFactory = Activator.CreateInstance(resolvedLoggerFactoryType);
-            object? logger = Activator.CreateInstance(genericLoggerType, loggerFactory) ?? throw new InvalidOperationException($"Unable to create instance of type [{genericLoggerType}]");
+            object? logger = Activator.CreateInstance(genericLoggerType, _loggerFactory);
 
-            IPlugIn? result = null;
-
-            result = Activator.CreateInstance(plugInType, logger) as IPlugIn;
-
-            return result;
+            return Activator.CreateInstance(plugInType, logger) as IPlugIn;
         }
 
-        private void DumpTypeConstructor(Type type)
-        {
-            foreach (var ctr in type.GetConstructors())
-            {
-                foreach (var parameterInfo in ctr.GetParameters())
-                {
-                    _logger.LogDebug(parameterInfo.ToString());
-                }
-            }
-        }
-
-        private static Assembly ResolveAssemblyForType(
-            Type type,
-            IRuntimeAssemblyLoadContext assemblyLoadContext)
-        {
-            ArgumentNullException.ThrowIfNull(type);
-
-            return assemblyLoadContext
-                .LoadFromAssemblyName(type.Assembly.GetName()) ??
-                throw new InvalidOperationException($"Unable to resolve type for [{type}]");
-        }
-
-        private static Type ResolvePlugInType(Assembly assembly)
+        private Type ResolvePlugInType(Assembly assembly)
         {
             var result = from Type type in assembly.GetTypes()
                          where typeof(IPlugIn).IsAssignableFrom(type)
@@ -96,21 +64,9 @@ namespace Shaos.Services.Runtime
 
             if (result == null || !result.Any())
             {
-                throw new InvalidOperationException($"Unable to resolve [{typeof(IPlugIn)}]");
-            }
+                _logger.LogWarning("Unable to resolve a [{Type}] derived type from Assembly: [{Name}]", typeof(IPlugIn), assembly.FullName);
 
-            return result.FirstOrDefault()!;
-        }
-
-        private static Type ResolveTypeFromAssembly(Type typeToResolve, Assembly assembly)
-        {
-            var result = from Type type in assembly.GetTypes()
-                         where type.FullName == typeToResolve.FullName
-                         select type;
-
-            if (result == null || !result.Any())
-            {
-                throw new InvalidOperationException($"Unable to resolve [{typeToResolve}]");
+                throw new InvalidOperationException($"Unable to resolve a [{typeof(IPlugIn)}] derived type from Assembly: [{assembly.FullName}]");
             }
 
             return result.FirstOrDefault()!;

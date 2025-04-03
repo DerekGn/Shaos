@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -29,31 +30,49 @@ using System.Runtime.Loader;
 namespace Shaos.Services.Runtime
 {
     [ExcludeFromCodeCoverage]
+    [DebuggerDisplay("'{Name}' ({_plugInAssemblyPath})")]
     public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
     {
-        private readonly AssemblyDependencyResolver _resolver;
+        private readonly AssemblyDependencyResolver _assemblyDependencyResolver;
+        private readonly AssemblyLoadContext _assemblyLoadContext;
+        private readonly string _plugInAssemblyPath;
 
-        public RuntimeAssemblyLoadContext(string name, string plugInPath) : base(name, true)
+        public RuntimeAssemblyLoadContext(
+           string plugInAssemblyPath) : this(GetAssemblyLoadContext(), plugInAssemblyPath, true)
         {
-            _resolver = new AssemblyDependencyResolver(plugInPath);
         }
+
+        public RuntimeAssemblyLoadContext(
+           string plugInAssemblyPath,
+           bool isCollectable) : this(GetAssemblyLoadContext(), plugInAssemblyPath, isCollectable)
+        {
+        }
+
+        public RuntimeAssemblyLoadContext(
+            AssemblyLoadContext assemblyLoadContext,
+            string plugInAssemblyPath,
+            bool isCollectable) : base(Path.GetFileNameWithoutExtension(plugInAssemblyPath), isCollectable)
+        {
+            ArgumentNullException.ThrowIfNull(assemblyLoadContext);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyPath);
+
+            _assemblyLoadContext = assemblyLoadContext;
+            _plugInAssemblyPath = plugInAssemblyPath;
+            _assemblyDependencyResolver = new AssemblyDependencyResolver(plugInAssemblyPath);
+        }
+
+#warning TODO load plugin folder local assemblies. Include executing runtime assemblies look up
 
         protected override Assembly? Load(AssemblyName assemblyName)
         {
-            string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
-            Assembly? result = null;
+            ArgumentNullException.ThrowIfNull(assemblyName);
 
-            if (assemblyPath != null)
-            {
-                result = LoadFromAssemblyPath(assemblyPath);
-            }
-
-            return result;
+            return _assemblyLoadContext.LoadFromAssemblyName(assemblyName);
         }
 
         protected override nint LoadUnmanagedDll(string unmanagedDllName)
         {
-            string? libraryPath = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
+            string? libraryPath = _assemblyDependencyResolver.ResolveUnmanagedDllToPath(unmanagedDllName);
             IntPtr result = IntPtr.Zero;
 
             if (libraryPath != null)
@@ -62,6 +81,11 @@ namespace Shaos.Services.Runtime
             }
 
             return result;
+        }
+
+        private static AssemblyLoadContext GetAssemblyLoadContext()
+        {
+            return AssemblyLoadContext.GetLoadContext(Assembly.GetExecutingAssembly()) ?? AssemblyLoadContext.Default;
         }
     }
 }

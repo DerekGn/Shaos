@@ -36,14 +36,17 @@ namespace Shaos.Services.IntTests.Fixtures
 
             ZipFile.ExtractToDirectory(PackageFilePath, assemblyDirectory, true);
 
-            var assemblyFilePath = Path.Combine(assemblyDirectory, AssemblyFileName);
+            AssemblyFilePath = Path.Combine(assemblyDirectory, AssemblyFileName);
 
-            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyFilePath));
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(nameof(PlugInFactoryTestFixture), assemblyFilePath);
+#warning May not need this
+            AssemblyName = AssemblyName.GetAssemblyName(AssemblyFilePath);
+
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyFilePath, true);
 
             AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
 
+        public string AssemblyFilePath { get; }
         public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
         public AssemblyName AssemblyName { get; }
 
