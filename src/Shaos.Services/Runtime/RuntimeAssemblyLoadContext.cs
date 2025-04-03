@@ -60,7 +60,7 @@ namespace Shaos.Services.Runtime
             _plugInAssemblyPath = plugInAssemblyPath;
             _assemblyDependencyResolver = new AssemblyDependencyResolver(plugInAssemblyPath);
         }
-
+#warning TODO load plugin folder local assemblies. Include executing runtime assemblies look up
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             ArgumentNullException.ThrowIfNull(assemblyName);
