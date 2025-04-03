@@ -382,8 +382,8 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<string>()))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
-            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyName(
-                It.IsAny<AssemblyName>()))
+            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
+                It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
             var result = await _plugInService

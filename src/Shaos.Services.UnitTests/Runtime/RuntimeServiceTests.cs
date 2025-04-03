@@ -135,8 +135,8 @@ namespace Shaos.Services.UnitTests.Runtime
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext
-                .Setup(_ => _.LoadFromAssemblyName(
-                    It.IsAny<AssemblyName>()))
+                .Setup(_ => _.LoadFromAssemblyPath(
+                    It.IsAny<string>()))
                 .Returns(typeof(object).Assembly);
 
             _mockPlugInFactory
@@ -185,8 +185,8 @@ namespace Shaos.Services.UnitTests.Runtime
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext
-                .Setup(_ => _.LoadFromAssemblyName(
-                    It.IsAny<AssemblyName>()))
+                .Setup(_ => _.LoadFromAssemblyPath(
+                    It.IsAny<string>()))
                 .Returns(typeof(object).Assembly);
 
             _mockPlugInFactory
@@ -255,8 +255,8 @@ namespace Shaos.Services.UnitTests.Runtime
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext
-                .Setup(_ => _.LoadFromAssemblyName(
-                    It.IsAny<AssemblyName>()))
+                .Setup(_ => _.LoadFromAssemblyPath(
+                    It.IsAny<string>()))
                 .Returns(typeof(object).Assembly);
 
             _mockPlugInFactory
