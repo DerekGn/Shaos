@@ -162,6 +162,11 @@ namespace Shaos.Repository
                .HasIndex(_ => _.Name)
                .HasDatabaseName("IX_LogLevelSwitch_Name_Ascending")
                .IsUnique(true);
+
+            modelBuilder
+                .Entity<LogLevelSwitch>()
+                .Property(_ => _.Level)
+                .IsRequired();
         }
     }
 }

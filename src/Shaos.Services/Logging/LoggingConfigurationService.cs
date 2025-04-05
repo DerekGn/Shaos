@@ -31,8 +31,8 @@ namespace Shaos.Services.Logging
 {
     public class LoggingConfigurationService : ILoggingConfigurationService
     {
-        private readonly IStore _store;
         private readonly ILogger<LoggingConfigurationService> _logger;
+        private readonly IStore _store;
 
         public LoggingConfigurationService(
             IStore store,
@@ -42,17 +42,31 @@ namespace Shaos.Services.Logging
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        public async Task InitialiseLoggingConfigurationAsync(
+            ILoggingConfiguration loggingConfiguration,
+            CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Initialising logging configuration");
+
+            await foreach (var logSwitch in _store.GetLogLevelSwitchesAsync())
+            {
+                _logger.LogDebug("Updating LogLevelSwitch [{Name}] Level: [{Level}]", logSwitch.Name, logSwitch.Level);
+
+                loggingConfiguration.LogLevelSwitches[logSwitch.Name].MinimumLevel = logSwitch.Level;
+            }
+        }
+
         public async Task UpdateLogLevelSwitchAsync(
             string name,
             LogEventLevel level,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Updating {Type} [{Name}] Level: [{Level}]",
                 nameof(LogLevelSwitch),
                 name,
                 level);
 
-            await _store.UpsertLogLevelSwitchAsync(name, level);
+            await _store.UpsertLogLevelSwitchAsync(name, level, cancellationToken);
         }
     }
 }

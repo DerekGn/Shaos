@@ -38,6 +38,7 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
+using Shaos.Startup;
 using System.Text.Json.Serialization;
 
 namespace Shaos
@@ -135,18 +136,19 @@ namespace Shaos
             });
 
             // Application defined services
+            builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IStore, Store>();
 
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<ILoggingConfiguration>(loggingConfiguration);
             builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 
+            builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorBackgroundWorker>();
 
             builder.Services.AddMemoryCache();

@@ -87,6 +87,13 @@ namespace Shaos.Services.Store
         Task DeleteAsync<T>(int id, CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
+        /// Get the <see cref="LogLevelSwitch"/>
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
+        IAsyncEnumerable<LogLevelSwitch> GetLogLevelSwitchesAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get a <see cref="PlugIn"/> instance by identifier
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/></param>

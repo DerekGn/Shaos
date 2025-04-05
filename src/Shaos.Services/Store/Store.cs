@@ -144,6 +144,19 @@ namespace Shaos.Services.Store
         }
 
         /// <inheritdoc/>
+        public async IAsyncEnumerable<LogLevelSwitch> GetLogLevelSwitchesAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var item in _context.LogLevelSwitches
+                .AsNoTracking()
+                .AsAsyncEnumerable()
+                .WithCancellation(cancellationToken))
+            {
+                yield return item;
+            }
+        }
+
+        /// <inheritdoc/>
         public async Task<PlugIn?> GetPlugInByIdAsync(
             int id,
             bool withNoTracking = true,
