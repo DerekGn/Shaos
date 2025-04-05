@@ -25,7 +25,6 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Reflection;
-using System.Xml.Linq;
 
 namespace Shaos.Services.Runtime
 {

@@ -33,10 +33,12 @@ using Shaos.Hosting;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
+using Shaos.Services.Logging;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
+using Shaos.Startup;
 using System.Text.Json.Serialization;
 
 namespace Shaos
@@ -56,8 +58,14 @@ namespace Shaos
                 .Configuration(configuration)
                 .CreateLogger();
 
+            var loggingConfiguration = new LoggingConfiguration();
+
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddSerilog();
+
+            builder.Services.AddSerilog((serviceProvider, loggerConfiguration) =>
+            {
+                loggingConfiguration.Configure(configuration, loggerConfiguration);
+            });
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -128,16 +136,19 @@ namespace Shaos
             });
 
             // Application defined services
+            builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
+            builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IStore, Store>();
 
-            builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
+            builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 
+            builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorBackgroundWorker>();
 
             builder.Services.AddMemoryCache();

@@ -10,8 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiRequests", "ApiRequests", "{057AF7FB-A4B5-43BB-B3C8-44FC5C3FF61E}"
 	ProjectSection(SolutionItems) = preProject
 		Authorisation.http = Authorisation.http
+		Logging.http = Logging.http
 		Plugin.http = Plugin.http
 		Runtime.http = Runtime.http
+		System.http = System.http
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Api.Model", "Shaos.Api.Model\Shaos.Api.Model.csproj", "{58F1F543-5D67-47D9-A620-0256A8FFE866}"
@@ -84,5 +86,8 @@ Global
 		{DE4CCFBC-CC46-4BC2-B607-2382C156C5B8} = {39708260-FFCA-40E4-A831-F43A160E8D3D}
 		{2C1179CB-0A95-4BAB-8BA8-297DF51189F4} = {39708260-FFCA-40E4-A831-F43A160E8D3D}
 		{9B677B85-1367-47E8-BD98-F70EB4935914} = {39708260-FFCA-40E4-A831-F43A160E8D3D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E4FABFB-C4C3-4AD7-9F23-7A8A9CC86B30}
 	EndGlobalSection
 EndGlobal

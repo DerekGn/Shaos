@@ -25,6 +25,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
@@ -140,6 +141,19 @@ namespace Shaos.Services.Store
                 .Set<T>()
                 .Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async IAsyncEnumerable<LogLevelSwitch> GetLogLevelSwitchesAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var item in _context.LogLevelSwitches
+                .AsNoTracking()
+                .AsAsyncEnumerable()
+                .WithCancellation(cancellationToken))
+            {
+                yield return item;
+            }
         }
 
         /// <inheritdoc/>
@@ -260,6 +274,32 @@ namespace Shaos.Services.Store
 
                 await _context.SaveChangesAsync(cancellationToken);
             }
+        }
+
+        /// </<inheritdoc/>
+        public async Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(
+            string name,
+            LogEventLevel level,
+            CancellationToken cancellationToken = default)
+        {
+            var logLevelSwitch = await _context.LogLevelSwitches.SingleAsync(_ => _.Name == name);
+
+            if(logLevelSwitch != null)
+            {
+                logLevelSwitch.Level = level;
+            }
+            else
+            {
+                await _context.LogLevelSwitches.AddAsync(new LogLevelSwitch()
+                {
+                    Name = name,
+                    Level = level
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return logLevelSwitch!;
         }
 
         private async Task<T> HandleDuplicatePlugInInstanceNameAsync<T>(string name, Func<Task<T>> operation)
