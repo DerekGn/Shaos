@@ -26,8 +26,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-#warning resolve assembly version
-
 namespace Shaos.Services.System
 {
     /// <summary>
@@ -100,12 +98,6 @@ namespace Shaos.Services.System
                 UserProcessorTime = process.UserProcessorTime,
                 VirtualMemorySize = process.VirtualMemorySize64,
             };
-        }
-
-        /// <inheritdoc/>
-        public string GetVersion()
-        {
-            return "1.0.0";
         }
 
         /// <inheritdoc/>

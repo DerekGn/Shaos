@@ -22,34 +22,16 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.System
+namespace Shaos.Services.Version
 {
     /// <summary>
-    /// Represents a system service for query of system runtime information
+    /// An application version service
     /// </summary>
-    public interface ISystemService
+    public interface IAppVersionService
     {
         /// <summary>
-        /// Gets the <see cref="SystemEnvironment"/> details
+        /// Get the version number
         /// </summary>
-        /// <returns>A <see cref="SystemEnvironment"/></returns>
-        SystemEnvironment GetEnvironment();
-
-        /// <summary>
-        /// Get information about the operating system
-        /// </summary>
-        /// <returns>A <see cref="RuntimeInformation"/></returns>
-        RuntimeInformation GetOsInformation();
-
-        /// <summary>
-        /// Get the <see cref="ProcessInformation"/>
-        /// </summary>
-        /// <returns>A <see cref="ProcessInformation"/></returns>
-        ProcessInformation GetProcessInformation();
-
-        /// <summary>
-        /// Shutdown the application
-        /// </summary>
-        void ShutdownApplication();
+        string Version { get; }
     }
 }

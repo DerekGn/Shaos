@@ -105,14 +105,6 @@ namespace Shaos.Services.UnitTests.System
         }
 
         [Fact]
-        public void TestGetVersion()
-        {
-            var result = _systemService.GetVersion();
-
-            Assert.NotNull(result);
-        }
-
-        [Fact]
         public void TestShutdownApplication()
         {
             _systemService.ShutdownApplication();

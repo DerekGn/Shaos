@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Services.System;
+using Shaos.Services.Version;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Shaos.Controllers
@@ -33,12 +34,15 @@ namespace Shaos.Controllers
     public class SystemController : CoreController
     {
         private readonly ISystemService _systemService;
+        private readonly IAppVersionService _appVersionService;
 
         public SystemController(
             ILogger<SystemController> logger,
-            ISystemService systemService) : base(logger)
+            ISystemService systemService,
+            IAppVersionService appVersionService) : base(logger)
         {
             _systemService = systemService?? throw new ArgumentNullException(nameof(systemService));
+            _appVersionService = appVersionService ?? throw new ArgumentNullException(nameof(appVersionService));
         }
 
         [HttpGet("version")]
@@ -51,7 +55,7 @@ namespace Shaos.Controllers
             OperationId = "GetVersion")]
         public ActionResult GetVersion()
         {
-            return Ok(_systemService.GetVersion());
+            return Ok(_appVersionService.Version);
         }
 
         [HttpPost("shutdown")]
