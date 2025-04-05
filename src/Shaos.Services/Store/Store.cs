@@ -25,6 +25,7 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Serilog.Events;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
@@ -260,6 +261,32 @@ namespace Shaos.Services.Store
 
                 await _context.SaveChangesAsync(cancellationToken);
             }
+        }
+
+        /// </<inheritdoc/>
+        public async Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(
+            string name,
+            LogEventLevel level,
+            CancellationToken cancellationToken = default)
+        {
+            var logLevelSwitch = await _context.LogLevelSwitches.SingleAsync(_ => _.Name == name);
+
+            if(logLevelSwitch != null)
+            {
+                logLevelSwitch.Level = level;
+            }
+            else
+            {
+                await _context.LogLevelSwitches.AddAsync(new LogLevelSwitch()
+                {
+                    Name = name,
+                    Level = level
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return logLevelSwitch!;
         }
 
         private async Task<T> HandleDuplicatePlugInInstanceNameAsync<T>(string name, Func<Task<T>> operation)

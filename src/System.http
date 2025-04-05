@@ -1,0 +1,43 @@
+# Update configuration to match application configuration
+# Use the Autorisation.http script to generate an access token
+@HostAddress = https://localhost:7000
+@id = 1
+@accessToken = <paste access token without quotes>
+
+###
+
+# Get the system version
+GET {{HostAddress}}/api/v1/system/version
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Shutdown the system
+POST {{HostAddress}}/api/v1/system/shutdown
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Get the operating system information
+GET {{HostAddress}}/api/v1/system/os
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Get the application environment information
+GET {{HostAddress}}/api/v1/system/environment
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+
+# Get the application process information
+GET {{HostAddress}}/api/v1/system/process
+#Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+###
+

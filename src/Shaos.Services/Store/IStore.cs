@@ -22,9 +22,9 @@
 * SOFTWARE.
 */
 
+using Serilog.Events;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
-using System.Runtime.CompilerServices;
 
 namespace Shaos.Services.Store
 {
@@ -165,6 +165,18 @@ namespace Shaos.Services.Store
             string fileName,
             string assemblyFile,
             string version,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Upsert a <see cref="LogLevelSwitch"/>
+        /// </summary>
+        /// <param name="name">The name of the <see cref="LogLevelSwitch"/> to upsert</param>
+        /// <param name="level">The <see cref="LogEventLevel"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The upserted <see cref="LogLevelSwitch"/></returns>
+        Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(
+            string name,
+            LogEventLevel level,
             CancellationToken cancellationToken = default);
     }
 }

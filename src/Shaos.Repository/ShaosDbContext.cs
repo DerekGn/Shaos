@@ -47,6 +47,9 @@ namespace Shaos.Repository
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
 
         /// <inheritdoc/>>
+        public DbSet<LogLevelSwitch> LogLevelSwitches { get; set; }
+
+        /// <inheritdoc/>>
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             ChangeTracker.Entries<BaseEntity>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
@@ -142,6 +145,22 @@ namespace Shaos.Repository
                .Entity<PlugInInstance>()
                .HasIndex(_ => _.Name)
                .HasDatabaseName("IX_PlugInInstance_Name_Ascending")
+               .IsUnique(true);
+
+            modelBuilder.Entity<LogLevelSwitch>()
+                .HasKey(_ => _.Id)
+                .HasName("PrimaryKey_LogLevelSwitch");
+
+            modelBuilder
+                .Entity<LogLevelSwitch>()
+                .Property(_ => _.Name)
+                .IsRequired()
+                .HasMaxLength(ModelConstants.MaxNameLength);
+
+            modelBuilder
+               .Entity<LogLevelSwitch>()
+               .HasIndex(_ => _.Name)
+               .HasDatabaseName("IX_LogLevelSwitch_Name_Ascending")
                .IsUnique(true);
         }
     }
