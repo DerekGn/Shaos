@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250312200507_InitialCreate")]
+    [Migration("20250405161242_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,11 +20,46 @@ namespace Shaos.Repository.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
 
-            modelBuilder.Entity("Shaos.Repository.Models.NuGetPackage", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.LogLevelSwitch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id")
+                        .HasName("PrimaryKey_LogLevelSwitch");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_LogLevelSwitch_Name_Ascending");
+
+                    b.ToTable("LogLevelSwitches");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Package", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AssemblyFile")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
@@ -46,12 +81,12 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id")
-                        .HasName("PrimaryKey_NuGetId");
+                        .HasName("PrimaryKey_PackageId");
 
                     b.HasIndex("PlugInId")
                         .IsUnique();
 
-                    b.ToTable("NuGetFiles");
+                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
@@ -79,6 +114,7 @@ namespace Shaos.Repository.Migrations
                         .HasName("PrimaryKey_PlugInId");
 
                     b.HasIndex("Name")
+                        .IsUnique()
                         .HasDatabaseName("IX_PlugIn_Name_Ascending");
 
                     b.ToTable("PlugIns");
@@ -94,7 +130,7 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Enabled")
@@ -115,6 +151,7 @@ namespace Shaos.Repository.Migrations
                         .HasName("PrimaryKey_PlugInInstanceId");
 
                     b.HasIndex("Name")
+                        .IsUnique()
                         .HasDatabaseName("IX_PlugInInstance_Name_Ascending");
 
                     b.HasIndex("PlugInId");
@@ -122,11 +159,11 @@ namespace Shaos.Repository.Migrations
                     b.ToTable("PlugInInstances");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.NuGetPackage", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.Package", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.PlugIn", "PlugIn")
-                        .WithOne("NuGetPackage")
-                        .HasForeignKey("Shaos.Repository.Models.NuGetPackage", "PlugInId");
+                        .WithOne("Package")
+                        .HasForeignKey("Shaos.Repository.Models.Package", "PlugInId");
 
                     b.Navigation("PlugIn");
                 });
@@ -144,7 +181,7 @@ namespace Shaos.Repository.Migrations
                 {
                     b.Navigation("Instances");
 
-                    b.Navigation("NuGetPackage");
+                    b.Navigation("Package");
                 });
 #pragma warning restore 612, 618
         }
