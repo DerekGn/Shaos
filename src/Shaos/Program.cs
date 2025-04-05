@@ -38,6 +38,7 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
+using Shaos.Services.Version;
 using Shaos.Startup;
 using System.Text.Json.Serialization;
 
@@ -141,6 +142,7 @@ namespace Shaos
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IStore, Store>();
 
+            builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
