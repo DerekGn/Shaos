@@ -95,6 +95,7 @@ namespace Shaos.Repository
             modelBuilder
                 .Entity<PlugIn>()
                 .Property(_ => _.Description)
+                .IsRequired()
                 .HasMaxLength(ModelConstants.MaxDescriptionLength);
 
             modelBuilder

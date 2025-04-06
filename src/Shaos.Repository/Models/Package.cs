@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Repository.Models
 {
     /// <summary>
@@ -43,5 +45,12 @@ namespace Shaos.Repository.Models
         /// The version of the <see cref="Package"/>
         /// </summary>
         public string Version { get; set; } = string.Empty;
+
+        /// <inheritdoc/>
+        [ExcludeFromCodeCoverage]
+        public override string ToString()
+        {
+            return $"{nameof(FileName)}: {FileName} {nameof(Version)}: {Version}";
+        }
     }
 }

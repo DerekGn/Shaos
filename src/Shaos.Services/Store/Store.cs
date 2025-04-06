@@ -52,7 +52,7 @@ namespace Shaos.Services.Store
         /// <inheritdoc/>
         public async Task<int> CreatePlugInAsync(
             string name,
-            string? description,
+            string description,
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
@@ -141,6 +141,16 @@ namespace Shaos.Services.Store
                 .Set<T>()
                 .Where(_ => _.Id == id)
                 .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> ExistsAsync<T>(
+            int id,
+            CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            return await _context
+                .Set<T>()
+                .AnyAsync(_ => _.Id == id);
         }
 
         /// <inheritdoc/>
@@ -331,9 +341,11 @@ namespace Shaos.Services.Store
             {
                 if (sqliteException.SqliteErrorCode == 0x13)
                 {
-                    _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
+                    var message = $"Duplicate PlugIn Name: [{name}] exists";
 
-                    throw new PlugInNameExistsException(name);
+                    _logger.LogWarning(exception, message, name);
+
+                    throw new PlugInNameExistsException(name, message);
                 }
 
                 throw;

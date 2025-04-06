@@ -22,31 +22,35 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models
+using Microsoft.EntityFrameworkCore;
+
+namespace Shaos.Paging
 {
-    /// <summary>
-    /// Represents a PlugIn entity
-    /// </summary>
-    public class PlugIn : BaseEntity
+    public class PaginatedList<T> : List<T>
     {
-        /// <summary>
-        /// The description of this <see cref="PlugIn"/>
-        /// </summary>
-        public string Description { get; set; } = string.Empty;
+        public int PageIndex { get; private set; }
+        public int TotalPages { get; private set; }
 
-        /// <summary>
-        /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugInInstance"/>
-        /// </summary>
-        public ICollection<PlugInInstance> Instances { get; } = new List<PlugInInstance>();
+        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
+        {
+            PageIndex = pageIndex;
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
-        /// <summary>
-        /// The name of this <see cref="PlugIn"/>
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+            this.AddRange(items);
+        }
 
-        /// <summary>
-        /// The set of <see cref="Package"/> associated with this <see cref="PlugIn"/>
-        /// </summary>
-        public Package? Package { get; set; }
+        public bool HasPreviousPage => PageIndex > 1;
+
+        public bool HasNextPage => PageIndex < TotalPages;
+
+        public static async Task<PaginatedList<T>> CreateAsync(
+            IQueryable<T> source, int pageIndex, int pageSize)
+        {
+            var count = await source.CountAsync();
+            var items = await source.Skip(
+                (pageIndex - 1) * pageSize)
+                .Take(pageSize).ToListAsync();
+            return new PaginatedList<T>(items, count, pageIndex, pageSize);
+        }
     }
 }
