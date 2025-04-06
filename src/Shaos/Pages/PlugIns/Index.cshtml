@@ -75,7 +75,7 @@
                 @Html.DisplayFor(modelItem => item.Instances.Count)
             </td>
             <td>
-                Status: @(item.Package != null ? item.Package.ToString() : "Unassigned")
+                @(item.Package != null ? item.Package.ToString() : "Unassigned")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedDate)
