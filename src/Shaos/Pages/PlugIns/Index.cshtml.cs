@@ -43,13 +43,13 @@ namespace Shaos.Pages.PlugIns
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public string CurrentFilter { get; set; }
+        public string CurrentFilter { get; set; } = string.Empty;
 
-        public string CurrentSort { get; set; }
+        public string CurrentSort { get; set; } = string.Empty;
 
-        public string IdSort { get; set; }
+        public string IdSort { get; set; } = string.Empty;
 
-        public string NameSort { get; set; }
+        public string NameSort { get; set; } = string.Empty;
 
         public PaginatedList<PlugIn> PlugIns { get; set; } = default!;
 
@@ -105,7 +105,9 @@ namespace Shaos.Pages.PlugIns
             PlugIns = await PaginatedList<PlugIn>
                 .CreateAsync(
                     queryablePlugIns
-                        .AsNoTracking(), pageIndex ?? 1, pageSize);
+                        .AsNoTracking()
+                        .Include(_ => _.Package)
+                        .Include(_ => _.Instances), pageIndex ?? 1, pageSize);
         }
     }
 }
