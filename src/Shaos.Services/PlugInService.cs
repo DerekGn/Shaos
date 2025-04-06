@@ -99,7 +99,8 @@ namespace Shaos.Services
                 else
                 {
                     _logger.LogWarning("PlugIn [{Id}] still running", id);
-                    throw new PlugInInstanceRunningException(plugInInstanceId);
+                    
+                    throw new PlugInInstanceRunningException(plugInInstanceId, $"PlugIn [{id}] still running");
                 }
             },
             cancellationToken: cancellationToken);
@@ -114,7 +115,7 @@ namespace Shaos.Services
             {
                 _logger.LogWarning("PlugInInstance [{Id}] Running", id);
 
-                throw new PlugInInstanceRunningException(id);
+                throw new PlugInInstanceRunningException(id, $"PlugInInstance [{id}] Running");
             }
             else
             {

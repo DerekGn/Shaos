@@ -33,7 +33,7 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)

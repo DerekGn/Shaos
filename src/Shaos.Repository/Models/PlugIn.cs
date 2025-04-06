@@ -32,7 +32,7 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
-        public string? Description { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugInInstance"/>

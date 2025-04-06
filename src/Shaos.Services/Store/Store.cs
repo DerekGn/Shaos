@@ -331,9 +331,11 @@ namespace Shaos.Services.Store
             {
                 if (sqliteException.SqliteErrorCode == 0x13)
                 {
-                    _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
+                    var message = $"Duplicate PlugIn Name: [{name}] exists";
 
-                    throw new PlugInNameExistsException(name);
+                    _logger.LogWarning(exception, message, name);
+
+                    throw new PlugInNameExistsException(name, message);
                 }
 
                 throw;
