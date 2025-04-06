@@ -34,7 +34,6 @@ namespace Shaos.Pages.PlugIns
 {
     public class EditModel : PageModel
     {
-        private readonly ShaosDbContext _context;
         private readonly IStore _store;
 
         public EditModel(
@@ -42,7 +41,6 @@ namespace Shaos.Pages.PlugIns
             ShaosDbContext context)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         [BindProperty]
@@ -85,7 +83,7 @@ namespace Shaos.Pages.PlugIns
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PlugInExists(PlugIn.Id))
+                if (!await PlugInExistsAsync(PlugIn.Id))
                 {
                     return NotFound();
                 }
@@ -98,9 +96,9 @@ namespace Shaos.Pages.PlugIns
             return RedirectToPage("./Index");
         }
 
-        private bool PlugInExists(int id)
+        private async Task<bool> PlugInExistsAsync(int id)
         {
-            return _context.PlugIns.Any(e => e.Id == id);
+            return await _store.ExistsAsync<PlugIn>(id);
         }
     }
 }

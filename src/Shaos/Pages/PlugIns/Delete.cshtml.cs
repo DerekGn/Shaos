@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models;
 using Shaos.Services;
 using Shaos.Services.Exceptions;

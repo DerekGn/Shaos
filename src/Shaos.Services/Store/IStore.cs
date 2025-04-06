@@ -44,7 +44,7 @@ namespace Shaos.Services.Store
         /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<int> CreatePlugInAsync(
             string name,
-            string? description,
+            string description,
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -85,6 +85,14 @@ namespace Shaos.Services.Store
         /// <param name="id">The identifier of the <see cref="BaseEntity"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task DeleteAsync<T>(int id, CancellationToken cancellationToken = default) where T : BaseEntity;
+
+        /// <summary>
+        /// Determine if an entity exists
+        /// </summary>
+        /// <typeparam name="T">The entity type</typeparam>
+        /// <param name="id">The identifier of the entity</param>
+        /// <returns>True if the entity exists</returns>
+        Task<bool> ExistsAsync<T>(int id, CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
         /// Get the <see cref="LogLevelSwitch"/>
