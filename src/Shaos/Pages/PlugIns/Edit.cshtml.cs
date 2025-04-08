@@ -29,6 +29,7 @@ using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Store;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Pages.PlugIns
 {
@@ -45,6 +46,11 @@ namespace Shaos.Pages.PlugIns
 
         [BindProperty]
         public PlugIn PlugIn { get; set; } = default!;
+
+        [BindProperty]
+        public Package? Package { get; set; } = default!;
+
+        //[DisplayFormat(NullDisplayText = "Never connected")]
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {

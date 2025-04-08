@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Repository.Models
@@ -34,16 +35,19 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The fully qualified path to the PlugIn assembly
         /// </summary>
+        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public string AssemblyFile { get; set; } = string.Empty;
 
         /// <summary>
         /// The file name of the <see cref="Package"/>
         /// </summary>
+        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public string FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// The version of the <see cref="Package"/>
         /// </summary>
+        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public string Version { get; set; } = string.Empty;
 
         /// <inheritdoc/>

@@ -23,9 +23,39 @@
                 <input asp-for="PlugIn.Description" class="form-control" />
                 <span asp-validation-for="PlugIn.Description" class="text-danger"></span>
             </div>
+
             <input type="hidden" asp-for="PlugIn.Id" />
             <input type="hidden" asp-for="PlugIn.CreatedDate" />
             <input type="hidden" asp-for="PlugIn.UpdatedDate" />
+
+            <h4>Package</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package.AssemblyFile)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package.AssemblyFile)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package.FileName)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package.FileName)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package.Version)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package.Version)
+                </dd>
+                <dt class="col-sm-4">
+                    Upload Package
+                </dt>
+                <dd class="col-sm-6">
+                    <input type="file" />
+                </dd>
+            </dl>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
