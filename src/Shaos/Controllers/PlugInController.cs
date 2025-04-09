@@ -371,19 +371,19 @@ namespace Shaos.Controllers
 
             if (validationResult == FileValidationResult.FileNameEmpty)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, "File name is empty");
             }
             else if (validationResult == FileValidationResult.InvalidContentType)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.FileName}] invalid content type");
             }
             else if (validationResult == FileValidationResult.InvalidFileLength)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.FileName}] has invalid length");
             }
             else if (validationResult == FileValidationResult.InvalidFileName)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.FileName}] has invalid type");
             }
 
             return problemDetails == null;

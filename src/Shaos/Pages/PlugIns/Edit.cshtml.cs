@@ -29,7 +29,6 @@ using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Store;
-using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Pages.PlugIns
 {
@@ -47,19 +46,14 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn PlugIn { get; set; } = default!;
 
-        [BindProperty]
-        public Package? Package { get; set; } = default!;
-
-        //[DisplayFormat(NullDisplayText = "Never connected")]
-
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var plugin = await _store.GetPlugInByIdAsync(id.Value);
+            var plugin = await _store.GetPlugInByIdAsync(id.Value, cancellationToken: cancellationToken);
             if (plugin == null)
             {
                 return NotFound();
@@ -70,7 +64,7 @@ namespace Shaos.Pages.PlugIns
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +73,7 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _store.UpdatePlugInAsync(PlugIn.Id, PlugIn.Name, PlugIn.Description);
+                await _store.UpdatePlugInAsync(PlugIn.Id, PlugIn.Name, PlugIn.Description, cancellationToken);
             }
             catch (PlugInNameExistsException ex)
             {
@@ -89,7 +83,7 @@ namespace Shaos.Pages.PlugIns
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await PlugInExistsAsync(PlugIn.Id))
+                if (!await PlugInExistsAsync(PlugIn.Id, cancellationToken))
                 {
                     return NotFound();
                 }
@@ -102,9 +96,9 @@ namespace Shaos.Pages.PlugIns
             return RedirectToPage("./Index");
         }
 
-        private async Task<bool> PlugInExistsAsync(int id)
+        private async Task<bool> PlugInExistsAsync(int id, CancellationToken cancellationToken)
         {
-            return await _store.ExistsAsync<PlugIn>(id);
+            return await _store.ExistsAsync<PlugIn>(id, cancellationToken);
         }
     }
 }

@@ -1,0 +1,73 @@
+﻿@page
+@model Shaos.Pages.PlugIns.PackageModel
+
+@{
+    ViewData["Title"] = "Package";
+}
+
+<h1>Package</h1>
+
+<h4>PlugIn</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.PlugIn.Name)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.PlugIn.Name)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.PlugIn.Description)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.PlugIn.Description)
+                </dd>
+            </dl>
+            <h4>Package</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package.AssemblyFile)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package.AssemblyFile)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package.FileName)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package.FileName)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package.Version)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package.Version)
+                </dd>
+                <dt class="col-sm-4">
+                    Upload Package
+                </dt>
+                <dd class="col-sm-6">
+                    <input asp-for="PackageFile" type="file" />
+                </dd>
+            </dl>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

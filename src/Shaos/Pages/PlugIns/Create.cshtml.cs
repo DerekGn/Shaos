@@ -48,7 +48,7 @@ namespace Shaos.Pages.PlugIns
         public PlugIn PlugIn { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
         {
             ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.CreatedDate)}");
             ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.UpdatedDate)}");
@@ -60,7 +60,7 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _store.CreatePlugInAsync(PlugIn.Name, PlugIn.Description);
+                await _store.CreatePlugInAsync(PlugIn.Name, PlugIn.Description, cancellationToken);
 
                 return RedirectToPage("./Index");
             }

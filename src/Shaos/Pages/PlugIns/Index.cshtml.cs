@@ -57,7 +57,8 @@ namespace Shaos.Pages.PlugIns
             string sortOrder,
             string currentFilter,
             string searchString,
-            int? pageIndex)
+            int? pageIndex,
+            CancellationToken cancellationToken)
         {
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -107,7 +108,8 @@ namespace Shaos.Pages.PlugIns
                     queryablePlugIns
                         .AsNoTracking()
                         .Include(_ => _.Package)
-                        .Include(_ => _.Instances), pageIndex ?? 1, pageSize);
+                        .Include(_ => _.Instances), pageIndex ?? 1, pageSize,
+                    cancellationToken);
         }
     }
 }

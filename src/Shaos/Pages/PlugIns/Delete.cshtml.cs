@@ -47,14 +47,14 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var plugin = await _store.GetPlugInByIdAsync(id.Value);
+            var plugin = await _store.GetPlugInByIdAsync(id.Value, cancellationToken: cancellationToken);
 
             if (plugin == null)
             {
@@ -67,7 +67,7 @@ namespace Shaos.Pages.PlugIns
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
@@ -76,7 +76,7 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _plugInService.DeletePlugInAsync(id.Value);
+                await _plugInService.DeletePlugInAsync(id.Value, cancellationToken);
 
                 return RedirectToPage("./Index");
             }
