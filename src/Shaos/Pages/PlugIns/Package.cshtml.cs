@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Sdk;
 using Shaos.Services;
 using Shaos.Services.Validation;
 
@@ -34,9 +35,9 @@ namespace Shaos.Pages.PlugIns
 {
     public class PackageModel : PageModel
     {
+        private readonly ICodeFileValidationService _codeFileValidationService;
         private readonly ShaosDbContext _context;
         private readonly IPlugInService _plugInService;
-        private readonly ICodeFileValidationService _codeFileValidationService;
 
         public PackageModel(
             ShaosDbContext context,
@@ -49,13 +50,13 @@ namespace Shaos.Pages.PlugIns
         }
 
         [BindProperty]
-        public PlugIn PlugIn { get; set; } = default!;
-
-        [BindProperty]
         public Package Package { get; set; } = default!;
 
         [BindProperty]
         public IFormFile PackageFile { get; set; } = default!;
+
+        [BindProperty]
+        public PlugIn? PlugIn { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -64,7 +65,7 @@ namespace Shaos.Pages.PlugIns
                 return NotFound();
             }
 
-            var plugin =  await _context.PlugIns.FirstOrDefaultAsync(m => m.Id == id);
+            var plugin = await _context.PlugIns.FirstOrDefaultAsync(m => m.Id == id);
             if (plugin == null)
             {
                 return NotFound();
@@ -82,40 +83,87 @@ namespace Shaos.Pages.PlugIns
                 return Page();
             }
 
-            string? validation = null;
-
-            var validationResult = _codeFileValidationService.ValidateFile(PackageFile);
-
-            switch (validationResult)
-            {
-                case FileValidationResult.Success:
-                    break;
-                case FileValidationResult.FileNameEmpty:
-                    validation = "File name is empty";
-                    break;
-                case FileValidationResult.InvalidContentType:
-                    validation = $"File: [{PackageFile.FileName}] invalid content type";
-                    break;
-                case FileValidationResult.InvalidFileName:
-                    validation = $"File: [{PackageFile.Name}] has invalid length";
-                    break;
-                case FileValidationResult.InvalidFileLength:
-                    validation = $"File: [{PackageFile.Name}] has invalid type";
-                    break;
-                default:
-                    break;
-            }
+            string? validation = ValidatePackageFile(PackageFile);
 
             if (validation != null)
             {
                 ModelState.AddModelError(string.Empty, validation);
 
+                PlugIn = await _context!.PlugIns!.FirstOrDefaultAsync(m => m.Id == PlugIn!.Id, cancellationToken);
                 return Page();
             }
 
-            //var c = _plugInService.UploadPlugInPackageAsync();
+            string? packageValidation = await ValidatePackageAsync(cancellationToken);
+
+            if (packageValidation != null)
+            {
+                ModelState.AddModelError(string.Empty, packageValidation);
+
+                PlugIn = await _context!.PlugIns!.FirstOrDefaultAsync(m => m.Id == PlugIn!.Id, cancellationToken);
+                return Page();
+            }
 
             return RedirectToPage("./Index");
+        }
+
+        private string? ValidatePackageFile(IFormFile formFile)
+        {
+            var validationResult = _codeFileValidationService.ValidateFile(formFile);
+            string? validation = null;
+
+            switch (validationResult)
+            {
+                case FileValidationResult.Success:
+                    break;
+
+                case FileValidationResult.FileNameEmpty:
+                    validation = "File name is empty";
+                    break;
+
+                case FileValidationResult.InvalidContentType:
+                    validation = $"File: [{formFile.FileName}] invalid content type";
+                    break;
+
+                case FileValidationResult.InvalidFileName:
+                    validation = $"File: [{formFile.Name}] has invalid length";
+                    break;
+
+                case FileValidationResult.InvalidFileLength:
+                    validation = $"File: [{formFile.Name}] has invalid type";
+                    break;
+
+                default:
+                    break;
+            }
+
+            return validation;
+        }
+
+        private async Task<string?> ValidatePackageAsync(CancellationToken cancellationToken)
+        {
+            var packageUploadResult = await _plugInService
+               .UploadPlugInPackageAsync(PlugIn!.Id, PackageFile.FileName, PackageFile.OpenReadStream(), cancellationToken);
+
+            string? result = null;
+
+            switch (packageUploadResult)
+            {
+                case UploadPackageResult.Success:
+                    break;
+
+                case UploadPackageResult.NoValidPlugIn:
+                    result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
+                    break;
+
+                case UploadPackageResult.PlugInRunning:
+                    result = $"The PlugIn [{PlugIn.Name}] currently has running instances";
+                    break;
+
+                default:
+                    break;
+            }
+
+            return result;
         }
     }
 }

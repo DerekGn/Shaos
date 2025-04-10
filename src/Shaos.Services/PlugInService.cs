@@ -99,7 +99,7 @@ namespace Shaos.Services
                 else
                 {
                     _logger.LogWarning("PlugIn [{Id}] still running", id);
-                    
+
                     throw new PlugInInstanceRunningException(plugInInstanceId, $"PlugIn [{id}] still running");
                 }
             },
@@ -161,43 +161,34 @@ namespace Shaos.Services
                 }
                 else
                 {
-                    if (!_fileStoreService.PackageExists(packageFileName))
+                    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+
+                    await _fileStoreService.WritePackageFileStreamAsync(
+                        plugIn.Id,
+                        packageFileName,
+                        stream,
+                        cancellationToken);
+
+                    var plugInFile = _fileStoreService
+                        .ExtractPackage(packageFileName, plugIn.Id.ToString())
+                        .FirstOrDefault(_ => _.EndsWith(".PlugIn.dll", StringComparison.OrdinalIgnoreCase));
+
+                    if (plugInFile == null)
                     {
-                        _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
-
-                        await _fileStoreService.WritePackageFileStreamAsync(
-                            plugIn.Id,
-                            packageFileName,
-                            stream,
-                            cancellationToken);
-
-                        var plugInFile = _fileStoreService
-                            .ExtractPackage(packageFileName, plugIn.Id.ToString())
-                            .FirstOrDefault(_ => _.EndsWith(".PlugIn.dll", StringComparison.OrdinalIgnoreCase));
-
-                        if(plugInFile == null)
-                        {
-                            _logger.LogWarning("No valid PlugIn implementation found");
-                            result = UploadPackageResult.NoValidPlugIn;
-                        }
-                        else
-                        {
-                            if(AssemblyContainsPlugIn(plugInFile, out var version))
-                            {
-                                await CreateOrUpdatePlugInPackageAsync(
-                                    plugIn,
-                                    packageFileName,
-                                    Path.GetFileName(plugInFile),
-                                    version,
-                                    cancellationToken);
-                            }
-                        }
+                        _logger.LogWarning("No valid PlugIn implementation found");
+                        result = UploadPackageResult.NoValidPlugIn;
                     }
                     else
                     {
-                        _logger.LogInformation("PlugIn Package file already exists [{FileName}]", packageFileName);
-
-                        result = UploadPackageResult.PackageExists;
+                        if (AssemblyContainsPlugIn(plugInFile, out var version))
+                        {
+                            await CreateOrUpdatePlugInPackageAsync(
+                                plugIn,
+                                packageFileName,
+                                Path.GetFileName(plugInFile),
+                                version,
+                                cancellationToken);
+                        }
                     }
                 }
             },
@@ -325,6 +316,7 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotFoundException(id);
             }
         }
+
         private bool VerifyPlugState(PlugIn plugIn, InstanceState state)
         {
             bool result = false;

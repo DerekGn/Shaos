@@ -35,11 +35,6 @@ namespace Shaos.Services
         Success,
 
         /// <summary>
-        /// The package already exists
-        /// </summary>
-        PackageExists,
-
-        /// <summary>
         /// No valid PlugIn assembly was found
         /// </summary>
         NoValidPlugIn,
