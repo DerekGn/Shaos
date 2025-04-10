@@ -248,7 +248,7 @@ namespace Shaos.Services.UnitTests
             var result = await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
 
-            Assert.Equal(UploadPackageResult.NoValidPlugIn, result);
+            Assert.Equal(UploadPackageResult.NoValidPlugInFile, result);
 
             _mockFileStoreService
                 .Verify(_ => _.WritePackageFileStreamAsync(
@@ -371,6 +371,62 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task TestUploadPlugInPackageNoPlugInTypeAsync()
+        {
+            MemoryStream stream = new MemoryStream();
+
+            _mockStore
+                .Setup(_ => _.GetPlugInByIdAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugIn());
+
+            _mockFileStoreService
+                .Setup(_ => _.PackageExists(
+                    It.IsAny<string>()))
+                .Returns(false);
+
+            _mockFileStoreService
+                .Setup(_ => _.ExtractPackage(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(new List<string>()
+                {
+                    ".PlugIn.dll"
+                });
+
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
+                It.IsAny<string>()))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+
+            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
+                It.IsAny<string>()))
+                .Returns(typeof(Stream).Assembly);
+
+            var result = await _plugInService
+                .UploadPlugInPackageAsync(1, "filename", stream);
+
+            Assert.Equal(UploadPackageResult.NoValidPlugInType, result);
+
+            _mockFileStoreService
+                .Verify(_ => _.WritePackageFileStreamAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            _mockStore.Verify(_ => _.CreatePlugInPackageAsync(
+                It.IsAny<PlugIn>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+                Times.Never);
         }
 
         private void SetupPlugInGet(PlugIn plugIn)

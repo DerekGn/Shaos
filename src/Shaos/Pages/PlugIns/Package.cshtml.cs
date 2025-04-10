@@ -151,12 +151,16 @@ namespace Shaos.Pages.PlugIns
                 case UploadPackageResult.Success:
                     break;
 
-                case UploadPackageResult.NoValidPlugIn:
-                    result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
+                case UploadPackageResult.NoValidPlugInFile:
+                    result = $"No valid assembly file found [{PackageFile.FileName}]";
                     break;
 
                 case UploadPackageResult.PlugInRunning:
                     result = $"The PlugIn [{PlugIn.Name}] currently has running instances";
+                    break;
+
+                case UploadPackageResult.NoValidPlugInType:
+                    result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
                     break;
 
                 default:

@@ -336,11 +336,13 @@ namespace Shaos.Controllers
                         plugIn.Id,
                         plugIn.Name);
 
-                    return Accepted(await PlugInService.UploadPlugInPackageAsync(
+                    var uploadResult = await PlugInService.UploadPlugInPackageAsync(
                         plugIn.Id,
                         fileName,
                         formFile.OpenReadStream(),
-                        cancellationToken));
+                        cancellationToken);
+                    
+                    return uploadResult.ToActionResult();
                 }
                 else
                 {
