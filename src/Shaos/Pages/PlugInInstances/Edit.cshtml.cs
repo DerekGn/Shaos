@@ -8,35 +8,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Store;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class EditModel : PageModel
     {
-        private readonly Shaos.Repository.ShaosDbContext _context;
+        private readonly IStore _store;
 
-        public EditModel(Shaos.Repository.ShaosDbContext context)
+        public EditModel(IStore store)
         {
-            _context = context;
+            _store = store;
         }
 
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var plugininstance =  await _context.PlugInInstances.FirstOrDefaultAsync(m => m.Id == id);
+            var plugininstance = await _store.GetPlugInInstanceByIdAsync(id, cancellationToken);
             if (plugininstance == null)
             {
                 return NotFound();
             }
             PlugInInstance = plugininstance;
-           ViewData["PlugInId"] = new SelectList(_context.PlugIns, "Id", "Description");
             return Page();
         }
 
@@ -49,30 +49,8 @@ namespace Shaos.Pages.PlugInInstances
                 return Page();
             }
 
-            _context.Attach(PlugInInstance).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlugInInstanceExists(PlugInInstance.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
             return RedirectToPage("./Index");
-        }
-
-        private bool PlugInInstanceExists(int id)
-        {
-            return _context.PlugInInstances.Any(e => e.Id == id);
         }
     }
 }

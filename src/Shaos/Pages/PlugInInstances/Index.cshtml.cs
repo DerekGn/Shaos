@@ -44,7 +44,7 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
-        public PlugIn PlugIn { get;set; } = default!;
+        public int Id { get;set; } = default!;
 
         public async Task OnGetAsync(
             int id,
@@ -54,11 +54,7 @@ namespace Shaos.Pages.PlugInInstances
             int? pageIndex,
             CancellationToken cancellationToken = default)
         {
-            PlugIn = await _context
-                .PlugIns
-                .Where(_ => _.Id == id)
-                .AsNoTracking()
-                .FirstAsync(cancellationToken);
+            Id = id;
 
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";

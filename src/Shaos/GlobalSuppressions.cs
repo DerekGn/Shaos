@@ -9,3 +9,5 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Controllers")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Extensions")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Hosting")]
+[assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Pages.PlugInInstances")]
+[assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Pages.PlugIns")]
