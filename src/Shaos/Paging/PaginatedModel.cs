@@ -22,21 +22,26 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
-{
-    /// <summary>
-    /// Create a PlugIn attributes class
-    /// </summary>
-    public record CreatePlugIn
-    {
-        /// <summary>
-        /// The <see cref="PlugIn"/> description
-        /// </summary>
-        public string? Description { get; init; }
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
-        /// <summary>
-        /// The <see cref="PlugIn"/> name
-        /// </summary>
-        public string Name { get; init; } = string.Empty;
+namespace Shaos.Paging
+{
+    public class PaginatedModel<T> : PageModel where T : class
+    {
+        [BindProperty]
+        public string CurrentFilter { get; set; } = string.Empty;
+
+        [BindProperty]
+        public string CurrentSort { get; set; } = string.Empty;
+
+        [BindProperty]
+        public string IdSort { get; set; } = string.Empty;
+
+        [BindProperty]
+        public string NameSort { get; set; } = string.Empty;
+
+        [BindProperty]
+        public PaginatedList<T> List { get; set; } = default!;
     }
 }

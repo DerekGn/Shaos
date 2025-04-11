@@ -29,7 +29,6 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
-using System.Reflection.Metadata;
 
 namespace Shaos.Services
 {
@@ -58,7 +57,7 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(
             int id,
-            CreatePlugInInstance create,
+            PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default)
         {
             int result = 0;
@@ -68,9 +67,8 @@ namespace Shaos.Services
                 _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
 
                 result = await _store.CreatePlugInInstanceAsync(
-                    create.Name,
-                    create.Description,
                     plugIn,
+                    plugInInstance,
                     cancellationToken);
             },
             false,

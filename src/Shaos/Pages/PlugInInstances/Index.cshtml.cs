@@ -22,14 +22,15 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shaos.Paging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
-namespace Shaos.Pages.PlugIns
+namespace Shaos.Pages.PlugInInstances
 {
-    public class IndexModel : PaginatedModel<PlugIn>
+    public class IndexModel : PaginatedModel<PlugInInstance>
     {
         private readonly IConfiguration _configuration;
         private readonly ShaosDbContext _context;
@@ -42,13 +43,23 @@ namespace Shaos.Pages.PlugIns
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        [BindProperty]
+        public PlugIn PlugIn { get;set; } = default!;
+
         public async Task OnGetAsync(
+            int id,
             string sortOrder,
             string currentFilter,
             string searchString,
             int? pageIndex,
             CancellationToken cancellationToken = default)
         {
+            PlugIn = await _context
+                .PlugIns
+                .Where(_ => _.Id == id)
+                .AsNoTracking()
+                .FirstAsync(cancellationToken);
+
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             IdSort = sortOrder == nameof(PlugIn.Id) ? "id_desc" : nameof(PlugIn.Id);
@@ -64,8 +75,8 @@ namespace Shaos.Pages.PlugIns
 
             CurrentFilter = searchString;
 
-            IQueryable<PlugIn> queryable = from p in _context.PlugIns
-                                           select p;
+            IQueryable<PlugInInstance> queryable = from p in _context.PlugInInstances
+                                                   select p;
 
             var pageSize = _configuration.GetValue("PageSize", 5);
 
@@ -79,31 +90,21 @@ namespace Shaos.Pages.PlugIns
                 case "name_desc":
                     queryable = queryable.OrderByDescending(_ => _.Name);
                     break;
-
                 case nameof(PlugIn.Name):
                     queryable = queryable.OrderBy(_ => _.Name);
                     break;
-
                 case "ar_desc":
                     queryable = queryable.OrderByDescending(_ => _.Id);
                     break;
-
                 case nameof(PlugIn.Id):
                     queryable = queryable.OrderBy(_ => _.Id);
                     break;
-
                 default:
                     break;
             }
 
-            List = await PaginatedList<PlugIn>
-                .CreateAsync(
-                    queryable
-                        .AsNoTracking()
-                        .Include(_ => _.Package)
-                        .Include(_ => _.Instances)
-                        .AsNoTracking(), pageIndex ?? 1, pageSize,
-                    cancellationToken);
+            List = await PaginatedList<PlugInInstance>
+                .CreateAsync(queryable.AsNoTracking(), pageIndex ?? 1, pageSize, cancellationToken);
         }
     }
 }

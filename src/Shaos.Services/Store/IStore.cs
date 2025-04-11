@@ -36,31 +36,27 @@ namespace Shaos.Services.Store
         /// <summary>
         /// Create a new <see cref="PlugIn"/> instance
         /// </summary>
-        /// <param name="name">The <see cref="PlugIn"/> name</param>
-        /// <param name="description">The <see cref="PlugIn"/> description</param>
+        /// <param name="plugIn">The <see cref="PlugIn"/> to create</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<int> CreatePlugInAsync(
-            string name,
-            string description,
+            PlugIn plugIn,
             CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new <see cref="PlugInInstance"/> instance
         /// </summary>
-        /// <param name="name">The <see cref="PlugInInstance"/> name</param>
-        /// <param name="description">The <see cref="PlugInInstance"/> description</param>
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="PlugInInstance"/></param>
+        /// <param name="plugInInstance">The <see cref="PlugInInstance"/> instance to associate the <see cref="PlugIn"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="PlugInInstance"/> identifier</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
         Task<int> CreatePlugInInstanceAsync(
-            string name,
-            string description,
             PlugIn plugIn,
+            PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);
 
         /// <summary>

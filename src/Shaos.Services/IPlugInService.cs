@@ -32,13 +32,13 @@ namespace Shaos.Services
         /// <summary>
         /// Create an instance of a <see cref="PlugIn"/>
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/> to create the instance</param>
-        /// <param name="create">The create instance attributes</param>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/> to create the <see cref="PlugInInstance"/></param>
+        /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to create</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the created <see cref="PlugInInstance"/></returns>
         Task<int> CreatePlugInInstanceAsync(
             int id,
-            CreatePlugInInstance create,
+            PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);
 
         /// <summary>

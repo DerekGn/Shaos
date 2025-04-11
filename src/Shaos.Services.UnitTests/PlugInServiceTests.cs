@@ -68,14 +68,13 @@ namespace Shaos.Services.UnitTests
             SetupPlugInGet(new PlugIn());
 
             _mockStore.Setup(_ => _.CreatePlugInInstanceAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
                 It.IsAny<PlugIn>(),
+                It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
                 .Throws(() => new PlugInInstanceNameExistsException("name"));
 
             await Assert.ThrowsAsync<PlugInInstanceNameExistsException>(async () =>
-            await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
+            await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
             {
                 Description = "description",
                 Name = "name"
@@ -86,7 +85,7 @@ namespace Shaos.Services.UnitTests
         public async Task TestCreatePlugInInstancePlugInNotFoundAsync()
         {
             await Assert.ThrowsAsync<PlugInNotFoundException>(async () =>
-                await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
+                await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
                 {
                     Description = "description",
                     Name = "name"
@@ -100,13 +99,12 @@ namespace Shaos.Services.UnitTests
             SetupPlugInGet(new PlugIn());
 
             _mockStore.Setup(_ => _.CreatePlugInInstanceAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
                 It.IsAny<PlugIn>(),
+                It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(10);
 
-            var result = await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
+            var result = await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
             {
                 Description = "description",
                 Name = "name"

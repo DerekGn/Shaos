@@ -1,14 +1,14 @@
 ﻿@page
-@model Shaos.Pages.PlugIns.IndexModel
+@model Shaos.Pages.PlugInInstances.IndexModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>PlugIns</h1>
+<h1>PlugIn Instances</h1>
 
 <p>
-    <a asp-page="Create">Create New PlugIn</a>
+    <a asp-page="Create" asp-route-id="@Model.PlugIn.Id">Create New PlugIn Instance</a>
 </p>
 
 @{
@@ -30,14 +30,21 @@
     <thead>
         <tr>
             <th>
-                <a asp-page="./Index" asp-route-sortOrder="@Model.IdSort"
-                   asp-route-currentFilter="@Model.CurrentFilter">
+                @Html.DisplayNameFor(model => model.List[0].Enabled)
+            </th>
+            <th>
+                <a asp-page="./Index"
+                    asp-route-id="@Model.PlugIn.Id"
+                    asp-route-sortOrder="@Model.IdSort"
+                    asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Id)
                 </a>
             </th>
             <th>
-                <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
-                   asp-route-currentFilter="@Model.CurrentFilter">
+                <a asp-page="./Index" 
+                    asp-route-id="@Model.PlugIn.Id"
+                    asp-route-sortOrder="@Model.NameSort"
+                    asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Name)
                 </a>
             </th>
@@ -45,10 +52,7 @@
                 @Html.DisplayNameFor(model => model.List[0].Description)
             </th>
             <th>
-                Instances
-            </th>
-            <th>
-                Package
+                @Html.DisplayNameFor(model => model.List[0].PlugIn)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.List[0].CreatedDate)
@@ -63,6 +67,9 @@
 @foreach (var item in Model.List) {
         <tr>
             <td>
+                @Html.DisplayFor(modelItem => item.Enabled)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
@@ -72,12 +79,6 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Instances.Count)
-            </td>
-            <td>
-                @(item.Package != null ? item.Package.ToString() : "Unassigned")
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.CreatedDate)
             </td>
             <td>
@@ -85,9 +86,8 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-page="./Package" asp-route-id="@item.Id">Package</a> |
-                <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id">Instances</a>
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
@@ -100,6 +100,7 @@
 }
 
 <a asp-page="./Index"
+   asp-route-id="@Model.PlugIn.Id"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
@@ -107,9 +108,14 @@
     Previous
 </a>
 <a asp-page="./Index"
+   asp-route-id="@Model.PlugIn.Id"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
    class="btn btn-primary @nextDisabled">
     Next
+</a>
+
+<a asp-page="/PlugIns/Index" class="btn btn-primary">
+    Cancel
 </a>

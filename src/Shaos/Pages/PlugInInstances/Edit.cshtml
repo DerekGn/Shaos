@@ -1,0 +1,60 @@
+﻿@page
+@model Shaos.Pages.PlugInInstances.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>PlugInInstance</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="PlugInInstance.Enabled" /> @Html.DisplayNameFor(model => model.PlugInInstance.Enabled)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="PlugInInstance.Name" class="control-label"></label>
+                <input asp-for="PlugInInstance.Name" class="form-control" />
+                <span asp-validation-for="PlugInInstance.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PlugInInstance.Description" class="control-label"></label>
+                <input asp-for="PlugInInstance.Description" class="form-control" />
+                <span asp-validation-for="PlugInInstance.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PlugInInstance.PlugInId" class="control-label"></label>
+                <select asp-for="PlugInInstance.PlugInId" class="form-control" asp-items="ViewBag.PlugInId"></select>
+                <span asp-validation-for="PlugInInstance.PlugInId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PlugInInstance.CreatedDate" class="control-label"></label>
+                <input asp-for="PlugInInstance.CreatedDate" class="form-control" />
+                <span asp-validation-for="PlugInInstance.CreatedDate" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="PlugInInstance.Id" />
+            <div class="form-group">
+                <label asp-for="PlugInInstance.UpdatedDate" class="control-label"></label>
+                <input asp-for="PlugInInstance.UpdatedDate" class="form-control" />
+                <span asp-validation-for="PlugInInstance.UpdatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index" asp-route-id="@Model.PlugInInstance.PlugInId">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

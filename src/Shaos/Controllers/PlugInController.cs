@@ -34,7 +34,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Runtime.CompilerServices;
 
-using CreatePlugInInstanceApi = Shaos.Api.Model.v1.CreatePlugInInstance;
 using UpdatePlugInApi = Shaos.Api.Model.v1.UpdatePlugIn;
 using UpdatePlugInInstanceApi = Shaos.Api.Model.v1.UpdatePlugInInstance;
 
@@ -74,18 +73,15 @@ namespace Shaos.Controllers
             Description = CreateDescription,
             OperationId = "CreatePlugIn")]
         public async Task<ActionResult<int>> CreatePlugInAsync(
-            [FromBody, SwaggerParameter("A PlugIn create", Required = true)] Api.Model.v1.CreatePlugIn create,
+            [FromBody, SwaggerParameter("A PlugIn create", Required = true)] CreatePlugIn create,
             CancellationToken cancellationToken)
         {
-            var createModel = create.ToModel();
-
             var id = 0;
             
             try
             {
                 id = await Store.CreatePlugInAsync(
-                    createModel.Name,
-                    createModel.Description,
+                    create.ToPlugIn(),
                     cancellationToken);
 
                 return Ok(id);
@@ -109,7 +105,7 @@ namespace Shaos.Controllers
             OperationId = "CreatePlugInInstance")]
         public async Task<ActionResult<int>> CreatePlugInInstanceAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            [FromBody, SwaggerParameter("The PlugIn Instance Create", Required = true)] CreatePlugInInstanceApi create,
+            [FromBody, SwaggerParameter("The PlugIn Instance Create", Required = true)] CreatePlugInInstance create,
             CancellationToken cancellationToken)
         {
             return await GetPlugInOperationAsync(id, async (plugIn, CancellationToken) =>
@@ -120,7 +116,7 @@ namespace Shaos.Controllers
                 {
                     id = await PlugInService.CreatePlugInInstanceAsync(
                         plugIn.Id,
-                        create.ToModel(),
+                        create.ToPlugInInstance(),
                         cancellationToken);
 
                     return Ok(id);

@@ -51,19 +51,13 @@ namespace Shaos.Services.Store
 
         /// <inheritdoc/>
         public async Task<int> CreatePlugInAsync(
-            string name,
-            string description,
+            PlugIn plugIn,
             CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNull(plugIn);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugIn.Name);
 
-            var plugIn = new PlugIn()
-            {
-                Name = name,
-                Description = description
-            };
-
-            return await HandleDuplicatePlugInNameAsync(name, async () =>
+            return await HandleDuplicatePlugInNameAsync(plugIn.Name, async () =>
             {
                 await _context.PlugIns.AddAsync(plugIn, cancellationToken);
 
@@ -77,25 +71,20 @@ namespace Shaos.Services.Store
 
         /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(
-            string name,
-            string description,
             PlugIn plugIn,
+            PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
+            ArgumentNullException.ThrowIfNull(plugIn);
+            ArgumentNullException.ThrowIfNull(plugInInstance);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInInstance.Name);
 
-            var plugInInstance = new PlugInInstance()
-            {
-                Description = description,
-                Name = name,
-                PlugIn = plugIn,
-                PlugInId = plugIn.Id
-            };
+            plugInInstance.PlugIn = plugIn;
+            plugInInstance.PlugInId = plugIn.Id;
 
             plugIn.Instances.Add(plugInInstance);
 
-            return await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
+            return await HandleDuplicatePlugInInstanceNameAsync(plugInInstance.Name, async () =>
             {
                 await _context.SaveChangesAsync(cancellationToken);
 

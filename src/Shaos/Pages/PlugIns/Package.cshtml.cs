@@ -50,7 +50,7 @@ namespace Shaos.Pages.PlugIns
         }
 
         [BindProperty]
-        public Package Package { get; set; } = default!;
+        public Package? Package { get; set; } = default!;
 
         [BindProperty]
         public IFormFile PackageFile { get; set; } = default!;
@@ -58,7 +58,7 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn? PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
@@ -71,12 +71,14 @@ namespace Shaos.Pages.PlugIns
                 return NotFound();
             }
             PlugIn = plugin;
+            Package = plugin.Package;
+
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -139,7 +141,7 @@ namespace Shaos.Pages.PlugIns
             return validation;
         }
 
-        private async Task<string?> ValidatePackageAsync(CancellationToken cancellationToken)
+        private async Task<string?> ValidatePackageAsync(CancellationToken cancellationToken = default)
         {
             var packageUploadResult = await _plugInService
                .UploadPlugInPackageAsync(PlugIn!.Id, PackageFile.FileName, PackageFile.OpenReadStream(), cancellationToken);

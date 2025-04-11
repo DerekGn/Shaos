@@ -28,7 +28,7 @@ using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Store;
 
-namespace Shaos.Pages.PlugIns
+namespace Shaos.Pages.PlugInInstances
 {
     public class CreateModel : PageModel
     {
@@ -36,22 +36,27 @@ namespace Shaos.Pages.PlugIns
 
         public CreateModel(IStore store)
         {
-            _store = store ?? throw new ArgumentNullException(nameof(store));
-        }
-
-        public IActionResult OnGet()
-        {
-            return Page();
+            _store = store;
         }
 
         [BindProperty]
-        public PlugIn PlugIn { get; set; } = default!;
+        public PlugIn? PlugIn { get; set; } = default!;
+
+        [BindProperty]
+        public PlugInInstance PlugInInstance { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
+        {
+            PlugIn = await _store.GetPlugInByIdAsync(id, false, cancellationToken);
+
+            return Page();
+        }
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.CreatedDate)}");
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.UpdatedDate)}");
+            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.CreatedDate)}");
+            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.UpdatedDate)}");
 
             if (!ModelState.IsValid)
             {
@@ -60,16 +65,16 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _store.CreatePlugInAsync(PlugIn, cancellationToken);
-
-                return RedirectToPage("./Index");
+                await _store.CreatePlugInInstanceAsync(PlugIn!, PlugInInstance, cancellationToken);
             }
-            catch (PlugInNameExistsException ex)
+            catch (PlugInInstanceNameExistsException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
 
                 return Page();
             }
+
+            return RedirectToPage("./Index", new { id = PlugIn!.Id.ToString() });
         }
     }
 }
