@@ -54,5 +54,20 @@ namespace Shaos.Services.Repositories
             string name,
             string description,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update a <see cref="Package"/> instance
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
+        /// <param name="fileName">The file name of the <see cref="Package"/></param>
+        /// <param name="assemblyFile">The <see cref="PlugIn"/> assembly</param>
+        /// <param name="version">The <see cref="Package"/> assembly version</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task UpdatePlugInPackageAsync(
+            PlugIn plugIn,
+            string fileName,
+            string assemblyFile,
+            string version,
+            CancellationToken cancellationToken = default);
     }
 }

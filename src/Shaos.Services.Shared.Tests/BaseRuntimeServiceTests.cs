@@ -55,7 +55,8 @@ namespace Shaos.Services.Shared.Tests
             plugInInstance = new PlugInInstance()
             {
                 Id = 2,
-                Name = "test"
+                Name = "test",
+                Description = "description"
             };
         }
 

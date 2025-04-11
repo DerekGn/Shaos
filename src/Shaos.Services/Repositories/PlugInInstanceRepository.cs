@@ -66,6 +66,29 @@ namespace Shaos.Services.Repositories
             });
         }
 
+        /// <inheritdoc/>
+        public async Task UpdatePlugInInstanceAsync(
+            int id,
+            string name,
+            string description,
+            CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
+
+            var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+
+            await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
+            {
+                plugInInstance.Name = name;
+                plugInInstance.Description = description;
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return plugInInstance;
+            });
+        }
+
         private async Task<T> HandleDuplicatePlugInInstanceNameAsync<T>(string name, Func<Task<T>> operation)
         {
             try
@@ -84,6 +107,5 @@ namespace Shaos.Services.Repositories
                 throw;
             }
         }
-
     }
 }

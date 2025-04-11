@@ -40,12 +40,12 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The name of this <see cref="PlugInInstance"/>
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public required string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// The description of the <see cref="PlugInInstance"/>
         /// </summary>
-        public string? Description {  get; set; }
+        public required string Description {  get; set; } = string.Empty;
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]

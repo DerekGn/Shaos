@@ -42,5 +42,20 @@ namespace Shaos.Services.Repositories
             PlugIn plugIn,
             PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update a <see cref="PlugInInstance"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
+        /// <param name="name">The updated name for the <see cref="PlugInInstance"/></param>
+        /// <param name="description">The updated description of the <see cref="PlugInInstance"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
+        Task UpdatePlugInInstanceAsync(
+            int id,
+            string name,
+            string description,
+            CancellationToken cancellationToken);
     }
 }

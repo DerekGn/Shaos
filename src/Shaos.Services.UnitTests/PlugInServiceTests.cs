@@ -162,7 +162,9 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(new PlugInInstance()
             {
-                Id = 10
+                Id = 10,
+                Name = "Test",
+                Description = "description"
             });
 
             SetupPlugInGet(plugIn);
@@ -191,7 +193,9 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(new PlugInInstance()
             {
-                Id = 10
+                Id = 10,
+                Name = "Test",
+                Description = "description"
             });
 
             SetupPlugInGet(plugIn);
@@ -224,7 +228,11 @@ namespace Shaos.Services.UnitTests
             _mockStore.Setup(_ => _.GetPlugInInstanceByIdAsync(
                 It.IsAny<int>(),
                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugInInstance());
+                .ReturnsAsync(new PlugInInstance() 
+                { 
+                    Name = "name",
+                    Description = "description"
+                });
 
             var result = await _plugInService.SetPlugInInstanceEnableAsync(10, state);
 
@@ -325,7 +333,9 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(new PlugInInstance()
             {
-                Id = 1
+                Id = 1,
+                Name = "name",
+                Description = "description"
             });
 
             _mockStore

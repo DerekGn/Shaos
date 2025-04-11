@@ -86,6 +86,28 @@ namespace Shaos.Services.Repositories
             });
         }
 
+        /// <inheritdoc/>
+        public async Task UpdatePlugInPackageAsync(
+            PlugIn plugIn,
+            string fileName,
+            string assemblyFile,
+            string version,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(fileName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFile);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(version);
+
+            if (plugIn.Package != null)
+            {
+                plugIn.Package.FileName = fileName;
+                plugIn.Package.AssemblyFile = assemblyFile;
+                plugIn.Package.Version = version;
+
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
         private async Task<T> HandleDuplicatePlugInNameAsync<T>(string name, Func<Task<T>> operation)
         {
             try
