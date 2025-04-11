@@ -139,7 +139,7 @@ namespace Shaos.Services.Store
         {
             return await _context
                 .Set<T>()
-                .AnyAsync(_ => _.Id == id);
+                .AnyAsync(_ => _.Id == id, cancellationToken);
         }
 
         /// <inheritdoc/>
