@@ -38,5 +38,21 @@ namespace Shaos.Services.Repositories
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<int> CreatePlugInAsync(PlugIn plugIn, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update a <see cref="PlugIn"/> instance
+        /// </summary>
+        /// <param name="id">The <see cref="PlugIn"/> identifier</param>
+        /// <param name="name">The <see cref="PlugIn"/> name</param>
+        /// <param name="description">The <see cref="PlugIn"/> description</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The <see cref="PlugIn"/> if found and updates are applied</returns>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
+        Task<PlugIn?> UpdatePlugInAsync(
+            int id,
+            string name,
+            string description,
+            CancellationToken cancellationToken = default);
     }
 }

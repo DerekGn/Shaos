@@ -33,8 +33,8 @@ namespace Shaos.Services.Repositories
 {
     public class PlugInRepository : IPlugInRepository
     {
-        private readonly ILogger<PlugInRepository> _logger;
         private readonly ShaosDbContext _context;
+        private readonly ILogger<PlugInRepository> _logger;
 
         public PlugInRepository(
             ILogger<PlugInRepository> logger,
@@ -60,6 +60,29 @@ namespace Shaos.Services.Repositories
                 _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
 
                 return plugIn.Id;
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task<PlugIn?> UpdatePlugInAsync(
+            int id,
+            string name,
+            string description,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
+
+            var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInNotFoundException(id);
+
+            return await HandleDuplicatePlugInNameAsync(name, async () =>
+            {
+                plugIn.Name = name;
+                plugIn.Description = description;
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return plugIn;
             });
         }
 

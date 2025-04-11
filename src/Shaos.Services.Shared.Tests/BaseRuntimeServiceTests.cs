@@ -42,8 +42,11 @@ namespace Shaos.Services.Shared.Tests
         {
             plugIn = new PlugIn()
             {
-                Id = 1
+                Id = 1,
+                Name = "plugin",
+                Description = "description"
             };
+
             plugIn.Package = new Package()
             {
                 AssemblyFile = BaseTestFixture.AssemblyFileName

@@ -31,7 +31,6 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using Shaos.Services.Store;
 using Shaos.Test.PlugIn;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -65,7 +64,11 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestCreatePlugInInstanceDuplicateNameAsync()
         {
-            SetupPlugInGet(new PlugIn());
+            SetupPlugInGet(new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            });
 
             _mockStore.Setup(_ => _.CreatePlugInInstanceAsync(
                 It.IsAny<string>(),
@@ -97,7 +100,11 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestCreatePlugInInstanceSuccessAsync()
         {
-            SetupPlugInGet(new PlugIn());
+            SetupPlugInGet(new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            });
 
             _mockStore.Setup(_ => _.CreatePlugInInstanceAsync(
                 It.IsAny<string>(),
@@ -147,7 +154,11 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInRunningAsync()
         {
-            var plugIn = new PlugIn();
+            var plugIn = new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            };
 
             plugIn.Instances.Add(new PlugInInstance()
             {
@@ -173,6 +184,8 @@ namespace Shaos.Services.UnitTests
         {
             var plugIn = new PlugIn()
             {
+                Name = "plugin",
+                Description = "description",
                 Package = new Package()
             };
 
@@ -230,7 +243,8 @@ namespace Shaos.Services.UnitTests
 
             _mockStore
                 .Setup(_ => _.GetPlugInByIdAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugIn());
+                .ReturnsAsync(new PlugIn()
+                { Name = "plugin", Description = "description" });
 
             _mockFileStoreService
                 .Setup(_ => _.PackageExists(It.IsAny<string>()))
@@ -265,7 +279,7 @@ namespace Shaos.Services.UnitTests
 
             _mockStore
                 .Setup(_ => _.GetPlugInByIdAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugIn());
+                .ReturnsAsync(new PlugIn() { Name = "plugin", Description = "description" });
 
             _mockFileStoreService
                 .Setup(_ => _.PackageExists(It.IsAny<string>()))
@@ -307,7 +321,7 @@ namespace Shaos.Services.UnitTests
         {
             MemoryStream stream = new MemoryStream();
 
-            var plugIn = new PlugIn();
+            var plugIn = new PlugIn() { Name = "plugin", Description = "description" };
 
             plugIn.Instances.Add(new PlugInInstance()
             {
@@ -362,7 +376,7 @@ namespace Shaos.Services.UnitTests
                     It.IsAny<int>(),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugIn());
+                .ReturnsAsync(new PlugIn() { Name = "plugin", Description = "description" });
 
             _mockFileStoreService
                 .Setup(_ => _.PackageExists(
