@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,35 +22,35 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 
-namespace Shaos.Repository.Models
+namespace Shaos.Paging
 {
-    /// <summary>
-    /// A <see cref="Package"/> for a <see cref="PlugIn"/>
-    /// </summary>
-    public class Package : PlugInChildBase
+    public class PaginatedList<T> : List<T>
     {
-        /// <summary>
-        /// The fully qualified path to the PlugIn assembly
-        /// </summary>
-        public string AssemblyFile { get; set; } = string.Empty;
+        public int PageIndex { get; private set; }
+        public int TotalPages { get; private set; }
 
-        /// <summary>
-        /// The file name of the <see cref="Package"/>
-        /// </summary>
-        public string FileName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The version of the <see cref="Package"/>
-        /// </summary>
-        public string Version { get; set; } = string.Empty;
-
-        /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        public override string ToString()
+        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
-            return $"{nameof(FileName)}: {FileName} {nameof(Version)}: {Version}";
+            PageIndex = pageIndex;
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            this.AddRange(items);
+        }
+
+        public bool HasPreviousPage => PageIndex > 1;
+
+        public bool HasNextPage => PageIndex < TotalPages;
+
+        public static async Task<PaginatedList<T>> CreateAsync(
+            IQueryable<T> source, int pageIndex, int pageSize)
+        {
+            var count = await source.CountAsync();
+            var items = await source.Skip(
+                (pageIndex - 1) * pageSize)
+                .Take(pageSize).ToListAsync();
+            return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
     }
 }
