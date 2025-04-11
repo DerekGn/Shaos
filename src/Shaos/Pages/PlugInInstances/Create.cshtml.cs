@@ -40,14 +40,14 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
-        public PlugIn? PlugIn { get; set; } = default!;
+        public int Id { get; set; } = default!;
 
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
+        public IActionResult OnGetAsync(int id)
         {
-            PlugIn = await _store.GetPlugInByIdAsync(id, false, cancellationToken);
+            Id = id;
 
             return Page();
         }
@@ -65,7 +65,9 @@ namespace Shaos.Pages.PlugInInstances
 
             try
             {
-                await _store.CreatePlugInInstanceAsync(PlugIn!, PlugInInstance, cancellationToken);
+                var plugIn = await _store.GetPlugInByIdAsync(Id, false, cancellationToken);
+
+                await _store.CreatePlugInInstanceAsync(plugIn!, PlugInInstance, cancellationToken);
             }
             catch (PlugInInstanceNameExistsException ex)
             {
@@ -74,7 +76,7 @@ namespace Shaos.Pages.PlugInInstances
                 return Page();
             }
 
-            return RedirectToPage("./Index", new { id = PlugIn!.Id.ToString() });
+            return RedirectToPage("./Index", new { id = Id.ToString() });
         }
     }
 }
