@@ -40,6 +40,14 @@ namespace Shaos.Services.Repositories
         Task<int> CreatePlugInAsync(PlugIn plugIn, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete a <see cref="PlugIn"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The number of rows deleted</returns>
+        Task<int> DeletePlugInAsync(int id, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Update a <see cref="PlugIn"/> instance
         /// </summary>
         /// <param name="id">The <see cref="PlugIn"/> identifier</param>

@@ -26,6 +26,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
+using Shaos.Repository.Extensions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 
@@ -67,11 +68,17 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
+        public Task DeletePlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return _context.Set<PlugInInstance>().DeleteAsync(id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task UpdatePlugInInstanceAsync(
             int id,
             string name,
             string description,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(description);

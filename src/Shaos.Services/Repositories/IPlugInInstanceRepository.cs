@@ -44,6 +44,16 @@ namespace Shaos.Services.Repositories
             CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete a <see cref="PlugInInstance"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/> to delete</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The number of rows deleted</returns>
+        Task DeletePlugInInstanceAsync(
+            int id,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Update a <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
@@ -56,6 +66,6 @@ namespace Shaos.Services.Repositories
             int id,
             string name,
             string description,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }
