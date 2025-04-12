@@ -24,6 +24,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Shaos.Repository.Extensions
 {
@@ -43,6 +45,54 @@ namespace Shaos.Repository.Extensions
         public static Task<int> DeleteAsync<T>(this DbSet<T> set, int id, CancellationToken cancellationToken = default) where T : BaseEntity
         {
             return set.Where(_ => _.Id == id).ExecuteDeleteAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="IAsyncEnumerable{T}"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type</typeparam>
+        /// <param name="set">The <see cref="DbSet{TEntity}"/> to delete the entity from</param>
+        /// <param name="filter">The filter expression to apply to the set</param>
+        /// <param name="orderBy">The order expression to apply to the set</param>
+        /// <param name="includeProperties">The set of include properties</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The <see cref="IAsyncEnumerable{T}"/></returns>
+        public static async IAsyncEnumerable<T> Get<T>(
+            this DbSet<T> set,
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            List<string>? includeProperties = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            IQueryable<T> query = set;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            IAsyncEnumerable<T> enumerable;
+            if (orderBy != null)
+            {
+                enumerable = orderBy(query).AsAsyncEnumerable();
+            }
+            else
+            {
+                enumerable = query.AsAsyncEnumerable();
+            }
+
+            await foreach (var item in enumerable.WithCancellation(cancellationToken))
+            {
+                yield return item;
+            }
         }
     }
 }
