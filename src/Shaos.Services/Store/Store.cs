@@ -139,7 +139,8 @@ namespace Shaos.Services.Store
         {
             return await _context
                 .Set<T>()
-                .AnyAsync(_ => _.Id == id, cancellationToken);
+                .AnyAsync(_ => _.Id == id,
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -283,10 +284,7 @@ namespace Shaos.Services.Store
             LogEventLevel level,
             CancellationToken cancellationToken = default)
         {
-            var logLevelSwitch = await _context
-                .LogLevelSwitches
-                .SingleAsync(_ => _.Name == name,
-                cancellationToken);
+            var logLevelSwitch = await _context.LogLevelSwitches.SingleAsync(_ => _.Name == name, cancellationToken);
 
             if(logLevelSwitch != null)
             {
@@ -298,8 +296,7 @@ namespace Shaos.Services.Store
                 {
                     Name = name,
                     Level = level
-                },
-                cancellationToken);
+                }, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -22,42 +22,31 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+using Serilog.Events;
+using Shaos.Repository.Models;
 
-namespace Shaos.Repository.Models
+namespace Shaos.Services.Repositories
 {
-    /// <summary>
-    /// Represents a configured instance of a <see cref="PlugIn"/>
-    /// </summary>
-    public class PlugInInstance : PlugInChildBase
+    public interface ILogLevelRepository
     {
         /// <summary>
-        /// Indicates if the <see cref="PlugInInstance"/> is enabled
+        /// Upsert a <see cref="LogLevelSwitch"/>
         /// </summary>
-        public bool Enabled { get; set; } = false;
+        /// <param name="name">The name of the <see cref="LogLevelSwitch"/> to upsert</param>
+        /// <param name="level">The <see cref="LogEventLevel"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The upserted <see cref="LogLevelSwitch"/></returns>
+        Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(
+            string name,
+            LogEventLevel level,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// The name of this <see cref="PlugInInstance"/>
+        /// Get the <see cref="LogLevelSwitch"/>
         /// </summary>
-        public required string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The description of the <see cref="PlugInInstance"/>
-        /// </summary>
-        public required string Description {  get; set; } = string.Empty;
-
-        /// <inheritdoc/>
-        [ExcludeFromCodeCoverage]
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.Append($"{nameof(Name)}: {Name} ");
-            stringBuilder.Append($"{nameof(Description)}: {Description??string.Empty} ");
-            stringBuilder.Append($"{nameof(Enabled)}: {Enabled}");
-
-            return stringBuilder.ToString();
-        }
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
+        IAsyncEnumerable<LogLevelSwitch> GetLogLevelSwitchesAsync(
+            CancellationToken cancellationToken = default);
     }
 }

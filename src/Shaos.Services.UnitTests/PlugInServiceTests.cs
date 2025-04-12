@@ -31,7 +31,6 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using Shaos.Services.Store;
 using Shaos.Test.PlugIn;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -65,16 +64,21 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestCreatePlugInInstanceDuplicateNameAsync()
         {
-            SetupPlugInGet(new PlugIn());
+            SetupPlugInGet(new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            });
 
             _mockStore.Setup(_ => _.CreatePlugInInstanceAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<PlugIn>(),
-                It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
                 .Throws(() => new PlugInInstanceNameExistsException("name"));
 
             await Assert.ThrowsAsync<PlugInInstanceNameExistsException>(async () =>
-            await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
+            await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
             {
                 Description = "description",
                 Name = "name"
@@ -85,7 +89,7 @@ namespace Shaos.Services.UnitTests
         public async Task TestCreatePlugInInstancePlugInNotFoundAsync()
         {
             await Assert.ThrowsAsync<PlugInNotFoundException>(async () =>
-                await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
+                await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
                 {
                     Description = "description",
                     Name = "name"
@@ -96,15 +100,20 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestCreatePlugInInstanceSuccessAsync()
         {
-            SetupPlugInGet(new PlugIn());
+            SetupPlugInGet(new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            });
 
             _mockStore.Setup(_ => _.CreatePlugInInstanceAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
                 It.IsAny<PlugIn>(),
-                It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(10);
 
-            var result = await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
+            var result = await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
             {
                 Description = "description",
                 Name = "name"
@@ -145,11 +154,17 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInRunningAsync()
         {
-            var plugIn = new PlugIn();
+            var plugIn = new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            };
 
             plugIn.Instances.Add(new PlugInInstance()
             {
-                Id = 10
+                Id = 10,
+                Name = "Test",
+                Description = "description"
             });
 
             SetupPlugInGet(plugIn);
@@ -171,12 +186,16 @@ namespace Shaos.Services.UnitTests
         {
             var plugIn = new PlugIn()
             {
+                Name = "plugin",
+                Description = "description",
                 Package = new Package()
             };
 
             plugIn.Instances.Add(new PlugInInstance()
             {
-                Id = 10
+                Id = 10,
+                Name = "Test",
+                Description = "description"
             });
 
             SetupPlugInGet(plugIn);
@@ -209,7 +228,11 @@ namespace Shaos.Services.UnitTests
             _mockStore.Setup(_ => _.GetPlugInInstanceByIdAsync(
                 It.IsAny<int>(),
                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugInInstance());
+                .ReturnsAsync(new PlugInInstance() 
+                { 
+                    Name = "name",
+                    Description = "description"
+                });
 
             var result = await _plugInService.SetPlugInInstanceEnableAsync(10, state);
 
@@ -222,13 +245,49 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public async Task TestUploadPlugInPackageExistsAsync()
+        {
+            MemoryStream stream = new MemoryStream();
+
+            _mockStore
+                .Setup(_ => _.GetPlugInByIdAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugIn()
+                { Name = "plugin", Description = "description" });
+
+            _mockFileStoreService
+                .Setup(_ => _.PackageExists(It.IsAny<string>()))
+                .Returns(true);
+
+            var result = await _plugInService
+                .UploadPlugInPackageAsync(1, "filename", stream);
+
+            Assert.Equal(UploadPackageResult.PackageExists, result);
+
+            _mockFileStoreService
+                .Verify(_ => _.WritePackageFileStreamAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>()),
+                    Times.Never);
+
+            _mockStore.Verify(_ => _.CreatePlugInPackageAsync(
+                It.IsAny<PlugIn>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
         public async Task TestUploadPlugInPackageNoValidPlugInAsync()
         {
             MemoryStream stream = new MemoryStream();
 
             _mockStore
                 .Setup(_ => _.GetPlugInByIdAsync(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugIn());
+                .ReturnsAsync(new PlugIn() { Name = "plugin", Description = "description" });
 
             _mockFileStoreService
                 .Setup(_ => _.PackageExists(It.IsAny<string>()))
@@ -246,7 +305,7 @@ namespace Shaos.Services.UnitTests
             var result = await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
 
-            Assert.Equal(UploadPackageResult.NoValidPlugInFile, result);
+            Assert.Equal(UploadPackageResult.NoValidPlugIn, result);
 
             _mockFileStoreService
                 .Verify(_ => _.WritePackageFileStreamAsync(
@@ -270,11 +329,13 @@ namespace Shaos.Services.UnitTests
         {
             MemoryStream stream = new MemoryStream();
 
-            var plugIn = new PlugIn();
+            var plugIn = new PlugIn() { Name = "plugin", Description = "description" };
 
             plugIn.Instances.Add(new PlugInInstance()
             {
-                Id = 1
+                Id = 1,
+                Name = "name",
+                Description = "description"
             });
 
             _mockStore
@@ -325,7 +386,7 @@ namespace Shaos.Services.UnitTests
                     It.IsAny<int>(),
                     It.IsAny<bool>(),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugIn());
+                .ReturnsAsync(new PlugIn() { Name = "plugin", Description = "description" });
 
             _mockFileStoreService
                 .Setup(_ => _.PackageExists(
@@ -369,62 +430,6 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
-        }
-
-        [Fact]
-        public async Task TestUploadPlugInPackageNoPlugInTypeAsync()
-        {
-            MemoryStream stream = new MemoryStream();
-
-            _mockStore
-                .Setup(_ => _.GetPlugInByIdAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugIn());
-
-            _mockFileStoreService
-                .Setup(_ => _.PackageExists(
-                    It.IsAny<string>()))
-                .Returns(false);
-
-            _mockFileStoreService
-                .Setup(_ => _.ExtractPackage(
-                    It.IsAny<string>(),
-                    It.IsAny<string>()))
-                .Returns(new List<string>()
-                {
-                    ".PlugIn.dll"
-                });
-
-            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
-                It.IsAny<string>()))
-                .Returns(_mockRuntimeAssemblyLoadContext.Object);
-
-            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
-                It.IsAny<string>()))
-                .Returns(typeof(Stream).Assembly);
-
-            var result = await _plugInService
-                .UploadPlugInPackageAsync(1, "filename", stream);
-
-            Assert.Equal(UploadPackageResult.NoValidPlugInType, result);
-
-            _mockFileStoreService
-                .Verify(_ => _.WritePackageFileStreamAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Stream>(),
-                    It.IsAny<CancellationToken>()),
-                    Times.Once);
-
-            _mockStore.Verify(_ => _.CreatePlugInPackageAsync(
-                It.IsAny<PlugIn>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()),
-                Times.Never);
         }
 
         private void SetupPlugInGet(PlugIn plugIn)
