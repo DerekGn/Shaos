@@ -25,8 +25,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Services;
+using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
-using Shaos.Services.Store;
 using Swashbuckle.AspNetCore.Annotations;
 
 using InstanceApi = Shaos.Api.Model.v1.Instance;
@@ -37,13 +37,15 @@ namespace Shaos.Controllers
     public class RuntimeController : BasePlugInController
     {
         private const string InstanceIdentifier = "The Instance identifier";
+
         private readonly IRuntimeService _runtimeService;
 
         public RuntimeController(
             ILogger<RuntimeController> logger,
-            IStore store,
             IPlugInService plugInService,
-            IRuntimeService runtimeService) : base(logger, store, plugInService)
+            IRuntimeService runtimeService,
+            IPlugInRepository plugInRepository,
+            IPlugInInstanceRepository plugInInstanceRepository) : base(logger, plugInService, plugInRepository, plugInInstanceRepository)
         {
             _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
         }
@@ -94,8 +96,10 @@ namespace Shaos.Controllers
                 [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id,
                 CancellationToken cancellationToken)
         {
-            var plugInInstance = await Store
-                .GetPlugInInstanceByIdAsync(id, cancellationToken);
+            var plugInInstance = await PlugInInstanceRepository
+                .GetByIdAsync(id, 
+                includeProperties: ["PlugIn"],
+                cancellationToken: cancellationToken);
 
             if (plugInInstance == null)
             {
@@ -114,28 +118,16 @@ namespace Shaos.Controllers
 
         [HttpPut("{id}/stop")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "A ExecutingInstance will be stopped")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The ExecutingInstance is not currently executing")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
             Summary = "Stop an Instance",
-            Description = "Stop an Instance", OperationId = "StopInstance")]
-        public async Task<ActionResult> StopInstanceAsync(
-            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id,
-            CancellationToken cancellationToken)
+            Description = "Stop an Instance",
+            OperationId = "StopInstance")]
+        public ActionResult StopInstance(
+            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
         {
-            var plugInInstance = await Store
-                .GetPlugInInstanceByIdAsync(id, cancellationToken);
-
-            if (plugInInstance == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                _runtimeService
-                    .StopInstance(plugInInstance.Id);
-            }
+            _runtimeService.StopInstance(id);
 
             return Accepted();
         }

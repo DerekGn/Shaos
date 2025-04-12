@@ -34,6 +34,7 @@ using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
+using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
 using Shaos.Services.System;
@@ -139,6 +140,8 @@ namespace Shaos
             // Application defined services
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
+            builder.Services.AddScoped<IPlugInInstanceRepository, PlugInInstanceRepository>();
+            builder.Services.AddScoped<IPlugInRepository, PlugInRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IStore, Store>();
 

@@ -71,6 +71,20 @@ namespace Shaos.Services.Repositories
             CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Get a <see cref="PlugInInstance"/> by identifier
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugInInstance"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A <see cref="PlugInInstance"/> instance if found</returns>
+        Task<PlugInInstance?> GetByIdAsync(
+            int id,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Update a <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>

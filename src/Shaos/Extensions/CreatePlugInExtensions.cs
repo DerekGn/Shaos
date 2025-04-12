@@ -22,18 +22,18 @@
 * SOFTWARE.
 */
 
-using CreatePlugInApi = Shaos.Api.Model.v1.CreatePlugIn;
-using CreatePlugInModel = Shaos.Services.CreatePlugIn;
+using Shaos.Api.Model.v1;
+using PlugIn = Shaos.Repository.Models.PlugIn;
 
 namespace Shaos.Extensions
 {
     internal static class CreatePlugInExtensions
     {
-        internal static CreatePlugInModel ToModel(this CreatePlugInApi createPlugIn)
+        internal static PlugIn ToModel(this CreatePlugIn createPlugIn)
         {
-            return new CreatePlugInModel()
+            return new PlugIn()
             {
-                Description = createPlugIn?.Description,
+                Description = createPlugIn.Description,
                 Name = createPlugIn!.Name
             };
         }

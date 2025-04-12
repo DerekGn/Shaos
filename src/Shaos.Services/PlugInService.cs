@@ -27,9 +27,9 @@ using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
+using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Store;
-using System.Reflection;
 
 namespace Shaos.Services
 {
@@ -40,16 +40,19 @@ namespace Shaos.Services
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly IRuntimeService _runtimeService;
         private readonly IStore _store;
+        private readonly IPlugInInstanceRepository _repository;
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IStore store,
+            IPlugInInstanceRepository repository,
             IRuntimeService runtimeService,
             IFileStoreService fileStoreService,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _store = store ?? throw new ArgumentNullException(nameof(store));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
             _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
@@ -58,7 +61,7 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(
             int id,
-            CreatePlugInInstance create,
+            PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default)
         {
             int result = 0;
@@ -67,10 +70,9 @@ namespace Shaos.Services
             {
                 _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
 
-                result = await _store.CreatePlugInInstanceAsync(
-                    create.Name,
-                    create.Description,
+                result = await _repository.CreatePlugInInstanceAsync(
                     plugIn,
+                    plugInInstance,
                     cancellationToken);
             },
             false,

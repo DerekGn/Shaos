@@ -42,7 +42,8 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The description of the instance
         /// </summary>
+        [Required]
         [StringLength(ModelConstants.MaxDescriptionLength)]
-        public string? Description { get; init; }
+        public required string Description { get; init; }
     }
 }

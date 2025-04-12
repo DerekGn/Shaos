@@ -88,6 +88,18 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
+        public Task<PlugInInstance?> GetByIdAsync(
+            int id,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null,
+            CancellationToken cancellationToken = default)
+        {
+            return _context
+                .Set<PlugInInstance>()
+                .GetByIdAsync(id, withNoTracking, includeProperties, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task UpdatePlugInInstanceAsync(
             int id,
             string name,

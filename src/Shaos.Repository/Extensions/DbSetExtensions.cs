@@ -102,5 +102,30 @@ namespace Shaos.Repository.Extensions
                 yield return item;
             }
         }
+
+        public static async Task<T?> GetByIdAsync<T>(
+            this DbSet<T> set,
+            int id,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null,
+            CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            IQueryable<T> query = set.Where(_ => _.Id == id);
+
+            if (withNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }
