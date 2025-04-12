@@ -70,7 +70,7 @@ namespace Shaos.Services
                 _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
 
                 result = await _plugInInstanceRepository
-                .CreatePlugInInstanceAsync(
+                .CreateAsync(
                     plugIn,
                     plugInInstance,
                     cancellationToken);

@@ -79,7 +79,7 @@ namespace Shaos.Controllers
 
             try
             {
-                var plugInId = await PlugInRepository.CreatePlugInAsync(
+                var plugInId = await PlugInRepository.CreateAsync(
                     create.ToModel(),
                     cancellationToken);
 
@@ -279,7 +279,7 @@ namespace Shaos.Controllers
         {
             try
             {
-                await PlugInRepository.UpdatePlugInAsync(
+                await PlugInRepository.UpdateAsync(
                     id,
                     update.Name,
                     update.Description,
@@ -314,7 +314,7 @@ namespace Shaos.Controllers
         {
             try
             {
-                await PlugInInstanceRepository.UpdatePlugInInstanceAsync(
+                await PlugInInstanceRepository.UpdateAsync(
                     id,
                     update.Name,
                     update.Description,

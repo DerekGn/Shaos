@@ -140,6 +140,7 @@ namespace Shaos
             // Application defined services
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
+            builder.Services.AddScoped<ILoggingConfigurationRepository, LoggingConfigurationRepository>();
             builder.Services.AddScoped<IPlugInInstanceRepository, PlugInInstanceRepository>();
             builder.Services.AddScoped<IPlugInRepository, PlugInRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();

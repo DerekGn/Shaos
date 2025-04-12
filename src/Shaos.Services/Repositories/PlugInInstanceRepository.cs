@@ -45,7 +45,7 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInInstanceAsync(
+        public async Task<int> CreateAsync(
             PlugIn plugIn,
             PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default)
@@ -70,6 +70,12 @@ namespace Shaos.Services.Repositories
         public Task DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             return Context.Set<PlugInInstance>().DeleteAsync(id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await Context.Set<PlugInInstance>().AnyAsync(_ => _.Id == id, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -98,7 +104,7 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task UpdatePlugInInstanceAsync(
+        public async Task UpdateAsync(
             int id,
             string name,
             string description,

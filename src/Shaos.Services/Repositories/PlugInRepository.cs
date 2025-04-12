@@ -64,7 +64,7 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInAsync(
+        public async Task<int> CreateAsync(
             PlugIn plugIn,
             CancellationToken cancellationToken = default)
         {
@@ -112,7 +112,7 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<PlugIn?> UpdatePlugInAsync(
+        public async Task<PlugIn?> UpdateAsync(
             int id,
             string name,
             string description,
@@ -135,7 +135,7 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task UpdatePlugInPackageAsync(
+        public async Task UpdatePackageAsync(
             PlugIn plugIn,
             string fileName,
             string assemblyFile,
@@ -173,6 +173,12 @@ namespace Shaos.Services.Repositories
 
                 throw;
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await Context.Set<PlugIn>().AnyAsync(_ => _.Id == id, cancellationToken);
         }
     }
 }

@@ -25,22 +25,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Store;
+using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugIns
 {
     public class EditModel : PageModel
     {
-        private readonly IStore _store;
+        private readonly IPlugInRepository _repository;
 
         public EditModel(
-            IStore store,
-            ShaosDbContext context)
+            IPlugInRepository repository)
         {
-            _store = store ?? throw new ArgumentNullException(nameof(store));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         [BindProperty]
@@ -53,7 +51,7 @@ namespace Shaos.Pages.PlugIns
                 return NotFound();
             }
 
-            var plugin = await _store.GetPlugInByIdAsync(id.Value, cancellationToken: cancellationToken);
+            var plugin = await _repository.GetByIdAsync(id.Value, cancellationToken: cancellationToken);
             if (plugin == null)
             {
                 return NotFound();
@@ -73,7 +71,7 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _store.UpdatePlugInAsync(PlugIn.Id, PlugIn.Name, PlugIn.Description, cancellationToken);
+                await _repository.UpdateAsync(PlugIn.Id, PlugIn.Name, PlugIn.Description, cancellationToken);
             }
             catch (PlugInNameExistsException ex)
             {
@@ -83,7 +81,7 @@ namespace Shaos.Pages.PlugIns
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await PlugInExistsAsync(PlugIn.Id, cancellationToken))
+                if (!await _repository.ExistsAsync(PlugIn.Id, cancellationToken))
                 {
                     return NotFound();
                 }
@@ -94,11 +92,6 @@ namespace Shaos.Pages.PlugIns
             }
 
             return RedirectToPage("./Index");
-        }
-
-        private async Task<bool> PlugInExistsAsync(int id, CancellationToken cancellationToken)
-        {
-            return await _store.ExistsAsync<PlugIn>(id, cancellationToken);
         }
     }
 }

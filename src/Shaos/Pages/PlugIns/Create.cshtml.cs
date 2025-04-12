@@ -26,17 +26,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Repositories;
 using Shaos.Services.Store;
 
 namespace Shaos.Pages.PlugIns
 {
     public class CreateModel : PageModel
     {
-        private readonly IStore _store;
+        private readonly IPlugInRepository _repository;
 
-        public CreateModel(IStore store)
+        public CreateModel(IPlugInRepository repository)
         {
-            _store = store ?? throw new ArgumentNullException(nameof(store));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         public IActionResult OnGet()
@@ -60,7 +61,7 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _store.CreatePlugInAsync(PlugIn, cancellationToken);
+                await _repository.CreateAsync(PlugIn, cancellationToken);
 
                 return RedirectToPage("./Index");
             }

@@ -69,7 +69,7 @@ namespace Shaos.Services.UnitTests
         {
             SetupPlugInGetByIdAsync();
 
-            _mockPlugInInstanceRepository.Setup(_ => _.CreatePlugInInstanceAsync(
+            _mockPlugInInstanceRepository.Setup(_ => _.CreateAsync(
                 It.IsAny<PlugIn>(),
                 It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
@@ -100,7 +100,7 @@ namespace Shaos.Services.UnitTests
         {
             SetupPlugInGetByIdAsync();
 
-            _mockPlugInInstanceRepository.Setup(_ => _.CreatePlugInInstanceAsync(
+            _mockPlugInInstanceRepository.Setup(_ => _.CreateAsync(
                 It.IsAny<PlugIn>(),
                 It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))

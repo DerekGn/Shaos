@@ -31,6 +31,16 @@ namespace Shaos.Services.Repositories
     public interface IPlugInRepository : IBaseRepository
     {
         /// <summary>
+        /// Create a new <see cref="PlugIn"/> instance
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
+        Task<int> CreateAsync(PlugIn plugIn, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Create a new <see cref="Package"/> instance
         /// </summary>
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
@@ -41,17 +51,6 @@ namespace Shaos.Services.Repositories
             PlugIn plugIn,
             Package package,
             CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Create a new <see cref="PlugIn"/> instance
-        /// </summary>
-        /// <param name="plugIn">The <see cref="PlugIn"/> </param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
-        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
-        Task<int> CreatePlugInAsync(PlugIn plugIn, CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Delete a <see cref="PlugIn"/>
         /// </summary>
@@ -59,6 +58,14 @@ namespace Shaos.Services.Repositories
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>
         Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Determine if a <see cref="PlugIn"/> with <paramref name="id"/> exists in the store
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>True if the <see cref="PlugIn"/> exists</returns>
+        Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 
@@ -100,7 +107,7 @@ namespace Shaos.Services.Repositories
         /// <returns>The <see cref="PlugIn"/> if found and updates are applied</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
-        Task<PlugIn?> UpdatePlugInAsync(
+        Task<PlugIn?> UpdateAsync(
             int id,
             string name,
             string description,
@@ -114,7 +121,7 @@ namespace Shaos.Services.Repositories
         /// <param name="assemblyFile">The <see cref="PlugIn"/> assembly</param>
         /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task UpdatePlugInPackageAsync(
+        Task UpdatePackageAsync(
             PlugIn plugIn,
             string fileName,
             string assemblyFile,
