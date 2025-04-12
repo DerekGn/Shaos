@@ -22,25 +22,31 @@
 * SOFTWARE.
 */
 
+using Serilog.Events;
 using Shaos.Repository.Models;
-using System.ComponentModel.DataAnnotations;
 
-namespace Shaos.Services
+namespace Shaos.Services.Repositories
 {
-    public class UpdatePlugIn
+    public interface ILoggingConfigurationRepository
     {
         /// <summary>
-        /// The name of this <see cref="PlugIn"/>
+        /// Upsert a <see cref="LogLevelSwitch"/>
         /// </summary>
-        [Required]
-        [StringLength(ModelConstants.MaxNameLength)]
-        public string Name { get; init; } = string.Empty;
+        /// <param name="name">The name of the <see cref="LogLevelSwitch"/> to upsert</param>
+        /// <param name="level">The <see cref="LogEventLevel"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The upserted <see cref="LogLevelSwitch"/></returns>
+        Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(
+            string name,
+            LogEventLevel level,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// The description of this <see cref="PlugIn"/>
+        /// Get the <see cref="LogLevelSwitch"/>
         /// </summary>
-        [Required]
-        [StringLength(ModelConstants.MaxDescriptionLength)]
-        public string? Description { get; init; } = string.Empty;
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
+        IAsyncEnumerable<LogLevelSwitch> GetLogLevelSwitchesAsync(
+            CancellationToken cancellationToken = default);
     }
 }

@@ -22,17 +22,17 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
 using CreatePlugInInstanceApi = Shaos.Api.Model.v1.CreatePlugInInstance;
+using PlugInInstanceModel = Shaos.Repository.Models.PlugInInstance;
 
 namespace Shaos.Extensions
 {
     internal static class CreatePlugInInstanceExtensions
     {
-        internal static PlugInInstance ToPlugInInstance(
+        internal static PlugInInstanceModel ToModel(
             this CreatePlugInInstanceApi createPlugInInstance)
         {
-            return new PlugInInstance()
+            return new PlugInInstanceModel()
             {
                 Description = createPlugInInstance.Description,
                 Name = createPlugInInstance.Name

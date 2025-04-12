@@ -28,14 +28,12 @@ using Shaos.Api.Model.v1;
 using Shaos.Extensions;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Repositories;
 using Shaos.Services.Store;
 using Shaos.Services.Validation;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Runtime.CompilerServices;
-
-using UpdatePlugInApi = Shaos.Api.Model.v1.UpdatePlugIn;
-using UpdatePlugInInstanceApi = Shaos.Api.Model.v1.UpdatePlugInInstance;
 
 namespace Shaos.Controllers
 {
@@ -55,9 +53,10 @@ namespace Shaos.Controllers
 
         public PlugInController(
             ILogger<PlugInController> logger,
-            IStore store,
             IPlugInService plugInService,
-            ICodeFileValidationService codeFileValidationService) : base(logger, store, plugInService)
+            IPlugInRepository plugInRepository,
+            IPlugInInstanceRepository plugInInstanceRepository,
+            ICodeFileValidationService codeFileValidationService) : base(logger, plugInService, plugInRepository, plugInInstanceRepository)
         {
             _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
         }
@@ -77,14 +76,14 @@ namespace Shaos.Controllers
             CancellationToken cancellationToken)
         {
             var id = 0;
-            
+
             try
             {
-                id = await Store.CreatePlugInAsync(
-                    create.ToPlugIn(),
+                var plugInId = await PlugInRepository.CreatePlugInAsync(
+                    create.ToModel(),
                     cancellationToken);
 
-                return Ok(id);
+                return Ok(plugInId);
             }
             catch (PlugInNameExistsException)
             {
@@ -96,7 +95,7 @@ namespace Shaos.Controllers
 
         [HttpPost("{id}/instances")]
         [SwaggerResponse(StatusCodes.Status201Created, "The PlugIn Instance identifier", Type = typeof(int))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
+        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
@@ -108,31 +107,33 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("The PlugIn Instance Create", Required = true)] CreatePlugInInstance create,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn, CancellationToken) =>
+            try
             {
-                var id = 0;
+                var plugInId = await PlugInService.CreatePlugInInstanceAsync(
+                    id,
+                    create.ToModel(),
+                    cancellationToken);
 
-                try
-                {
-                    id = await PlugInService.CreatePlugInInstanceAsync(
-                        plugIn.Id,
-                        create.ToPlugInInstance(),
-                        cancellationToken);
-
-                    return Ok(id);
-                }
-                catch (PlugInInstanceNameExistsException)
-                {
-                    return base.Conflict(CreateProblemDetails(
+                return Ok(plugInId);
+            }
+            catch (PlugInNotFoundException ex)
+            {
+                return NotFound(
+                    CreateProblemDetails(
+                        HttpStatusCode.NotFound, ex.Message));
+            }
+            catch (PlugInInstanceNameExistsException)
+            {
+                return Conflict(
+                    CreateProblemDetails(
                         HttpStatusCode.Conflict,
                         $"A PlugInInstance with name [{create.Name}] already exists"));
-                }
-            },
-            cancellationToken);
+            }
         }
 
         [HttpDelete("{id}")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn will be deleted")]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "An instance of the PlugIn is running", Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
@@ -143,13 +144,23 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            await PlugInService.DeletePlugInAsync(id, cancellationToken);
+            try
+            {
+                await PlugInService.DeletePlugInAsync(id, cancellationToken);
 
-            return Accepted();
+                return Accepted();
+            }
+            catch (PlugInInstanceRunningException ex)
+            {
+                return BadRequest(
+                    CreateProblemDetails(
+                        HttpStatusCode.BadRequest, ex.Message));
+            }
         }
 
         [HttpDelete("instances/{id}")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn Instance will be deleted")]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "The PlugIn Instance is still running", Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
@@ -160,13 +171,18 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn, CancellationToken) =>
+            try
             {
                 await PlugInService.DeletePlugInInstanceAsync(id, cancellationToken);
 
                 return Accepted();
-            },
-            cancellationToken);
+            }
+            catch (PlugInInstanceRunningException ex)
+            {
+                return BadRequest(
+                    CreateProblemDetails(
+                        HttpStatusCode.BadRequest, ex.Message));
+            }
         }
 
         [HttpGet("{id}")]
@@ -182,11 +198,16 @@ namespace Shaos.Controllers
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, (plugIn) =>
+            var plugIn = await PlugInInstanceRepository.GetByIdAsync(id, includeProperties: [], cancellationToken: cancellationToken);
+
+            if (plugIn != null)
             {
                 return Ok(plugIn.ToApi());
-            },
-            cancellationToken);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         [HttpGet]
@@ -200,7 +221,12 @@ namespace Shaos.Controllers
         public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            await foreach (var item in Store.GetPlugInsAsync(cancellationToken))
+            var plugIns = PlugInRepository
+                .GetAsync(
+                    includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)],
+                    cancellationToken: cancellationToken);
+
+            await foreach (var item in plugIns)
             {
                 yield return item.ToApi();
             }
@@ -223,9 +249,9 @@ namespace Shaos.Controllers
             try
             {
                 await PlugInService.SetPlugInInstanceEnableAsync(
-                id,
-                state,
-                cancellationToken);
+                    id,
+                    state,
+                    cancellationToken);
 
                 return Ok();
             }
@@ -248,12 +274,12 @@ namespace Shaos.Controllers
             OperationId = "UpdatePlugIn")]
         public async Task<ActionResult<PlugIn>> UpdatePlugInAsync(
             [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInApi update,
+            [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugIn update,
             CancellationToken cancellationToken)
         {
             try
             {
-                await Store.UpdatePlugInAsync(
+                await PlugInRepository.UpdatePlugInAsync(
                     id,
                     update.Name,
                     update.Description,
@@ -283,12 +309,12 @@ namespace Shaos.Controllers
             OperationId = "UpdatePlugInInstance")]
         public async Task<ActionResult> UpdatePlugInInstanceAsync(
             [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
-            [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInInstanceApi update,
+            [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInInstance update,
             CancellationToken cancellationToken)
         {
             try
             {
-                await Store.UpdatePlugInInstanceAsync(
+                await PlugInInstanceRepository.UpdatePlugInInstanceAsync(
                     id,
                     update.Name,
                     update.Description,
@@ -298,7 +324,9 @@ namespace Shaos.Controllers
             }
             catch (PlugInInstanceNameExistsException)
             {
-                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugInInstance with name [{update.Name}] already exists"));
+                return Conflict(
+                    CreateProblemDetails(
+                        HttpStatusCode.Conflict, $"A PlugInInstance with name [{update.Name}] already exists"));
             }
             catch (PlugInInstanceNotFoundException)
             {
@@ -309,7 +337,7 @@ namespace Shaos.Controllers
         [HttpPut("{id}/upload")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn package is uploaded, extracted and verified", Type = typeof(UploadPackageResult))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Indicates if there was a problem with the upload file", Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
+        [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
@@ -321,31 +349,32 @@ namespace Shaos.Controllers
             IFormFile formFile,
             CancellationToken cancellationToken)
         {
-            return await GetPlugInOperationAsync(id, async (plugIn, cancellationToken) =>
+            if (ValidateFormFile(formFile, out var problemDetails))
             {
-                if (ValidateFormFile(formFile, out var problemDetails))
+                var fileName = Path.GetFileName(formFile.FileName);
+
+                Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}]", fileName, id);
+
+                try
                 {
-                    var fileName = Path.GetFileName(formFile.FileName);
-
-                    Logger.LogDebug("Uploading File: [{FileName}] to PlugIn Id: [{Id}] Name: [{Name}]", 
-                        fileName,
-                        plugIn.Id,
-                        plugIn.Name);
-
-                    var uploadResult = await PlugInService.UploadPlugInPackageAsync(
-                        plugIn.Id,
+                    return Accepted(await PlugInService.UploadPlugInPackageAsync(
+                        id,
                         fileName,
                         formFile.OpenReadStream(),
-                        cancellationToken);
-                    
-                    return uploadResult.ToActionResult();
+                        cancellationToken));
                 }
-                else
+                catch (PlugInNotFoundException ex)
                 {
-                    return BadRequest(problemDetails);
+                    return NotFound(
+                        CreateProblemDetails(
+                            HttpStatusCode.NotFound,
+                            ex.Message));
                 }
-            },
-            cancellationToken);
+            }
+            else
+            {
+                return BadRequest(problemDetails);
+            }
         }
 
         private static ProblemDetails CreateProblemDetails(
@@ -369,19 +398,19 @@ namespace Shaos.Controllers
 
             if (validationResult == FileValidationResult.FileNameEmpty)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, "File name is empty");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
             }
             else if (validationResult == FileValidationResult.InvalidContentType)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.FileName}] invalid content type");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
             }
             else if (validationResult == FileValidationResult.InvalidFileLength)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.FileName}] has invalid length");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
             }
             else if (validationResult == FileValidationResult.InvalidFileName)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.FileName}] has invalid type");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
             }
 
             return problemDetails == null;

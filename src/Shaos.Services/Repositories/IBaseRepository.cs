@@ -22,31 +22,10 @@
 * SOFTWARE.
 */
 
-using Shaos.Services;
-using Shaos.Services.Repositories;
-
-namespace Shaos.Controllers
+namespace Shaos.Services.Repositories
 {
-    public abstract class BasePlugInController : CoreController
+    public interface IBaseRepository
     {
-        internal const string IdentifierNotFound = "A PlugIn with identifier was not found";
-        internal const string PluginNotFound = "The PlugIn could not be found";
-
-        protected BasePlugInController(
-            ILogger<BasePlugInController> logger,
-            IPlugInService plugInService,
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository) : base(logger)
-        {
-            PlugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
-            PlugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
-            PlugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
-        }
-
-        public IPlugInService PlugInService { get; }
-
-        public IPlugInRepository PlugInRepository { get; }
-
-        public IPlugInInstanceRepository PlugInInstanceRepository { get; }
+        Task SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

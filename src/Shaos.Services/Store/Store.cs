@@ -139,7 +139,8 @@ namespace Shaos.Services.Store
         {
             return await _context
                 .Set<T>()
-                .AnyAsync(_ => _.Id == id, cancellationToken);
+                .AnyAsync(_ => _.Id == id,
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -298,8 +299,7 @@ namespace Shaos.Services.Store
                 {
                     Name = name,
                     Level = level
-                },
-                cancellationToken);
+                }, cancellationToken);
             }
 
             await _context.SaveChangesAsync(cancellationToken);

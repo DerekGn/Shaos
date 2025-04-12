@@ -22,23 +22,22 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
+using Shaos.Repository;
 
-namespace Shaos.Services
+namespace Shaos.Services.Repositories
 {
-    /// <summary>
-    /// The updated properties for the <see cref="PlugIn"/> instance
-    /// </summary>
-    public class UpdatePlugInInstance
+    public abstract class BaseRepository
     {
-        /// <summary>
-        /// The name of the instance
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
+        protected readonly ShaosDbContext Context;
 
-        /// <summary>
-        /// The description of the instance
-        /// </summary>
-        public string Description { get; set; } = string.Empty;
+        protected BaseRepository(ShaosDbContext context)
+        {
+            Context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            await Context.SaveChangesAsync(cancellationToken);
+        }
     }
 }
