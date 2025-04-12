@@ -53,7 +53,6 @@ namespace Shaos.Controllers
 
         public PlugInController(
             ILogger<PlugInController> logger,
-            IStore store,
             IPlugInService plugInService,
             IPlugInRepository plugInRepository,
             IPlugInInstanceRepository plugInInstanceRepository,

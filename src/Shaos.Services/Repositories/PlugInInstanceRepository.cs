@@ -33,17 +33,15 @@ using System.Linq.Expressions;
 
 namespace Shaos.Services.Repositories
 {
-    public class PlugInInstanceRepository : IPlugInInstanceRepository
+    public class PlugInInstanceRepository : BaseRepository, IPlugInInstanceRepository
     {
-        private readonly ShaosDbContext _context;
         private readonly ILogger<PlugInInstanceRepository> _logger;
 
         public PlugInInstanceRepository(
             ILogger<PlugInInstanceRepository> logger,
-            ShaosDbContext context)
+            ShaosDbContext context) : base(context)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <inheritdoc/>
@@ -62,16 +60,16 @@ namespace Shaos.Services.Repositories
 
             return await HandleDuplicatePlugInInstanceNameAsync(plugInInstance.Name, async () =>
             {
-                await _context.SaveChangesAsync(cancellationToken);
+                await Context.SaveChangesAsync(cancellationToken);
 
                 return plugInInstance.Id;
             });
         }
 
         /// <inheritdoc/>
-        public Task DeletePlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-            return _context.Set<PlugInInstance>().DeleteAsync(id, cancellationToken);
+            return Context.Set<PlugInInstance>().DeleteAsync(id, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -82,7 +80,7 @@ namespace Shaos.Services.Repositories
             List<string>? includeProperties = null,
             CancellationToken cancellationToken = default)
         {
-            return _context
+            return Context
                 .Set<PlugInInstance>()
                 .GetAsync(withNoTracking, filter, orderBy, includeProperties, cancellationToken);
         }
@@ -94,7 +92,7 @@ namespace Shaos.Services.Repositories
             List<string>? includeProperties = null,
             CancellationToken cancellationToken = default)
         {
-            return _context
+            return Context
                 .Set<PlugInInstance>()
                 .GetByIdAsync(id, withNoTracking, includeProperties, cancellationToken);
         }
@@ -109,14 +107,14 @@ namespace Shaos.Services.Repositories
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
 
-            var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+            var plugInInstance = await Context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
             await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
             {
                 plugInInstance.Name = name;
                 plugInInstance.Description = description;
 
-                await _context.SaveChangesAsync(cancellationToken);
+                await Context.SaveChangesAsync(cancellationToken);
 
                 return plugInInstance;
             });
