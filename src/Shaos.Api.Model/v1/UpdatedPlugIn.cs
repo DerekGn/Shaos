@@ -42,7 +42,8 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
+        [Required]
         [StringLength(ModelConstants.MaxDescriptionLength)]
-        public string? Description { get; init; }
+        public required string Description { get; init; }
     }
 }

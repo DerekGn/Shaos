@@ -22,10 +22,8 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc;
-using Shaos.Repository.Models;
 using Shaos.Services;
-using Shaos.Services.Store;
+using Shaos.Services.Repositories;
 
 namespace Shaos.Controllers
 {
@@ -36,53 +34,19 @@ namespace Shaos.Controllers
 
         protected BasePlugInController(
             ILogger<BasePlugInController> logger,
-            IStore store,
-            IPlugInService plugInService) : base(logger)
+            IPlugInService plugInService,
+            IPlugInRepository plugInRepository,
+            IPlugInInstanceRepository plugInInstanceRepository) : base(logger)
         {
-            Store = store ?? throw new ArgumentNullException(nameof(store));
             PlugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
+            PlugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
+            PlugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
         }
 
         public IPlugInService PlugInService { get; }
 
-        public IStore Store { get; }
+        public IPlugInRepository PlugInRepository { get; }
 
-        internal async Task<ActionResult> GetPlugInOperationAsync(
-            int id,
-            Func<PlugIn, CancellationToken, Task<ActionResult>> operation,
-            CancellationToken cancellationToken)
-        {
-            var plugIn = await Store.GetPlugInByIdAsync(
-                id,
-                cancellationToken: cancellationToken);
-
-            if (plugIn == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return await operation(plugIn, cancellationToken);
-            }
-        }
-
-        internal async Task<ActionResult> GetPlugInOperationAsync(
-            int id,
-            Func<PlugIn, ActionResult> operation,
-            CancellationToken cancellationToken)
-        {
-            var plugIn = await Store.GetPlugInByIdAsync(
-                id,
-                cancellationToken: cancellationToken);
-
-            if (plugIn == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return operation(plugIn);
-            }
-        }
+        public IPlugInInstanceRepository PlugInInstanceRepository { get; }
     }
 }

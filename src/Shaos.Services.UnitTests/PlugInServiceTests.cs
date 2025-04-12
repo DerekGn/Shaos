@@ -27,6 +27,7 @@ using Moq;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
+using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Shared.Tests;
 using Shaos.Services.Store;
@@ -38,9 +39,10 @@ namespace Shaos.Services.UnitTests
 {
     public class PlugInServiceTests : BaseTests
     {
-        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
+        private readonly Mock<IPlugInInstanceRepository> _mockRepository;
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
+        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly Mock<IRuntimeService> _mockRuntimeService;
         private readonly Mock<IStore> _mockStore;
         private readonly PlugInService _plugInService;
@@ -51,11 +53,13 @@ namespace Shaos.Services.UnitTests
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockRuntimeService = new Mock<IRuntimeService>();
+            _mockRepository = new Mock<IPlugInInstanceRepository>();
             _mockStore = new Mock<IStore>();
 
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
                 _mockStore.Object,
+                _mockRepository.Object,
                 _mockRuntimeService.Object,
                 _mockFileStoreService.Object,
                 _mockRuntimeAssemblyLoadContextFactory.Object);
@@ -78,7 +82,7 @@ namespace Shaos.Services.UnitTests
                 .Throws(() => new PlugInInstanceNameExistsException("name"));
 
             await Assert.ThrowsAsync<PlugInInstanceNameExistsException>(async () =>
-            await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
+            await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
             {
                 Description = "description",
                 Name = "name"
@@ -89,7 +93,7 @@ namespace Shaos.Services.UnitTests
         public async Task TestCreatePlugInInstancePlugInNotFoundAsync()
         {
             await Assert.ThrowsAsync<PlugInNotFoundException>(async () =>
-                await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
+                await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
                 {
                     Description = "description",
                     Name = "name"
@@ -113,7 +117,7 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(10);
 
-            var result = await _plugInService.CreatePlugInInstanceAsync(1, new CreatePlugInInstance()
+            var result = await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
             {
                 Description = "description",
                 Name = "name"
@@ -228,8 +232,8 @@ namespace Shaos.Services.UnitTests
             _mockStore.Setup(_ => _.GetPlugInInstanceByIdAsync(
                 It.IsAny<int>(),
                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugInInstance() 
-                { 
+                .ReturnsAsync(new PlugInInstance()
+                {
                     Name = "name",
                     Description = "description"
                 });
