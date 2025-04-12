@@ -33,17 +33,34 @@ using System.Linq.Expressions;
 
 namespace Shaos.Services.Repositories
 {
-    public class PlugInRepository : IPlugInRepository
+    public class PlugInRepository : BaseRepository, IPlugInRepository
     {
-        private readonly ShaosDbContext _context;
         private readonly ILogger<PlugInRepository> _logger;
 
         public PlugInRepository(
             ILogger<PlugInRepository> logger,
-            ShaosDbContext context)
+            ShaosDbContext context) : base(context)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        // <inheritdoc/>
+        public async Task<int> CreatePackageAsync(
+            PlugIn plugIn,
+            Package package,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(plugIn);
+            ArgumentNullException.ThrowIfNull(package);
+
+            plugIn.Package = package;
+
+            package.PlugIn = plugIn;
+            package.PlugInId = plugIn.Id;
+
+            await Context.SaveChangesAsync(cancellationToken);
+
+            return package.Id;
         }
 
         /// <inheritdoc/>
@@ -55,9 +72,9 @@ namespace Shaos.Services.Repositories
 
             return await HandleDuplicatePlugInNameAsync(plugIn.Name, async () =>
             {
-                await _context.PlugIns.AddAsync(plugIn, cancellationToken);
+                await Context.PlugIns.AddAsync(plugIn, cancellationToken);
 
-                await _context.SaveChangesAsync(cancellationToken);
+                await Context.SaveChangesAsync(cancellationToken);
 
                 _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
 
@@ -66,9 +83,9 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public Task<int> DeletePlugInAsync(int id, CancellationToken cancellationToken = default)
+        public Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-            return _context.Set<PlugIn>().DeleteAsync(id, cancellationToken);
+            return Context.Set<PlugIn>().DeleteAsync(id, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -79,7 +96,7 @@ namespace Shaos.Services.Repositories
             List<string>? includeProperties = null,
             CancellationToken cancellationToken = default)
         {
-            return _context
+            return Context
                 .Set<PlugIn>()
                 .GetAsync(withNoTracking, filter, orderBy, includeProperties, cancellationToken);
         }
@@ -91,7 +108,7 @@ namespace Shaos.Services.Repositories
             List<string>? includeProperties = null,
             CancellationToken cancellationToken = default)
         {
-            return _context.Set<PlugIn>().GetByIdAsync(id, withNoTracking, includeProperties, cancellationToken);
+            return Context.Set<PlugIn>().GetByIdAsync(id, withNoTracking, includeProperties, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -104,14 +121,14 @@ namespace Shaos.Services.Repositories
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
 
-            var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInNotFoundException(id);
+            var plugIn = await Context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInNotFoundException(id);
 
             return await HandleDuplicatePlugInNameAsync(name, async () =>
             {
                 plugIn.Name = name;
                 plugIn.Description = description;
 
-                await _context.SaveChangesAsync(cancellationToken);
+                await Context.SaveChangesAsync(cancellationToken);
 
                 return plugIn;
             });
@@ -135,7 +152,7 @@ namespace Shaos.Services.Repositories
                 plugIn.Package.AssemblyFile = assemblyFile;
                 plugIn.Package.Version = version;
 
-                await _context.SaveChangesAsync(cancellationToken);
+                await Context.SaveChangesAsync(cancellationToken);
             }
         }
 

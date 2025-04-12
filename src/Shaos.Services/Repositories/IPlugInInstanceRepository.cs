@@ -28,7 +28,7 @@ using System.Linq.Expressions;
 
 namespace Shaos.Services.Repositories
 {
-    public interface IPlugInInstanceRepository
+    public interface IPlugInInstanceRepository : IBaseRepository
     {
         /// <summary>
         /// Create a new <see cref="PlugInInstance"/> instance
@@ -50,7 +50,7 @@ namespace Shaos.Services.Repositories
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>
-        Task DeletePlugInInstanceAsync(
+        Task DeleteAsync(
             int id,
             CancellationToken cancellationToken = default);
 

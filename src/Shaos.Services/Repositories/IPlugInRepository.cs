@@ -22,16 +22,26 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace Shaos.Services.Repositories
 {
-    public interface IPlugInRepository
+    public interface IPlugInRepository : IBaseRepository
     {
+        /// <summary>
+        /// Create a new <see cref="Package"/> instance
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
+        /// <param name="package">The <see cref="Package"/> instance to associate the <see cref="PlugIn"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The <see cref="Package"/> identifier</returns>
+        Task<int> CreatePackageAsync(
+            PlugIn plugIn,
+            Package package,
+            CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Create a new <see cref="PlugIn"/> instance
         /// </summary>
@@ -48,7 +58,7 @@ namespace Shaos.Services.Repositories
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>
-        Task<int> DeletePlugInAsync(int id, CancellationToken cancellationToken = default);
+        Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 

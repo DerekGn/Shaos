@@ -30,11 +30,11 @@ using System.Runtime.CompilerServices;
 
 namespace Shaos.Services.Repositories
 {
-    public class LogLevelRepository : ILogLevelRepository
+    public class LoggingConfigurationRepository : ILoggingConfigurationRepository
     {
         private readonly ShaosDbContext _context;
 
-        public LogLevelRepository(ShaosDbContext context)
+        public LoggingConfigurationRepository(ShaosDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

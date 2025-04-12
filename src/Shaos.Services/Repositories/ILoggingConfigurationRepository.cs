@@ -27,7 +27,7 @@ using Shaos.Repository.Models;
 
 namespace Shaos.Services.Repositories
 {
-    public interface ILogLevelRepository
+    public interface ILoggingConfigurationRepository
     {
         /// <summary>
         /// Upsert a <see cref="LogLevelSwitch"/>
