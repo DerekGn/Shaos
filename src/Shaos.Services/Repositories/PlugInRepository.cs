@@ -29,6 +29,7 @@ using Shaos.Repository;
 using Shaos.Repository.Extensions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using System.Linq.Expressions;
 
 namespace Shaos.Services.Repositories
 {
@@ -68,6 +69,19 @@ namespace Shaos.Services.Repositories
         public Task<int> DeletePlugInAsync(int id, CancellationToken cancellationToken = default)
         {
             return _context.Set<PlugIn>().DeleteAsync(id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IAsyncEnumerable<PlugIn> GetAsync(
+            Expression<Func<PlugIn, bool>>? filter = null,
+            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null,
+            CancellationToken cancellationToken = default)
+        {
+            return _context
+                .Set<PlugIn>()
+                .GetAsync(withNoTracking, filter, orderBy, includeProperties, cancellationToken);
         }
 
         /// <inheritdoc/>

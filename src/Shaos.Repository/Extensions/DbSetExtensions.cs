@@ -52,13 +52,15 @@ namespace Shaos.Repository.Extensions
         /// </summary>
         /// <typeparam name="T">The entity type</typeparam>
         /// <param name="set">The <see cref="DbSet{TEntity}"/> to delete the entity from</param>
+        /// <param name="withNoTracking">Indicates if the set of entities are tracked by the context</param>
         /// <param name="filter">The filter expression to apply to the set</param>
         /// <param name="orderBy">The order expression to apply to the set</param>
         /// <param name="includeProperties">The set of include properties</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="IAsyncEnumerable{T}"/></returns>
-        public static async IAsyncEnumerable<T> Get<T>(
+        public static async IAsyncEnumerable<T> GetAsync<T>(
             this DbSet<T> set,
+            bool withNoTracking = true,
             Expression<Func<T, bool>>? filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             List<string>? includeProperties = null,
@@ -79,7 +81,13 @@ namespace Shaos.Repository.Extensions
                 }
             }
 
+            if (withNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
             IAsyncEnumerable<T> enumerable;
+
             if (orderBy != null)
             {
                 enumerable = orderBy(query).AsAsyncEnumerable();

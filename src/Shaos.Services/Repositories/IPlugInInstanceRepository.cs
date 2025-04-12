@@ -24,6 +24,7 @@
 
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using System.Linq.Expressions;
 
 namespace Shaos.Services.Repositories
 {
@@ -51,6 +52,22 @@ namespace Shaos.Services.Repositories
         /// <returns>The number of rows deleted</returns>
         Task DeletePlugInInstanceAsync(
             int id,
+            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="withNoTracking"></param>
+        /// <param name="includeProperties"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        IAsyncEnumerable<PlugInInstance> GetAsync(
+            Expression<Func<PlugInInstance, bool>>? filter = null,
+            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null,
             CancellationToken cancellationToken = default);
 
         /// <summary>

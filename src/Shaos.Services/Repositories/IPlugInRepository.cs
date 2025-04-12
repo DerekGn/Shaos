@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
+using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Shaos.Services.Repositories
 {
@@ -46,6 +49,22 @@ namespace Shaos.Services.Repositories
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>
         Task<int> DeletePlugInAsync(int id, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="orderBy"></param>
+        /// <param name="withNoTracking"></param>
+        /// <param name="includeProperties"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        IAsyncEnumerable<PlugIn> GetAsync(
+            Expression<Func<PlugIn, bool>>? filter = null,
+            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update a <see cref="PlugIn"/> instance

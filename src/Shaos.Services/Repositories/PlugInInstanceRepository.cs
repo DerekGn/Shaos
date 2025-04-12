@@ -29,13 +29,14 @@ using Shaos.Repository;
 using Shaos.Repository.Extensions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using System.Linq.Expressions;
 
 namespace Shaos.Services.Repositories
 {
     public class PlugInInstanceRepository : IPlugInInstanceRepository
     {
-        private readonly ILogger<PlugInInstanceRepository> _logger;
         private readonly ShaosDbContext _context;
+        private readonly ILogger<PlugInInstanceRepository> _logger;
 
         public PlugInInstanceRepository(
             ILogger<PlugInInstanceRepository> logger,
@@ -71,6 +72,19 @@ namespace Shaos.Services.Repositories
         public Task DeletePlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
         {
             return _context.Set<PlugInInstance>().DeleteAsync(id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IAsyncEnumerable<PlugInInstance> GetAsync(
+            Expression<Func<PlugInInstance, bool>>? filter = null,
+            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null,
+            CancellationToken cancellationToken = default)
+        {
+            return _context
+                .Set<PlugInInstance>()
+                .GetAsync(withNoTracking, filter, orderBy, includeProperties, cancellationToken);
         }
 
         /// <inheritdoc/>
