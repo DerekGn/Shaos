@@ -1,0 +1,38 @@
+﻿@page
+@model Shaos.Pages.Logging.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Override Logging Levels</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Minimum Level
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.LoggingLevelSwitches) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Key)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.MinimumLevel)
+            </td>
+            <td>
+                <a asp-page="./Override" asp-route-name="@item.Key">Override</a> |
+                <a asp-page="./Delete" asp-route-name="@item.Key">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -55,7 +55,9 @@ namespace Shaos.Startup
                     .GetRequiredService<ILoggingConfigurationService>();
 
                 await loggingConfigurationService
-                    .InitialiseLoggingConfigurationAsync(loggingConfiguration);
+                    .InitialiseLoggingConfigurationAsync(
+                    loggingConfiguration,
+                    cancellationToken);
             }
         }
 

@@ -8,7 +8,7 @@ namespace Shaos.DataAnnotations
 
         protected override IEnumerable<string> GetAvailableNames(ILoggingConfiguration loggingConfiguration)
         {
-            return loggingConfiguration.LogLevelSwitches.Keys;
+            return loggingConfiguration.LoggingLevelSwitches.Keys;
         }
     }
 }

@@ -22,18 +22,32 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Serilog.Core;
+using Shaos.Repository.Models;
+using Shaos.Services.Logging;
 
-namespace Shaos.Services.Logging
+namespace Shaos.Pages.Logging
 {
-    /// <summary>
-    /// Represents a logger configuration settings
-    /// </summary>
-    public interface ILoggingConfiguration
+    public class IndexModel : PageModel
     {
-        /// <summary>
-        /// A <see cref="IReadOnlyDictionary{TKey, TValue}"/> of <see cref="LoggingLevelSwitch"/>
-        /// </summary>
-        IReadOnlyDictionary<string, LoggingLevelSwitch> LoggingLevelSwitches { get; }
+        private readonly ILoggingConfiguration _loggingConfiguration;
+
+        public IndexModel(ILoggingConfiguration loggingConfiguration)
+        {
+            _loggingConfiguration = loggingConfiguration ?? throw new ArgumentNullException(nameof(loggingConfiguration));
+        }
+
+        [BindProperty]
+        public IReadOnlyDictionary<string, LoggingLevelSwitch> LoggingLevelSwitches { get;set; } = default!;
+
+        [BindProperty]
+        public IList<LogLevelSwitch> LogLevelSwitches { get; set; } = default!;
+
+        public void OnGet()
+        {
+            LoggingLevelSwitches = _loggingConfiguration.LoggingLevelSwitches;
+        }
     }
 }

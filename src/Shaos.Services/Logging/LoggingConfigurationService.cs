@@ -26,7 +26,6 @@ using Microsoft.Extensions.Logging;
 using Serilog.Events;
 using Shaos.Repository.Models;
 using Shaos.Services.Repositories;
-using Shaos.Services.Store;
 
 namespace Shaos.Services.Logging
 {
@@ -49,11 +48,11 @@ namespace Shaos.Services.Logging
         {
             _logger.LogInformation("Initialising logging configuration");
 
-            await foreach (var logSwitch in _repository.GetLogLevelSwitchesAsync())
+            await foreach (var logSwitch in _repository.GetAsync(cancellationToken))
             {
                 _logger.LogDebug("Updating LogLevelSwitch [{Name}] Level: [{Level}]", logSwitch.Name, logSwitch.Level);
 
-                loggingConfiguration.LogLevelSwitches[logSwitch.Name].MinimumLevel = logSwitch.Level;
+                loggingConfiguration.LoggingLevelSwitches[logSwitch.Name].MinimumLevel = logSwitch.Level;
             }
         }
 
@@ -67,7 +66,7 @@ namespace Shaos.Services.Logging
                 name,
                 level);
 
-            await _repository.UpsertLogLevelSwitchAsync(name, level, cancellationToken);
+            await _repository.UpsertAsync(name, level, cancellationToken);
         }
     }
 }
