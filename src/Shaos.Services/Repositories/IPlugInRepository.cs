@@ -51,6 +51,7 @@ namespace Shaos.Services.Repositories
             PlugIn plugIn,
             Package package,
             CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Delete a <see cref="PlugIn"/>
         /// </summary>
@@ -68,14 +69,14 @@ namespace Shaos.Services.Repositories
         Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// 
+        /// Get an <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/> instances
         /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="orderBy"></param>
+        /// <param name="filter">The filter expression to filter the <see cref="PlugIn"/></param>
+        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances</param>
         /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugIn"/></param>
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/> instances</returns>
         IAsyncEnumerable<PlugIn> GetAsync(
             Expression<Func<PlugIn, bool>>? filter = null,
             Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
@@ -96,6 +97,21 @@ namespace Shaos.Services.Repositories
             bool withNoTracking = true,
             List<string>? includeProperties = null,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get an <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances
+        /// </summary>
+        /// <param name="filter">The filter expression to filter the <see cref="PlugIn"/></param>
+        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances</param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugIn"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances</returns>
+        IQueryable<PlugIn> GetQueryable(
+            Expression<Func<PlugIn, bool>>? filter = null,
+            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null);
 
         /// <summary>
         /// Update a <see cref="PlugIn"/> instance

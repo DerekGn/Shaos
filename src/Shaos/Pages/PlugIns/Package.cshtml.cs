@@ -24,11 +24,10 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services;
+using Shaos.Services.Repositories;
 using Shaos.Services.Validation;
 
 namespace Shaos.Pages.PlugIns
@@ -36,15 +35,15 @@ namespace Shaos.Pages.PlugIns
     public class PackageModel : PageModel
     {
         private readonly ICodeFileValidationService _codeFileValidationService;
-        private readonly ShaosDbContext _context;
         private readonly IPlugInService _plugInService;
+        private readonly IPlugInRepository _repository;
 
         public PackageModel(
-            ShaosDbContext context,
+            IPlugInRepository repository,
             IPlugInService plugInService,
             ICodeFileValidationService codeFileValidationService)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _plugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
             _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
         }
@@ -65,7 +64,7 @@ namespace Shaos.Pages.PlugIns
                 return NotFound();
             }
 
-            var plugin = await _context.PlugIns.FirstOrDefaultAsync(m => m.Id == id);
+            var plugin = await _repository.GetByIdAsync(id.Value, cancellationToken: cancellationToken);
             if (plugin == null)
             {
                 return NotFound();
@@ -91,7 +90,7 @@ namespace Shaos.Pages.PlugIns
             {
                 ModelState.AddModelError(string.Empty, validation);
 
-                PlugIn = await _context!.PlugIns!.FirstOrDefaultAsync(m => m.Id == PlugIn!.Id, cancellationToken);
+                PlugIn = await _repository.GetByIdAsync(PlugIn!.Id, cancellationToken: cancellationToken);
                 return Page();
             }
 
@@ -101,11 +100,42 @@ namespace Shaos.Pages.PlugIns
             {
                 ModelState.AddModelError(string.Empty, packageValidation);
 
-                PlugIn = await _context!.PlugIns!.FirstOrDefaultAsync(m => m.Id == PlugIn!.Id, cancellationToken);
+                PlugIn = await _repository.GetByIdAsync(PlugIn!.Id, cancellationToken: cancellationToken);
                 return Page();
             }
 
             return RedirectToPage("./Index");
+        }
+
+        private async Task<string?> ValidatePackageAsync(CancellationToken cancellationToken = default)
+        {
+            var packageUploadResult = await _plugInService
+               .UploadPlugInPackageAsync(PlugIn!.Id, PackageFile.FileName, PackageFile.OpenReadStream(), cancellationToken);
+
+            string? result = null;
+
+            switch (packageUploadResult)
+            {
+                case UploadPackageResult.Success:
+                    break;
+
+                case UploadPackageResult.NoValidPlugInFile:
+                    result = $"No valid assembly file found [{PackageFile.FileName}]";
+                    break;
+
+                case UploadPackageResult.PlugInRunning:
+                    result = $"The PlugIn [{PlugIn.Name}] currently has running instances";
+                    break;
+
+                case UploadPackageResult.NoValidPlugInType:
+                    result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
+                    break;
+
+                default:
+                    break;
+            }
+
+            return result;
         }
 
         private string? ValidatePackageFile(IFormFile formFile)
@@ -139,37 +169,6 @@ namespace Shaos.Pages.PlugIns
             }
 
             return validation;
-        }
-
-        private async Task<string?> ValidatePackageAsync(CancellationToken cancellationToken = default)
-        {
-            var packageUploadResult = await _plugInService
-               .UploadPlugInPackageAsync(PlugIn!.Id, PackageFile.FileName, PackageFile.OpenReadStream(), cancellationToken);
-
-            string? result = null;
-
-            switch (packageUploadResult)
-            {
-                case UploadPackageResult.Success:
-                    break;
-
-                case UploadPackageResult.NoValidPlugInFile:
-                    result = $"No valid assembly file found [{PackageFile.FileName}]";
-                    break;
-
-                case UploadPackageResult.PlugInRunning:
-                    result = $"The PlugIn [{PlugIn.Name}] currently has running instances";
-                    break;
-
-                case UploadPackageResult.NoValidPlugInType:
-                    result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
-                    break;
-
-                default:
-                    break;
-            }
-
-            return result;
         }
     }
 }

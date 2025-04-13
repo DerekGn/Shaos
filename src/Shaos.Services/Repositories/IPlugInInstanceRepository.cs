@@ -107,6 +107,19 @@ namespace Shaos.Services.Repositories
             string description,
             CancellationToken cancellationToken = default);
 
-
+        /// <summary>
+        /// Get an <see cref="IQueryable{T}"/> of <see cref="PlugInInstance"/> instances
+        /// </summary>
+        /// <param name="filter">The filter expression to filter the <see cref="PlugInInstance"/></param>
+        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="PlugInInstance"/> instances</param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugInInstance"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A <see cref="IQueryable{T}"/> of <see cref="PlugInInstance"/> instances</returns>
+        IQueryable<PlugInInstance> GetQueryable(
+            Expression<Func<PlugInInstance, bool>>? filter = null,
+            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null);
     }
 }

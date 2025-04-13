@@ -22,23 +22,23 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
 using Shaos.Paging;
-using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Repositories;
+using System.Linq.Expressions;
 
 namespace Shaos.Pages.PlugIns
 {
     public class IndexModel : PaginatedModel<PlugIn>
     {
         private readonly IConfiguration _configuration;
-        private readonly ShaosDbContext _context;
+        private readonly IPlugInRepository _repository;
 
         public IndexModel(
-            ShaosDbContext context,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IPlugInRepository repository)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
@@ -64,45 +64,46 @@ namespace Shaos.Pages.PlugIns
 
             CurrentFilter = searchString;
 
-            IQueryable<PlugIn> queryable = from p in _context.PlugIns
-                                           select p;
+            Expression<Func<PlugIn, bool>>? filter = null;
+            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null;
 
-            var pageSize = _configuration.GetValue("PageSize", 5);
-
-            if (!String.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                queryable = queryable.Where(_ => _.Name!.ToLower().Contains(searchString.ToLower()));
+                filter = _ => _.Name!.ToLower().Contains(searchString.ToLower());
             }
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    queryable = queryable.OrderByDescending(_ => _.Name);
+                    orderBy = _ => _.OrderByDescending(_ => _.Name);
                     break;
 
                 case nameof(PlugIn.Name):
-                    queryable = queryable.OrderBy(_ => _.Name);
+                    orderBy = _ => _.OrderBy(_ => _.Name);
                     break;
 
-                case "ar_desc":
-                    queryable = queryable.OrderByDescending(_ => _.Id);
+                case "id_desc":
+                    orderBy = _ => _.OrderByDescending(_ => _.Id);
                     break;
 
                 case nameof(PlugIn.Id):
-                    queryable = queryable.OrderBy(_ => _.Id);
+                    orderBy = _ => _.OrderBy(_ => _.Id);
                     break;
 
                 default:
                     break;
             }
 
+            var queryable = _repository.GetQueryable(
+                filter,
+                orderBy,
+                includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)]);
+
             List = await PaginatedList<PlugIn>
                 .CreateAsync(
-                    queryable
-                        .AsNoTracking()
-                        .Include(_ => _.Package)
-                        .Include(_ => _.Instances)
-                        .AsNoTracking(), pageIndex ?? 1, pageSize,
+                    queryable,
+                    pageIndex ?? 1,
+                    _configuration.GetValue("PageSize", 5),
                     cancellationToken);
         }
     }

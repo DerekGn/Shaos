@@ -104,6 +104,18 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
+        public IQueryable<PlugInInstance> GetQueryable(
+            Expression<Func<PlugInInstance, bool>>? filter = null,
+            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null)
+        {
+            return Context
+                .Set<PlugInInstance>()
+                .GetQueryable(withNoTracking, filter, orderBy, includeProperties);
+        }
+
+        /// <inheritdoc/>
         public async Task UpdateAsync(
             int id,
             string name,

@@ -75,8 +75,6 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("A PlugIn create", Required = true)] CreatePlugIn create,
             CancellationToken cancellationToken)
         {
-            var id = 0;
-
             try
             {
                 var plugInId = await PlugInRepository.CreateAsync(

@@ -25,17 +25,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
-using Shaos.Services.Store;
+using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class EditModel : PageModel
     {
-        private readonly IStore _store;
+        private readonly IPlugInInstanceRepository _repository;
 
-        public EditModel(IStore store)
+        public EditModel(IPlugInInstanceRepository repository)
         {
-            _store = store;
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         [BindProperty]
@@ -48,7 +48,7 @@ namespace Shaos.Pages.PlugInInstances
                 return NotFound();
             }
 
-            var plugininstance = await _store.GetPlugInInstanceByIdAsync(id, cancellationToken);
+            var plugininstance = await _repository.GetByIdAsync(id, false, cancellationToken: cancellationToken);
             if (plugininstance == null)
             {
                 return NotFound();
@@ -66,6 +66,7 @@ namespace Shaos.Pages.PlugInInstances
                 return Page();
             }
 
+            await _repository.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

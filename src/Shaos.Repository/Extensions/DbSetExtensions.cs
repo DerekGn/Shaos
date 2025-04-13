@@ -103,6 +103,16 @@ namespace Shaos.Repository.Extensions
             }
         }
 
+        /// <summary>
+        /// Gets a null-able instance of <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type</typeparam>
+        /// <param name="set">The <see cref="DbSet{TEntity}"/> to delete the entity from</param>
+        /// <param name="id">The identity of the entity to retrieve</param>
+        /// <param name="withNoTracking">Indicates if the set of entities are tracked by the context</param>
+        /// <param name="includeProperties">The set of include properties</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An instance of <typeparamref name="T"/></returns>
         public static async Task<T?> GetByIdAsync<T>(
             this DbSet<T> set,
             int id,
@@ -126,6 +136,51 @@ namespace Shaos.Repository.Extensions
             }
 
             return await query.FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="IQueryable{T}"/> of <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">The entity type</typeparam>
+        /// <param name="set">The <see cref="DbSet{TEntity}"/> to delete the entity from</param>
+        /// <param name="withNoTracking">Indicates if the set of entities are tracked by the context</param>
+        /// <param name="filter">The filter expression to apply to the set</param>
+        /// <param name="orderBy">The order expression to apply to the set</param>
+        /// <param name="includeProperties">The set of include properties</param>
+        /// <returns>An <see cref="IQueryable{T}"/> of <typeparamref name="T"/></returns>
+        public static IQueryable<T> GetQueryable<T>(
+            this DbSet<T> set,
+            bool withNoTracking = true,
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            List<string>? includeProperties = null) where T : BaseEntity
+        {
+            IQueryable<T> query = set;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+
+            if (withNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return query;
         }
     }
 }

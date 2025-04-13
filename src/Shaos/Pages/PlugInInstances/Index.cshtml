@@ -52,9 +52,6 @@
                 @Html.DisplayNameFor(model => model.List[0].Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].PlugIn)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.List[0].CreatedDate)
             </th>
             <th>
@@ -86,7 +83,6 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
