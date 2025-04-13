@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Core;
@@ -37,7 +36,7 @@ namespace Shaos.Services.Logging
     /// </summary>
     public class LoggingConfiguration : ILoggingConfiguration
     {
-        private FrozenDictionary<string, LoggingLevelSwitch> _logLevelSwitches;
+        private FrozenDictionary<string, LoggingLevelSwitch> _loggingLevelSwitches;
         private readonly Assembly[] _loggerConfigurationAssemblies;
 
         public LoggingConfiguration()
@@ -49,7 +48,7 @@ namespace Shaos.Services.Logging
                 typeof(FileLoggerConfigurationExtensions).Assembly,
             };
 
-            _logLevelSwitches = FrozenDictionary<string, LoggingLevelSwitch>.Empty;
+            _loggingLevelSwitches = FrozenDictionary<string, LoggingLevelSwitch>.Empty;
         }
 
         /// <summary>
@@ -66,10 +65,10 @@ namespace Shaos.Services.Logging
             };
             loggerConfiguration.ReadFrom.Configuration(configuration, readerOptions);
 
-            _logLevelSwitches = logLevelSwitches.ToFrozenDictionary();
+            _loggingLevelSwitches = logLevelSwitches.ToFrozenDictionary();
         }
 
         /// </<inheritdoc/>
-        public IReadOnlyDictionary<string, LoggingLevelSwitch> LogLevelSwitches => _logLevelSwitches;
+        public IReadOnlyDictionary<string, LoggingLevelSwitch> LoggingLevelSwitches => _loggingLevelSwitches;
     }
 }

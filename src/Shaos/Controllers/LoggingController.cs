@@ -1,4 +1,4 @@
-﻿/*
+﻿ /*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Serilog.Events;
 using Shaos.DataAnnotations;
+using Shaos.Repository.Models;
 using Shaos.Services.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
@@ -55,7 +56,7 @@ namespace Shaos.Controllers
             Description = "Get the currently configured set of the log level switches",
             OperationId = "GetLogLevelSwitches")]
         public IDictionary<string, LogEventLevel> GetLogLevelSwitches()
-            => _loggingConfiguration.LogLevelSwitches.ToDictionary(_ => _.Key, _ => _.Value.MinimumLevel);
+            => _loggingConfiguration.LoggingLevelSwitches.ToDictionary(_ => _.Key, _ => _.Value.MinimumLevel);
 
         [HttpPost("levels")]
         [SwaggerResponse(StatusCodes.Status202Accepted)]
@@ -70,6 +71,8 @@ namespace Shaos.Controllers
             [Required] LogEventLevel level,
             CancellationToken cancellationToken)
         {
+            _loggingConfiguration.LoggingLevelSwitches[name].MinimumLevel = level;
+
             await _loggingConfigurationService.UpdateLogLevelSwitchAsync(name, level, cancellationToken);
 
             return Accepted();

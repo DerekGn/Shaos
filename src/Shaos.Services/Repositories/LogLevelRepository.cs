@@ -40,7 +40,7 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<LogLevelSwitch> GetLogLevelSwitchesAsync(
+        public async IAsyncEnumerable<LogLevelSwitch> GetAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in _context.LogLevelSwitches
@@ -52,15 +52,25 @@ namespace Shaos.Services.Repositories
             }
         }
 
+        public async Task<LogLevelSwitch?> GetByNameAsync(
+            string name,
+            CancellationToken cancellationToken = default)
+        {
+            return await _context
+                .LogLevelSwitches
+                .Where(_ => _.Name == name)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         /// <inheritdoc/>
-        public async Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(
+        public async Task<LogLevelSwitch> UpsertAsync(
             string name,
             LogEventLevel level,
             CancellationToken cancellationToken = default)
         {
             var logLevelSwitch = await _context
                 .LogLevelSwitches
-                .SingleAsync(_ => _.Name == name, cancellationToken);
+                .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
 
             if (logLevelSwitch != null)
             {
