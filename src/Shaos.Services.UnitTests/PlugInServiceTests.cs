@@ -69,7 +69,7 @@ namespace Shaos.Services.UnitTests
         {
             SetupPlugInGetByIdAsync();
 
-            _mockPlugInInstanceRepository.Setup(_ => _.CreatePlugInInstanceAsync(
+            _mockPlugInInstanceRepository.Setup(_ => _.CreateAsync(
                 It.IsAny<PlugIn>(),
                 It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
@@ -100,7 +100,7 @@ namespace Shaos.Services.UnitTests
         {
             SetupPlugInGetByIdAsync();
 
-            _mockPlugInInstanceRepository.Setup(_ => _.CreatePlugInInstanceAsync(
+            _mockPlugInInstanceRepository.Setup(_ => _.CreateAsync(
                 It.IsAny<PlugIn>(),
                 It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
@@ -230,37 +230,6 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
-        public async Task TestUploadPlugInPackageExistsAsync()
-        {
-            MemoryStream stream = new MemoryStream();
-
-            SetupPlugInGetByIdAsync();
-
-            _mockFileStoreService
-                .Setup(_ => _.PackageExists(It.IsAny<string>()))
-                .Returns(true);
-
-            var result = await _plugInService
-                .UploadPlugInPackageAsync(1, "filename", stream);
-
-            Assert.Equal(UploadPackageResult.PackageExists, result);
-
-            _mockFileStoreService
-                .Verify(_ => _.WritePackageFileStreamAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<string>(),
-                    It.IsAny<Stream>(),
-                    It.IsAny<CancellationToken>()),
-                    Times.Never);
-
-            _mockPlugInRepository.Verify(_ => _.CreatePackageAsync(
-                It.IsAny<PlugIn>(),
-                It.IsAny<Package>(),
-                It.IsAny<CancellationToken>()),
-                Times.Never);
-        }
-
-        [Fact]
         public async Task TestUploadPlugInPackageNoValidPlugInAsync()
         {
             MemoryStream stream = new MemoryStream();
@@ -283,7 +252,7 @@ namespace Shaos.Services.UnitTests
             var result = await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
 
-            Assert.Equal(UploadPackageResult.NoValidPlugIn, result);
+            Assert.Equal(UploadPackageResult.NoValidPlugInFile, result);
 
             _mockFileStoreService
                 .Verify(_ => _.WritePackageFileStreamAsync(

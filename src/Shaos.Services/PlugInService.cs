@@ -70,7 +70,7 @@ namespace Shaos.Services
                 _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
 
                 result = await _plugInInstanceRepository
-                .CreatePlugInInstanceAsync(
+                .CreateAsync(
                     plugIn,
                     plugInInstance,
                     cancellationToken);
@@ -169,66 +169,46 @@ namespace Shaos.Services
                 }
                 else
                 {
-                    if (!_fileStoreService.PackageExists(packageFileName))
+                    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+
+                    await _fileStoreService.WritePackageFileStreamAsync(
+                        plugIn.Id,
+                        packageFileName,
+                        stream,
+                        cancellationToken);
+
+                    var plugInFile = _fileStoreService
+                        .ExtractPackage(packageFileName, plugIn.Id.ToString())
+                        .FirstOrDefault(_ => _.EndsWith(".PlugIn.dll", StringComparison.OrdinalIgnoreCase));
+
+                    if (plugInFile == null)
                     {
-                        _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
-
-                        await _fileStoreService.WritePackageFileStreamAsync(
-                            plugIn.Id,
-                            packageFileName,
-                            stream,
-                            cancellationToken);
-
-                        var plugInFile = _fileStoreService
-                            .ExtractPackage(packageFileName, plugIn.Id.ToString())
-                            .FirstOrDefault(_ => _.EndsWith(".PlugIn.dll", StringComparison.OrdinalIgnoreCase));
-
-                        if (plugInFile == null)
-                        {
-                            _logger.LogWarning("No valid PlugIn implementation found");
-                            result = UploadPackageResult.NoValidPlugIn;
-                        }
-                        else
-                        {
-                            if (AssemblyContainsPlugIn(plugInFile, out var version))
-                            {
-                                await CreateOrUpdatePlugInPackageAsync(
-                                    plugIn,
-                                    packageFileName,
-                                    Path.GetFileName(plugInFile),
-                                    version,
-                                    cancellationToken);
-                            }
-                        }
+                        _logger.LogWarning("No valid PlugIn assembly file found");
+                        result = UploadPackageResult.NoValidPlugInFile;
                     }
                     else
                     {
-                        _logger.LogInformation("PlugIn Package file already exists [{FileName}]", packageFileName);
+                        ValidateAssemblyContainsPlugIn(plugInFile, out var version, out var validPlugIn).Dispose();
 
-                        result = UploadPackageResult.PackageExists;
+                        if (validPlugIn)
+                        {
+                            await CreateOrUpdatePlugInPackageAsync(
+                                plugIn,
+                                packageFileName,
+                                Path.GetFileName(plugInFile),
+                                version,
+                                cancellationToken);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("No valid PlugIn implementation type found");
+                            result = UploadPackageResult.NoValidPlugInType;
+                        }
                     }
                 }
             },
             false,
             cancellationToken);
-
-            return result;
-        }
-
-        private bool AssemblyContainsPlugIn(string assemblyFile, out string version)
-        {
-            var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
-            var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
-
-            bool result = false;
-
-            var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
-
-            version = plugInAssembly.GetName().Version!.ToString();
-
-            result = plugInAssembly.GetTypes().Any(t => typeof(IPlugIn).IsAssignableFrom(t));
-
-            unloadingWeakReference.Dispose();
 
             return result;
         }
@@ -315,6 +295,26 @@ namespace Shaos.Services
                 _logger.LogWarning("PlugIn: [{Id}] not found", id);
                 throw new PlugInNotFoundException(id, $"PlugIn: [{id}] not found");
             }
+        }
+
+        private UnloadingWeakReference<IRuntimeAssemblyLoadContext> ValidateAssemblyContainsPlugIn(
+            string assemblyFile,
+            out string version,
+            out bool result)
+        {
+            var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
+            var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
+
+            result = false;
+            var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
+
+            version = plugInAssembly.GetName().Version!.ToString();
+
+            result = plugInAssembly.GetTypes().Any(t => typeof(IPlugIn).IsAssignableFrom(t));
+
+            runtimeAssemblyLoadContext.Unload();
+
+            return unloadingWeakReference;
         }
 
         private bool VerifyPlugState(PlugIn plugIn, InstanceState state)

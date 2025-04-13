@@ -24,52 +24,59 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models;
-using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 
-namespace Shaos.Pages.PlugIns
+namespace Shaos.Pages.PlugInInstances
 {
-    public class CreateModel : PageModel
+    public class DeleteModel : PageModel
     {
-        private readonly IPlugInRepository _repository;
+        private readonly Repository.ShaosDbContext _context;
 
-        public CreateModel(IPlugInRepository repository)
+        public DeleteModel(Repository.ShaosDbContext context)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        }
-
-        public IActionResult OnGet()
-        {
-            return Page();
+            _context = context;
         }
 
         [BindProperty]
-        public PlugIn PlugIn { get; set; } = default!;
+        public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken = default)
         {
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.CreatedDate)}");
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.UpdatedDate)}");
-
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            try
-            {
-                await _repository.CreateAsync(PlugIn, cancellationToken);
+            var plugininstance = await _context.PlugInInstances.FirstOrDefaultAsync(m => m.Id == id);
 
-                return RedirectToPage("./Index");
-            }
-            catch (PlugInNameExistsException ex)
+            if (plugininstance == null)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-
-                return Page();
+                return NotFound();
             }
+            else
+            {
+                PlugInInstance = plugininstance;
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var plugininstance = await _context.PlugInInstances.FindAsync(id);
+            if (plugininstance != null)
+            {
+                PlugInInstance = plugininstance;
+                _context.PlugInInstances.Remove(PlugInInstance);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage("./Index");
         }
     }
 }

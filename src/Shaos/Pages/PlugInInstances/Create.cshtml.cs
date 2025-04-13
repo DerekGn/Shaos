@@ -28,30 +28,39 @@ using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
 
-namespace Shaos.Pages.PlugIns
+namespace Shaos.Pages.PlugInInstances
 {
     public class CreateModel : PageModel
     {
-        private readonly IPlugInRepository _repository;
+        private readonly IPlugInRepository _plugInRepository;
+        private readonly IPlugInInstanceRepository _plugInInstanceRepository;
 
-        public CreateModel(IPlugInRepository repository)
+        public CreateModel(
+            IPlugInRepository plugInRepository,
+            IPlugInInstanceRepository plugInInstanceRepository)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        }
-
-        public IActionResult OnGet()
-        {
-            return Page();
+            _plugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
+            _plugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
         }
 
         [BindProperty]
-        public PlugIn PlugIn { get; set; } = default!;
+        public int Id { get; set; } = default!;
+
+        [BindProperty]
+        public PlugInInstance PlugInInstance { get; set; } = default!;
+
+        public IActionResult OnGetAsync(int id)
+        {
+            Id = id;
+
+            return Page();
+        }
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.CreatedDate)}");
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.UpdatedDate)}");
+            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.CreatedDate)}");
+            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.UpdatedDate)}");
 
             if (!ModelState.IsValid)
             {
@@ -60,16 +69,18 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _repository.CreateAsync(PlugIn, cancellationToken);
+                var plugIn = await _plugInRepository.GetByIdAsync(Id, false, cancellationToken: cancellationToken);
 
-                return RedirectToPage("./Index");
+                await _plugInInstanceRepository.CreateAsync(plugIn!, PlugInInstance, cancellationToken);
             }
-            catch (PlugInNameExistsException ex)
+            catch (PlugInInstanceNameExistsException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
 
                 return Page();
             }
+
+            return RedirectToPage("./Index", new { id = Id.ToString() });
         }
     }
 }

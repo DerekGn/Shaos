@@ -27,34 +27,34 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Store;
+using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugIns
 {
     public class DeleteModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IStore _store;
+        private readonly IPlugInRepository _repository;
 
         public DeleteModel(
-            IStore store,
+            IPlugInRepository repository,
             IPlugInService plugInService)
         {
-            _store = store ?? throw new ArgumentNullException(nameof(store));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _plugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
         }
 
         [BindProperty]
         public PlugIn PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var plugin = await _store.GetPlugInByIdAsync(id.Value);
+            var plugin = await _repository.GetByIdAsync(id.Value, cancellationToken: cancellationToken);
 
             if (plugin == null)
             {
@@ -67,7 +67,7 @@ namespace Shaos.Pages.PlugIns
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int? id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
@@ -76,7 +76,7 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _plugInService.DeletePlugInAsync(id.Value);
+                await _plugInService.DeletePlugInAsync(id.Value, cancellationToken);
 
                 return RedirectToPage("./Index");
             }

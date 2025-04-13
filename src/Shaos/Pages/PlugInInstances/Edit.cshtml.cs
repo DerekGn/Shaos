@@ -25,51 +25,50 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
-using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
 
-namespace Shaos.Pages.PlugIns
+namespace Shaos.Pages.PlugInInstances
 {
-    public class CreateModel : PageModel
+    public class EditModel : PageModel
     {
-        private readonly IPlugInRepository _repository;
+        private readonly IPlugInInstanceRepository _repository;
 
-        public CreateModel(IPlugInRepository repository)
+        public EditModel(IPlugInInstanceRepository repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public IActionResult OnGet()
+        [BindProperty]
+        public PlugInInstance PlugInInstance { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
+            if (id == 0)
+            {
+                return NotFound();
+            }
+
+            var plugininstance = await _repository.GetByIdAsync(id, false, cancellationToken: cancellationToken);
+            if (plugininstance == null)
+            {
+                return NotFound();
+            }
+            PlugInInstance = plugininstance;
             return Page();
         }
 
-        [BindProperty]
-        public PlugIn PlugIn { get; set; } = default!;
-
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.CreatedDate)}");
-            ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.UpdatedDate)}");
-
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            try
-            {
-                await _repository.CreateAsync(PlugIn, cancellationToken);
+            await _repository.SaveChangesAsync();
 
-                return RedirectToPage("./Index");
-            }
-            catch (PlugInNameExistsException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-
-                return Page();
-            }
+            return RedirectToPage("./Index");
         }
     }
 }

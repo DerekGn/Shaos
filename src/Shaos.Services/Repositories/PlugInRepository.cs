@@ -44,6 +44,25 @@ namespace Shaos.Services.Repositories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <inheritdoc/>
+        public async Task<int> CreateAsync(
+            PlugIn plugIn,
+            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(plugIn);
+
+            return await HandleDuplicatePlugInNameAsync(plugIn.Name, async () =>
+            {
+                await Context.PlugIns.AddAsync(plugIn, cancellationToken);
+
+                await Context.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
+
+                return plugIn.Id;
+            });
+        }
+
         // <inheritdoc/>
         public async Task<int> CreatePackageAsync(
             PlugIn plugIn,
@@ -64,28 +83,15 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInAsync(
-            PlugIn plugIn,
-            CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(plugIn);
-
-            return await HandleDuplicatePlugInNameAsync(plugIn.Name, async () =>
-            {
-                await Context.PlugIns.AddAsync(plugIn, cancellationToken);
-
-                await Context.SaveChangesAsync(cancellationToken);
-
-                _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
-
-                return plugIn.Id;
-            });
-        }
-
-        /// <inheritdoc/>
         public Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             return Context.Set<PlugIn>().DeleteAsync(id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await Context.Set<PlugIn>().AnyAsync(_ => _.Id == id, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -111,8 +117,20 @@ namespace Shaos.Services.Repositories
             return Context.Set<PlugIn>().GetByIdAsync(id, withNoTracking, includeProperties, cancellationToken);
         }
 
+        // <inheritdoc/>
+        public IQueryable<PlugIn> GetQueryable(
+            Expression<Func<PlugIn, bool>>? filter = null,
+            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null)
+        {
+            return Context
+                .Set<PlugIn>()
+                .GetQueryable(withNoTracking, filter, orderBy, includeProperties);
+        }
+
         /// <inheritdoc/>
-        public async Task<PlugIn?> UpdatePlugInAsync(
+        public async Task<PlugIn?> UpdateAsync(
             int id,
             string name,
             string description,
@@ -135,7 +153,7 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task UpdatePlugInPackageAsync(
+        public async Task UpdatePackageAsync(
             PlugIn plugIn,
             string fileName,
             string assemblyFile,

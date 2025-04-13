@@ -39,7 +39,7 @@ namespace Shaos.Services.Repositories
         /// <returns>The <see cref="PlugInInstance"/> identifier</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
-        Task<int> CreatePlugInInstanceAsync(
+        Task<int> CreateAsync(
             PlugIn plugIn,
             PlugInInstance plugInInstance,
             CancellationToken cancellationToken = default);
@@ -53,6 +53,14 @@ namespace Shaos.Services.Repositories
         Task DeleteAsync(
             int id,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Determine if a <see cref="PlugIn"/> with <paramref name="id"/> exists in the store
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>True if the <see cref="PlugIn"/> exists</returns>
+        Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 
@@ -93,10 +101,25 @@ namespace Shaos.Services.Repositories
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
-        Task UpdatePlugInInstanceAsync(
+        Task UpdateAsync(
             int id,
             string name,
             string description,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get an <see cref="IQueryable{T}"/> of <see cref="PlugInInstance"/> instances
+        /// </summary>
+        /// <param name="filter">The filter expression to filter the <see cref="PlugInInstance"/></param>
+        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="PlugInInstance"/> instances</param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugInInstance"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A <see cref="IQueryable{T}"/> of <see cref="PlugInInstance"/> instances</returns>
+        IQueryable<PlugInInstance> GetQueryable(
+            Expression<Func<PlugInInstance, bool>>? filter = null,
+            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null);
     }
 }

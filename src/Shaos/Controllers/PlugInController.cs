@@ -75,11 +75,9 @@ namespace Shaos.Controllers
             [FromBody, SwaggerParameter("A PlugIn create", Required = true)] CreatePlugIn create,
             CancellationToken cancellationToken)
         {
-            var id = 0;
-
             try
             {
-                var plugInId = await PlugInRepository.CreatePlugInAsync(
+                var plugInId = await PlugInRepository.CreateAsync(
                     create.ToModel(),
                     cancellationToken);
 
@@ -200,7 +198,7 @@ namespace Shaos.Controllers
         {
             var plugIn = await PlugInInstanceRepository.GetByIdAsync(id, includeProperties: [], cancellationToken: cancellationToken);
 
-            if(plugIn != null)
+            if (plugIn != null)
             {
                 return Ok(plugIn.ToApi());
             }
@@ -279,7 +277,7 @@ namespace Shaos.Controllers
         {
             try
             {
-                await PlugInRepository.UpdatePlugInAsync(
+                await PlugInRepository.UpdateAsync(
                     id,
                     update.Name,
                     update.Description,
@@ -314,7 +312,7 @@ namespace Shaos.Controllers
         {
             try
             {
-                await PlugInInstanceRepository.UpdatePlugInInstanceAsync(
+                await PlugInInstanceRepository.UpdateAsync(
                     id,
                     update.Name,
                     update.Description,

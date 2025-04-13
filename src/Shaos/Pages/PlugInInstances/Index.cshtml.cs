@@ -22,33 +22,40 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Repository.Models;
 using Shaos.Services.Repositories;
 using System.Linq.Expressions;
 
-namespace Shaos.Pages.PlugIns
+namespace Shaos.Pages.PlugInInstances
 {
-    public class IndexModel : PaginatedModel<PlugIn>
+    public class IndexModel : PaginatedModel<PlugInInstance>
     {
         private readonly IConfiguration _configuration;
-        private readonly IPlugInRepository _repository;
+        private readonly IPlugInInstanceRepository _repository;
 
         public IndexModel(
             IConfiguration configuration,
-            IPlugInRepository repository)
+            IPlugInInstanceRepository repository)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
+        [BindProperty]
+        public int Id { get;set; } = default!;
+
         public async Task OnGetAsync(
+            int id,
             string sortOrder,
             string currentFilter,
             string searchString,
             int? pageIndex,
             CancellationToken cancellationToken = default)
         {
+            Id = id;
+
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             IdSort = sortOrder == nameof(PlugIn.Id) ? "id_desc" : nameof(PlugIn.Id);
@@ -64,8 +71,9 @@ namespace Shaos.Pages.PlugIns
 
             CurrentFilter = searchString;
 
-            Expression<Func<PlugIn, bool>>? filter = null;
-            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null;
+
+            Expression<Func<PlugInInstance, bool>>? filter = null;
+            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null;
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -78,7 +86,7 @@ namespace Shaos.Pages.PlugIns
                     orderBy = _ => _.OrderByDescending(_ => _.Name);
                     break;
 
-                case nameof(PlugIn.Name):
+                case nameof(PlugInInstance.Name):
                     orderBy = _ => _.OrderBy(_ => _.Name);
                     break;
 
@@ -86,7 +94,7 @@ namespace Shaos.Pages.PlugIns
                     orderBy = _ => _.OrderByDescending(_ => _.Id);
                     break;
 
-                case nameof(PlugIn.Id):
+                case nameof(PlugInInstance.Id):
                     orderBy = _ => _.OrderBy(_ => _.Id);
                     break;
 
@@ -96,13 +104,11 @@ namespace Shaos.Pages.PlugIns
 
             var queryable = _repository.GetQueryable(
                 filter,
-                orderBy,
-                includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)]);
+                orderBy);
 
-            List = await PaginatedList<PlugIn>
+            List = await PaginatedList<PlugInInstance>
                 .CreateAsync(
-                    queryable,
-                    pageIndex ?? 1,
+                    queryable, pageIndex ?? 1,
                     _configuration.GetValue("PageSize", 5),
                     cancellationToken);
         }

@@ -31,6 +31,16 @@ namespace Shaos.Services.Repositories
     public interface IPlugInRepository : IBaseRepository
     {
         /// <summary>
+        /// Create a new <see cref="PlugIn"/> instance
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
+        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
+        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
+        Task<int> CreateAsync(PlugIn plugIn, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Create a new <see cref="Package"/> instance
         /// </summary>
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
@@ -43,16 +53,6 @@ namespace Shaos.Services.Repositories
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Create a new <see cref="PlugIn"/> instance
-        /// </summary>
-        /// <param name="plugIn">The <see cref="PlugIn"/> </param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
-        /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
-        Task<int> CreatePlugInAsync(PlugIn plugIn, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Delete a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
@@ -61,14 +61,22 @@ namespace Shaos.Services.Repositories
         Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// 
+        /// Determine if a <see cref="PlugIn"/> with <paramref name="id"/> exists in the store
         /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="orderBy"></param>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>True if the <see cref="PlugIn"/> exists</returns>
+        Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get an <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/> instances
+        /// </summary>
+        /// <param name="filter">The filter expression to filter the <see cref="PlugIn"/></param>
+        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances</param>
         /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugIn"/></param>
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/> instances</returns>
         IAsyncEnumerable<PlugIn> GetAsync(
             Expression<Func<PlugIn, bool>>? filter = null,
             Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
@@ -91,6 +99,21 @@ namespace Shaos.Services.Repositories
             CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Get an <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances
+        /// </summary>
+        /// <param name="filter">The filter expression to filter the <see cref="PlugIn"/></param>
+        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances</param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugIn"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances</returns>
+        IQueryable<PlugIn> GetQueryable(
+            Expression<Func<PlugIn, bool>>? filter = null,
+            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+            bool withNoTracking = true,
+            List<string>? includeProperties = null);
+
+        /// <summary>
         /// Update a <see cref="PlugIn"/> instance
         /// </summary>
         /// <param name="id">The <see cref="PlugIn"/> identifier</param>
@@ -100,7 +123,7 @@ namespace Shaos.Services.Repositories
         /// <returns>The <see cref="PlugIn"/> if found and updates are applied</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
-        Task<PlugIn?> UpdatePlugInAsync(
+        Task<PlugIn?> UpdateAsync(
             int id,
             string name,
             string description,
@@ -114,7 +137,7 @@ namespace Shaos.Services.Repositories
         /// <param name="assemblyFile">The <see cref="PlugIn"/> assembly</param>
         /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task UpdatePlugInPackageAsync(
+        Task UpdatePackageAsync(
             PlugIn plugIn,
             string fileName,
             string assemblyFile,

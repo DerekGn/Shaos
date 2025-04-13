@@ -22,31 +22,26 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace Shaos.Paging
 {
-    /// <summary>
-    /// The upload package result
-    /// </summary>
-    public enum UploadPackageResult
+    public class PaginatedModel<T> : PageModel where T : class
     {
-        /// <summary>
-        /// The package upload was successful
-        /// </summary>
-        Success,
+        [BindProperty]
+        public string CurrentFilter { get; set; } = string.Empty;
 
-        /// <summary>
-        /// No valid PlugIn assembly was found
-        /// </summary>
-        NoValidPlugInFile,
+        [BindProperty]
+        public string CurrentSort { get; set; } = string.Empty;
 
-        /// <summary>
-        /// No valid PlugIn type was found in the uploaded package
-        /// </summary>
-        NoValidPlugInType,
+        [BindProperty]
+        public string IdSort { get; set; } = string.Empty;
 
-        /// <summary>
-        /// The PlugIn is running
-        /// </summary>
-        PlugInRunning
+        [BindProperty]
+        public string NameSort { get; set; } = string.Empty;
+
+        [BindProperty]
+        public PaginatedList<T> List { get; set; } = default!;
     }
 }

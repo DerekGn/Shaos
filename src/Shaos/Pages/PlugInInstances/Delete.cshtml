@@ -1,0 +1,58 @@
+﻿@page
+@model Shaos.Pages.PlugInInstances.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>PlugInInstance</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PlugInInstance.Enabled)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PlugInInstance.Enabled)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PlugInInstance.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PlugInInstance.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PlugInInstance.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PlugInInstance.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PlugInInstance.PlugIn)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PlugInInstance.PlugIn.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PlugInInstance.CreatedDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PlugInInstance.CreatedDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PlugInInstance.UpdatedDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PlugInInstance.UpdatedDate)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="PlugInInstance.Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

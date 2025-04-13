@@ -22,31 +22,31 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+using Microsoft.AspNetCore.Mvc;
+using Shaos.Services;
+
+namespace Shaos.Extensions
 {
-    /// <summary>
-    /// The upload package result
-    /// </summary>
-    public enum UploadPackageResult
+    public static class UploadPackageResultExtensions
     {
-        /// <summary>
-        /// The package upload was successful
-        /// </summary>
-        Success,
+        public static ActionResult ToActionResult(this UploadPackageResult result)
+        {
+            ActionResult actionResult = new AcceptedResult();
 
-        /// <summary>
-        /// No valid PlugIn assembly was found
-        /// </summary>
-        NoValidPlugInFile,
+            switch (result)
+            {
+                case UploadPackageResult.Success:
+                    break;
+                case UploadPackageResult.NoValidPlugInFile:
+                case UploadPackageResult.NoValidPlugInType:
+                case UploadPackageResult.PlugInRunning:
+                    actionResult = new BadRequestObjectResult(result.ToString());
+                    break;
+                default:
+                    break;
+            }
 
-        /// <summary>
-        /// No valid PlugIn type was found in the uploaded package
-        /// </summary>
-        NoValidPlugInType,
-
-        /// <summary>
-        /// The PlugIn is running
-        /// </summary>
-        PlugInRunning
+            return actionResult;
+        }
     }
 }
