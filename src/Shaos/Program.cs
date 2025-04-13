@@ -106,6 +106,7 @@ namespace Shaos
             });
 
             builder.Services.AddRazorPages();
+            builder.Services.AddSignalR();
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {
                 _.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
