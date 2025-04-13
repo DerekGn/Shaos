@@ -25,7 +25,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Serilog.Events;
 using Shaos.DataAnnotations;
-using Shaos.Repository.Models;
 using Shaos.Services.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;

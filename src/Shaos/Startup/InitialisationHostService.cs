@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-
 using Shaos.Services.Logging;
 
 namespace Shaos.Startup

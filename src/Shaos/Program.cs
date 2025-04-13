@@ -29,7 +29,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
+using Shaos.Extensions;
 using Shaos.Hosting;
+using Shaos.Hubs;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
@@ -106,6 +108,7 @@ namespace Shaos
             });
 
             builder.Services.AddRazorPages();
+            builder.Services.AddSignalR();
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {
                 _.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -197,6 +200,7 @@ namespace Shaos
             app.UseAuthorization();
 
             app.MapRazorPages();
+            app.MapHub<RuntimeHub>($"/{nameof(RuntimeHub).ToCamelCase()}");
 
             app.Run();
         }
