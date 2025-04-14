@@ -44,10 +44,10 @@ namespace Shaos.Services.Runtime
         Instance? GetInstance(int id);
 
         /// <summary>
-        /// Get the <see cref="IEnumerable{T}"/> of <see cref="Instance"/>
+        /// Get the <see cref="IReadOnlyList{T}"/> of <see cref="Instance"/>
         /// </summary>
-        /// <returns>The <see cref="IEnumerable{T}"/> of <see cref="Instance"/></returns>
-        public IEnumerable<Instance> GetInstances();
+        /// <returns>The <see cref="IReadOnlyList{T}"/> of <see cref="Instance"/></returns>
+        public IReadOnlyList<Instance> GetInstances();
 
         /// <summary>
         /// Start the execution of a <see cref="PlugInInstance"/>

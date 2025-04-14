@@ -28,7 +28,6 @@ using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
-using System.Reflection;
 
 namespace Shaos.Services.Runtime
 {
@@ -66,12 +65,9 @@ namespace Shaos.Services.Runtime
         }
 
         /// <inheritdoc/>
-        public IEnumerable<Instance> GetInstances()
+        public IReadOnlyList<Instance> GetInstances()
         {
-            foreach (var executingInstance in _executingInstances)
-            {
-                yield return executingInstance;
-            }
+            return _executingInstances.AsReadOnly();
         }
 
         /// <inheritdoc/>
