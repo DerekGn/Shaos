@@ -45,10 +45,10 @@
                 @Html.DisplayNameFor(model => model.List[0].Description)
             </th>
             <th>
-                Instances
+                Package
             </th>
             <th>
-                Package
+                Instances
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.List[0].CreatedDate)
@@ -72,10 +72,10 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Instances.Count)
+                @(item.Package != null ? item.Package.FileName : "Unassigned")
             </td>
             <td>
-                @(item.Package != null ? item.Package.ToString() : "Unassigned")
+                @Html.DisplayFor(modelItem => item.Instances.Count)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedDate)

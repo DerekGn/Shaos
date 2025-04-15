@@ -74,12 +74,7 @@ namespace Shaos.Services.Repositories
 
             plugIn.Package = package;
 
-            package.PlugIn = plugIn;
-            package.PlugInId = plugIn.Id;
-
-            await Context.SaveChangesAsync(cancellationToken);
-
-            return package.Id;
+            return await Context.SaveChangesAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
