@@ -38,7 +38,6 @@ using Shaos.Services.IO;
 using Shaos.Services.Logging;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
-using Shaos.Services.Store;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
 using Shaos.Services.Version;
@@ -147,7 +146,6 @@ namespace Shaos
             builder.Services.AddScoped<IPlugInInstanceRepository, PlugInInstanceRepository>();
             builder.Services.AddScoped<IPlugInRepository, PlugInRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
-            builder.Services.AddScoped<IStore, Store>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
