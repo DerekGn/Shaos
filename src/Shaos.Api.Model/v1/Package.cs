@@ -27,7 +27,7 @@ namespace Shaos.Api.Model.v1
     /// <summary>
     /// Represents a package
     /// </summary>
-    public record Package : Base
+    public record Package
     {
         /// <summary>
         /// The fully qualified path to the PlugIn assembly extracted from the package

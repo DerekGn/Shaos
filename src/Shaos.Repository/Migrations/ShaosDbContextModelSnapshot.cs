@@ -15,7 +15,7 @@ namespace Shaos.Repository.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
 
             modelBuilder.Entity("Shaos.Repository.Models.LogLevelSwitch", b =>
                 {
@@ -45,45 +45,6 @@ namespace Shaos.Repository.Migrations
                         .HasDatabaseName("IX_LogLevelSwitch_Name_Ascending");
 
                     b.ToTable("LogLevelSwitches");
-                });
-
-            modelBuilder.Entity("Shaos.Repository.Models.Package", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("AssemblyFile")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("PlugInId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id")
-                        .HasName("PrimaryKey_PackageId");
-
-                    b.HasIndex("PlugInId")
-                        .IsUnique();
-
-                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
@@ -157,13 +118,37 @@ namespace Shaos.Repository.Migrations
                     b.ToTable("PlugInInstances");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.Package", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
                 {
-                    b.HasOne("Shaos.Repository.Models.PlugIn", "PlugIn")
-                        .WithOne("Package")
-                        .HasForeignKey("Shaos.Repository.Models.Package", "PlugInId");
+                    b.OwnsOne("Shaos.Repository.Models.Package", "Package", b1 =>
+                        {
+                            b1.Property<int>("PlugInId")
+                                .HasColumnType("INTEGER");
 
-                    b.Navigation("PlugIn");
+                            b1.Property<string>("AssemblyFile")
+                                .IsRequired()
+                                .HasMaxLength(40)
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("FileName")
+                                .IsRequired()
+                                .HasMaxLength(40)
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Version")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("PlugInId");
+
+                            b1.ToTable("Packages");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PlugInId");
+                        });
+
+                    b.Navigation("Package");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugInInstance", b =>
@@ -178,8 +163,6 @@ namespace Shaos.Repository.Migrations
             modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
                 {
                     b.Navigation("Instances");
-
-                    b.Navigation("Package");
                 });
 #pragma warning restore 612, 618
         }

@@ -30,7 +30,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// A <see cref="Package"/> for a <see cref="PlugIn"/>
     /// </summary>
-    public class Package : PlugInChildBase
+    public class Package
     {
         /// <summary>
         /// The fully qualified path to the PlugIn assembly

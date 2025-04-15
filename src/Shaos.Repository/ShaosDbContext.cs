@@ -73,13 +73,6 @@ namespace Shaos.Repository
                 .HasName("PrimaryKey_PlugInId");
 
             modelBuilder
-                .Entity<PlugIn>()
-                .HasOne(_ => _.Package)
-                .WithOne(_ => _.PlugIn)
-                .HasForeignKey<Package>(_ => _.PlugInId)
-                .IsRequired(false);
-
-            modelBuilder
                .Entity<PlugIn>()
                .HasMany(_ => _.Instances)
                .WithOne(_ => _.PlugIn)
@@ -104,27 +97,16 @@ namespace Shaos.Repository
                 .HasDatabaseName("IX_PlugIn_Name_Ascending")
                 .IsUnique(true);
 
-            modelBuilder.Entity<Package>()
-                .HasKey(_ => _.Id)
-                .HasName("PrimaryKey_PackageId");
-
             modelBuilder
-                .Entity<Package>()
-                .Property(_ => _.AssemblyFile)
-                .HasMaxLength(ModelConstants.MaxFilePathLength)
-                .IsRequired();
-
-            modelBuilder
-                .Entity<Package>()
-                .Property(_ => _.FileName)
-                .HasMaxLength(ModelConstants.MaxNameLength)
-                .IsRequired();
-
-            modelBuilder
-                .Entity<Package>()
-                .Property(_ => _.Version)
-                .HasMaxLength(ModelConstants.MaxVersionLength)
-                .IsRequired();
+                .Entity<PlugIn>()
+                .OwnsOne(
+                    _ => _.Package,
+                    _ =>
+                    {
+                        _.Property(_ => _.AssemblyFile).HasMaxLength(ModelConstants.MaxFilePathLength).IsRequired();
+                        _.Property(_ => _.FileName).HasMaxLength(ModelConstants.MaxNameLength).IsRequired();
+                        _.Property(_ => _.Version).HasMaxLength(ModelConstants.MaxVersionLength).IsRequired();
+                    });
 
             modelBuilder.Entity<PlugInInstance>()
                 .HasKey(_ => _.Id)

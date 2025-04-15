@@ -47,23 +47,20 @@ namespace Shaos.Repository.Migrations
                 name: "Packages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    PlugInId = table.Column<int>(type: "INTEGER", nullable: false),
                     AssemblyFile = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     FileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    Version = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    PlugInId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Version = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PrimaryKey_PackageId", x => x.Id);
+                    table.PrimaryKey("PK_Packages", x => x.PlugInId);
                     table.ForeignKey(
                         name: "FK_Packages_PlugIns_PlugInId",
                         column: x => x.PlugInId,
                         principalTable: "PlugIns",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,12 +90,6 @@ namespace Shaos.Repository.Migrations
                 name: "IX_LogLevelSwitch_Name_Ascending",
                 table: "LogLevelSwitches",
                 column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Packages_PlugInId",
-                table: "Packages",
-                column: "PlugInId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
