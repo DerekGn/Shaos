@@ -24,6 +24,9 @@
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// A <see cref="Instance"/> host
+    /// </summary>
     public interface IInstanceHost
     {
         /// <summary>
@@ -31,23 +34,48 @@ namespace Shaos.Services.Runtime
         /// </summary>
         event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
 
+        /// <summary>
+        /// The <see cref="IReadOnlyList{T}"/> of <see cref="Instance"/>
+        /// </summary>
+        IReadOnlyList<Instance> Instances { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="assemblyFileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InstanceExistsException"></exception>
         Instance AddInstance(
             int id,
             string name,
             string assemblyFileName);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="InstanceExistsException"></exception>
         void RemoveInstance(int id);
 
         /// <summary>
         /// Start the execution of a <see cref="PlugInInstance"/>
         /// </summary>
         /// <returns>An <see cref="Instance"/></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="InstanceNotFoundException"></exception>
         Instance StartInstance(int id);
 
         /// <summary>
         /// Stop a running instance
         /// </summary>
         /// <param name="id">The identifier of the instance that is to be stopped</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="InstanceNotFoundException"></exception>
         Instance StopInstance(int id);
     }
 }

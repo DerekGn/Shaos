@@ -60,6 +60,9 @@ namespace Shaos.Services.Runtime
         public event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
 
         // </inheritdoc>
+        public IReadOnlyList<Instance> Instances => _executingInstances.AsReadOnly();
+
+        // </inheritdoc>
         public Instance AddInstance(
             int id,
             string name,
@@ -98,6 +101,12 @@ namespace Shaos.Services.Runtime
             {
                 throw new InstanceExistsException(id);
             }
+        }
+
+        // </inheritdoc>
+        public bool InstanceExists(int id)
+        {
+            return _executingInstances.Any(_ => _.Id == id);
         }
 
         // </inheritdoc>

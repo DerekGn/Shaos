@@ -141,20 +141,20 @@ namespace Shaos
 
             // Application defined services
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
-            builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
             builder.Services.AddScoped<ILoggingConfigurationRepository, LoggingConfigurationRepository>();
+            builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
             builder.Services.AddScoped<IPlugInInstanceRepository, PlugInInstanceRepository>();
             builder.Services.AddScoped<IPlugInRepository, PlugInRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
+            builder.Services.AddScoped<IRuntimeService, RuntimeService>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
+            builder.Services.AddSingleton<IInstanceHost, InstanceHost>();
             builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
-            builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
-            builder.Services.AddScoped<IInstanceHost, InstanceHost>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorBackgroundWorker>();

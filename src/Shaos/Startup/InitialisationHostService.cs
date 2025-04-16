@@ -23,6 +23,7 @@
 */
 
 using Shaos.Services.Logging;
+using Shaos.Services.Runtime;
 
 namespace Shaos.Startup
 {
@@ -43,6 +44,33 @@ namespace Shaos.Startup
         {
             _logger.LogInformation("Initialising application");
 
+            await InitialiseLoggingConfiguration(cancellationToken);
+
+            await InitialiseInstanceHostAsync(cancellationToken);
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        private async Task InitialiseInstanceHostAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Initialising instance host");
+
+            using (var scope = _services.CreateScope())
+            {
+                var runtimeService = scope.ServiceProvider
+                    .GetRequiredService<IRuntimeService>();
+
+                await runtimeService.StartEnabledInstancesAsync(cancellationToken);
+            }
+        }
+
+        private async Task InitialiseLoggingConfiguration(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Initialising logging configuration");
+
             using (var scope = _services.CreateScope())
             {
                 var loggingConfiguration = scope
@@ -58,11 +86,6 @@ namespace Shaos.Startup
                     loggingConfiguration,
                     cancellationToken);
             }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
         }
     }
 }

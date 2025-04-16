@@ -28,7 +28,7 @@ using Shaos.Services;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Swashbuckle.AspNetCore.Annotations;
-
+using System.Runtime.CompilerServices;
 using InstanceApi = Shaos.Api.Model.v1.Instance;
 
 namespace Shaos.Controllers
@@ -50,25 +50,25 @@ namespace Shaos.Controllers
             _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
         }
 
-        [HttpGet("{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The Instance", Type = typeof(InstanceApi))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The Instance is not currently executing")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get an Instance",
-            Description = "Returns an Instance",
-            OperationId = "GetInstance")]
-        public ActionResult<InstanceApi> GetInstance(
-            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
-        {
-#warning TODO
-            //var executingInstance = _runtimeService.GetInstance(id);
+        //        [HttpGet("{id}")]
+        //        [SwaggerResponse(StatusCodes.Status200OK, "The Instance", Type = typeof(InstanceApi))]
+        //        [SwaggerResponse(StatusCodes.Status404NotFound, "The Instance is not currently executing")]
+        //        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        //        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        //        [SwaggerOperation(
+        //            Summary = "Get an Instance",
+        //            Description = "Returns an Instance",
+        //            OperationId = "GetInstance")]
+        //        public ActionResult<InstanceApi> GetInstance(
+        //            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
+        //        {
+        //#warning TODO
+        //            //var executingInstance = _runtimeService.GetInstance(id);
 
-            //return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance.ToApi());
+        //            //return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance.ToApi());
 
-            return NotFound();
-        }
+        //            return NotFound();
+        //        }
 
         [HttpGet()]
         [SwaggerResponse(StatusCodes.Status200OK, "The list of Instances", Type = typeof(IEnumerable<InstanceApi>))]
@@ -78,66 +78,64 @@ namespace Shaos.Controllers
             Summary = "Gets the list of Instances",
             Description = "The list of Instances",
             OperationId = "GetInstances")]
-        public IEnumerable<InstanceApi> GetInstancesAsync()
+        public async IAsyncEnumerable<InstanceApi> GetInstancesAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-#warning TODO
-            //foreach (var item in _runtimeService.GetInstances())
-            //{
-            //    yield return item.ToApi();
-            //}
-
-            return null;
-        }
-
-        [HttpPut("{id}/start")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugInInstance will be started")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugInInstance was not found")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Start a PlugInInstance",
-            Description = "Start a PlugInInstance executing",
-            OperationId = "StartInstance")]
-        public async Task<ActionResult> StartInstanceAsync(
-                [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id,
-                CancellationToken cancellationToken)
-        {
-            var plugInInstance = await PlugInInstanceRepository
-                .GetByIdAsync(id, 
-                includeProperties: ["PlugIn"],
-                cancellationToken: cancellationToken);
-
-            if (plugInInstance == null)
+            foreach (var item in await _runtimeService.GetInstancesAsync(cancellationToken))
             {
-                return NotFound();
+                yield return item.ToApi();
             }
-            else
-            {
-#warning TODO
-                //_runtimeService
-                //    .StartInstance(
-                //        plugInInstance.PlugIn!,
-                //        plugInInstance);
-            }
-
-            return Accepted();
         }
 
-        [HttpPut("{id}/stop")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "A ExecutingInstance will be stopped")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Stop an Instance",
-            Description = "Stop an Instance",
-            OperationId = "StopInstance")]
-        public ActionResult StopInstance(
-            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
-        {
-#warning TODO
-            //_runtimeService.StopInstance(id);
+        //        [HttpPut("{id}/start")]
+        //        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugInInstance will be started")]
+        //        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugInInstance was not found")]
+        //        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        //        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        //        [SwaggerOperation(
+        //            Summary = "Start a PlugInInstance",
+        //            Description = "Start a PlugInInstance executing",
+        //            OperationId = "StartInstance")]
+        //        public async Task<ActionResult> StartInstanceAsync(
+        //                [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id,
+        //                CancellationToken cancellationToken)
+        //        {
+        //            var plugInInstance = await PlugInInstanceRepository
+        //                .GetByIdAsync(id, 
+        //                includeProperties: ["PlugIn"],
+        //                cancellationToken: cancellationToken);
 
-            return Accepted();
-        }
+        //            if (plugInInstance == null)
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //#warning TODO
+        //                //_runtimeService
+        //                //    .StartInstance(
+        //                //        plugInInstance.PlugIn!,
+        //                //        plugInInstance);
+        //            }
+
+        //            return Accepted();
+        //        }
+
+        //        [HttpPut("{id}/stop")]
+        //        [SwaggerResponse(StatusCodes.Status202Accepted, "A ExecutingInstance will be stopped")]
+        //        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        //        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        //        [SwaggerOperation(
+        //            Summary = "Stop an Instance",
+        //            Description = "Stop an Instance",
+        //            OperationId = "StopInstance")]
+        //        public ActionResult StopInstance(
+        //            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
+        //        {
+        //#warning TODO
+        //            //_runtimeService.StopInstance(id);
+
+        //            return Accepted();
+        //        }
     }
 }
