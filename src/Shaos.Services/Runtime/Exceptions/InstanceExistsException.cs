@@ -22,40 +22,30 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Paging;
-using Shaos.Services.Runtime;
-
-namespace Shaos.Pages.Runtime
+namespace Shaos.Services.Runtime.Exceptions
 {
-    public class IndexModel : PageModel
+    [Serializable]
+    public class InstanceExistsException : Exception
     {
-        private readonly IConfiguration _configuration;
-        private readonly IRuntimeService _runtimeService;
-
-        public IndexModel(
-            IConfiguration configuration,
-            IRuntimeService runtimeService)
+        public InstanceExistsException()
         {
-            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        [BindProperty]
-        public PaginatedList<Instance> Instances { get; set; } = default!;
-
-        //[BindProperty]
-        //public IList<PlugInInstance> PlugInInstance { get; set; } = default!;
-
-        public async Task OnGetAsync(
-            int? pageIndex)
+        public InstanceExistsException(int id)
         {
-#warning TODO
-            //Instances = PaginatedList<Instance>.Create(
-            //    _runtimeService.GetInstances().AsQueryable(),
-            //    pageIndex ?? 1,
-            //    _configuration.GetValue("PageSize", 5));
+            Id = id;
         }
+
+        public InstanceExistsException(int id, string? message) : base(message)
+        {
+            Id = id;
+        }
+
+        public InstanceExistsException(int id, string? message, Exception? innerException) : base(message, innerException)
+        {
+            Id = id;
+        }
+
+        public int Id { get; }
     }
 }

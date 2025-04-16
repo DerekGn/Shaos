@@ -41,6 +41,11 @@ namespace Shaos.Services.Runtime
         public Assembly? Assembly { get; internal set; }
 
         /// <summary>
+        /// The assembly file path
+        /// </summary>
+        public string AssemblyFilePath { get; internal set; } = string.Empty;
+
+        /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
         /// </summary>
         public Exception? Exception { get; internal set; }
@@ -91,6 +96,7 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(State)}: {State}");
             stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
             stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.ToString())}");
+            stringBuilder.AppendLine($"{nameof(AssemblyFilePath)}: {(AssemblyFilePath == null ? "Empty" : AssemblyFilePath.ToString())}");
             stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
             stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");

@@ -62,9 +62,12 @@ namespace Shaos.Controllers
         public ActionResult<InstanceApi> GetInstance(
             [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
         {
-            var executingInstance = _runtimeService.GetInstance(id);
+#warning TODO
+            //var executingInstance = _runtimeService.GetInstance(id);
 
-            return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance.ToApi());
+            //return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance.ToApi());
+
+            return NotFound();
         }
 
         [HttpGet()]
@@ -77,10 +80,13 @@ namespace Shaos.Controllers
             OperationId = "GetInstances")]
         public IEnumerable<InstanceApi> GetInstancesAsync()
         {
-            foreach (var item in _runtimeService.GetInstances())
-            {
-                yield return item.ToApi();
-            }
+#warning TODO
+            //foreach (var item in _runtimeService.GetInstances())
+            //{
+            //    yield return item.ToApi();
+            //}
+
+            return null;
         }
 
         [HttpPut("{id}/start")]
@@ -107,10 +113,11 @@ namespace Shaos.Controllers
             }
             else
             {
-                _runtimeService
-                    .StartInstance(
-                        plugInInstance.PlugIn!,
-                        plugInInstance);
+#warning TODO
+                //_runtimeService
+                //    .StartInstance(
+                //        plugInInstance.PlugIn!,
+                //        plugInInstance);
             }
 
             return Accepted();
@@ -127,7 +134,8 @@ namespace Shaos.Controllers
         public ActionResult StopInstance(
             [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
         {
-            _runtimeService.StopInstance(id);
+#warning TODO
+            //_runtimeService.StopInstance(id);
 
             return Accepted();
         }

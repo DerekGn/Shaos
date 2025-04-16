@@ -22,30 +22,32 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Runtime;
-using System.Reflection;
-
-namespace Shaos.Services.UnitTests.Fixtures
+namespace Shaos.Services.Runtime
 {
-    public class PlugInFactoryTestFixture : TestFixture
+    public interface IInstanceHost
     {
-        public PlugInFactoryTestFixture()
-        {
-            var assemblyPath = Path.Combine(BinariesValidationPath, AssemblyFileName);
-            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(assemblyPath);
+        /// <summary>
+        /// An event that is raised when an <see cref="Instance"/> state changes
+        /// </summary>
+        event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
 
-            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
-        }
+        Instance AddInstance(
+            int id,
+            string name,
+            string assemblyFileName);
 
-        public AssemblyName AssemblyName { get; }
-        public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
+        void RemoveInstance(int id);
 
-        public override void Dispose()
-        {
-            AssemblyLoadContextReference.Dispose();
+        /// <summary>
+        /// Start the execution of a <see cref="PlugInInstance"/>
+        /// </summary>
+        /// <returns>An <see cref="Instance"/></returns>
+        Instance StartInstance(int id);
 
-            base.Dispose();
-        }
+        /// <summary>
+        /// Stop a running instance
+        /// </summary>
+        /// <param name="id">The identifier of the instance that is to be stopped</param>
+        Instance StopInstance(int id);
     }
 }

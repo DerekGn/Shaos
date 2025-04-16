@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Services.Runtime.Exceptions
 {
 	public class RuntimeMaxInstancesRunningException : Exception
 	{

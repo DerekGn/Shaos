@@ -27,7 +27,7 @@ namespace Shaos.Services.Runtime
     /// <summary>
     /// The runtime configuration options
     /// </summary>
-    public class RuntimeServiceOptions
+    public class RuntimeOptions
     {
         /// <summary>
         /// The maximum number of <see cref="Instance"/> that can be executed in parallel

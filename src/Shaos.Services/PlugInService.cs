@@ -113,18 +113,18 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            if (_runtimeService.GetInstance(id) != null)
-            {
-                _logger.LogWarning("PlugInInstance [{Id}] Running", id);
+            //if (_runtimeService.GetInstance(id) != null)
+            //{
+            //    _logger.LogWarning("PlugInInstance [{Id}] Running", id);
 
-                throw new PlugInInstanceRunningException(id, $"PlugInInstance [{id}] Running");
-            }
-            else
-            {
-                _logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
+            //    throw new PlugInInstanceRunningException(id, $"PlugInInstance [{id}] Running");
+            //}
+            //else
+            //{
+            //    _logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
 
-                await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
-            }
+            //    await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
+            //}
         }
 
         /// <inheritdoc/>
@@ -162,7 +162,7 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if (VerifyPlugState(plugIn, InstanceState.Active))
+                if (VerifyPlugState(plugIn, InstanceState.Running))
                 {
                     _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
                     result = UploadPackageResult.PlugInRunning;
@@ -219,17 +219,18 @@ namespace Shaos.Services
 
             plugInInstanceId = 0;
 
-            if (plugIn != null)
-            {
-                foreach (var plugInInstance in plugIn.Instances)
-                {
-                    if (_runtimeService.GetInstance(plugInInstance.Id) != null)
-                    {
-                        result = true;
-                        break;
-                    }
-                }
-            }
+#warning TODO
+            //if (plugIn != null)
+            //{
+            //    foreach (var plugInInstance in plugIn.Instances)
+            //    {
+            //        if (_runtimeService.GetInstance(plugInInstance.Id) != null)
+            //        {
+            //            result = true;
+            //            break;
+            //        }
+            //    }
+            //}
 
             return result;
         }
@@ -320,17 +321,17 @@ namespace Shaos.Services
         private bool VerifyPlugState(PlugIn plugIn, InstanceState state)
         {
             bool result = false;
+#warning TODO
+            //foreach (var instance in plugIn.Instances)
+            //{
+            //    var executingInstance = _runtimeService.GetInstance(instance.Id);
 
-            foreach (var instance in plugIn.Instances)
-            {
-                var executingInstance = _runtimeService.GetInstance(instance.Id);
-
-                if (executingInstance != null && executingInstance.State == state)
-                {
-                    result = true;
-                    break;
-                }
-            }
+            //    if (executingInstance != null && executingInstance.State == state)
+            //    {
+            //        result = true;
+            //        break;
+            //    }
+            //}
 
             return result;
         }

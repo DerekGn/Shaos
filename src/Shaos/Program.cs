@@ -154,6 +154,7 @@ namespace Shaos
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<IRuntimeService, RuntimeService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
+            builder.Services.AddScoped<IInstanceHost, InstanceHost>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorBackgroundWorker>();
