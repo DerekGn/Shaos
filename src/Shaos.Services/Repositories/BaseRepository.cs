@@ -35,9 +35,9 @@ namespace Shaos.Services.Repositories
             Context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await Context.SaveChangesAsync(cancellationToken);
+            return await Context.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,40 +22,40 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Paging;
 using Shaos.Services.Runtime;
 
-namespace Shaos.Pages.Runtime
+namespace Shaos.Pages.Instances
 {
-    public class IndexModel : PageModel
+    public class IndexModel : PaginatedModel<Instance>
     {
+        private readonly IInstanceHost _instanceHost;
         private readonly IConfiguration _configuration;
-        private readonly IRuntimeService _runtimeService;
 
         public IndexModel(
-            IConfiguration configuration,
-            IRuntimeService runtimeService)
+            IInstanceHost instanceHost,
+            IConfiguration configuration)
         {
-            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(configuration);
+
+            _instanceHost = instanceHost;
+            _configuration = configuration;
         }
 
-        [BindProperty]
-        public PaginatedList<Instance> Instances { get; set; } = default!;
-
-        //[BindProperty]
-        //public IList<PlugInInstance> PlugInInstance { get; set; } = default!;
-
-        public async Task OnGetAsync(
+        public void OnGet(
+            string sortOrder,
+            string currentFilter,
+            string searchString,
             int? pageIndex)
         {
-#warning TODO
-            //Instances = PaginatedList<Instance>.Create(
-            //    _runtimeService.GetInstances().AsQueryable(),
-            //    pageIndex ?? 1,
-            //    _configuration.GetValue("PageSize", 5));
+#warning TODO finish sort
+            var queryable = _instanceHost.Instances.AsQueryable();
+
+            List = PaginatedList<Instance>
+                .Create(
+                    queryable, pageIndex ?? 1,
+                    _configuration.GetValue("PageSize", 5));
         }
     }
 }

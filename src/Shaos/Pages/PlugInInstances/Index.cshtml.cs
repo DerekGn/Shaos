@@ -71,7 +71,6 @@ namespace Shaos.Pages.PlugInInstances
 
             CurrentFilter = searchString;
 
-
             Expression<Func<PlugInInstance, bool>>? filter = null;
             Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null;
 

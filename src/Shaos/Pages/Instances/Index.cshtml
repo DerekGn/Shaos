@@ -1,0 +1,106 @@
+﻿@page
+@model Shaos.Pages.Instances.IndexModel
+@{
+}
+
+<h1>Instances</h1>
+
+@{
+    var backToListDisabled = Model.List.Count == 0 ? "disabled" : "";
+}
+
+<form asp-page="./Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-page="./Index" class="btn @backToListDisabled">Back To List</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@Model.IdSort"
+                asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.List[0].Id)
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
+                asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.List[0].Name)
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.List[0].State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.List[0].StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.List[0].StopTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.List[0].RunningTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.List[0].Exception)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.List) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StopTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RunningTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Exception)
+            </td>
+            <td>
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.List.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.List.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
