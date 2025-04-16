@@ -118,24 +118,37 @@ namespace Shaos.Services.Repositories
         /// <inheritdoc/>
         public async Task UpdateAsync(
             int id,
-            string name,
-            string description,
+            bool? enabled = default,
+            string? name = default,
+            string? description = default,
             CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
-
-            var plugInInstance = await Context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
-
-            await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
+            if(enabled.HasValue && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(description))
             {
-                plugInInstance.Name = name;
-                plugInInstance.Description = description;
+                var plugInInstance = await Context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
-                await Context.SaveChangesAsync(cancellationToken);
+                await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
+                {
+                    if (enabled.HasValue)
+                    {
+                        plugInInstance.Enabled = enabled.Value;
+                    }
 
-                return plugInInstance;
-            });
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        plugInInstance.Name = name;
+                    }
+                    
+                    if (!string.IsNullOrEmpty(description))
+                    {
+                        plugInInstance.Description = description;
+                    }
+
+                    await Context.SaveChangesAsync(cancellationToken);
+
+                    return plugInInstance;
+                });
+            }
         }
 
         private async Task<T> HandleDuplicatePlugInInstanceNameAsync<T>(string name, Func<Task<T>> operation)

@@ -103,8 +103,9 @@ namespace Shaos.Services.Repositories
         /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
         Task UpdateAsync(
             int id,
-            string name,
-            string description,
+            bool? enabled = default,
+            string? name = default,
+            string? description = default,
             CancellationToken cancellationToken = default);
 
         /// <summary>
