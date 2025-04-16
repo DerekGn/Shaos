@@ -48,6 +48,9 @@
                 Package
             </th>
             <th>
+                Version
+            </th>
+            <th>
                 Instances
             </th>
             <th>
@@ -73,6 +76,9 @@
             </td>
             <td>
                 @(item.Package != null ? item.Package.FileName : "Unassigned")
+            </td>
+            <td>
+                @(item.Package != null ? item.Package.Version : "Unassigned")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Instances.Count)

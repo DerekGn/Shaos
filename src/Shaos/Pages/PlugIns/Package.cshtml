@@ -15,38 +15,38 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <dl class="row">
                 <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.PlugIn.Name)
+                    @Html.DisplayNameFor(model => model.PlugIn!.Name)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.PlugIn.Name)
+                    @Html.DisplayFor(model => model.PlugIn!.Name)
                 </dd>
                 <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.PlugIn.Description)
+                    @Html.DisplayNameFor(model => model.PlugIn!.Description)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.PlugIn.Description)
+                    @Html.DisplayFor(model => model.PlugIn!.Description)
                 </dd>
             </dl>
             <h4>Package</h4>
             <hr />
             <dl class="row">
                 <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Package.AssemblyFile)
+                    @Html.DisplayNameFor(model => model.Package!.AssemblyFile)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package.AssemblyFile)
+                    @Html.DisplayFor(model => model.Package!.AssemblyFile)
                 </dd>
                 <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Package.FileName)
+                    @Html.DisplayNameFor(model => model.Package!.FileName)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package.FileName)
+                    @Html.DisplayFor(model => model.Package!.FileName)
                 </dd>
                 <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Package.Version)
+                    @Html.DisplayNameFor(model => model.Package!.Version)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package.Version)
+                    @Html.DisplayFor(model => model.Package!.Version)
                 </dd>
                 <dt class="col-sm-4">
                     Upload Package
