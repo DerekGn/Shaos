@@ -143,6 +143,8 @@ namespace Shaos.Services.Runtime
             {
                 if (instance.State != InstanceState.Running)
                 {
+                    instance.StartTime = DateTime.Now;
+
                     _ = Task.Run(() => StartExecutingInstance(instance));
                 }
                 else
@@ -183,6 +185,7 @@ namespace Shaos.Services.Runtime
                 }
                 else
                 {
+                    instance.StopTime = DateTime.Now;
                     _ = Task.Run(async () => await StopExecutingInstanceAsync(instance));
                 }
             }
@@ -291,11 +294,15 @@ namespace Shaos.Services.Runtime
             }
         }
 
-        private void UpdateStateOnCompletion(Instance instance, Task antecedent)
+        private void UpdateStateOnCompletion(
+            Instance instance,
+            Task antecedent)
         {
             _logger.LogDebug("Completed PlugIn Task: {NewLine}{Task}",
                 Environment.NewLine,
                 antecedent.ToLoggingString());
+
+            instance.StartTime = DateTime.Now;
 
             if ((antecedent.Status == TaskStatus.RanToCompletion) || (antecedent.Status == TaskStatus.Canceled))
             {

@@ -85,6 +85,16 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public UnloadingWeakReference<IRuntimeAssemblyLoadContext>? UnloadingContext { get; internal set; }
 
+        /// <summary>
+        /// The last start time of this instance
+        /// </summary>
+        public DateTime? StartTime { get; internal set; }
+
+        /// <summary>
+        /// The last stop time of this instance
+        /// </summary>
+        public DateTime? StopTime { get; internal set; }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
