@@ -95,6 +95,23 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public DateTime? StopTime { get; internal set; }
 
+        /// <summary>
+        /// The total running time of this instance
+        /// </summary>
+        public TimeSpan RunningTime => CalculateRunningTime();
+
+        private TimeSpan CalculateRunningTime()
+        {
+            TimeSpan timeSpan = TimeSpan.Zero;
+
+            if(StartTime != null && StopTime != null)
+            {
+                timeSpan = StopTime.Value.Subtract(StopTime.Value);
+            }
+
+            return timeSpan;
+        }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -104,6 +121,9 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
             stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
             stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
+            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
+            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
             stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
             stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.ToString())}");
             stringBuilder.AppendLine($"{nameof(AssemblyFilePath)}: {(AssemblyFilePath == null ? "Empty" : AssemblyFilePath.ToString())}");
