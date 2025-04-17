@@ -98,6 +98,8 @@ namespace Shaos.Services
             {
                 if (!CheckPlugInRunning(plugIn, out var plugInInstanceId))
                 {
+                    RemoveInstancesFromHost(plugIn);
+
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
                     {
@@ -114,6 +116,15 @@ namespace Shaos.Services
                 }
             },
             cancellationToken: cancellationToken);
+        }
+
+        private void RemoveInstancesFromHost(PlugIn plugIn)
+        {
+            foreach (var instance in plugIn.Instances)
+            {
+                _logger.LogDebug("Removing Instance [{Id}] from instance host", instance.Id);
+                _instanceHost.RemoveInstance(instance.Id);
+            }
         }
 
         /// <inheritdoc/>
@@ -286,18 +297,19 @@ namespace Shaos.Services
 
             plugInInstanceId = 0;
 
-#warning TODO
-            //if (plugIn != null)
-            //{
-            //    foreach (var plugInInstance in plugIn.Instances)
-            //    {
-            //        if (_runtimeService.GetInstance(plugInInstance.Id) != null)
-            //        {
-            //            result = true;
-            //            break;
-            //        }
-            //    }
-            //}
+            if (plugIn != null)
+            {
+               foreach (var plugInInstance in plugIn.Instances)
+               {
+                   if (_instanceHost.Instances.Any(_ => _.Id == plugInInstance.Id))
+                   {
+                        _logger.LogDebug("Found running instance [{Id}]", plugInInstance.Id);
+                        plugInInstanceId = plugInInstance.Id;
+                        result = true;
+                        break;
+                   }
+               }
+            }
 
             return result;
         }
@@ -382,6 +394,10 @@ namespace Shaos.Services
 
             runtimeAssemblyLoadContext.Unload();
 
+            _logger.LogDebug("Assembly file: [{Assembly}] contains valid PlugIn: [{result}]",
+                assemblyFile,
+                result);
+            
             return unloadingWeakReference;
         }
 
