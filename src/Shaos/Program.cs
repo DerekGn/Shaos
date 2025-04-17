@@ -146,7 +146,6 @@ namespace Shaos
             builder.Services.AddScoped<IPlugInInstanceRepository, PlugInInstanceRepository>();
             builder.Services.AddScoped<IPlugInRepository, PlugInRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
-            builder.Services.AddScoped<IRuntimeService, RuntimeService>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();

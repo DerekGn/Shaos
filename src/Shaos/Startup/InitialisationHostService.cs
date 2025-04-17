@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Shaos.Services;
 using Shaos.Services.Logging;
 using Shaos.Services.Runtime;
 
@@ -60,10 +61,10 @@ namespace Shaos.Startup
 
             using (var scope = _services.CreateScope())
             {
-                var runtimeService = scope.ServiceProvider
-                    .GetRequiredService<IRuntimeService>();
+                var plugInService = scope.ServiceProvider
+                    .GetRequiredService<IPlugInService>();
 
-                await runtimeService.StartEnabledInstancesAsync(cancellationToken);
+                await plugInService.StartEnabledInstancesAsync(cancellationToken);
             }
         }
 

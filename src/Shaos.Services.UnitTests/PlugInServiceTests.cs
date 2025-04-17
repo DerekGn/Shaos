@@ -43,21 +43,21 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IPlugInRepository> _mockPlugInRepository;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private readonly Mock<IRuntimeService> _mockRuntimeService;
+        private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly PlugInService _plugInService;
 
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
-            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
-            _mockRuntimeService = new Mock<IRuntimeService>();
+            _mockInstanceHost = new Mock<IInstanceHost>();
             _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
             _mockPlugInRepository = new Mock<IPlugInRepository>();
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
 
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
-                _mockRuntimeService.Object,
+                _mockInstanceHost.Object,
                 _mockFileStoreService.Object,
                 _mockPlugInRepository.Object,
                 _mockPlugInInstanceRepository.Object,

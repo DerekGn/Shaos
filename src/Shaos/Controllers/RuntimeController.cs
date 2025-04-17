@@ -38,16 +38,18 @@ namespace Shaos.Controllers
     {
         private const string InstanceIdentifier = "The Instance identifier";
 
-        private readonly IRuntimeService _runtimeService;
+        private readonly IInstanceHost _instanceHost;
 
         public RuntimeController(
             ILogger<RuntimeController> logger,
             IPlugInService plugInService,
-            IRuntimeService runtimeService,
+            IInstanceHost instanceHost,
             IPlugInRepository plugInRepository,
             IPlugInInstanceRepository plugInInstanceRepository) : base(logger, plugInService, plugInRepository, plugInInstanceRepository)
         {
-            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
+            ArgumentNullException.ThrowIfNull(logger);
+
+            _instanceHost = instanceHost;
         }
 
         //        [HttpGet("{id}")]
@@ -70,22 +72,22 @@ namespace Shaos.Controllers
         //            return NotFound();
         //        }
 
-        [HttpGet()]
-        [SwaggerResponse(StatusCodes.Status200OK, "The list of Instances", Type = typeof(IEnumerable<InstanceApi>))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Gets the list of Instances",
-            Description = "The list of Instances",
-            OperationId = "GetInstances")]
-        public async IAsyncEnumerable<InstanceApi> GetInstancesAsync(
-            [EnumeratorCancellation] CancellationToken cancellationToken = default)
-        {
-            foreach (var item in await _runtimeService.GetInstancesAsync(cancellationToken))
-            {
-                yield return item.ToApi();
-            }
-        }
+        //[HttpGet()]
+        //[SwaggerResponse(StatusCodes.Status200OK, "The list of Instances", Type = typeof(IEnumerable<InstanceApi>))]
+        //[SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
+        //[SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
+        //[SwaggerOperation(
+        //    Summary = "Gets the list of Instances",
+        //    Description = "The list of Instances",
+        //    OperationId = "GetInstances")]
+        //public async IAsyncEnumerable<InstanceApi> GetInstancesAsync(
+        //    [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        //{
+        //    //foreach (var item in await _runtimeService.GetInstancesAsync(cancellationToken))
+        //    //{
+        //    //    yield return item.ToApi();
+        //    //}
+        //}
 
         //        [HttpPut("{id}/start")]
         //        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugInInstance will be started")]

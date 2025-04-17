@@ -35,26 +35,33 @@ namespace Shaos.Services
     public class PlugInService : IPlugInService
     {
         private readonly IFileStoreService _fileStoreService;
+        private readonly IInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
-        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
-        private readonly IRuntimeService _runtimeService;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
         private readonly IPlugInRepository _plugInRepository;
+        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public PlugInService(
             ILogger<PlugInService> logger,
-            IRuntimeService runtimeService,
+            IInstanceHost instanceHost,
             IFileStoreService fileStoreService,
             IPlugInRepository plugInRepository,
             IPlugInInstanceRepository plugInInstanceRepository,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
-            _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
-            _plugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
-            _plugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
-            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(fileStoreService);
+            ArgumentNullException.ThrowIfNull(plugInRepository);
+            ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
+            ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
+
+            _logger = logger;
+            _instanceHost = instanceHost;
+            _fileStoreService = fileStoreService;
+            _plugInRepository = plugInRepository;
+            _plugInInstanceRepository = plugInInstanceRepository;
+            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
         /// <inheritdoc/>
@@ -146,6 +153,47 @@ namespace Shaos.Services
             else
             {
                 throw new PlugInInstanceNotFoundException(id);
+            }
+        }
+
+        public async Task StartEnabledInstancesAsync(CancellationToken cancellationToken = default)
+        {
+            var plugIns = _plugInRepository
+                .GetAsync(
+                    _ => _.Package != null,
+                    includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
+                    cancellationToken: cancellationToken
+                );
+
+            await foreach (var plugIn in plugIns)
+            {
+                foreach (var instance in plugIn.Instances)
+                {
+                    if (!_instanceHost.Instances.Any(_ => _.Id == instance.Id))
+                    {
+                        var assemblyFilePath = Path
+                            .Combine(_fileStoreService
+                            .GetAssemblyPath(instance.Id), plugIn.Package!.AssemblyFile);
+
+                        _logger.LogInformation("Adding Instance [{Id}] Name: [{Name}] to InstanceHost",
+                            instance.Id,
+                            instance.Name);
+
+                        _instanceHost.AddInstance(
+                            instance.Id,
+                            instance.Name,
+                            assemblyFilePath);
+
+                        if (instance.Enabled)
+                        {
+                            _logger.LogInformation("Starting Instance [{Id}] Name: [{Name}]",
+                                instance.Id,
+                                instance.Name);
+
+                            _instanceHost.StartInstance(instance.Id);
+                        }
+                    }
+                }
             }
         }
 

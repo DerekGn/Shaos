@@ -75,6 +75,12 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Start all <see cref="PlugInInstance"/> that are enabled
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task StartEnabledInstancesAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Upload the package binaries for a <see cref="PlugIn"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to update the NuGet package</param>
