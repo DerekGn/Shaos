@@ -74,13 +74,14 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
+                _logger.LogInformation("Creating PlugInInstance and adding to runtime. PlugIn: [{Id}]", id);
 
-                result = await _plugInInstanceRepository
-                .CreateAsync(
+                result = await _plugInInstanceRepository.CreateAsync(
                     plugIn,
                     plugInInstance,
                     cancellationToken);
+
+                AddInstanceToHost(plugIn, plugInInstance);
             },
             false,
             cancellationToken);
@@ -120,6 +121,20 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
+            var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
+            
+            if(instance != null)
+            {
+                if (instance.State == InstanceState.Running)
+                {
+
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Instance ");
+            }
+
             //if (_runtimeService.GetInstance(id) != null)
             //{
             //    _logger.LogWarning("PlugInInstance [{Id}] Running", id);
@@ -171,18 +186,7 @@ namespace Shaos.Services
                 {
                     if (!_instanceHost.Instances.Any(_ => _.Id == instance.Id))
                     {
-                        var assemblyFilePath = Path
-                            .Combine(_fileStoreService
-                            .GetAssemblyPath(instance.Id), plugIn.Package!.AssemblyFile);
-
-                        _logger.LogInformation("Adding Instance [{Id}] Name: [{Name}] to InstanceHost",
-                            instance.Id,
-                            instance.Name);
-
-                        _instanceHost.AddInstance(
-                            instance.Id,
-                            instance.Name,
-                            assemblyFilePath);
+                        AddInstanceToHost(plugIn, instance);
 
                         if (instance.Enabled)
                         {
@@ -261,6 +265,21 @@ namespace Shaos.Services
             return result;
         }
 
+        private void AddInstanceToHost(PlugIn plugIn, PlugInInstance instance)
+        {
+            var assemblyFilePath = Path
+                                        .Combine(_fileStoreService
+                                        .GetAssemblyPath(instance.Id), plugIn.Package!.AssemblyFile);
+
+            _logger.LogInformation("Adding Instance [{Id}] Name: [{Name}] to InstanceHost",
+                instance.Id,
+                instance.Name);
+
+            _instanceHost.AddInstance(
+                instance.Id,
+                instance.Name,
+                assemblyFilePath);
+        }
         private bool CheckPlugInRunning(PlugIn plugIn, out int plugInInstanceId)
         {
             bool result = false;
