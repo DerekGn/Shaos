@@ -375,19 +375,6 @@ namespace Shaos.Controllers
             }
         }
 
-        private static ProblemDetails CreateProblemDetails(
-            HttpStatusCode statusCode,
-            string details)
-        {
-            return new ProblemDetails()
-            {
-                Title = statusCode.ToString(),
-                Detail = details,
-                Status = (int?)statusCode,
-                Type = statusCode.MapToType()
-            };
-        }
-
         private bool ValidateFormFile(IFormFile formFile, out ProblemDetails? problemDetails)
         {
             problemDetails = null;

@@ -40,42 +40,49 @@ namespace Shaos.Services.Runtime
         IReadOnlyList<Instance> Instances { get; }
 
         /// <summary>
-        /// 
+        /// Add an <see cref="Instance"/> to the <see cref="InstanceHost"/>
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="name"></param>
-        /// <param name="assemblyFileName"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InstanceExistsException"></exception>
+        /// <param name="id">The identifier of </param>
+        /// <param name="name">The name of the instance</param>
+        /// <param name="assemblyFileName">The name of the assembly file for the instance</param>
+        /// <returns>The <see cref="Instance"/> that was added</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyFileName"/> is nul of empty</exception>
+        /// <exception cref="InstanceExistsException">Thrown if the <see cref="InstanceHost"/> already contains an <see cref="Instance"/> with <paramref name="id"/></exception>
         Instance AddInstance(
             int id,
             string name,
             string assemblyFileName);
 
         /// <summary>
-        /// 
+        /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
         /// </summary>
         /// <param name="id"></param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="InstanceExistsException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
+        /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is still running</exception>
+        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
         void RemoveInstance(int id);
 
         /// <summary>
-        /// Start the execution of a <see cref="PlugInInstance"/>
+        /// Start the execution of a <see cref="Instance"/>
         /// </summary>
         /// <returns>An <see cref="Instance"/></returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="InstanceNotFoundException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
+        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
+        /// <remarks>
+        /// The instance is not synchronously started
+        /// </remarks>
         Instance StartInstance(int id);
 
         /// <summary>
-        /// Stop a running instance
+        /// Stop a running <see cref="Instance"/>
         /// </summary>
         /// <param name="id">The identifier of the instance that is to be stopped</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <exception cref="InstanceNotFoundException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
+        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
+        /// <remarks>
+        /// The instance is not synchronously stopped
+        /// </remarks>
         Instance StopInstance(int id);
     }
 }

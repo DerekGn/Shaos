@@ -118,17 +118,16 @@ namespace Shaos.Services.Runtime
 
             if (instance != null)
             {
-                // stop instance if running
                 if (instance.State == InstanceState.Running)
                 {
-                    _ = Task.Run(() => StopExecutingInstanceAsync(instance));
+                    throw new InstanceRunningException(id);
                 }
 
                 _executingInstances.Remove(instance);
             }
             else
             {
-                throw new InstanceExistsException(id);
+                throw new InstanceNotFoundException(id);
             }
         }
 

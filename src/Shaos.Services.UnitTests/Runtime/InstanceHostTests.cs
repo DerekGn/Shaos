@@ -144,9 +144,7 @@ namespace Shaos.Services.UnitTests.Runtime
                 State = InstanceState.Running
             });
 
-            _instanceHost.RemoveInstance(1);
-
-            Assert.Null(_instanceHost._executingInstances.FirstOrDefault());
+            Assert.Throws<InstanceRunningException>(() => _instanceHost.RemoveInstance(1));
         }
 
         [Fact]
@@ -158,7 +156,7 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestRemoveInstanceNotFound()
         {
-            Assert.Throws<InstanceExistsException>(() => _instanceHost.RemoveInstance(1));
+            Assert.Throws<InstanceNotFoundException>(() => _instanceHost.RemoveInstance(1));
         }
 
         [Fact]
