@@ -20,6 +20,7 @@
     </div>
 </form>
 
+
 <table class="table">
     <thead>
         <tr>
@@ -36,7 +37,10 @@
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].State)
+                <a asp-page="./Index" asp-route-sortOrder="@Model.StateSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.List[0].State)
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.List[0].StartTime)
@@ -78,7 +82,6 @@
                 @Html.DisplayFor(modelItem => item.Exception)
             </td>
             <td>
-
             </td>
         </tr>
 }

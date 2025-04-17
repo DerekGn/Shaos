@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Services.Runtime;
 
@@ -43,14 +44,68 @@ namespace Shaos.Pages.Instances
             _configuration = configuration;
         }
 
+        [BindProperty]
+        public string StateSort { get; set; } = string.Empty;
+
         public void OnGet(
             string sortOrder,
             string currentFilter,
             string searchString,
             int? pageIndex)
         {
-#warning TODO finish sort
+            CurrentSort = sortOrder;
+            NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            IdSort = sortOrder == nameof(Instance.Id) ? "id_desc" : nameof(Instance.Id);
+            StateSort = sortOrder == nameof(Instance.State) ? "state_desc" : nameof(Instance.State);
+
+            if (searchString != null)
+            {
+                pageIndex = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            CurrentFilter = searchString;
+
+
             var queryable = _instanceHost.Instances.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                queryable = queryable.Where(_ => _.Name.ToLower().Contains(searchString.ToLower()));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    queryable = queryable.OrderByDescending(_ => _.Name);
+                    break;
+
+                case nameof(Instance.Name):
+                    queryable = queryable.OrderBy(_ => _.Name);
+                    break;
+
+                case "id_desc":
+                    queryable = queryable.OrderByDescending(_ => _.Id);
+                    break;
+
+                case nameof(Instance.Id):
+                    queryable = queryable.OrderBy(_ => _.Id);
+                    break;
+
+                case "state_desc":
+                    queryable = queryable.OrderByDescending(_ => _.State);
+                    break;
+
+                case nameof(Instance.State):
+                    queryable = queryable.OrderBy(_ => _.State);
+                    break;
+
+                default:
+                    break;
+            }
 
             List = PaginatedList<Instance>
                 .Create(
