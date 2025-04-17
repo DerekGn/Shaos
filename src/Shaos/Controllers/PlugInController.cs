@@ -296,7 +296,7 @@ namespace Shaos.Controllers
             }
         }
 
-        [HttpPut("instances/{id}")]
+        [HttpPatch("instances/{id}")]
         [SwaggerResponse(StatusCodes.Status202Accepted, "The update was accepted")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
@@ -313,6 +313,7 @@ namespace Shaos.Controllers
             {
                 await PlugInInstanceRepository.UpdateAsync(
                     id,
+                    update.Enabled,
                     update.Name,
                     update.Description,
                     cancellationToken);
