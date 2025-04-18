@@ -399,17 +399,17 @@ namespace Shaos.Services
         private bool VerifyPlugState(PlugIn plugIn, InstanceState state)
         {
             bool result = false;
-#warning TODO
-            //foreach (var instance in plugIn.Instances)
-            //{
-            //    var executingInstance = _runtimeService.GetInstance(instance.Id);
 
-            //    if (executingInstance != null && executingInstance.State == state)
-            //    {
-            //        result = true;
-            //        break;
-            //    }
-            //}
+            foreach (var instance in plugIn.Instances)
+            {
+                var executingInstance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == instance.Id);
+
+                if (executingInstance != null && executingInstance.State == state)
+                {
+                    result = true;
+                    break;
+                }
+            }
 
             return result;
         }

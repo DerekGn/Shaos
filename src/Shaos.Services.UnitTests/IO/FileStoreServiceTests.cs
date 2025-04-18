@@ -84,14 +84,6 @@ namespace Shaos.Services.UnitTests.IO
         }
 
         [Fact]
-        public void TestPackageExists()
-        {
-            var exists = _fileStoreService.PackageExists(TestFixture.PackageFileName);
-
-            Assert.True(exists);
-        }
-
-        [Fact]
         public async Task TestWritePackageFileStreamAsync()
         {
             using var memoryStream = new MemoryStream();

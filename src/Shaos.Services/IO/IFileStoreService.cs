@@ -53,13 +53,6 @@ namespace Shaos.Services.IO
         string GetAssemblyPath(int id);
 
         /// <summary>
-        /// Determine if a package file exists in the package store
-        /// </summary>
-        /// <param name="fileName">The filename of the package file</param>
-        /// <returns>True if the package file exists</returns>
-        bool PackageExists(string fileName);
-
-        /// <summary>
         /// </summary>
         /// <param name="id">The <see cref="PlugIn"/> identifier</param>
         /// <param name="packageFileName">The package filename to write too</param>
