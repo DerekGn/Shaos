@@ -167,7 +167,8 @@ namespace Shaos.Services.UnitTests.Runtime
                 Id = 1,
             });
 
-            SetupMockPlugIn();
+            var mockPlugIn = new Mock<IPlugIn>();
+            SetupMockPlugIn(mockPlugIn.Object);
 
             SetupStateWait(InstanceState.Complete);
 
@@ -187,7 +188,8 @@ namespace Shaos.Services.UnitTests.Runtime
                 Id = 1,
             });
 
-            var mockPlugIn = SetupMockPlugIn();
+            var mockPlugIn = new Mock<IPlugIn>();
+            SetupMockPlugIn(mockPlugIn.Object);
 
             mockPlugIn
                 .Setup(_ => _.ExecuteAsync(It.IsAny<CancellationToken>()))
@@ -295,10 +297,8 @@ namespace Shaos.Services.UnitTests.Runtime
             }
         }
 
-        private Mock<IPlugIn> SetupMockPlugIn()
+        private void SetupMockPlugIn(IPlugIn? plugIn)
         {
-            var mockPlugIn = new Mock<IPlugIn>();
-
             _mockRuntimeAssemblyLoadContextFactory
                .Setup(_ => _.Create(
                    It.IsAny<string>()))
@@ -312,9 +312,7 @@ namespace Shaos.Services.UnitTests.Runtime
             _mockPlugInFactory
                 .Setup(_ => _.CreateInstance(
                     It.IsAny<Assembly>()))
-                .Returns(mockPlugIn.Object);
-
-            return mockPlugIn;
+                .Returns(plugIn);
         }
 
         private void SetupStateWait(InstanceState state)

@@ -57,5 +57,13 @@ namespace Shaos.Services.UnitTests.Runtime
 
             context.Unload();
         }
+
+        [Fact]
+        public void TestCreateInstanceNotFound()
+        {
+            var assembly = typeof(object).Assembly;
+
+            Assert.Throws<InvalidOperationException>(() => _plugInFactory.CreateInstance(assembly));
+        }
     }
 }

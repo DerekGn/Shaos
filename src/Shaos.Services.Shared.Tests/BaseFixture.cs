@@ -80,6 +80,7 @@ namespace Shaos.Services.Shared.Tests
         public virtual void Dispose()
         {
             BinariesPath.DeleteDirectory();
+            PackageFilePath.DeleteDirectory();
         }
     }
 }

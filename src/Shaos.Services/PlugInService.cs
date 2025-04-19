@@ -138,6 +138,10 @@ namespace Shaos.Services
                     _logger.LogInformation("Deleting PlugInInstance [{Id}]", id);
 
                     await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
+
+                    _logger.LogInformation("Deleting Instance [{Id}] from InstanceHost", id);
+
+                    _instanceHost.RemoveInstance(id);
                 }
             }
             else
@@ -181,7 +185,7 @@ namespace Shaos.Services
             {
                 foreach (var instance in plugIn.Instances)
                 {
-                    if (!_instanceHost.Instances.Any(_ => _.Id == instance.Id))
+                    if (!_instanceHost.InstanceExists(instance.Id))
                     {
                         AddInstanceToHost(plugIn, instance);
 
@@ -265,8 +269,8 @@ namespace Shaos.Services
         private void AddInstanceToHost(PlugIn plugIn, PlugInInstance instance)
         {
             var assemblyFilePath = Path
-                                        .Combine(_fileStoreService
-                                        .GetAssemblyPath(instance.Id), plugIn.Package!.AssemblyFile);
+                .Combine(_fileStoreService
+                .GetAssemblyPath(instance.Id), plugIn.Package!.AssemblyFile);
 
             _logger.LogInformation("Adding Instance [{Id}] Name: [{Name}] to InstanceHost",
                 instance.Id,
@@ -288,7 +292,7 @@ namespace Shaos.Services
             {
                 foreach (var plugInInstance in plugIn.Instances)
                 {
-                    if (_instanceHost.Instances.Any(_ => _.Id == plugInInstance.Id))
+                    if (_instanceHost.InstanceExists(plugInInstance.Id))
                     {
                         _logger.LogDebug("Found running instance [{Id}]", plugInInstance.Id);
                         plugInInstanceId = plugInInstance.Id;
