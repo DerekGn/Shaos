@@ -100,8 +100,6 @@ namespace Shaos.Services
                 {
                     RemoveInstancesFromHost(plugIn);
 
-                    RemoveInstancesFromHost(plugIn);
-
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
                     {
@@ -118,15 +116,6 @@ namespace Shaos.Services
                 }
             },
             cancellationToken: cancellationToken);
-        }
-
-        private void RemoveInstancesFromHost(PlugIn plugIn)
-        {
-            foreach (var instance in plugIn.Instances)
-            {
-                _logger.LogDebug("Removing Instance [{Id}] from instance host", instance.Id);
-                _instanceHost.RemoveInstance(instance.Id);
-            }
         }
 
         /// <inheritdoc/>
