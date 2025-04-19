@@ -22,9 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Runtime.Exceptions
 {
-    [Serializable]
+    [ExcludeFromCodeCoverage]
     public class InstanceExistsException : Exception
     {
         public InstanceExistsException()

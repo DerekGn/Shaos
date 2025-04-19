@@ -22,9 +22,12 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Runtime.Exceptions
 {
-    internal class InstanceRunningException : Exception
+    [ExcludeFromCodeCoverage]
+    public class InstanceRunningException : Exception
     {
         public InstanceRunningException()
         {

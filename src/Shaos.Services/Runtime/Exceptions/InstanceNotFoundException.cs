@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Runtime.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public class InstanceNotFoundException : Exception
     {
         public InstanceNotFoundException()

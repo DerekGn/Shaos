@@ -172,7 +172,8 @@ namespace Shaos.Services
             }
         }
 
-        public async Task StartEnabledInstancesAsync(CancellationToken cancellationToken = default)
+        public async Task StartEnabledInstancesAsync(
+            CancellationToken cancellationToken = default)
         {
             var plugIns = _plugInRepository
                 .GetAsync(
