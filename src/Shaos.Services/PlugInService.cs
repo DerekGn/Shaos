@@ -292,7 +292,9 @@ namespace Shaos.Services
             {
                 foreach (var plugInInstance in plugIn.Instances)
                 {
-                    if (_instanceHost.InstanceExists(plugInInstance.Id))
+                    var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == plugInInstance.Id);
+
+                    if (instance != null && instance.State == InstanceState.Running)
                     {
                         _logger.LogDebug("Found running instance [{Id}]", plugInInstance.Id);
                         plugInInstanceId = plugInInstance.Id;
