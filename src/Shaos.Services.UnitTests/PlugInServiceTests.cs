@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Models;
@@ -33,6 +34,7 @@ using Shaos.Services.Shared.Tests;
 using Shaos.Test.PlugIn;
 using Xunit;
 using Xunit.Abstractions;
+using Shaos.Services.Shared.Tests.Extensions;
 
 namespace Shaos.Services.UnitTests
 {
@@ -443,6 +445,41 @@ namespace Shaos.Services.UnitTests
                 Times.Once);
         }
 
+        [Fact]
+        public async Task TestStartEnabledInstancesAsync()
+        {
+            var plugIn = SetupPlugInGetAsync();
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = "assemblyfilename",
+                FileName = "filename"
+            };
+
+            plugIn.Instances.Add(new PlugInInstance(){
+                Name = "name",
+                Enabled = true,
+                Description = "description"
+            });
+
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPath(
+                    It.IsAny<int>()
+                ))
+                .Returns("");
+
+            await _plugInService.StartEnabledInstancesAsync();
+
+            _mockInstanceHost.Verify(_ => _.AddInstance(
+                It.IsAny<int>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()),
+                Times.Once);
+
+            _mockInstanceHost.Verify(_ => _.StartInstance(
+                It.IsAny<int>()),
+                Times.Once);
+        }
+
         private PlugIn SetupPlugInGetByIdAsync()
         {
             var plugIn = new PlugIn()
@@ -458,6 +495,26 @@ namespace Shaos.Services.UnitTests
                     It.IsAny<List<string>?>(),
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(plugIn);
+
+            return plugIn;
+        }
+
+        private PlugIn SetupPlugInGetAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            };
+
+            _mockPlugInRepository
+                .Setup(_ => _.GetAsync(
+                    It.IsAny<Expression<Func<PlugIn, bool>>?>(),
+                    It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<List<string>?>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(new List<PlugIn>() {plugIn}.ToAsyncEnumerable());
 
             return plugIn;
         }
