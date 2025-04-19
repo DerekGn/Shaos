@@ -100,6 +100,8 @@ namespace Shaos.Services
                 {
                     RemoveInstancesFromHost(plugIn);
 
+                    RemoveInstancesFromHost(plugIn);
+
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
                     {
@@ -133,31 +135,26 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default)
         {
             var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
-            
-            if(instance != null)
+
+            if (instance != null)
             {
                 if (instance.State == InstanceState.Running)
                 {
+                    _logger.LogWarning("Instance [{Id}] Running", id);
 
+                    throw new PlugInInstanceRunningException(id, $"Instance [{id}] Running");
+                }
+                else
+                {
+                    _logger.LogInformation("Deleting PlugInInstance [{Id}]", id);
+
+                    await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
                 }
             }
             else
             {
                 _logger.LogWarning("Instance ");
             }
-
-            //if (_runtimeService.GetInstance(id) != null)
-            //{
-            //    _logger.LogWarning("PlugInInstance [{Id}] Running", id);
-
-            //    throw new PlugInInstanceRunningException(id, $"PlugInInstance [{id}] Running");
-            //}
-            //else
-            //{
-            //    _logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
-
-            //    await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
-            //}
         }
 
         /// <inheritdoc/>
@@ -291,6 +288,7 @@ namespace Shaos.Services
                 instance.Name,
                 assemblyFilePath);
         }
+
         private bool CheckPlugInRunning(PlugIn plugIn, out int plugInInstanceId)
         {
             bool result = false;
@@ -299,16 +297,16 @@ namespace Shaos.Services
 
             if (plugIn != null)
             {
-               foreach (var plugInInstance in plugIn.Instances)
-               {
-                   if (_instanceHost.Instances.Any(_ => _.Id == plugInInstance.Id))
-                   {
+                foreach (var plugInInstance in plugIn.Instances)
+                {
+                    if (_instanceHost.Instances.Any(_ => _.Id == plugInInstance.Id))
+                    {
                         _logger.LogDebug("Found running instance [{Id}]", plugInInstance.Id);
                         plugInInstanceId = plugInInstance.Id;
                         result = true;
                         break;
-                   }
-               }
+                    }
+                }
             }
 
             return result;
@@ -377,6 +375,14 @@ namespace Shaos.Services
             }
         }
 
+        private void RemoveInstancesFromHost(PlugIn plugIn)
+        {
+            foreach (var instance in plugIn.Instances)
+            {
+                _logger.LogDebug("Removing Instance [{Id}] from instance host", instance.Id);
+                _instanceHost.RemoveInstance(instance.Id);
+            }
+        }
         private UnloadingWeakReference<IRuntimeAssemblyLoadContext> ValidateAssemblyContainsPlugIn(
             string assemblyFile,
             out string version,
@@ -394,27 +400,27 @@ namespace Shaos.Services
 
             runtimeAssemblyLoadContext.Unload();
 
-            _logger.LogDebug("Assembly file: [{Assembly}] contains valid PlugIn: [{result}]",
+            _logger.LogDebug("Assembly file: [{Assembly}] contains valid PlugIn: [{Result}]",
                 assemblyFile,
                 result);
-            
+
             return unloadingWeakReference;
         }
 
         private bool VerifyPlugState(PlugIn plugIn, InstanceState state)
         {
             bool result = false;
-#warning TODO
-            //foreach (var instance in plugIn.Instances)
-            //{
-            //    var executingInstance = _runtimeService.GetInstance(instance.Id);
 
-            //    if (executingInstance != null && executingInstance.State == state)
-            //    {
-            //        result = true;
-            //        break;
-            //    }
-            //}
+            foreach (var instance in plugIn.Instances)
+            {
+                var executingInstance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == instance.Id);
+
+                if (executingInstance != null && executingInstance.State == state)
+                {
+                    result = true;
+                    break;
+                }
+            }
 
             return result;
         }
