@@ -30,11 +30,11 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
-using Shaos.Services.Shared.Tests;
 using Shaos.Test.PlugIn;
+using Shaos.Testing.Shared;
+using Shaos.Testing.Shared.Extensions;
 using Xunit;
 using Xunit.Abstractions;
-using Shaos.Services.Shared.Tests.Extensions;
 
 namespace Shaos.Services.UnitTests
 {

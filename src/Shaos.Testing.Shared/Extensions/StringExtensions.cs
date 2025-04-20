@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Shared.Tests.Extensions
+namespace Shaos.Testing.Shared.Extensions
 {
     public static class StringExtensions
     {

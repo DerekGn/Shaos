@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Shared.Tests;
+using Shaos.Testing.Shared;
 
 namespace Shaos.Services.IntTests.Fixtures
 {

@@ -27,7 +27,7 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.Shared.Tests
+namespace Shaos.Testing.Shared
 {
     public abstract class BaseTests
     {
