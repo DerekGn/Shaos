@@ -1,15 +1,9 @@
 ﻿@page
-@model Shaos.Pages.PlugIns.IndexModel
-
+@model Shaos.Pages.Instances.IndexModel
 @{
-    ViewData["Title"] = "Index";
 }
 
-<h1>PlugIns</h1>
-
-<p>
-    <a asp-page="Create">Create New PlugIn</a>
-</p>
+<h1>Instances</h1>
 
 @{
     var backToListDisabled = Model.List.Count == 0 ? "disabled" : "";
@@ -26,38 +20,39 @@
     </div>
 </form>
 
+
 <table class="table">
     <thead>
         <tr>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.IdSort"
-                   asp-route-currentFilter="@Model.CurrentFilter">
+                asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Id)
                 </a>
             </th>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
-                   asp-route-currentFilter="@Model.CurrentFilter">
+                asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Name)
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].Description)
+                <a asp-page="./Index" asp-route-sortOrder="@Model.StateSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.List[0].State)
+                </a>
             </th>
             <th>
-                Package
+                @Html.DisplayNameFor(model => model.List[0].StartTime)
             </th>
             <th>
-                Version
+                @Html.DisplayNameFor(model => model.List[0].StopTime)
             </th>
             <th>
-                Instances
+                @Html.DisplayNameFor(model => model.List[0].RunningTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.List[0].UpdatedDate)
+                @Html.DisplayNameFor(model => model.List[0].Exception)
             </th>
             <th></th>
         </tr>
@@ -72,28 +67,21 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.State)
             </td>
             <td>
-                @(item.Package != null ? item.Package.FileName : "Unassigned")
+                @Html.DisplayFor(modelItem => item.StartTime)
             </td>
             <td>
-                @(item.Package != null ? item.Package.Version : "Unassigned")
+                @Html.DisplayFor(modelItem => item.StopTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Instances.Count)
+                @Html.DisplayFor(modelItem => item.RunningTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
+                @Html.DisplayFor(modelItem => item.Exception)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UpdatedDate)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-page="./Package" asp-route-id="@item.Id">Package</a> |
-                <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id">Instances</a>
             </td>
         </tr>
 }

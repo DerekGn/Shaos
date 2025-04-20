@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public class PlugInNotFoundException : Exception
     {
         public PlugInNotFoundException(int id)

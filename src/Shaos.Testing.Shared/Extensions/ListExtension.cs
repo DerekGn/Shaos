@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,28 +22,16 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-
-namespace Shaos.Services.Exceptions
+namespace Shaos.Testing.Shared.Extensions
 {
-    [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotFoundException : Exception
+    public static class ListExtensions
     {
-        public PlugInInstanceNotFoundException(int id)
+        public static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IList<T> list)
         {
-            Id = id;
+            foreach (var item in list)
+            {
+                yield return item;
+            }
         }
-
-        public PlugInInstanceNotFoundException(int id, string message) : base(message)
-        {
-            Id = id;
-        }
-
-        public PlugInInstanceNotFoundException(int id, string message, Exception inner) : base(message, inner)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
     }
 }

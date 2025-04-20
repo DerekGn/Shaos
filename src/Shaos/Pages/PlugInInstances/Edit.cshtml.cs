@@ -48,7 +48,7 @@ namespace Shaos.Pages.PlugInInstances
                 return NotFound();
             }
 
-            var plugininstance = await _repository.GetByIdAsync(id, false, cancellationToken: cancellationToken);
+            var plugininstance = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
             if (plugininstance == null)
             {
                 return NotFound();
@@ -59,14 +59,19 @@ namespace Shaos.Pages.PlugInInstances
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            await _repository.SaveChangesAsync();
+            await _repository.UpdateAsync(
+                PlugInInstance.Id,
+                PlugInInstance.Enabled,
+                PlugInInstance.Name,
+                PlugInInstance.Description,
+                cancellationToken);
 
             return RedirectToPage("./Index");
         }

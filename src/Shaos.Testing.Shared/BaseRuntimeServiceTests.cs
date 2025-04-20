@@ -26,7 +26,7 @@ using Shaos.Repository.Models;
 using Shaos.Services.Runtime;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.Shared.Tests
+namespace Shaos.Testing.Shared
 {
     public abstract class BaseRuntimeServiceTests : BaseTests
     {

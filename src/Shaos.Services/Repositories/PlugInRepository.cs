@@ -72,14 +72,21 @@ namespace Shaos.Services.Repositories
             ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(package);
 
+            _logger.LogDebug("Creating new package for PlugIn: [{Id}] Package: [{Package}]",
+                plugIn.Id,
+                package);
+
             plugIn.Package = package;
 
             return await Context.SaveChangesAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public Task<int> DeleteAsync(int id,
+            CancellationToken cancellationToken = default)
         {
+            _logger.LogDebug("Deleting PlugIn [{Id}]", id);
+
             return Context.Set<PlugIn>().DeleteAsync(id, cancellationToken);
         }
 

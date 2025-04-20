@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,28 +22,24 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
+using Shaos.Services.Version;
+using Xunit;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Services.UnitTests.Version
 {
-    [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotFoundException : Exception
+    public class AppVersionServiceTests
     {
-        public PlugInInstanceNotFoundException(int id)
-        {
-            Id = id;
-        }
+        private AppVersionService _appVersionService;
 
-        public PlugInInstanceNotFoundException(int id, string message) : base(message)
+        public AppVersionServiceTests()
         {
-            Id = id;
+            _appVersionService = new AppVersionService();
         }
-
-        public PlugInInstanceNotFoundException(int id, string message, Exception inner) : base(message, inner)
+        
+        [Fact]
+        public void TestVesrsion()
         {
-            Id = id;
+            Assert.NotEmpty(_appVersionService.Version);
         }
-
-        public int Id { get; }
     }
 }

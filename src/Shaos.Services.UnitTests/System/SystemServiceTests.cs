@@ -25,8 +25,8 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Shaos.Services.Shared.Tests;
 using Shaos.Services.System;
+using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 

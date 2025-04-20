@@ -22,28 +22,37 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.Reflection;
+using Xunit.Abstractions;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Testing.Shared
 {
-    [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotFoundException : Exception
+    public abstract class BaseTests
     {
-        public PlugInInstanceNotFoundException(int id)
+        protected BaseTests(ITestOutputHelper outputHelper)
         {
-            Id = id;
+            var serviceCollection = new ServiceCollection()
+                .AddLogging((builder) => {
+                    builder.AddXUnit(outputHelper);
+                    builder.SetMinimumLevel(LogLevel.Debug);
+                }).AddOptions();
+
+            ServiceProvider = serviceCollection.BuildServiceProvider();
+
+            LoggerFactory = ServiceProvider.GetService<ILoggerFactory>();
+
+            AssemblyDirectory = Path
+                .GetDirectoryName(
+                Assembly.GetExecutingAssembly().Location);
+
+            OutputHelper = outputHelper;
         }
 
-        public PlugInInstanceNotFoundException(int id, string message) : base(message)
-        {
-            Id = id;
-        }
-
-        public PlugInInstanceNotFoundException(int id, string message, Exception inner) : base(message, inner)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        public string? AssemblyDirectory { get; }
+        public ILoggerFactory? LoggerFactory { get; }
+        public ITestOutputHelper OutputHelper { get; }
+        public ServiceProvider ServiceProvider { get; }
     }
 }

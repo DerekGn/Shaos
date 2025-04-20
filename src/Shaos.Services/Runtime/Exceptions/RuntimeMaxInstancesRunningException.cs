@@ -22,27 +22,15 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Runtime
-{
-    /// <summary>
-    /// The runtime configuration options
-    /// </summary>
-    public class RuntimeServiceOptions
-    {
-        /// <summary>
-        /// The maximum number of <see cref="Instance"/> that can be executed in parallel
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 50
-        /// </remarks>
-        public int MaxExecutingInstances { get; init; } = 50;
+using System.Diagnostics.CodeAnalysis;
 
-        /// <summary>
-        /// The wait time for a <see cref="PlugIn"/> stop request
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 1 second
-        /// </remarks>
-        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
-    }
+namespace Shaos.Services.Runtime.Exceptions
+{
+	[ExcludeFromCodeCoverage]
+	public class RuntimeMaxInstancesRunningException : Exception
+	{
+		public RuntimeMaxInstancesRunningException() { }
+		public RuntimeMaxInstancesRunningException(string message) : base(message) { }
+		public RuntimeMaxInstancesRunningException(string message, Exception inner) : base(message, inner) { }
+	}
 }

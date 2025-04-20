@@ -75,14 +75,6 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public bool PackageExists(string fileName)
-        {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(fileName);
-
-            return File.Exists(Path.Combine(_options.Value.PackagesPath, fileName));
-        }
-
-        /// <inheritdoc/>
         public async Task<string> WritePackageFileStreamAsync(
             int id,
             string packageFileName,

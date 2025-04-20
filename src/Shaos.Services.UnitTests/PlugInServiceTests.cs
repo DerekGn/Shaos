@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Models;
@@ -29,8 +30,9 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
-using Shaos.Services.Shared.Tests;
 using Shaos.Test.PlugIn;
+using Shaos.Testing.Shared;
+using Shaos.Testing.Shared.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -43,21 +45,21 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IPlugInRepository> _mockPlugInRepository;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private readonly Mock<IRuntimeService> _mockRuntimeService;
+        private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly PlugInService _plugInService;
 
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
-            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
-            _mockRuntimeService = new Mock<IRuntimeService>();
+            _mockInstanceHost = new Mock<IInstanceHost>();
             _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
             _mockPlugInRepository = new Mock<IPlugInRepository>();
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
 
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
-                _mockRuntimeService.Object,
+                _mockInstanceHost.Object,
                 _mockFileStoreService.Object,
                 _mockPlugInRepository.Object,
                 _mockPlugInInstanceRepository.Object,
@@ -98,13 +100,24 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestCreatePlugInInstanceSuccessAsync()
         {
-            SetupPlugInGetByIdAsync();
+            var plugIn = SetupPlugInGetByIdAsync();
+
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = "assemblyfile"
+            };
 
             _mockPlugInInstanceRepository.Setup(_ => _.CreateAsync(
                 It.IsAny<PlugIn>(),
                 It.IsAny<PlugInInstance>(),
                 It.IsAny<CancellationToken>()))
                 .ReturnsAsync(10);
+
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPath(
+                    It.IsAny<int>()
+                ))
+                .Returns("");
 
             var result = await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
             {
@@ -118,17 +131,31 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceRunningAsync()
         {
-            _mockRuntimeService.Setup(_ => _.GetInstance(
-                It.IsAny<int>()))
-                .Returns(new Instance() { Name = "Test" });
+            _mockInstanceHost
+                .Setup(_ => _.Instances)
+                .Returns(new List<Instance>(){
+                    new Instance()
+                    {
+                        Id = 12,
+                        State = InstanceState.Running
+                    }});
 
             await Assert.ThrowsAsync<PlugInInstanceRunningException>(async () =>
-                await _plugInService.DeletePlugInInstanceAsync(12));
+               await _plugInService.DeletePlugInInstanceAsync(12));
         }
 
         [Fact]
         public async Task TestDeletePlugInInstanceSuccessAsync()
         {
+            _mockInstanceHost
+                .Setup(_ => _.Instances)
+                .Returns(new List<Instance>(){
+                    new Instance()
+                    {
+                        Id = 12,
+                        State = InstanceState.Complete
+                    }});
+            
             await _plugInService.DeletePlugInInstanceAsync(12);
 
             _mockPlugInInstanceRepository.Verify(_ => _.DeleteAsync(
@@ -156,13 +183,14 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            _mockRuntimeService.Setup(_ => _.GetInstance(
-                It.IsAny<int>()))
-                .Returns(new Instance()
-                {
-                    Id = 10,
-                    Name = "Test"
-                });
+            _mockInstanceHost
+                .Setup(_ => _.Instances)
+                .Returns(new List<Instance>(){
+                    new Instance()
+                    {
+                        Id = 10,
+                        State = InstanceState.Running
+                    }});
 
             await Assert.ThrowsAsync<PlugInInstanceRunningException>(async () =>
                 await _plugInService.DeletePlugInAsync(1));
@@ -182,7 +210,20 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
+            _mockInstanceHost
+                .Setup(_ => _.Instances)
+                .Returns(new List<Instance>(){
+                    new Instance()
+                    {
+                        Id = 10,
+                        State = InstanceState.Complete
+                    }});
+
             await _plugInService.DeletePlugInAsync(1);
+
+            _mockInstanceHost.Verify(_ => _.RemoveInstance(
+                It.IsAny<int>()),
+                Times.Once);
 
             _mockFileStoreService.Verify(_ => _.DeletePackage(
                 It.IsAny<int>(),
@@ -237,10 +278,6 @@ namespace Shaos.Services.UnitTests
             SetupPlugInGetByIdAsync();
 
             _mockFileStoreService
-                .Setup(_ => _.PackageExists(It.IsAny<string>()))
-                .Returns(false);
-
-            _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(
                     It.IsAny<string>(),
                     It.IsAny<string>()))
@@ -283,14 +320,19 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            _mockRuntimeService
-                .Setup(_ => _.GetInstance(
-                    It.IsAny<int>()))
-                .Returns(new Instance()
+            var instances = new List<Instance>()
+            {
+                new Instance()
                 {
-                    State = InstanceState.Active,
+                    Id=1,
+                    State = InstanceState.Running,
                     Name = "Test"
-                });
+                }
+            };
+
+            _mockInstanceHost
+                .Setup(_ => _.Instances)
+                .Returns(instances);
 
             var result = await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
@@ -318,11 +360,6 @@ namespace Shaos.Services.UnitTests
             MemoryStream stream = new MemoryStream();
 
             SetupPlugInGetByIdAsync();
-
-            _mockFileStoreService
-                .Setup(_ => _.PackageExists(
-                    It.IsAny<string>()))
-                .Returns(false);
 
             _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(
@@ -361,6 +398,88 @@ namespace Shaos.Services.UnitTests
                 Times.Once);
         }
 
+        [Fact]
+        public async Task TestUploadPlugInPackageUpdateSuccessAsync()
+        {
+            MemoryStream stream = new MemoryStream();
+
+            var plugIn = SetupPlugInGetByIdAsync();
+
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = "assemblyfile"
+            };
+
+            _mockFileStoreService
+                .Setup(_ => _.ExtractPackage(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(new List<string>()
+                {
+                    ".PlugIn.dll"
+                });
+
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
+                It.IsAny<string>()))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+
+            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
+                It.IsAny<string>()))
+                .Returns(typeof(TestPlugIn).Assembly);
+
+            var result = await _plugInService
+                .UploadPlugInPackageAsync(1, "filename", stream);
+
+            Assert.Equal(UploadPackageResult.Success, result);
+
+            _mockFileStoreService
+                .Verify(_ => _.WritePackageFileStreamAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<string>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            _mockPlugInRepository.Verify(_ => _.SaveChangesAsync(
+                It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task TestStartEnabledInstancesAsync()
+        {
+            var plugIn = SetupPlugInGetAsync();
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = "assemblyfilename",
+                FileName = "filename"
+            };
+
+            plugIn.Instances.Add(new PlugInInstance(){
+                Name = "name",
+                Enabled = true,
+                Description = "description"
+            });
+
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPath(
+                    It.IsAny<int>()
+                ))
+                .Returns("");
+
+            await _plugInService.StartEnabledInstancesAsync();
+
+            _mockInstanceHost.Verify(_ => _.AddInstance(
+                It.IsAny<int>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()),
+                Times.Once);
+
+            _mockInstanceHost.Verify(_ => _.StartInstance(
+                It.IsAny<int>()),
+                Times.Once);
+        }
+
         private PlugIn SetupPlugInGetByIdAsync()
         {
             var plugIn = new PlugIn()
@@ -376,6 +495,26 @@ namespace Shaos.Services.UnitTests
                     It.IsAny<List<string>?>(),
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(plugIn);
+
+            return plugIn;
+        }
+
+        private PlugIn SetupPlugInGetAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            };
+
+            _mockPlugInRepository
+                .Setup(_ => _.GetAsync(
+                    It.IsAny<Expression<Func<PlugIn, bool>>?>(),
+                    It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<List<string>?>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(new List<PlugIn>() {plugIn}.ToAsyncEnumerable());
 
             return plugIn;
         }

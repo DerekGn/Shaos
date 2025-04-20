@@ -24,9 +24,9 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Services.IO;
-using Shaos.Services.Shared.Tests;
-using Shaos.Services.Shared.Tests.Extensions;
 using Shaos.Services.UnitTests.Fixtures;
+using Shaos.Testing.Shared;
+using Shaos.Testing.Shared.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -81,14 +81,6 @@ namespace Shaos.Services.UnitTests.IO
 
             Assert.NotNull(result);
             Assert.Equal(expectedPath, result);
-        }
-
-        [Fact]
-        public void TestPackageExists()
-        {
-            var exists = _fileStoreService.PackageExists(TestFixture.PackageFileName);
-
-            Assert.True(exists);
         }
 
         [Fact]

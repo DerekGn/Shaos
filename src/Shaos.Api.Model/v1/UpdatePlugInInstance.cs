@@ -35,15 +35,19 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The name of the instance
         /// </summary>
-        [Required]
         [StringLength(ModelConstants.MaxNameLength)]
-        public required string Name { get; init; }
+        public string? Name { get; init; }
 
         /// <summary>
         /// The description of the instance
         /// </summary>
-        [Required]
         [StringLength(ModelConstants.MaxDescriptionLength)]
-        public required string Description { get; init; }
+        public string? Description { get; init; }
+
+        /// <summary>
+        /// The enabled state of the instance
+        /// </summary>
+        public bool? Enabled { get; init; }
+
     }
 }

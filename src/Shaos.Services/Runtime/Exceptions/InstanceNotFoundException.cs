@@ -24,22 +24,26 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Services.Runtime.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotFoundException : Exception
+    public class InstanceNotFoundException : Exception
     {
-        public PlugInInstanceNotFoundException(int id)
+        public InstanceNotFoundException()
+        {
+        }
+
+        public InstanceNotFoundException(int id)
         {
             Id = id;
         }
 
-        public PlugInInstanceNotFoundException(int id, string message) : base(message)
+        public InstanceNotFoundException(int id, string? message) : base(message)
         {
             Id = id;
         }
 
-        public PlugInInstanceNotFoundException(int id, string message, Exception inner) : base(message, inner)
+        public InstanceNotFoundException(int id, string? message, Exception? innerException) : base(message, innerException)
         {
             Id = id;
         }

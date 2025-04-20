@@ -35,26 +35,33 @@ namespace Shaos.Services
     public class PlugInService : IPlugInService
     {
         private readonly IFileStoreService _fileStoreService;
+        private readonly IInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
-        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
-        private readonly IRuntimeService _runtimeService;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
         private readonly IPlugInRepository _plugInRepository;
+        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public PlugInService(
             ILogger<PlugInService> logger,
-            IRuntimeService runtimeService,
+            IInstanceHost instanceHost,
             IFileStoreService fileStoreService,
             IPlugInRepository plugInRepository,
             IPlugInInstanceRepository plugInInstanceRepository,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
-            _fileStoreService = fileStoreService ?? throw new ArgumentNullException(nameof(fileStoreService));
-            _plugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
-            _plugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
-            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory ?? throw new ArgumentNullException(nameof(runtimeAssemblyLoadContextFactory));
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(fileStoreService);
+            ArgumentNullException.ThrowIfNull(plugInRepository);
+            ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
+            ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
+
+            _logger = logger;
+            _instanceHost = instanceHost;
+            _fileStoreService = fileStoreService;
+            _plugInRepository = plugInRepository;
+            _plugInInstanceRepository = plugInInstanceRepository;
+            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
         /// <inheritdoc/>
@@ -67,13 +74,14 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
+                _logger.LogInformation("Creating PlugInInstance and adding to runtime. PlugIn: [{Id}]", id);
 
-                result = await _plugInInstanceRepository
-                .CreateAsync(
+                result = await _plugInInstanceRepository.CreateAsync(
                     plugIn,
                     plugInInstance,
                     cancellationToken);
+
+                AddInstanceToHost(plugIn, plugInInstance);
             },
             false,
             cancellationToken);
@@ -90,6 +98,8 @@ namespace Shaos.Services
             {
                 if (!CheckPlugInRunning(plugIn, out var plugInInstanceId))
                 {
+                    RemoveInstancesFromHost(plugIn);
+
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
                     {
@@ -113,17 +123,30 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            if (_runtimeService.GetInstance(id) != null)
-            {
-                _logger.LogWarning("PlugInInstance [{Id}] Running", id);
+            var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
 
-                throw new PlugInInstanceRunningException(id, $"PlugInInstance [{id}] Running");
+            if (instance != null)
+            {
+                if (instance.State == InstanceState.Running)
+                {
+                    _logger.LogWarning("Instance [{Id}] Running", id);
+
+                    throw new PlugInInstanceRunningException(id, $"Instance [{id}] Running");
+                }
+                else
+                {
+                    _logger.LogInformation("Deleting PlugInInstance [{Id}]", id);
+
+                    await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
+
+                    _logger.LogInformation("Deleting Instance [{Id}] from InstanceHost", id);
+
+                    _instanceHost.RemoveInstance(id);
+                }
             }
             else
             {
-                _logger.LogInformation("PlugInInstance [{Id}] Deleting", id);
-
-                await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
+                _logger.LogWarning("Instance ");
             }
         }
 
@@ -149,6 +172,37 @@ namespace Shaos.Services
             }
         }
 
+        public async Task StartEnabledInstancesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var plugIns = _plugInRepository
+                .GetAsync(
+                    _ => _.Package != null,
+                    includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
+                    cancellationToken: cancellationToken
+                );
+
+            await foreach (var plugIn in plugIns)
+            {
+                foreach (var instance in plugIn.Instances)
+                {
+                    if (!_instanceHost.InstanceExists(instance.Id))
+                    {
+                        AddInstanceToHost(plugIn, instance);
+
+                        if (instance.Enabled)
+                        {
+                            _logger.LogInformation("Starting Instance [{Id}] Name: [{Name}]",
+                                instance.Id,
+                                instance.Name);
+
+                            _instanceHost.StartInstance(instance.Id);
+                        }
+                    }
+                }
+            }
+        }
+
         /// <inheritdoc/>
         public async Task<UploadPackageResult> UploadPlugInPackageAsync(
             int id,
@@ -162,7 +216,7 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if (VerifyPlugState(plugIn, InstanceState.Active))
+                if (VerifyPlugState(plugIn, InstanceState.Running))
                 {
                     _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
                     result = UploadPackageResult.PlugInRunning;
@@ -213,6 +267,22 @@ namespace Shaos.Services
             return result;
         }
 
+        private void AddInstanceToHost(PlugIn plugIn, PlugInInstance instance)
+        {
+            var assemblyFilePath = Path
+                .Combine(_fileStoreService
+                .GetAssemblyPath(instance.Id), plugIn.Package!.AssemblyFile);
+
+            _logger.LogInformation("Adding Instance [{Id}] Name: [{Name}] to InstanceHost",
+                instance.Id,
+                instance.Name);
+
+            _instanceHost.AddInstance(
+                instance.Id,
+                instance.Name,
+                assemblyFilePath);
+        }
+
         private bool CheckPlugInRunning(PlugIn plugIn, out int plugInInstanceId)
         {
             bool result = false;
@@ -223,8 +293,12 @@ namespace Shaos.Services
             {
                 foreach (var plugInInstance in plugIn.Instances)
                 {
-                    if (_runtimeService.GetInstance(plugInInstance.Id) != null)
+                    var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == plugInInstance.Id);
+
+                    if (instance != null && instance.State == InstanceState.Running)
                     {
+                        _logger.LogDebug("Found running instance [{Id}]", plugInInstance.Id);
+                        plugInInstanceId = plugInInstance.Id;
                         result = true;
                         break;
                     }
@@ -297,6 +371,14 @@ namespace Shaos.Services
             }
         }
 
+        private void RemoveInstancesFromHost(PlugIn plugIn)
+        {
+            foreach (var instance in plugIn.Instances)
+            {
+                _logger.LogDebug("Removing Instance [{Id}] from instance host", instance.Id);
+                _instanceHost.RemoveInstance(instance.Id);
+            }
+        }
         private UnloadingWeakReference<IRuntimeAssemblyLoadContext> ValidateAssemblyContainsPlugIn(
             string assemblyFile,
             out string version,
@@ -314,6 +396,10 @@ namespace Shaos.Services
 
             runtimeAssemblyLoadContext.Unload();
 
+            _logger.LogDebug("Assembly file: [{Assembly}] contains valid PlugIn: [{Result}]",
+                assemblyFile,
+                result);
+
             return unloadingWeakReference;
         }
 
@@ -323,7 +409,7 @@ namespace Shaos.Services
 
             foreach (var instance in plugIn.Instances)
             {
-                var executingInstance = _runtimeService.GetInstance(instance.Id);
+                var executingInstance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == instance.Id);
 
                 if (executingInstance != null && executingInstance.State == state)
                 {

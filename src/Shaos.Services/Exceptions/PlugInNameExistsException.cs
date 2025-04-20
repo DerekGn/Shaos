@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public class PlugInNameExistsException : Exception
     {
         public PlugInNameExistsException(string name)

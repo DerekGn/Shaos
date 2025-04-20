@@ -22,37 +22,27 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System.Reflection;
-using Xunit.Abstractions;
-
-namespace Shaos.Services.Shared.Tests
+namespace Shaos.Services.Runtime
 {
-    public abstract class BaseTests
+    /// <summary>
+    /// The runtime configuration options
+    /// </summary>
+    public class RuntimeOptions
     {
-        protected BaseTests(ITestOutputHelper outputHelper)
-        {
-            var serviceCollection = new ServiceCollection()
-                .AddLogging((builder) => {
-                    builder.AddXUnit(outputHelper);
-                    builder.SetMinimumLevel(LogLevel.Debug);
-                }).AddOptions();
+        /// <summary>
+        /// The maximum number of <see cref="Instance"/> that can be executed in parallel
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 50
+        /// </remarks>
+        public int MaxExecutingInstances { get; init; } = 50;
 
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-
-            LoggerFactory = ServiceProvider.GetService<ILoggerFactory>();
-
-            AssemblyDirectory = Path
-                .GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
-
-            OutputHelper = outputHelper;
-        }
-
-        public string? AssemblyDirectory { get; }
-        public ILoggerFactory? LoggerFactory { get; }
-        public ITestOutputHelper OutputHelper { get; }
-        public ServiceProvider ServiceProvider { get; }
+        /// <summary>
+        /// The wait time for a <see cref="PlugIn"/> stop request
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 1 second
+        /// </remarks>
+        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
     }
 }

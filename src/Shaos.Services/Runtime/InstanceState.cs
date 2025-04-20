@@ -44,9 +44,9 @@ namespace Shaos.Services.Runtime
         /// </summary>
         ActivationFaulted,
         /// <summary>
-        /// The <see cref="Instance"/> is activate
+        /// The <see cref="Instance"/> is running
         /// </summary>
-        Active,
+        Running,
         /// <summary>
         /// The <see cref="Instance"/> is complete.
         /// </summary>

@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -24,41 +24,39 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
-using Shaos.Repository.Models;
-using Shaos.Services.Repositories;
-using System.Linq.Expressions;
+using Shaos.Services.Runtime;
 
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.Pages.Instances
 {
-    public class IndexModel : PaginatedModel<PlugInInstance>
+    public class IndexModel : PaginatedModel<Instance>
     {
+        private readonly IInstanceHost _instanceHost;
         private readonly IConfiguration _configuration;
-        private readonly IPlugInInstanceRepository _repository;
 
         public IndexModel(
-            IConfiguration configuration,
-            IPlugInInstanceRepository repository)
+            IInstanceHost instanceHost,
+            IConfiguration configuration)
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(configuration);
+
+            _instanceHost = instanceHost;
+            _configuration = configuration;
         }
 
         [BindProperty]
-        public int Id { get;set; } = default!;
+        public string StateSort { get; set; } = string.Empty;
 
-        public async Task OnGetAsync(
-            int id,
+        public void OnGet(
             string sortOrder,
             string currentFilter,
             string searchString,
-            int? pageIndex,
-            CancellationToken cancellationToken = default)
+            int? pageIndex)
         {
-            Id = id;
-
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            IdSort = sortOrder == nameof(PlugIn.Id) ? "id_desc" : nameof(PlugIn.Id);
+            IdSort = sortOrder == nameof(Instance.Id) ? "id_desc" : nameof(Instance.Id);
+            StateSort = sortOrder == nameof(Instance.State) ? "state_desc" : nameof(Instance.State);
 
             if (searchString != null)
             {
@@ -71,45 +69,48 @@ namespace Shaos.Pages.PlugInInstances
 
             CurrentFilter = searchString;
 
-            Expression<Func<PlugInInstance, bool>>? filter = null;
-            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null;
+
+            var queryable = _instanceHost.Instances.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.Name!.ToLower().Contains(searchString.ToLower());
+                queryable = queryable.Where(_ => _.Name.ToLower().Contains(searchString.ToLower()));
             }
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    orderBy = _ => _.OrderByDescending(_ => _.Name);
+                    queryable = queryable.OrderByDescending(_ => _.Name);
                     break;
 
-                case nameof(PlugInInstance.Name):
-                    orderBy = _ => _.OrderBy(_ => _.Name);
+                case nameof(Instance.Name):
+                    queryable = queryable.OrderBy(_ => _.Name);
                     break;
 
                 case "id_desc":
-                    orderBy = _ => _.OrderByDescending(_ => _.Id);
+                    queryable = queryable.OrderByDescending(_ => _.Id);
                     break;
 
-                case nameof(PlugInInstance.Id):
-                    orderBy = _ => _.OrderBy(_ => _.Id);
+                case nameof(Instance.Id):
+                    queryable = queryable.OrderBy(_ => _.Id);
+                    break;
+
+                case "state_desc":
+                    queryable = queryable.OrderByDescending(_ => _.State);
+                    break;
+
+                case nameof(Instance.State):
+                    queryable = queryable.OrderBy(_ => _.State);
                     break;
 
                 default:
                     break;
             }
 
-            var queryable = _repository.GetQueryable(
-                filter,
-                orderBy);
-
-            List = await PaginatedList<PlugInInstance>
-                .CreateAsync(
+            List = PaginatedList<Instance>
+                .Create(
                     queryable, pageIndex ?? 1,
-                    _configuration.GetValue("PageSize", 5),
-                    cancellationToken);
+                    _configuration.GetValue("PageSize", 5));
         }
     }
 }

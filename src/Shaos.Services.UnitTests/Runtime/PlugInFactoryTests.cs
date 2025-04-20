@@ -24,8 +24,8 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Services.Runtime;
-using Shaos.Services.Shared.Tests;
 using Shaos.Services.UnitTests.Fixtures;
+using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -56,6 +56,14 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(plugIn);
 
             context.Unload();
+        }
+
+        [Fact]
+        public void TestCreateInstanceNotFound()
+        {
+            var assembly = typeof(object).Assembly;
+
+            Assert.Throws<InvalidOperationException>(() => _plugInFactory.CreateInstance(assembly));
         }
     }
 }

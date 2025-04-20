@@ -24,47 +24,29 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
-using Shaos.Services;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Exceptions;
 using Swashbuckle.AspNetCore.Annotations;
-
+using System.Net;
 using InstanceApi = Shaos.Api.Model.v1.Instance;
 
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/runtime")]
-    public class RuntimeController : BasePlugInController
+    public class InstanceHostController : CoreController
     {
         private const string InstanceIdentifier = "The Instance identifier";
 
-        private readonly IRuntimeService _runtimeService;
+        private readonly IInstanceHost _instanceHost;
 
-        public RuntimeController(
-            ILogger<RuntimeController> logger,
-            IPlugInService plugInService,
-            IRuntimeService runtimeService,
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository) : base(logger, plugInService, plugInRepository, plugInInstanceRepository)
+        public InstanceHostController(
+            ILogger<InstanceHostController> logger,
+            IInstanceHost instanceHost) : base(logger)
         {
-            _runtimeService = runtimeService ?? throw new ArgumentNullException(nameof(runtimeService));
-        }
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(instanceHost);
 
-        [HttpGet("{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The Instance", Type = typeof(InstanceApi))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The Instance is not currently executing")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get an Instance",
-            Description = "Returns an Instance",
-            OperationId = "GetInstance")]
-        public ActionResult<InstanceApi> GetInstance(
-            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
-        {
-            var executingInstance = _runtimeService.GetInstance(id);
-
-            return executingInstance == null ? NotFound() : new OkObjectResult(executingInstance.ToApi());
+            _instanceHost = instanceHost;
         }
 
         [HttpGet()]
@@ -75,45 +57,33 @@ namespace Shaos.Controllers
             Summary = "Gets the list of Instances",
             Description = "The list of Instances",
             OperationId = "GetInstances")]
-        public IEnumerable<InstanceApi> GetInstancesAsync()
+        public IEnumerable<InstanceApi> GetInstances()
         {
-            foreach (var item in _runtimeService.GetInstances())
+            foreach (var item in _instanceHost.Instances)
             {
                 yield return item.ToApi();
             }
         }
 
         [HttpPut("{id}/start")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugInInstance will be started")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The PlugInInstance was not found")]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The Instance will be started")]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "The Instance was not found", Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
         [SwaggerOperation(
-            Summary = "Start a PlugInInstance",
-            Description = "Start a PlugInInstance executing",
+            Summary = "Start a Instance",
+            Description = "Start a Instance executing",
             OperationId = "StartInstance")]
-        public async Task<ActionResult> StartInstanceAsync(
-                [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id,
-                CancellationToken cancellationToken)
+        public ActionResult StartInstance(
+                [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
         {
-            var plugInInstance = await PlugInInstanceRepository
-                .GetByIdAsync(id, 
-                includeProperties: ["PlugIn"],
-                cancellationToken: cancellationToken);
-
-            if (plugInInstance == null)
+            return HandleError(id, (id) =>
             {
-                return NotFound();
-            }
-            else
-            {
-                _runtimeService
-                    .StartInstance(
-                        plugInInstance.PlugIn!,
-                        plugInInstance);
-            }
+                _instanceHost.StartInstance(id);
 
-            return Accepted();
+                return Accepted();
+            });
         }
 
         [HttpPut("{id}/stop")]
@@ -127,7 +97,32 @@ namespace Shaos.Controllers
         public ActionResult StopInstance(
             [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
         {
-            _runtimeService.StopInstance(id);
+            return HandleError(id, (id) =>
+            {
+                _instanceHost.StopInstance(id);
+
+                return Accepted();
+            });
+        }
+
+        private ActionResult HandleError(int id, Func<int, ActionResult> operation)
+        {
+            try
+            {
+                operation(id);
+            }
+            catch (InstanceNotFoundException)
+            {
+                return BadRequest(
+                    CreateProblemDetails(HttpStatusCode.NotFound,
+                        $"Instance [{id}] not found"));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest(
+                    CreateProblemDetails(HttpStatusCode.BadRequest,
+                        "Id is invalid"));
+            }
 
             return Accepted();
         }

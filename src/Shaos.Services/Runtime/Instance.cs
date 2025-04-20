@@ -41,6 +41,11 @@ namespace Shaos.Services.Runtime
         public Assembly? Assembly { get; internal set; }
 
         /// <summary>
+        /// The assembly file path
+        /// </summary>
+        public string AssemblyFilePath { get; internal set; } = string.Empty;
+
+        /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
         /// </summary>
         public Exception? Exception { get; internal set; }
@@ -80,6 +85,33 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public UnloadingWeakReference<IRuntimeAssemblyLoadContext>? UnloadingContext { get; internal set; }
 
+        /// <summary>
+        /// The last start time of this instance
+        /// </summary>
+        public DateTime? StartTime { get; internal set; }
+
+        /// <summary>
+        /// The last stop time of this instance
+        /// </summary>
+        public DateTime? StopTime { get; internal set; }
+
+        /// <summary>
+        /// The total running time of this instance
+        /// </summary>
+        public TimeSpan RunningTime => CalculateRunningTime();
+
+        private TimeSpan CalculateRunningTime()
+        {
+            TimeSpan timeSpan = TimeSpan.Zero;
+
+            if(StartTime != null && StopTime != null)
+            {
+                timeSpan = StopTime.Value.Subtract(StopTime.Value);
+            }
+
+            return timeSpan;
+        }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -89,8 +121,12 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
             stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
             stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
+            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
+            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
             stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
             stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.ToString())}");
+            stringBuilder.AppendLine($"{nameof(AssemblyFilePath)}: {(AssemblyFilePath == null ? "Empty" : AssemblyFilePath.ToString())}");
             stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
             stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");

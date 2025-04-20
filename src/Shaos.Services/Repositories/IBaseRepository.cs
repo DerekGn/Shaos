@@ -26,6 +26,6 @@ namespace Shaos.Services.Repositories
 {
     public interface IBaseRepository
     {
-        Task SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

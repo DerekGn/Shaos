@@ -22,28 +22,24 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-
-namespace Shaos.Services.Exceptions
+namespace Shaos.Testing.Shared.Extensions
 {
-    [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotFoundException : Exception
+    public static class StringExtensions
     {
-        public PlugInInstanceNotFoundException(int id)
-        {
-            Id = id;
+        public static void CreateDirectory(this string value) {
+            
+            if (value != null && !Directory.Exists(value))
+            {
+                Directory.CreateDirectory(value);
+            }
         }
 
-        public PlugInInstanceNotFoundException(int id, string message) : base(message)
+        public static void DeleteDirectory(this string value)
         {
-            Id = id;
+            if (value != null && Directory.Exists(value))
+            {
+                Directory.Delete(value, true);
+            }
         }
-
-        public PlugInInstanceNotFoundException(int id, string message, Exception inner) : base(message, inner)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
     }
 }

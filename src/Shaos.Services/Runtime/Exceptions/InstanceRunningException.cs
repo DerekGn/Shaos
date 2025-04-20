@@ -22,24 +22,32 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Shared.Tests.Extensions
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Runtime.Exceptions
 {
-    public static class StringExtensions
+    [ExcludeFromCodeCoverage]
+    public class InstanceRunningException : Exception
     {
-        public static void CreateDirectory(this string value) {
-            
-            if (value != null && !Directory.Exists(value))
-            {
-                Directory.CreateDirectory(value);
-            }
+        public InstanceRunningException()
+        {
         }
 
-        public static void DeleteDirectory(this string value)
+        public InstanceRunningException(int id)
         {
-            if (value != null && Directory.Exists(value))
-            {
-                Directory.Delete(value, true);
-            }
+            Id = id;
         }
+
+        public InstanceRunningException(int id, string? message) : base(message)
+        {
+            Id = id;
+        }
+
+        public InstanceRunningException(int id, string? message, Exception? innerException) : base(message, innerException)
+        {
+            Id = id;
+        }
+
+        public int Id { get; }
     }
 }

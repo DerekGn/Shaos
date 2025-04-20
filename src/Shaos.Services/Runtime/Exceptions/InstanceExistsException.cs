@@ -22,12 +22,32 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Exceptions
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Runtime.Exceptions
 {
-	public class RuntimeMaxInstancesRunningException : Exception
-	{
-		public RuntimeMaxInstancesRunningException() { }
-		public RuntimeMaxInstancesRunningException(string message) : base(message) { }
-		public RuntimeMaxInstancesRunningException(string message, Exception inner) : base(message, inner) { }
-	}
+    [ExcludeFromCodeCoverage]
+    public class InstanceExistsException : Exception
+    {
+        public InstanceExistsException()
+        {
+        }
+
+        public InstanceExistsException(int id)
+        {
+            Id = id;
+        }
+
+        public InstanceExistsException(int id, string? message) : base(message)
+        {
+            Id = id;
+        }
+
+        public InstanceExistsException(int id, string? message, Exception? innerException) : base(message, innerException)
+        {
+            Id = id;
+        }
+
+        public int Id { get; }
+    }
 }

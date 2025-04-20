@@ -25,7 +25,7 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Services.IntTests.Fixtures;
 using Shaos.Services.Runtime;
-using Shaos.Services.Shared.Tests;
+using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 

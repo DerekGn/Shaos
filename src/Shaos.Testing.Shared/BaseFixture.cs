@@ -24,11 +24,11 @@
 
 using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
-using Shaos.Services.Shared.Tests.Extensions;
+using Shaos.Testing.Shared.Extensions;
 using System.IO.Compression;
 using System.Reflection;
 
-namespace Shaos.Services.Shared.Tests
+namespace Shaos.Testing.Shared
 {
     public abstract class BaseTestFixture : IDisposable
     {
@@ -80,6 +80,7 @@ namespace Shaos.Services.Shared.Tests
         public virtual void Dispose()
         {
             BinariesPath.DeleteDirectory();
+            PackageFilePath.DeleteDirectory();
         }
     }
 }
