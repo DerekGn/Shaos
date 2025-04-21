@@ -32,6 +32,8 @@ namespace Shaos.Testing.Shared.Extensions
             {
                 yield return item;
             }
+
+            await Task.CompletedTask; // to make the compiler warning go away
         }
     }
 }

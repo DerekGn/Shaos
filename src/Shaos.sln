@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Services.IntTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Test.PlugIn", "Shaos.Test.PlugIn\Shaos.Test.PlugIn.csproj", "{9B677B85-1367-47E8-BD98-F70EB4935914}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaos.Testing.Shared", "Shaos.Testing.Shared\Shaos.Testing.Shared.csproj", "{8CC8DB2D-D9D5-EA83-3571-3C7B6F6EB97E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{9B677B85-1367-47E8-BD98-F70EB4935914}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B677B85-1367-47E8-BD98-F70EB4935914}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B677B85-1367-47E8-BD98-F70EB4935914}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CC8DB2D-D9D5-EA83-3571-3C7B6F6EB97E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CC8DB2D-D9D5-EA83-3571-3C7B6F6EB97E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CC8DB2D-D9D5-EA83-3571-3C7B6F6EB97E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CC8DB2D-D9D5-EA83-3571-3C7B6F6EB97E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{E4E058B6-10EE-4817-A177-0ABDCFB90926} = {65F7083B-B252-4653-837A-08D1AFB86C82}
 		{DE4CCFBC-CC46-4BC2-B607-2382C156C5B8} = {39708260-FFCA-40E4-A831-F43A160E8D3D}
 		{9B677B85-1367-47E8-BD98-F70EB4935914} = {39708260-FFCA-40E4-A831-F43A160E8D3D}
+		{8CC8DB2D-D9D5-EA83-3571-3C7B6F6EB97E} = {39708260-FFCA-40E4-A831-F43A160E8D3D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6E4FABFB-C4C3-4AD7-9F23-7A8A9CC86B30}
