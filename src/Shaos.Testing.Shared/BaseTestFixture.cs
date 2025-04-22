@@ -22,8 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Options;
-using Shaos.Services.IO;
 using Shaos.Testing.Shared.Extensions;
 using System.IO.Compression;
 using System.Reflection;
@@ -32,55 +30,77 @@ namespace Shaos.Testing.Shared
 {
     public abstract class BaseTestFixture : IDisposable
     {
-        public const string AssemblyFileName = "Shaos.Test.PlugIn.dll";
-        public const string ExtractionFolder = "extracted";
-        public const string PackageFileName = "Shaos.Test.PlugIn.zip";
-        public const string PackagesFolder = "packages";
-        public const string ValidationFolder = "validation";
-
-        public BaseTestFixture(string testProjectName, string plugInProjectName)
+        public BaseTestFixture(string testProjectName, string packageName)
         {
             var assemblyDirectory = Path
                 .GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location);
 
-            var sourcePackageDirectory = assemblyDirectory!.Replace(testProjectName, plugInProjectName).Replace("net8.0", string.Empty);
-            var sourcePackageFilePath = Path.Combine(sourcePackageDirectory, PackageFileName);
+            PackageName = packageName;
+            PackageNameInvalid = string.Concat(PackageName, ".Invalid");
 
-            var targetPackageDirectory = Path.Combine(Path.Combine(assemblyDirectory, "testing"), Guid.NewGuid().ToString());
-            var targetPackageFilePath = Path.Combine(targetPackageDirectory, PackageFileName);
+            PackageFile = string.Concat(PackageName, ".zip");
+            PackageFileInvalid = string.Concat(PackageNameInvalid, ".zip");
 
-            targetPackageDirectory.CreateDirectory();
+            PackageDirectory = Path.Combine(Path.Combine(assemblyDirectory, "testing"), Guid.NewGuid().ToString());
+            PackageDirectory.CreateDirectory();
 
-            File.Copy(sourcePackageFilePath, targetPackageFilePath, true);
+            PackageFilePath = Path.Combine(PackageDirectory, PackageFile);
+            PackageFileInvalidPath = Path.Combine(PackageDirectory, PackageFileInvalid);
 
-            BinariesPath = targetPackageDirectory;
-            PackageFilePath = targetPackageFilePath;
+            CopyPackageFile(
+                PackageName,
+                PackageFile,
+                testProjectName,
+                assemblyDirectory,
+                PackageDirectory);
 
-            var optionsInstance = new FileStoreOptions()
-            {
-                BinariesPath = BinariesPath,
-                PackagesPath = BinariesPath
-            };
+            CopyPackageFile(
+                PackageNameInvalid,
+                PackageFileInvalid,
+                testProjectName,
+                assemblyDirectory,
+                PackageDirectory);
 
-            FileStoreOptions = Options.Create(optionsInstance);
+            PlugInDirectory = Path.Combine(PackageDirectory, PackageName);
+            PlugInDirectoryInvalid = Path.Combine(PackageDirectory, PackageNameInvalid);
 
-            BinariesValidationPath = Path.Combine(BinariesPath, ValidationFolder);
-            ZipFile.ExtractToDirectory(PackageFilePath, BinariesValidationPath, true);
+            AssemblyFilePath = Path.Combine(PlugInDirectory, String.Concat(PackageName, ".dll"));
+            AssemblyFilePathInvalid = Path.Combine(PlugInDirectoryInvalid, String.Concat(PackageNameInvalid, ".dll"));
+
+            ZipFile.ExtractToDirectory(Path.Combine(PackageDirectory, PackageFile), Path.Combine(PackageDirectory, PackageName), true);
+            ZipFile.ExtractToDirectory(Path.Combine(PackageDirectory, PackageFileInvalid), Path.Combine(PackageDirectory, PackageNameInvalid), true);
         }
 
-        public IOptions<FileStoreOptions> FileStoreOptions { get; }
-
+        public string AssemblyFilePath { get; }
+        public string AssemblyFilePathInvalid { get; }
+        public string PackageDirectory { get; }
+        public string PackageFile { get; }
+        public string PackageFileInvalid { get; }
+        public string PackageFileInvalidPath { get; }
         public string PackageFilePath { get; }
-
-        public string BinariesPath { get; }
-
-        public string BinariesValidationPath { get; }
+        public string PackageName { get; }
+        public string PackageNameInvalid { get; }
+        public string PlugInDirectory { get; }
+        public string PlugInDirectoryInvalid { get; }
 
         public virtual void Dispose()
         {
-            BinariesPath.DeleteDirectory();
-            PackageFilePath.DeleteDirectory();
+            PackageDirectory.DeleteDirectory();
+        }
+
+        private static void CopyPackageFile(
+            string packageName,
+            string packageFileName,
+            string testProjectName,
+            string assemblyDirectory,
+            string targetPackageDirectory)
+        {
+            var sourcePackageDirectory = assemblyDirectory!.Replace(testProjectName, packageName).Replace("net8.0", string.Empty);
+            var sourcePackageFilePath = Path.Combine(sourcePackageDirectory, packageFileName);
+            var targetPackageFilePath = Path.Combine(targetPackageDirectory, packageFileName);
+
+            File.Copy(sourcePackageFilePath, targetPackageFilePath, true);
         }
     }
 }

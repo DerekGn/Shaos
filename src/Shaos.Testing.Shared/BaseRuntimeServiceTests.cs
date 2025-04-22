@@ -47,10 +47,11 @@ namespace Shaos.Testing.Shared
                 Description = "description"
             };
 
-            plugIn.Package = new Package()
-            {
-                AssemblyFile = BaseTestFixture.AssemblyFileName
-            };
+#warning TODO
+            //plugIn.Package = new Package()
+            //{
+            //    AssemblyFile = BaseTestFixture.AssemblyFileName
+            //};
 
             plugInInstance = new PlugInInstance()
             {

@@ -32,29 +32,30 @@ namespace Shaos.Services.IntTests.Fixtures
     {
         public PlugInFactoryTestFixture()
         {
-            var assemblyDirectory = Path.Combine(BinariesPath, "1");
+//            var assemblyDirectory = Path.Combine(BinariesPath, "1");
 
-            ZipFile.ExtractToDirectory(PackageFilePath, assemblyDirectory, true);
+//            ZipFile.ExtractToDirectory(PackageFilePath, assemblyDirectory, true);
 
-            AssemblyFilePath = Path.Combine(assemblyDirectory, AssemblyFileName);
+//            AssemblyFilePath = Path.Combine(assemblyDirectory, AssemblyFileName);
 
-#warning May not need this
-            AssemblyName = AssemblyName.GetAssemblyName(AssemblyFilePath);
+//#warning May not need this
+//            AssemblyName = AssemblyName.GetAssemblyName(AssemblyFilePath);
 
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyFilePath, true);
+//            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyFilePath, true);
 
-            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
+//            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
 
         public string AssemblyFilePath { get; }
         public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
         public AssemblyName AssemblyName { get; }
 
-        public override void Dispose()
-        {
-            AssemblyLoadContextReference.Dispose();
+#warning TODO
+        //public override void Dispose()
+        //{
+        //    AssemblyLoadContextReference.Dispose();
 
-            base.Dispose();
-        }
+        //    base.Dispose();
+        //}
     }
 }

@@ -30,9 +30,10 @@ namespace Shaos.Services.IntTests.Fixtures
     {
         public RuntimeServiceFixture()
         {
-            var assemblyDirectory = Path.Combine(BinariesPath, "1");
+#warning TODO
+            //var assemblyDirectory = Path.Combine(BinariesPath, "1");
 
-            ZipFile.ExtractToDirectory(PackageFilePath, assemblyDirectory, true);
+            //ZipFile.ExtractToDirectory(PackageFilePath, assemblyDirectory, true);
         }
     }
 }

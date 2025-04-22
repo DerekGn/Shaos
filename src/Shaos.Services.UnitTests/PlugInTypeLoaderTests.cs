@@ -59,7 +59,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public void TestValidateFileNotFound()
         {
-            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(_fixture.AssemblyPath))
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(_fixture.AssemblyFilePath))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
@@ -72,27 +72,40 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public void TestValidatePlugInTypeNotFound()
         {
-            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(_fixture.AssemblyPath))
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(It.IsAny<string>()))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
                 It.IsAny<string>()))
                 .Returns(typeof(Object).Assembly);
 
-            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyPath, out var version));
+            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyFilePath, out var version));
+        }
+
+        [Fact]
+        public void TestValidatePlugInTypesFound()
+        {
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(It.IsAny<string>()))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+
+            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
+                It.IsAny<string>()))
+                .Returns(typeof(Test.PlugIn.Invalid.TestPlugIn).Assembly);
+
+            Assert.Throws<PlugInTypesFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyFilePathInvalid, out var version));
         }
 
         [Fact]
         public void TestValidateSuccess()
         {
-            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(_fixture.AssemblyPath))
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(_fixture.AssemblyFilePath))
                 .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            _pluginLoader.Validate(_fixture.AssemblyPath, out var version);
+            _pluginLoader.Validate(_fixture.AssemblyFilePath, out var version);
 
             Assert.Equal("1.0.0.0", version);
         }

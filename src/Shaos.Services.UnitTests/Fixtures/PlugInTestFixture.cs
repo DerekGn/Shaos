@@ -31,20 +31,18 @@ namespace Shaos.Services.UnitTests.Fixtures
     {
         public PlugInTestFixture()
         {
-            AssemblyPath = Path.Combine(BinariesValidationPath, AssemblyFileName);
-            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(AssemblyPath));
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyPath);
+            //var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyPath);
 
-            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
+            //AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
 
         public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
         public AssemblyName AssemblyName { get; }
-        public string AssemblyPath { get; }
 
         public override void Dispose()
         {
-            AssemblyLoadContextReference.Dispose();
+#warning TODO
+            //AssemblyLoadContextReference.Dispose();
 
             base.Dispose();
         }

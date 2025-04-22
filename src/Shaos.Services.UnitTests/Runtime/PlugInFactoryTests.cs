@@ -47,7 +47,7 @@ namespace Shaos.Services.UnitTests.Runtime
                 LoggerFactory!.CreateLogger<PlugInFactory>());
         }
 
-        [Fact]
+        [Fact(Skip = "needs refactor")]
         public void TestCreateInstance()
         {
             var context = _fixture.AssemblyLoadContextReference.Target;

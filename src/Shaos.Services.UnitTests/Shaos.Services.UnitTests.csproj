@@ -34,6 +34,7 @@
         <ProjectReference Include="..\Shaos.Testing.Shared\Shaos.Testing.Shared.csproj" />
         <ProjectReference Include="..\Shaos.Services\Shaos.Services.csproj" />
         <ProjectReference Include="..\Shaos.Test.PlugIn\Shaos.Test.PlugIn.csproj" />
+        <ProjectReference Include="..\Shaos.Test.PlugIn.Invalid\Shaos.Test.PlugIn.Invalid.csproj" />
     </ItemGroup>
 
     <ItemGroup>
