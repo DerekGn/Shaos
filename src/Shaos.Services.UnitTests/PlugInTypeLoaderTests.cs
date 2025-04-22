@@ -64,7 +64,7 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            Assert.Throws<FileNotFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyPath, out var version));
+            Assert.Throws<FileNotFoundException>(() => _pluginLoader.Validate("z:\non-exists", out var version));
         }
 
         [Fact]
