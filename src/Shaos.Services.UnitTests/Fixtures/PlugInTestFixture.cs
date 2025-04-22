@@ -38,9 +38,9 @@ namespace Shaos.Services.UnitTests.Fixtures
             AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
 
-        public string AssemblyPath { get; }
-        public AssemblyName AssemblyName { get; }
         public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
+        public AssemblyName AssemblyName { get; }
+        public string AssemblyPath { get; }
 
         public override void Dispose()
         {

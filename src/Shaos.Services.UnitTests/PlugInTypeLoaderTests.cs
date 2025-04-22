@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Test.PlugIn;
@@ -65,6 +66,19 @@ namespace Shaos.Services.UnitTests
                 .Returns(typeof(TestPlugIn).Assembly);
 
             Assert.Throws<FileNotFoundException>(() => _pluginLoader.Validate("z:\non-exists", out var version));
+        }
+
+        [Fact]
+        public void TestValidatePlugInTypeNotFound()
+        {
+            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(_fixture.AssemblyPath))
+                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+
+            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
+                It.IsAny<string>()))
+                .Returns(typeof(Object).Assembly);
+
+            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyPath, out var version));
         }
 
         [Fact]

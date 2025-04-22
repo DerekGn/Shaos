@@ -23,9 +23,11 @@
 */
 
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Test.PlugIn
 {
+    [ExcludeFromCodeCoverage]
     public class TestPlugInOptions
     {
         [Required]
