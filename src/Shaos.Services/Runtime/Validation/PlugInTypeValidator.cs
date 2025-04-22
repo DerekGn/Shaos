@@ -24,20 +24,18 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
-using Shaos.Services.Exceptions;
-using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
-using System.Reflection;
 
-namespace Shaos.Services
+namespace Shaos.Services.Runtime.Validation
 {
-    public class PlugInTypeLoader : IPlugInTypeLoader
+    public class PlugInTypeValidator : IPlugInTypeValidator
     {
-        private readonly ILogger<PlugInTypeLoader> _logger;
+        private readonly ILogger<PlugInTypeValidator> _logger;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
-        public PlugInTypeLoader(
-            ILogger<PlugInTypeLoader> logger,
+        public PlugInTypeValidator(
+            ILogger<PlugInTypeValidator> logger,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -49,49 +47,59 @@ namespace Shaos.Services
 
         public void Validate(string assemblyFile, out string version)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFile);
+            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFile);
 
             if(!File.Exists(assemblyFile))
             {
                 throw new FileNotFoundException("Assembly file not found", assemblyFile);
             }
 
-            ValidateAssemblyContainsPlugIn(assemblyFile, out version, out var count).Dispose();
-
-            if(count == 0)
-            {
-                throw new PlugInTypeNotFoundException();
-            }
-
-            if(count > 1)
-            {
-                throw new PlugInTypesFoundException(count);
-            }
+            ValidateAssembly(assemblyFile, out version);
         }
 
-        private UnloadingWeakReference<IRuntimeAssemblyLoadContext> ValidateAssemblyContainsPlugIn(
-            string assemblyFile,
-            out string version,
-            out int count)
+        private void ValidateAssembly(string assemblyFile, out string version)
         {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
 
-            var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
+            try
+            {
+                var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
 
-            version = plugInAssembly.GetName().Version!.ToString();
+                var resolvedPlugIns = plugInAssembly.ResolveAssemblyDerivedTypes(typeof(IPlugIn));
 
-            var resolvedPlugIns = plugInAssembly.ResolveAssemblyDerivedTypes(typeof(IPlugIn));
+                var count = resolvedPlugIns.Count();
 
-            count = resolvedPlugIns.Count();
+                if (count == 0)
+                {
+                    throw new PlugInTypeNotFoundException();
+                }
 
-            runtimeAssemblyLoadContext.Unload();
+                if (count > 1)
+                {
+                    throw new PlugInTypesFoundException(count);
+                }
 
-            _logger.LogDebug("Assembly file: [{Assembly}] contains [{Count}] PlugIns",
-                assemblyFile,
-                count);
+                var plugInType = resolvedPlugIns.First();
 
-            return unloadingWeakReference;
+                var plugInConstructors = plugInType.GetConstructors();
+
+                if(plugInConstructors.Length != 1)
+                {
+                    throw new PlugInInvalidConstructorsException();
+                }
+
+                var plugInConstructor = plugInConstructors[0];
+                var plugInConstructorParameters = plugInConstructor.GetParameters();
+
+                version = plugInAssembly.GetName().Version!.ToString();
+            }
+            finally
+            {
+                runtimeAssemblyLoadContext.Unload();
+
+                unloadingWeakReference.Dispose();
+            }
         }
     }
 }

@@ -22,12 +22,12 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Exceptions;
 using Shaos.Sdk;
+using Shaos.Services.Runtime.Exceptions;
 
-namespace Shaos.Services
+namespace Shaos.Services.Runtime.Validation
 {
-    public interface IPlugInTypeLoader
+    public interface IPlugInTypeValidator
     {
         /// <summary>
         /// Validate that an assembly contains valid <see cref="IPlugIn"/>

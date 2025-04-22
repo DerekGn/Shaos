@@ -24,24 +24,25 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Validation;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests
+namespace Shaos.Services.UnitTests.Runtime.Validation
 {
-    public class PlugInTypeLoaderTests : BaseTests, IClassFixture<PlugInTestFixture>
+    public class PlugInTypeValidatorTests : BaseTests, IClassFixture<PlugInTestFixture>
     {
         private readonly PlugInTestFixture _fixture;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private readonly PlugInTypeLoader _pluginLoader;
+        private readonly PlugInTypeValidator _pluginLoader;
 
-        public PlugInTypeLoaderTests(
+        public PlugInTypeValidatorTests(
             ITestOutputHelper output,
             PlugInTestFixture fixture) : base(output)
         {
@@ -51,8 +52,8 @@ namespace Shaos.Services.UnitTests
 
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
 
-            _pluginLoader = new PlugInTypeLoader(
-                LoggerFactory!.CreateLogger<PlugInTypeLoader>(),
+            _pluginLoader = new PlugInTypeValidator(
+                LoggerFactory!.CreateLogger<PlugInTypeValidator>(),
                 _mockRuntimeAssemblyLoadContextFactory.Object);
         }
 
@@ -77,7 +78,7 @@ namespace Shaos.Services.UnitTests
 
             _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
                 It.IsAny<string>()))
-                .Returns(typeof(Object).Assembly);
+                .Returns(typeof(object).Assembly);
 
             Assert.Throws<PlugInTypeNotFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyFilePath, out var version));
         }
