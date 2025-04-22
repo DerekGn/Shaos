@@ -82,15 +82,31 @@ namespace Shaos.Services.Runtime.Validation
 
                 var plugInType = resolvedPlugIns.First();
 
-                var plugInConstructors = plugInType.GetConstructors();
+                var constructors = plugInType.GetConstructors();
 
-                if(plugInConstructors.Length != 1)
+                if(constructors.Length != 1)
                 {
-                    throw new PlugInInvalidConstructorsException();
+                    throw new PlugInConstructorsException($"PlugIn contains invalid number of construnctors [{constructors.Length}]");
                 }
 
-                var plugInConstructor = plugInConstructors[0];
-                var plugInConstructorParameters = plugInConstructor.GetParameters();
+                var parameters = constructors[0].GetParameters();
+
+                var loggerParameter = parameters
+                    .FirstOrDefault(_ => _.ParameterType
+                        .GetInterfaces()
+                            .Any(_ => _.IsInterface && _ == typeof(ILogger)));
+
+                if(loggerParameter == null)
+                {
+                    throw new PlugInConstructorException(
+                        $"PlugIn type [{plugInType.Name}] does not contain [{nameof(ILogger)}] parameter");
+                }
+
+                if(loggerParameter.ParameterType.GenericTypeArguments[0] != plugInType)
+                {
+                    throw new PlugInConstructorException(
+                        $"PlugIn type [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type [{}]");
+                }
 
                 version = plugInAssembly.GetName().Version!.ToString();
             }

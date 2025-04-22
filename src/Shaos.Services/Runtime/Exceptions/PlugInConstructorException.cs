@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -24,16 +24,16 @@
 
 namespace Shaos.Services.Runtime.Exceptions
 {
-    public class PlugInInvalidConstructorsException : Exception
+    public class PlugInConstructorException : Exception
     {
-        public PlugInInvalidConstructorsException()
+        public PlugInConstructorException()
         { }
 
-        public PlugInInvalidConstructorsException(string message) : base(message)
+        public PlugInConstructorException(string message) : base(message)
         {
         }
 
-        public PlugInInvalidConstructorsException(string message, Exception inner) : base(message, inner)
+        public PlugInConstructorException(string message, Exception inner) : base(message, inner)
         {
         }
     }
