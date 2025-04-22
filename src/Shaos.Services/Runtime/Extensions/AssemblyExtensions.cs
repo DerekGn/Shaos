@@ -22,30 +22,17 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Runtime;
 using System.Reflection;
 
-namespace Shaos.Services.UnitTests.Fixtures
+namespace Shaos.Services.Runtime.Extensions
 {
-    public class PlugInFactoryTestFixture : TestFixture
+    internal static class AssemblyExtensions
     {
-        public PlugInFactoryTestFixture()
+        public static IEnumerable<Type> ResolveAssemblyDerivedTypes(this Assembly assembly, Type baseType)
         {
-            var assemblyPath = Path.Combine(BinariesValidationPath, AssemblyFileName);
-            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(assemblyPath);
-
-            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
-        }
-
-        public AssemblyName AssemblyName { get; }
-        public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
-
-        public override void Dispose()
-        {
-            AssemblyLoadContextReference.Dispose();
-
-            base.Dispose();
+            return from Type type in assembly.GetTypes()
+                         where baseType.IsAssignableFrom(type)
+                         select type;
         }
     }
 }

@@ -23,7 +23,7 @@
 */
 
 using Shaos.Repository.Models;
-using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
 using Xunit.Abstractions;
 
 namespace Shaos.Testing.Shared

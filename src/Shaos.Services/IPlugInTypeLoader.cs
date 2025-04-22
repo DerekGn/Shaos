@@ -22,40 +22,22 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Logging;
-using Shaos.Services.IntTests.Fixtures;
-using Shaos.Services.Runtime.Factories;
-using Shaos.Testing.Shared;
-using Xunit;
-using Xunit.Abstractions;
+using Shaos.Services.Exceptions;
+using Shaos.Sdk;
 
-namespace Shaos.Services.IntTests
+namespace Shaos.Services
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
+    public interface IPlugInTypeLoader
     {
-        private readonly PlugInFactoryTestFixture _fixture;
-        private readonly PlugInFactory _plugInFactory;
-
-        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
-        {
-            _fixture = fixture;
-
-            _plugInFactory = new PlugInFactory(
-                LoggerFactory!,
-                LoggerFactory!.CreateLogger<PlugInFactory>());
-        }
-
-        [Fact]
-        public void TestCreateInstance()
-        {
-            var context = _fixture.AssemblyLoadContextReference.Target;
-            var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
-
-            var plugIn = _plugInFactory.CreateInstance(assembly);
-
-            Assert.NotNull(plugIn);
-
-            context.Unload();
-        }
+        /// <summary>
+        /// Validate that an assembly contains valid <see cref="IPlugIn"/>
+        /// </summary>
+        /// <param name="assemblyFile">The fully qualified path to the <see cref="Assembly"/></param>
+        /// <param name="version">The assembly version</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="assemblyFile"/> is empty or white space</exception>
+        /// <exception cref="FileNotFoundException">Thrown if <paramref name="assemblyFile"/> does not exist</exception>
+        /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the <paramref name="assemblyFile"/></exception>
+        /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the <paramref name="assemblyFile"/></exception>
+        void Validate(string assemblyFile, out string version);
     }
 }

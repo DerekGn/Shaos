@@ -22,29 +22,13 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Runtime
+using System.ComponentModel.DataAnnotations;
+
+namespace Shaos.Test.PlugIn
 {
-    /// <summary>
-    /// An event that represents an <see cref="Instance"/> state change
-    /// </summary>
-    public class InstanceStateEventArgs : EventArgs
+    public class TestPlugInOptions
     {
-        public InstanceStateEventArgs(
-            int id,
-            InstanceState state)
-        {
-            Id = id;
-            State = state;
-        }
-
-        /// <summary>
-        /// The <see cref="Instance"/> identifier
-        /// </summary>
-        public int Id { get; init; }
-
-        /// <summary>
-        /// The <see cref="Instance"/> state change
-        /// </summary>
-        public InstanceState State { get; init; }
+        [Required]
+        public required TimeSpan Delay { get; set; }
     }
 }

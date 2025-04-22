@@ -22,40 +22,27 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Logging;
-using Shaos.Services.IntTests.Fixtures;
-using Shaos.Services.Runtime.Factories;
-using Shaos.Testing.Shared;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Shaos.Services.IntTests
+namespace Shaos.Services.Runtime.Host
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
+    /// <summary>
+    /// The runtime configuration options
+    /// </summary>
+    public class InstanceHostOptions
     {
-        private readonly PlugInFactoryTestFixture _fixture;
-        private readonly PlugInFactory _plugInFactory;
+        /// <summary>
+        /// The maximum number of <see cref="Instance"/> that can be executed in parallel
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 50
+        /// </remarks>
+        public int MaxExecutingInstances { get; init; } = 50;
 
-        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
-        {
-            _fixture = fixture;
-
-            _plugInFactory = new PlugInFactory(
-                LoggerFactory!,
-                LoggerFactory!.CreateLogger<PlugInFactory>());
-        }
-
-        [Fact]
-        public void TestCreateInstance()
-        {
-            var context = _fixture.AssemblyLoadContextReference.Target;
-            var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
-
-            var plugIn = _plugInFactory.CreateInstance(assembly);
-
-            Assert.NotNull(plugIn);
-
-            context.Unload();
-        }
+        /// <summary>
+        /// The wait time for a <see cref="PlugIn"/> stop request
+        /// </summary>
+        /// <remarks>
+        /// Defaults to 1 second
+        /// </remarks>
+        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
     }
 }

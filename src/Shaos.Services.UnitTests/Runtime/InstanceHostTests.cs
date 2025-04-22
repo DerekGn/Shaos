@@ -28,6 +28,8 @@ using Moq;
 using Shaos.Sdk;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Factories;
+using Shaos.Services.Runtime.Host;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
 using System.Reflection;
@@ -57,7 +59,7 @@ namespace Shaos.Services.UnitTests.Runtime
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockPlugInFactory = new Mock<IPlugInFactory>();
 
-            var optionsInstance = new RuntimeOptions()
+            var optionsInstance = new InstanceHostOptions()
             {
                 MaxExecutingInstances = 5
             };

@@ -27,6 +27,7 @@ using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Reflection;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services.Runtime
 {

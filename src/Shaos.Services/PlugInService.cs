@@ -29,6 +29,8 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Extensions;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services
 {
@@ -39,29 +41,26 @@ namespace Shaos.Services
         private readonly ILogger<PlugInService> _logger;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
         private readonly IPlugInRepository _plugInRepository;
-        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
+        
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IInstanceHost instanceHost,
             IFileStoreService fileStoreService,
             IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository,
-            IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
+            IPlugInInstanceRepository plugInInstanceRepository)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
             ArgumentNullException.ThrowIfNull(fileStoreService);
             ArgumentNullException.ThrowIfNull(plugInRepository);
             ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
-            ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
             _instanceHost = instanceHost;
             _fileStoreService = fileStoreService;
             _plugInRepository = plugInRepository;
             _plugInInstanceRepository = plugInInstanceRepository;
-            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
         /// <inheritdoc/>
@@ -242,22 +241,23 @@ namespace Shaos.Services
                     }
                     else
                     {
-                        ValidateAssemblyContainsPlugIn(plugInFile, out var version, out var validPlugIn).Dispose();
+#warning TODO
+                        ////ValidateAssemblyContainsPlugIn(plugInFile, out var version, out var validPlugIn).Dispose();
 
-                        if (validPlugIn)
-                        {
-                            await CreateOrUpdatePlugInPackageAsync(
-                                plugIn,
-                                packageFileName,
-                                Path.GetFileName(plugInFile),
-                                version,
-                                cancellationToken);
-                        }
-                        else
-                        {
-                            _logger.LogWarning("No valid PlugIn implementation type found");
-                            result = UploadPackageResult.NoValidPlugInType;
-                        }
+                        //if (validPlugIn)
+                        //{
+                        //    await CreateOrUpdatePlugInPackageAsync(
+                        //        plugIn,
+                        //        packageFileName,
+                        //        Path.GetFileName(plugInFile),
+                        //        version,
+                        //        cancellationToken);
+                        //}
+                        //else
+                        //{
+                        //    _logger.LogWarning("No valid PlugIn implementation type found");
+                        //    result = UploadPackageResult.NoValidPlugInType;
+                        //}
                     }
                 }
             },
@@ -378,29 +378,6 @@ namespace Shaos.Services
                 _logger.LogDebug("Removing Instance [{Id}] from instance host", instance.Id);
                 _instanceHost.RemoveInstance(instance.Id);
             }
-        }
-        private UnloadingWeakReference<IRuntimeAssemblyLoadContext> ValidateAssemblyContainsPlugIn(
-            string assemblyFile,
-            out string version,
-            out bool result)
-        {
-            var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
-            var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
-
-            result = false;
-            var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
-
-            version = plugInAssembly.GetName().Version!.ToString();
-
-            result = plugInAssembly.GetTypes().Any(t => typeof(IPlugIn).IsAssignableFrom(t));
-
-            runtimeAssemblyLoadContext.Unload();
-
-            _logger.LogDebug("Assembly file: [{Assembly}] contains valid PlugIn: [{Result}]",
-                assemblyFile,
-                result);
-
-            return unloadingWeakReference;
         }
 
         private bool VerifyPlugState(PlugIn plugIn, InstanceState state)

@@ -26,21 +26,22 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Factories;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Host
 {
     public class InstanceHost : IInstanceHost
     {
         internal readonly List<Instance> _executingInstances;
         private readonly ILogger<InstanceHost> _logger;
-        private readonly IOptions<RuntimeOptions> _options;
+        private readonly IOptions<InstanceHostOptions> _options;
         private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public InstanceHost(
             ILogger<InstanceHost> logger,
             IPlugInFactory plugInFactory,
-            IOptions<RuntimeOptions> options,
+            IOptions<InstanceHostOptions> options,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -69,8 +70,8 @@ namespace Shaos.Services.Runtime
             string assemblyFileName)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFileName);
 
             VerifyInstanceCount();
 
@@ -303,7 +304,7 @@ namespace Shaos.Services.Runtime
 
             instance.StartTime = DateTime.Now;
 
-            if ((antecedent.Status == TaskStatus.RanToCompletion) || (antecedent.Status == TaskStatus.Canceled))
+            if (antecedent.Status == TaskStatus.RanToCompletion || antecedent.Status == TaskStatus.Canceled)
             {
                 instance.State = InstanceState.Complete;
 

@@ -30,6 +30,7 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
 using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
@@ -44,7 +45,6 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IPlugInInstanceRepository> _mockPlugInInstanceRepository;
         private readonly Mock<IPlugInRepository> _mockPlugInRepository;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
-        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly PlugInService _plugInService;
 
@@ -55,15 +55,13 @@ namespace Shaos.Services.UnitTests
             _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
             _mockPlugInRepository = new Mock<IPlugInRepository>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
-            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
 
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
                 _mockInstanceHost.Object,
                 _mockFileStoreService.Object,
                 _mockPlugInRepository.Object,
-                _mockPlugInInstanceRepository.Object,
-                _mockRuntimeAssemblyLoadContextFactory.Object);
+                _mockPlugInInstanceRepository.Object);
         }
 
         [Fact]
@@ -370,9 +368,10 @@ namespace Shaos.Services.UnitTests
                     ".PlugIn.dll"
                 });
 
-            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
-                It.IsAny<string>()))
-                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+#warning TODO
+            //_mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
+            //    It.IsAny<string>()))
+            //    .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
                 It.IsAny<string>()))
@@ -419,9 +418,10 @@ namespace Shaos.Services.UnitTests
                     ".PlugIn.dll"
                 });
 
-            _mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
-                It.IsAny<string>()))
-                .Returns(_mockRuntimeAssemblyLoadContext.Object);
+#warning TODO
+            //_mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
+            //    It.IsAny<string>()))
+            //    .Returns(_mockRuntimeAssemblyLoadContext.Object);
 
             _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
                 It.IsAny<string>()))

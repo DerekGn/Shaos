@@ -25,7 +25,7 @@
 using Shaos.Sdk;
 using System.Reflection;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Factories
 {
     /// <summary>
     /// A <see cref="PlugInFactory"/> interface definition

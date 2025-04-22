@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
     /// A <see cref="Instance"/> host

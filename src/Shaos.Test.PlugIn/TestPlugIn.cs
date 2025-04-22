@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 
@@ -32,10 +33,17 @@ namespace Shaos.Test.PlugIn
     public class TestPlugIn : IPlugIn
     {
         private readonly ILogger<TestPlugIn> _logger;
+        private readonly IOptions<TestPlugInOptions> _options;
 
-        public TestPlugIn(ILogger<TestPlugIn> logger)
+        public TestPlugIn(
+            ILogger<TestPlugIn> logger,
+            IOptions<TestPlugInOptions> options)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(options);
+
+            _logger = logger;
+            _options = options;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -44,7 +52,7 @@ namespace Shaos.Test.PlugIn
 
             do
             {
-                await Task.Delay(100, cancellationToken);
+                await Task.Delay(_options.Value.Delay, cancellationToken);
                 _logger.LogInformation("Executing [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
             } while (!cancellationToken.IsCancellationRequested);
 

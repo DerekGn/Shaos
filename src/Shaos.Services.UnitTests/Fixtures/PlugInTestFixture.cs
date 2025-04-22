@@ -22,27 +22,31 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Runtime
-{
-    /// <summary>
-    /// The runtime configuration options
-    /// </summary>
-    public class RuntimeOptions
-    {
-        /// <summary>
-        /// The maximum number of <see cref="Instance"/> that can be executed in parallel
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 50
-        /// </remarks>
-        public int MaxExecutingInstances { get; init; } = 50;
+using Shaos.Services.Runtime;
+using System.Reflection;
 
-        /// <summary>
-        /// The wait time for a <see cref="PlugIn"/> stop request
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 1 second
-        /// </remarks>
-        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
+namespace Shaos.Services.UnitTests.Fixtures
+{
+    public class PlugInTestFixture : TestFixture
+    {
+        public PlugInTestFixture()
+        {
+            AssemblyPath = Path.Combine(BinariesValidationPath, AssemblyFileName);
+            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(AssemblyPath));
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyPath);
+
+            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
+        }
+
+        public string AssemblyPath { get; }
+        public AssemblyName AssemblyName { get; }
+        public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
+
+        public override void Dispose()
+        {
+            AssemblyLoadContextReference.Dispose();
+
+            base.Dispose();
+        }
     }
 }

@@ -26,7 +26,7 @@ using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Reflection;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Factories
 {
     public class PlugInFactory : IPlugInFactory
     {
@@ -46,6 +46,8 @@ namespace Shaos.Services.Runtime
             ArgumentNullException.ThrowIfNull(assembly);
 
             var plugInType = ResolvePlugInType(assembly);
+
+            _logger.LogDebug("Resolved PlugIn: [{Name}] from Assembly: [{Assembly}]", plugInType.Name, assembly.FullName);
 
             Type[] typeArgs = { plugInType };
             Type genericLoggerType = typeof(Logger<>).MakeGenericType(typeArgs);
@@ -70,5 +72,22 @@ namespace Shaos.Services.Runtime
 
             return result.FirstOrDefault()!;
         }
+
+        //private IPlugIn? ActivateType(Type plugInType)
+        //{
+        //    if(plugInType.GetConstructors().Length > 1)
+        //    {
+        //        throw new InvalidOperationException($"Resolved PlugIn: [{plugInType.Name}] contains multiple constructors");
+        //    }
+
+        //    if (plugInType.GetConstructors().Length == 0)
+        //    {
+        //        throw new InvalidOperationException($"Resolved PlugIn: [{plugInType.Name}] contains no constructor");
+        //    }
+
+        //    var constructor = plugInType.GetConstructors()[0];
+
+        //    var parameters = constructor.GetParameters();
+        //}
     }
 }

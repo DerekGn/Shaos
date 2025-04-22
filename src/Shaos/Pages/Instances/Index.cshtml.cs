@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Pages.Instances
 {
