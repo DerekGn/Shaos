@@ -40,6 +40,7 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly PlugInTypeLoader _pluginLoader;
+
         public PlugInTypeLoaderTests(
             ITestOutputHelper output,
             PlugInTestFixture fixture) : base(output)
