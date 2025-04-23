@@ -23,16 +23,22 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
+using System.Linq;
 
 namespace Shaos.Services.Runtime.Validation
 {
     public class PlugInTypeValidator : IPlugInTypeValidator
     {
+        private const int AllowedConstructorCount = 1;
+        private const int AllowedConstructorParameterCount = 2;
+
         private readonly ILogger<PlugInTypeValidator> _logger;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
+        private readonly List<Type> _validConstructorParameterTypes;
 
         public PlugInTypeValidator(
             ILogger<PlugInTypeValidator> logger,
@@ -43,72 +49,50 @@ namespace Shaos.Services.Runtime.Validation
 
             _logger = logger;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
+
+            _validConstructorParameterTypes =
+            [
+                typeof(ILogger),
+                typeof(IOptions<>)
+            ];
         }
 
         public void Validate(string assemblyFile, out string version)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFile);
 
-            if(!File.Exists(assemblyFile))
+            if (!File.Exists(assemblyFile))
             {
                 throw new FileNotFoundException("Assembly file not found", assemblyFile);
             }
-
-            ValidateAssembly(assemblyFile, out version);
-        }
-
-        private void ValidateAssembly(string assemblyFile, out string version)
-        {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
 
             try
             {
-                var plugInAssembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
+                var assembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
 
-                var resolvedPlugIns = plugInAssembly.ResolveAssemblyDerivedTypes(typeof(IPlugIn));
-
+                var resolvedPlugIns = assembly.ResolveAssemblyDerivedTypes(typeof(IPlugIn));
+                
                 var count = resolvedPlugIns.Count();
 
                 if (count == 0)
                 {
+                    _logger.LogError("No PlugIn type found in assembly [{Assembly}]", assembly.FullName);
                     throw new PlugInTypeNotFoundException();
                 }
 
                 if (count > 1)
                 {
+                    _logger.LogError("More than one PlugIn type found in assembly [{Assembly}]", assembly.FullName);
                     throw new PlugInTypesFoundException(count);
                 }
 
                 var plugInType = resolvedPlugIns.First();
 
-                var constructors = plugInType.GetConstructors();
+                ValidatePlugInType(plugInType);
 
-                if(constructors.Length != 1)
-                {
-                    throw new PlugInConstructorsException($"PlugIn contains invalid number of construnctors [{constructors.Length}]");
-                }
-
-                var parameters = constructors[0].GetParameters();
-
-                var loggerParameter = parameters
-                    .FirstOrDefault(_ => _.ParameterType
-                        .GetInterfaces()
-                            .Any(_ => _.IsInterface && _ == typeof(ILogger)));
-
-                if(loggerParameter == null)
-                {
-                    throw new PlugInConstructorException(
-                        $"PlugIn type [{plugInType.Name}] does not contain [{nameof(ILogger)}] parameter");
-                }
-
-                if(loggerParameter.ParameterType.GenericTypeArguments[0] != plugInType)
-                {
-                    throw new PlugInConstructorException(
-                        $"PlugIn type [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type [{}]");
-                }
-
-                version = plugInAssembly.GetName().Version!.ToString();
+                version = assembly.GetName().Version!.ToString();
             }
             finally
             {
@@ -117,5 +101,62 @@ namespace Shaos.Services.Runtime.Validation
                 unloadingWeakReference.Dispose();
             }
         }
+
+        internal void ValidatePlugInType(Type plugInType)
+        {
+            var constructors = plugInType.GetConstructors();
+
+            if (constructors.Length != AllowedConstructorCount)
+            {
+                _logger.LogError("PlugIn [{Name}] contains invalid number of constructors [{Length}]",
+                    plugInType.Name,
+                    constructors.Length);
+
+                throw new PlugInConstructorsException(
+                    $"PlugIn [{plugInType.Name}] contains invalid number of constructors [{constructors.Length}]");
+            }
+
+            var parameters = constructors[0].GetParameters();
+
+            if (parameters.Length > AllowedConstructorParameterCount)
+            {
+                _logger.LogError("PlugIn [{Name}] contains invalid number of constructors [{Length}]",
+                    plugInType.Name,
+                    constructors.Length);
+
+                throw new PlugInConstructorException(
+                    $"PlugIn [{plugInType.Name}] constructor contains invalid number of constructors [{parameters.Length}]");
+            }
+
+            foreach (var parameterType in from parameter in parameters
+                                          let parameterType = parameter.ParameterType
+                                          select parameterType)
+            {
+                if (!_validConstructorParameterTypes.Contains(parameterType) && !parameterType.IsInterface)
+                {
+                    _logger.LogError("PlugIn [{Name}] contains an invalid constructor parameter type [{Type}]",
+                        plugInType.Name,
+                        parameterType.Name);
+
+                    throw new PlugInConstructorException();
+                }
+
+                if (parameterType == _validConstructorParameterTypes[0])
+                {
+                    var loggerParameter = parameterType;
+
+                    if (loggerParameter.GenericTypeArguments[0] != plugInType)
+                    {
+                        _logger.LogError("PlugIn [{Name}] [{Type}] parameter invalid generic type parameter [{Arg}]",
+                            plugInType.Name,
+                            nameof(ILogger),
+                            loggerParameter.GenericTypeArguments[0].Name);
+
+                        throw new PlugInConstructorException(
+                            $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerParameter.GenericTypeArguments[0].Name}]");
+                    }
+                }
+            }
+        }
     }
-}
+} 

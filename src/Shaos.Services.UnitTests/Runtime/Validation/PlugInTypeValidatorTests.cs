@@ -40,7 +40,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         private readonly PlugInTestFixture _fixture;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private readonly PlugInTypeValidator _pluginLoader;
+        private readonly PlugInTypeValidator _pluginTypeValidator;
 
         public PlugInTypeValidatorTests(
             ITestOutputHelper output,
@@ -52,7 +52,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
 
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
 
-            _pluginLoader = new PlugInTypeValidator(
+            _pluginTypeValidator = new PlugInTypeValidator(
                 LoggerFactory!.CreateLogger<PlugInTypeValidator>(),
                 _mockRuntimeAssemblyLoadContextFactory.Object);
         }
@@ -67,7 +67,18 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            Assert.Throws<FileNotFoundException>(() => _pluginLoader.Validate("z:\non-exists", out var version));
+            Assert.Throws<FileNotFoundException>(() => _pluginTypeValidator.Validate("z:\non-exists", out var version));
+        }
+
+        [Fact]
+        public void TestValidatePlugInTypeInvalidConstructorCount()
+        {
+            var exception = Assert.Throws<PlugInConstructorsException>(() => _pluginTypeValidator
+            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidConstructorCount)));
+
+            Assert.Equal(
+                "PlugIn [TestPlugInInvalidConstructorCount] contains invalid number of constructors [2]",
+                exception.Message);
         }
 
         [Fact]
@@ -80,7 +91,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(object).Assembly);
 
-            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyFilePath, out var version));
+            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var version));
         }
 
         [Fact]
@@ -93,7 +104,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(Test.PlugIn.Invalid.TestPlugIn).Assembly);
 
-            Assert.Throws<PlugInTypesFoundException>(() => _pluginLoader.Validate(_fixture.AssemblyFilePathInvalid, out var version));
+            Assert.Throws<PlugInTypesFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePathInvalid, out var version));
         }
 
         [Fact]
@@ -106,7 +117,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            _pluginLoader.Validate(_fixture.AssemblyFilePath, out var version);
+            _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var version);
 
             Assert.Equal("1.0.0.0", version);
         }
