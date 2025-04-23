@@ -27,7 +27,6 @@ using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
-using System.Linq;
 
 namespace Shaos.Services.Runtime.Validation
 {
@@ -141,7 +140,9 @@ namespace Shaos.Services.Runtime.Validation
                     throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameter type [{parameterType.Name}]");
                 }
 
-                if (parameterType == _validConstructorParameterTypes[0])
+                var interfaces = parameterType.GetInterfaces();
+
+                if ((interfaces.Length != 0) && interfaces[0] == _validConstructorParameterTypes[0])
                 {
                     var loggerParameter = parameterType;
 

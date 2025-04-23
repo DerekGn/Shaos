@@ -74,7 +74,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeMultipleConstructors()
         {
             var exception = Assert.Throws<PlugInConstructorsException>(() => _pluginTypeValidator
-            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleConstructors)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleConstructors)));
 
             Assert.Equal(
                 "PlugIn [TestPlugInMultipleConstructors] contains invalid number of constructors [2]",
@@ -85,10 +85,22 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeMultipleParameters()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleParameters)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleParameters)));
 
             Assert.Equal(
                 "PlugIn [TestPlugInMultipleParameters] constructor contains invalid number of constructor parameters [3]",
+                exception.Message);
+        }
+
+
+        [Fact]
+        public void TestValidatePlugInTypeLogger()
+        {
+            var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidLogger)));
+
+            Assert.Equal(
+                "PlugIn [TestPlugInInvalidLogger] [ILogger] parameter invalid generic type parameter [TestPlugIn]",
                 exception.Message);
         }
 
@@ -96,7 +108,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeInvalidParameters()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters)));
 
             Assert.Equal(
                 "PlugIn [TestPlugInInvalidParameters] contains an invalid constructor parameter type [Int32]",
