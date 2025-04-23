@@ -22,15 +22,16 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugInDuplicate : IPlugIn
+    public class TestPlugInValidLoggerWithInvalid : IPlugIn
     {
-        public TestPlugInDuplicate()
+        public TestPlugInValidLoggerWithInvalid(ILogger<TestPlugInValidLoggerWithInvalid> logger, int i)
         {
         }
 

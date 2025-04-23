@@ -49,12 +49,36 @@ namespace Shaos.Services.Runtime.Factories
 
             _logger.LogDebug("Resolved PlugIn: [{Name}] from Assembly: [{Assembly}]", plugInType.Name, assembly.FullName);
 
-            Type[] typeArgs = { plugInType };
-            Type genericLoggerType = typeof(Logger<>).MakeGenericType(typeArgs);
+            var constructorParameters = GetConstructorParameters(plugInType);
 
-            object? logger = Activator.CreateInstance(genericLoggerType, _loggerFactory);
+            return Activator.CreateInstance(plugInType, constructorParameters) as IPlugIn;
+        }
 
-            return Activator.CreateInstance(plugInType, logger) as IPlugIn;
+        private List<object> GetConstructorParameters(Type plugInType)
+        {
+            var result = new List<object>();
+
+            var constructors = plugInType.GetConstructors();
+
+            var parameters = constructors[0].GetParameters();
+
+
+            foreach (var parameterType in from parameter in parameters
+                                          let parameterType = parameter.ParameterType
+                                          select parameterType)
+            {
+                var interfaces = parameterType.GetInterfaces();
+
+                if(interfaces[0] == typeof(ILogger))
+                {
+                    Type[] typeArgs = { plugInType };
+                    Type genericLoggerType = typeof(Logger<>).MakeGenericType(typeArgs);
+
+                    result.Add(Activator.CreateInstance(genericLoggerType, _loggerFactory)!);
+                }
+            }
+
+            return result;
         }
 
         private Type ResolvePlugInType(Assembly assembly)

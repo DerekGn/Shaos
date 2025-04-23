@@ -31,9 +31,9 @@ namespace Shaos.Services.UnitTests.Fixtures
     {
         public PlugInTestFixture()
         {
-            //var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyPath);
-
-            //AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyFilePath);
+            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(AssemblyFilePath));
+            AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
 
         public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
@@ -41,8 +41,7 @@ namespace Shaos.Services.UnitTests.Fixtures
 
         public override void Dispose()
         {
-#warning TODO
-            //AssemblyLoadContextReference.Dispose();
+            AssemblyLoadContextReference.Dispose();
 
             base.Dispose();
         }

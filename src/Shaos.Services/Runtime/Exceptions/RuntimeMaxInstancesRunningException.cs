@@ -26,11 +26,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
-	[ExcludeFromCodeCoverage]
-	public class RuntimeMaxInstancesRunningException : Exception
-	{
-		public RuntimeMaxInstancesRunningException() { }
-		public RuntimeMaxInstancesRunningException(string message) : base(message) { }
-		public RuntimeMaxInstancesRunningException(string message, Exception inner) : base(message, inner) { }
-	}
+    [ExcludeFromCodeCoverage]
+    public class RuntimeMaxInstancesRunningException : Exception
+    {
+        public RuntimeMaxInstancesRunningException()
+        { }
+
+        public RuntimeMaxInstancesRunningException(string message) : base(message)
+        {
+        }
+
+        public RuntimeMaxInstancesRunningException(string message, Exception inner) : base(message, inner)
+        {
+        }
+    }
 }

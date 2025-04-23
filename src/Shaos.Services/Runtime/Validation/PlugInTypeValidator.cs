@@ -27,6 +27,8 @@ using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Shaos.Services.Runtime.Validation
 {
@@ -51,7 +53,7 @@ namespace Shaos.Services.Runtime.Validation
 
             _validConstructorParameterTypes =
             [
-                typeof(ILogger),
+                typeof(ILogger<>),
                 typeof(IOptions<>)
             ];
         }
@@ -72,7 +74,7 @@ namespace Shaos.Services.Runtime.Validation
                 var assembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
 
                 var resolvedPlugIns = assembly.ResolveAssemblyDerivedTypes(typeof(IPlugIn));
-                
+
                 var count = resolvedPlugIns.Count();
 
                 if (count == 0)
@@ -115,49 +117,59 @@ namespace Shaos.Services.Runtime.Validation
                     $"PlugIn [{plugInType.Name}] contains invalid number of constructors [{constructors.Length}]");
             }
 
-            var parameters = constructors[0].GetParameters();
+            var parameterInfos = constructors[0].GetParameters();
 
-            if (parameters.Length > AllowedConstructorParameterCount)
+            if (parameterInfos.Length > AllowedConstructorParameterCount)
             {
                 _logger.LogError("PlugIn [{Name}] contains invalid number of constructor parameters [{Length}]",
                     plugInType.Name,
-                    parameters.Length);
+                    parameterInfos.Length);
 
                 throw new PlugInConstructorException(
-                    $"PlugIn [{plugInType.Name}] constructor contains invalid number of constructor parameters [{parameters.Length}]");
+                    $"PlugIn [{plugInType.Name}] constructor contains invalid number of constructor parameters [{parameterInfos.Length}]");
             }
 
-            foreach (var parameterType in from parameter in parameters
-                                          let parameterType = parameter.ParameterType
-                                          select parameterType)
+            var parameterTypes = (from parameterInfo in parameterInfos
+                                  let parameterType = parameterInfo.ParameterType
+                                  select parameterType)
+                                 .ToList();
+
+            var genericTypes = (from type in parameterTypes
+                                where type.IsGenericType
+                                let genericType = type.GetGenericTypeDefinition()
+                                select genericType)
+                                .ToList();
+
+            var validParameters = _validConstructorParameterTypes.Intersect(genericTypes).ToList();
+
+            if(validParameters.Count == 0 || validParameters.Count != parameterTypes.Count)
             {
-                if (!_validConstructorParameterTypes.Contains(parameterType) && !parameterType.IsInterface)
+                var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
+
+                _logger.LogError("PlugIn [{Name}] contains an invalid constructor parameters [{List}]",
+                    plugInType.Name,
+                    constructorParameterList);
+
+                throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{constructorParameterList}]");
+            }
+
+            var loggerType = parameterTypes.FirstOrDefault(_ => _.GetGenericTypeDefinition() == _validConstructorParameterTypes[0]);
+
+            if (loggerType != null)
+            {
+                var loggerGenericType = loggerType.GenericTypeArguments[0];
+
+                if (loggerGenericType != plugInType)
                 {
-                    _logger.LogError("PlugIn [{Name}] contains an invalid constructor parameter type [{Type}]",
+                    _logger.LogError("PlugIn [{Name}] [{Type}] parameter invalid generic type parameter [{Arg}]",
                         plugInType.Name,
-                        parameterType.Name);
+                        nameof(ILogger),
+                        loggerGenericType.Name);
 
-                    throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameter type [{parameterType.Name}]");
-                }
-
-                var interfaces = parameterType.GetInterfaces();
-
-                if ((interfaces.Length != 0) && interfaces[0] == _validConstructorParameterTypes[0])
-                {
-                    var loggerParameter = parameterType;
-
-                    if (loggerParameter.GenericTypeArguments[0] != plugInType)
-                    {
-                        _logger.LogError("PlugIn [{Name}] [{Type}] parameter invalid generic type parameter [{Arg}]",
-                            plugInType.Name,
-                            nameof(ILogger),
-                            loggerParameter.GenericTypeArguments[0].Name);
-
-                        throw new PlugInConstructorException(
-                            $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerParameter.GenericTypeArguments[0].Name}]");
-                    }
+                    throw new PlugInConstructorException(
+                        $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerGenericType.Name}]");
                 }
             }
         }
     }
-} 
+}

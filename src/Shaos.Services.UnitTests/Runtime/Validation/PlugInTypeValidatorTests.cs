@@ -92,6 +92,16 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 exception.Message);
         }
 
+        [Fact]
+        public void TestValidateTestPlugInValidLoggerWithInvalid()
+        {
+            var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInValidLoggerWithInvalid)));
+
+            Assert.Equal(
+                "PlugIn [TestPlugInValidLoggerWithInvalid] contains an invalid constructor parameters [ILogger`1,Int32]",
+                exception.Message);
+        }
 
         [Fact]
         public void TestValidatePlugInTypeLogger()
@@ -111,7 +121,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters)));
 
             Assert.Equal(
-                "PlugIn [TestPlugInInvalidParameters] contains an invalid constructor parameter type [Int32]",
+                "PlugIn [TestPlugInInvalidParameters] contains an invalid constructor parameters [Int32,Int32]",
                 exception.Message);
         }
 
