@@ -120,12 +120,12 @@ namespace Shaos.Services.Runtime.Validation
 
             if (parameters.Length > AllowedConstructorParameterCount)
             {
-                _logger.LogError("PlugIn [{Name}] contains invalid number of constructors [{Length}]",
+                _logger.LogError("PlugIn [{Name}] contains invalid number of constructor parameters [{Length}]",
                     plugInType.Name,
-                    constructors.Length);
+                    parameters.Length);
 
                 throw new PlugInConstructorException(
-                    $"PlugIn [{plugInType.Name}] constructor contains invalid number of constructors [{parameters.Length}]");
+                    $"PlugIn [{plugInType.Name}] constructor contains invalid number of constructor parameters [{parameters.Length}]");
             }
 
             foreach (var parameterType in from parameter in parameters
@@ -138,7 +138,7 @@ namespace Shaos.Services.Runtime.Validation
                         plugInType.Name,
                         parameterType.Name);
 
-                    throw new PlugInConstructorException();
+                    throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameter type [{parameterType.Name}]");
                 }
 
                 if (parameterType == _validConstructorParameterTypes[0])

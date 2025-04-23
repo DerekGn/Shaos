@@ -71,13 +71,35 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         }
 
         [Fact]
-        public void TestValidatePlugInTypeInvalidConstructorCount()
+        public void TestValidatePlugInTypeMultipleConstructors()
         {
             var exception = Assert.Throws<PlugInConstructorsException>(() => _pluginTypeValidator
-            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidConstructorCount)));
+            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleConstructors)));
 
             Assert.Equal(
-                "PlugIn [TestPlugInInvalidConstructorCount] contains invalid number of constructors [2]",
+                "PlugIn [TestPlugInMultipleConstructors] contains invalid number of constructors [2]",
+                exception.Message);
+        }
+
+        [Fact]
+        public void TestValidatePlugInTypeMultipleParameters()
+        {
+            var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
+            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleParameters)));
+
+            Assert.Equal(
+                "PlugIn [TestPlugInMultipleParameters] constructor contains invalid number of constructor parameters [3]",
+                exception.Message);
+        }
+
+        [Fact]
+        public void TestValidatePlugInTypeInvalidParameters()
+        {
+            var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
+            .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters)));
+
+            Assert.Equal(
+                "PlugIn [TestPlugInInvalidParameters] contains an invalid constructor parameter type [Int32]",
                 exception.Message);
         }
 

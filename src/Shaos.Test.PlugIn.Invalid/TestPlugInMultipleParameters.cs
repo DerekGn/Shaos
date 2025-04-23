@@ -28,13 +28,9 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugInInvalidConstructorCount : IPlugIn
+    public class TestPlugInMultipleParameters : IPlugIn
     {
-        public TestPlugInInvalidConstructorCount()
-        {
-        }
-
-        public TestPlugInInvalidConstructorCount(int i)
+        public TestPlugInMultipleParameters(int i, int q, int u)
         {
         }
 
