@@ -58,25 +58,20 @@ namespace Shaos.Services.Runtime.Factories
         {
             var result = new List<object>();
 
-            var constructors = plugInType.GetConstructors();
+            var constructorInfos = plugInType.GetConstructors();
 
-            var parameters = constructors[0].GetParameters();
+            var parameterInfos = constructorInfos[0].GetParameters();
 
+            var parameterTypes = (from parameterInfo in parameterInfos
+                                  let parameterType = parameterInfo.ParameterType
+                                  select parameterType)
+                                .ToList();
 
-            foreach (var parameterType in from parameter in parameters
-                                          let parameterType = parameter.ParameterType
-                                          select parameterType)
-            {
-                var interfaces = parameterType.GetInterfaces();
-
-                if(interfaces[0] == typeof(ILogger))
-                {
-                    Type[] typeArgs = { plugInType };
-                    Type genericLoggerType = typeof(Logger<>).MakeGenericType(typeArgs);
-
-                    result.Add(Activator.CreateInstance(genericLoggerType, _loggerFactory)!);
-                }
-            }
+            var genericTypes = (from type in parameterTypes
+                                where type.IsGenericType
+                                let genericType = type.GetGenericTypeDefinition()
+                                select genericType)
+                                .ToList();
 
             return result;
         }
