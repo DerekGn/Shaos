@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using System.Reflection;
 
@@ -51,7 +52,7 @@ namespace Shaos.Services.Runtime.Factories
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
-            return Activator.CreateInstance(plugInType, constructorParameters) as IPlugIn;
+            return Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
         }
 
         private List<object> GetConstructorParameters(Type plugInType)
@@ -65,13 +66,25 @@ namespace Shaos.Services.Runtime.Factories
             var parameterTypes = (from parameterInfo in parameterInfos
                                   let parameterType = parameterInfo.ParameterType
                                   select parameterType)
-                                .ToList();
+                                  .ToList();
 
-            var genericTypes = (from type in parameterTypes
-                                where type.IsGenericType
-                                let genericType = type.GetGenericTypeDefinition()
-                                select genericType)
-                                .ToList();
+            foreach (var parameterType in parameterTypes)
+            {
+                if(parameterType.IsGenericType)
+                {
+                    var genericType = parameterType.GetGenericTypeDefinition();
+
+                    if(genericType == typeof(ILogger<>))
+                    {
+                        Type[] typeArgs = { parameterType.GenericTypeArguments[0] };
+                        Type loggerType = typeof(Logger<>).MakeGenericType(typeArgs);
+
+                        _logger.LogDebug("Creating instance of [{Name}]", parameterType.FullName);
+
+                        result.Add(Activator.CreateInstance(loggerType, _loggerFactory)!);
+                    }
+                }
+            }
 
             return result;
         }
@@ -91,22 +104,5 @@ namespace Shaos.Services.Runtime.Factories
 
             return result.FirstOrDefault()!;
         }
-
-        //private IPlugIn? ActivateType(Type plugInType)
-        //{
-        //    if(plugInType.GetConstructors().Length > 1)
-        //    {
-        //        throw new InvalidOperationException($"Resolved PlugIn: [{plugInType.Name}] contains multiple constructors");
-        //    }
-
-        //    if (plugInType.GetConstructors().Length == 0)
-        //    {
-        //        throw new InvalidOperationException($"Resolved PlugIn: [{plugInType.Name}] contains no constructor");
-        //    }
-
-        //    var constructor = plugInType.GetConstructors()[0];
-
-        //    var parameters = constructor.GetParameters();
-        //}
     }
 }

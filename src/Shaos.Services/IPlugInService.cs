@@ -87,7 +87,12 @@ namespace Shaos.Services
         /// <param name="packageFileName">The file name for the <see cref="PlugIn"/></param>
         /// <param name="stream">The <see cref="Stream"/> to write to the <paramref name="fileName"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task<UploadPackageResult> UploadPlugInPackageAsync(
+        /// <exception cref="ArgumentNullException">Thrown if package file name is null or empty</exception>
+        /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
+        /// <exception cref="NoValidPlugInAssemblyFoundException">Throw if no valid PlugIn assembly file was found</exception>
+        /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
+        /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
+        Task UploadPlugInPackageAsync(
             int id,
             string packageFileName,
             Stream stream,

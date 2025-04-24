@@ -24,42 +24,45 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
-using Shaos.Services.Runtime;
-using Shaos.Services.Runtime.Extensions;
 using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime.Validation;
 
 namespace Shaos.Services
 {
     public class PlugInService : IPlugInService
     {
+        private const string PlugInNamePostFix = ".PlugIn.dll";
+
         private readonly IFileStoreService _fileStoreService;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
         private readonly IPlugInRepository _plugInRepository;
-        
+        private readonly IPlugInTypeValidator _plugInTypeValidator;
 
         public PlugInService(
             ILogger<PlugInService> logger,
             IInstanceHost instanceHost,
             IFileStoreService fileStoreService,
             IPlugInRepository plugInRepository,
+            IPlugInTypeValidator plugInTypeValidator,
             IPlugInInstanceRepository plugInInstanceRepository)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
             ArgumentNullException.ThrowIfNull(fileStoreService);
             ArgumentNullException.ThrowIfNull(plugInRepository);
+            ArgumentNullException.ThrowIfNull(plugInTypeValidator);
             ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
 
             _logger = logger;
             _instanceHost = instanceHost;
             _fileStoreService = fileStoreService;
             _plugInRepository = plugInRepository;
+            _plugInTypeValidator = plugInTypeValidator;
             _plugInInstanceRepository = plugInInstanceRepository;
         }
 
@@ -145,7 +148,7 @@ namespace Shaos.Services
             }
             else
             {
-                _logger.LogWarning("Instance ");
+                _logger.LogWarning("Instance [{Id}] not found", id);
             }
         }
 
@@ -203,7 +206,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<UploadPackageResult> UploadPlugInPackageAsync(
+        public async Task UploadPlugInPackageAsync(
             int id,
             string packageFileName,
             Stream stream,
@@ -211,60 +214,48 @@ namespace Shaos.Services
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
-            UploadPackageResult result = UploadPackageResult.Success;
-
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if (VerifyPlugState(plugIn, InstanceState.Running))
+                if (VerifyPlugState(plugIn, InstanceState.Running, out var id))
                 {
-                    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
-                    result = UploadPackageResult.PlugInRunning;
-                }
-                else
-                {
-                    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+                    _logger.LogError("Found running PlugIn Instance Id: [{Id}]", id);
 
-                    await _fileStoreService.WritePackageFileStreamAsync(
-                        plugIn.Id,
+                    throw new PlugInInstanceRunningException(id, "Instance Running");
+                }
+
+                _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+
+                await _fileStoreService.WritePackageFileStreamAsync(
+                    plugIn.Id,
+                    packageFileName,
+                    stream,
+                    cancellationToken);
+
+                var plugInFile = _fileStoreService
+                    .ExtractPackage(packageFileName, plugIn.Id.ToString())
+                    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+
+                if (plugInFile == null)
+                {
+                    _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
+                        PlugInNamePostFix,
+                        packageFileName);
+
+                    throw new NoValidPlugInAssemblyFoundException(
+                        $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+                }
+
+                _plugInTypeValidator.Validate(plugInFile, out var version);
+
+                await CreateOrUpdatePlugInPackageAsync(
+                        plugIn,
                         packageFileName,
-                        stream,
+                        Path.GetFileName(plugInFile),
+                        version,
                         cancellationToken);
-
-                    var plugInFile = _fileStoreService
-                        .ExtractPackage(packageFileName, plugIn.Id.ToString())
-                        .FirstOrDefault(_ => _.EndsWith(".PlugIn.dll", StringComparison.OrdinalIgnoreCase));
-
-                    if (plugInFile == null)
-                    {
-                        _logger.LogWarning("No valid PlugIn assembly file found");
-                        result = UploadPackageResult.NoValidPlugInFile;
-                    }
-                    else
-                    {
-#warning TODO
-                        ////ValidateAssemblyContainsPlugIn(plugInFile, out var version, out var validPlugIn).Dispose();
-
-                        //if (validPlugIn)
-                        //{
-                        //    await CreateOrUpdatePlugInPackageAsync(
-                        //        plugIn,
-                        //        packageFileName,
-                        //        Path.GetFileName(plugInFile),
-                        //        version,
-                        //        cancellationToken);
-                        //}
-                        //else
-                        //{
-                        //    _logger.LogWarning("No valid PlugIn implementation type found");
-                        //    result = UploadPackageResult.NoValidPlugInType;
-                        //}
-                    }
-                }
             },
             false,
             cancellationToken);
-
-            return result;
         }
 
         private void AddInstanceToHost(PlugIn plugIn, PlugInInstance instance)
@@ -380,9 +371,14 @@ namespace Shaos.Services
             }
         }
 
-        private bool VerifyPlugState(PlugIn plugIn, InstanceState state)
+        private bool VerifyPlugState(
+            PlugIn plugIn,
+            InstanceState state,
+            out int runningInstanceId)
         {
             bool result = false;
+
+            runningInstanceId = 0;
 
             foreach (var instance in plugIn.Instances)
             {
@@ -391,6 +387,7 @@ namespace Shaos.Services
                 if (executingInstance != null && executingInstance.State == state)
                 {
                     result = true;
+                    runningInstanceId = instance.Id;
                     break;
                 }
             }

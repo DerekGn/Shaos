@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Models;
@@ -31,9 +30,11 @@ using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime.Validation;
 using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
+using System.Linq.Expressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -42,10 +43,10 @@ namespace Shaos.Services.UnitTests
     public class PlugInServiceTests : BaseTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
+        private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInInstanceRepository> _mockPlugInInstanceRepository;
         private readonly Mock<IPlugInRepository> _mockPlugInRepository;
-        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
-        private readonly Mock<IInstanceHost> _mockInstanceHost;
+        private readonly Mock<IPlugInTypeValidator> _mockPlugInTypeValidator;
         private readonly PlugInService _plugInService;
 
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
@@ -54,13 +55,14 @@ namespace Shaos.Services.UnitTests
             _mockInstanceHost = new Mock<IInstanceHost>();
             _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
             _mockPlugInRepository = new Mock<IPlugInRepository>();
-            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+            _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
 
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
                 _mockInstanceHost.Object,
                 _mockFileStoreService.Object,
                 _mockPlugInRepository.Object,
+                _mockPlugInTypeValidator.Object,
                 _mockPlugInInstanceRepository.Object);
         }
 
@@ -153,7 +155,7 @@ namespace Shaos.Services.UnitTests
                         Id = 12,
                         State = InstanceState.Complete
                     }});
-            
+
             await _plugInService.DeletePlugInInstanceAsync(12);
 
             _mockPlugInInstanceRepository.Verify(_ => _.DeleteAsync(
@@ -269,6 +271,42 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public async Task TestStartEnabledInstancesAsync()
+        {
+            var plugIn = SetupPlugInGetAsync();
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = "assemblyfilename",
+                FileName = "filename"
+            };
+
+            plugIn.Instances.Add(new PlugInInstance()
+            {
+                Name = "name",
+                Enabled = true,
+                Description = "description"
+            });
+
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPath(
+                    It.IsAny<int>()
+                ))
+                .Returns("");
+
+            await _plugInService.StartEnabledInstancesAsync();
+
+            _mockInstanceHost.Verify(_ => _.AddInstance(
+                It.IsAny<int>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()),
+                Times.Once);
+
+            _mockInstanceHost.Verify(_ => _.StartInstance(
+                It.IsAny<int>()),
+                Times.Once);
+        }
+
+        [Fact]
         public async Task TestUploadPlugInPackageNoValidPlugInAsync()
         {
             MemoryStream stream = new MemoryStream();
@@ -284,10 +322,13 @@ namespace Shaos.Services.UnitTests
                     "file.dll"
                 });
 
-            var result = await _plugInService
-                .UploadPlugInPackageAsync(1, "filename", stream);
+            var exception = await Assert
+                .ThrowsAsync<NoValidPlugInAssemblyFoundException>(async () => await _plugInService
+                    .UploadPlugInPackageAsync(1, "filename", stream));
 
-            Assert.Equal(UploadPackageResult.NoValidPlugInFile, result);
+            Assert.Equal(
+                "No assembly file ending with [.PlugIn.dll] was found in the package [filename] files",
+                exception.Message);
 
             _mockFileStoreService
                 .Verify(_ => _.WritePackageFileStreamAsync(
@@ -332,10 +373,13 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.Instances)
                 .Returns(instances);
 
-            var result = await _plugInService
-                .UploadPlugInPackageAsync(1, "filename", stream);
+            var exception = await Assert
+                .ThrowsAsync<PlugInInstanceRunningException>(async () => await _plugInService
+                    .UploadPlugInPackageAsync(1, "filename", stream));
 
-            Assert.Equal(UploadPackageResult.PlugInRunning, result);
+            Assert.Equal(
+                "Instance Running",
+                exception.Message);
 
             _mockFileStoreService
                 .Verify(_ => _.WritePackageFileStreamAsync(
@@ -352,7 +396,7 @@ namespace Shaos.Services.UnitTests
                     Times.Never);
         }
 
-        [Fact(Skip = "needs refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackageSuccessAsync()
         {
             MemoryStream stream = new MemoryStream();
@@ -368,19 +412,8 @@ namespace Shaos.Services.UnitTests
                     ".PlugIn.dll"
                 });
 
-#warning TODO
-            //_mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
-            //    It.IsAny<string>()))
-            //    .Returns(_mockRuntimeAssemblyLoadContext.Object);
-
-            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
-                It.IsAny<string>()))
-                .Returns(typeof(TestPlugIn).Assembly);
-
-            var result = await _plugInService
+            await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
-
-            Assert.Equal(UploadPackageResult.Success, result);
 
             _mockFileStoreService
                 .Verify(_ => _.WritePackageFileStreamAsync(
@@ -397,7 +430,7 @@ namespace Shaos.Services.UnitTests
                 Times.Once);
         }
 
-        [Fact(Skip = "needs refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackageUpdateSuccessAsync()
         {
             MemoryStream stream = new MemoryStream();
@@ -418,19 +451,8 @@ namespace Shaos.Services.UnitTests
                     ".PlugIn.dll"
                 });
 
-#warning TODO
-            //_mockRuntimeAssemblyLoadContextFactory.Setup(_ => _.Create(
-            //    It.IsAny<string>()))
-            //    .Returns(_mockRuntimeAssemblyLoadContext.Object);
-
-            _mockRuntimeAssemblyLoadContext.Setup(_ => _.LoadFromAssemblyPath(
-                It.IsAny<string>()))
-                .Returns(typeof(TestPlugIn).Assembly);
-
-            var result = await _plugInService
+            await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
-
-            Assert.Equal(UploadPackageResult.Success, result);
 
             _mockFileStoreService
                 .Verify(_ => _.WritePackageFileStreamAsync(
@@ -443,60 +465,6 @@ namespace Shaos.Services.UnitTests
             _mockPlugInRepository.Verify(_ => _.SaveChangesAsync(
                 It.IsAny<CancellationToken>()),
                 Times.Once);
-        }
-
-        [Fact]
-        public async Task TestStartEnabledInstancesAsync()
-        {
-            var plugIn = SetupPlugInGetAsync();
-            plugIn.Package = new Package()
-            {
-                AssemblyFile = "assemblyfilename",
-                FileName = "filename"
-            };
-
-            plugIn.Instances.Add(new PlugInInstance(){
-                Name = "name",
-                Enabled = true,
-                Description = "description"
-            });
-
-            _mockFileStoreService
-                .Setup(_ => _.GetAssemblyPath(
-                    It.IsAny<int>()
-                ))
-                .Returns("");
-
-            await _plugInService.StartEnabledInstancesAsync();
-
-            _mockInstanceHost.Verify(_ => _.AddInstance(
-                It.IsAny<int>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()),
-                Times.Once);
-
-            _mockInstanceHost.Verify(_ => _.StartInstance(
-                It.IsAny<int>()),
-                Times.Once);
-        }
-
-        private PlugIn SetupPlugInGetByIdAsync()
-        {
-            var plugIn = new PlugIn()
-            {
-                Name = "plugin",
-                Description = "description"
-            };
-
-            _mockPlugInRepository
-                .Setup(_ => _.GetByIdAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<List<string>?>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(plugIn);
-
-            return plugIn;
         }
 
         private PlugIn SetupPlugInGetAsync()
@@ -514,7 +482,26 @@ namespace Shaos.Services.UnitTests
                     It.IsAny<bool>(),
                     It.IsAny<List<string>?>(),
                     It.IsAny<CancellationToken>()))
-                .Returns(new List<PlugIn>() {plugIn}.ToAsyncEnumerable());
+                .Returns(new List<PlugIn>() { plugIn }.ToAsyncEnumerable());
+
+            return plugIn;
+        }
+
+        private PlugIn SetupPlugInGetByIdAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Name = "plugin",
+                Description = "description"
+            };
+
+            _mockPlugInRepository
+                .Setup(_ => _.GetByIdAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<List<string>?>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(plugIn);
 
             return plugIn;
         }

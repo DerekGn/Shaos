@@ -36,14 +36,14 @@ namespace Shaos.Test.PlugIn
         private readonly IOptions<TestPlugInOptions> _options;
 
         public TestPlugIn(
-            ILogger<TestPlugIn> logger,
-            IOptions<TestPlugInOptions> options)
+            ILogger<TestPlugIn> logger)//,
+            //IOptions<TestPlugInOptions> options)
         {
             ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(options);
+            //ArgumentNullException.ThrowIfNull(options);
 
             _logger = logger;
-            _options = options;
+            //_options = options;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)

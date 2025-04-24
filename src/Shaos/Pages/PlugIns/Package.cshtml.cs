@@ -27,7 +27,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
+using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Validation;
 
 namespace Shaos.Pages.PlugIns
@@ -109,30 +111,31 @@ namespace Shaos.Pages.PlugIns
 
         private async Task<string?> ValidatePackageAsync(CancellationToken cancellationToken = default)
         {
-            var packageUploadResult = await _plugInService
-               .UploadPlugInPackageAsync(PlugIn!.Id, PackageFile.FileName, PackageFile.OpenReadStream(), cancellationToken);
-
             string? result = null;
 
-            switch (packageUploadResult)
+            try
             {
-                case UploadPackageResult.Success:
-                    break;
-
-                case UploadPackageResult.NoValidPlugInFile:
-                    result = $"No valid assembly file found [{PackageFile.FileName}]";
-                    break;
-
-                case UploadPackageResult.PlugInRunning:
-                    result = $"The PlugIn [{PlugIn.Name}] currently has running instances";
-                    break;
-
-                case UploadPackageResult.NoValidPlugInType:
-                    result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
-                    break;
-
-                default:
-                    break;
+                await _plugInService.UploadPlugInPackageAsync(
+                    PlugIn!.Id,
+                    PackageFile.FileName,
+                    PackageFile.OpenReadStream(),
+                    cancellationToken);
+            }
+            catch (PlugInInstanceRunningException ex)
+            {
+                result = $"The PlugIn: [{PlugIn!.Name}] currently has running instances Id: [{ex.Id}]";
+            }
+            catch (NoValidPlugInAssemblyFoundException)
+            {
+                result = $"No valid assembly file found [{PackageFile.FileName}]";
+            }
+            catch(PlugInTypeNotFoundException)
+            {
+                result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
+            }
+            catch(PlugInTypesFoundException)
+            {
+                result = $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{PackageFile.FileName}]";
             }
 
             return result;
