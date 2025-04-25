@@ -143,7 +143,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State != InstanceState.Running)
                 {
-                    instance.StartTime = DateTime.Now;
+                    instance.StartTime = DateTime.UtcNow;
 
                     _ = Task.Run(() => StartExecutingInstance(instance));
                 }
@@ -185,7 +185,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    instance.StopTime = DateTime.Now;
+                    instance.StopTime = DateTime.UtcNow;
                     _ = Task.Run(async () => await StopExecutingInstanceAsync(instance));
                 }
             }

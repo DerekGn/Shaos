@@ -105,9 +105,16 @@ namespace Shaos.Services.Runtime
         {
             TimeSpan timeSpan = TimeSpan.Zero;
 
-            if(StartTime != null && StopTime != null)
+            if(StartTime != null)
             {
-                timeSpan = StopTime.Value.Subtract(StopTime.Value);
+                if (StopTime != null)
+                {
+                    timeSpan = StopTime.Value.Subtract(StartTime.Value);
+                }
+                else
+                {
+                    timeSpan = DateTime.UtcNow.Subtract(StartTime.Value);
+                }
             }
 
             return timeSpan;

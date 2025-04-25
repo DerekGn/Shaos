@@ -58,7 +58,7 @@ namespace Shaos.Services.Runtime.Validation
             ];
         }
 
-        public void Validate(string assemblyFile, out Type? configurationType, out string version)
+        public void Validate(string assemblyFile, out string version)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFile);
 
@@ -91,7 +91,7 @@ namespace Shaos.Services.Runtime.Validation
 
                 var plugInType = resolvedPlugIns.First();
 
-                configurationType = ValidatePlugInType(plugInType);
+                ValidatePlugInType(plugInType);
 
                 version = assembly.GetName().Version!.ToString();
             }
@@ -103,7 +103,7 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        internal Type? ValidatePlugInType(Type plugInType)
+        internal void ValidatePlugInType(Type plugInType)
         {
             var constructors = plugInType.GetConstructors();
 
@@ -170,8 +170,6 @@ namespace Shaos.Services.Runtime.Validation
                         $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerGenericType.Name}]");
                 }
             }
-
-            return parameterTypes.FirstOrDefault(_ => _.GetGenericTypeDefinition() == _validConstructorParameterTypes[1]);
         }
     }
 }

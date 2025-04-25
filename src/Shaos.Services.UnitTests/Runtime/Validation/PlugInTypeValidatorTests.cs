@@ -68,7 +68,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            Assert.Throws<FileNotFoundException>(() => _pluginTypeValidator.Validate("z:\non-exists", out var _, out var _));
+            Assert.Throws<FileNotFoundException>(() => _pluginTypeValidator.Validate("z:\non-exists", out var _));
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(object).Assembly);
 
-            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var _, out var _));
+            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var _));
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(Test.PlugIn.Invalid.TestPlugIn).Assembly);
 
-            Assert.Throws<PlugInTypesFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePathInvalid, out var _, out var _));
+            Assert.Throws<PlugInTypesFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePathInvalid, out var _));
         }
 
         [Fact]
@@ -162,10 +162,9 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var configurationType, out var version);
+            _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var version);
 
             Assert.Equal("1.0.0.0", version);
-            Assert.NotNull(configurationType);
         }
     }
 }
