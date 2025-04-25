@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250415205730_InitialCreate")]
+    [Migration("20250424210850_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -131,6 +131,9 @@ namespace Shaos.Repository.Migrations
                             b1.Property<string>("AssemblyFile")
                                 .IsRequired()
                                 .HasMaxLength(40)
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("ConfigurationType")
                                 .HasColumnType("TEXT");
 
                             b1.Property<string>("FileName")

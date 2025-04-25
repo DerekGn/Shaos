@@ -40,6 +40,7 @@ using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime.Validation;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
 using Shaos.Services.Version;
@@ -154,6 +155,7 @@ namespace Shaos
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IInstanceHost, InstanceHost>();
             builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
+            builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 

@@ -49,6 +49,7 @@ namespace Shaos.Repository.Migrations
                 {
                     PlugInId = table.Column<int>(type: "INTEGER", nullable: false),
                     AssemblyFile = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    ConfigurationType = table.Column<string>(type: "TEXT", nullable: true),
                     FileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     Version = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false)
                 },

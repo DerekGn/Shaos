@@ -39,6 +39,12 @@ namespace Shaos.Repository.Models
         public string AssemblyFile { get; set; } = string.Empty;
 
         /// <summary>
+        /// The version of the <see cref="Package"/>
+        /// </summary>
+        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
+        public string? ConfigurationType { get; set; } = string.Empty;
+
+        /// <summary>
         /// The file name of the <see cref="Package"/>
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
@@ -54,7 +60,11 @@ namespace Shaos.Repository.Models
         [ExcludeFromCodeCoverage]
         public override string ToString()
         {
-            return $"{nameof(FileName)}: {FileName} {nameof(Version)}: {Version}";
+            return
+                $"{nameof(AssemblyFile)}: {AssemblyFile} " +
+                $"{nameof(ConfigurationType)}: {ConfigurationType} " +
+                $"{nameof(FileName)}: {FileName} " +
+                $"{nameof(Version)}: {Version}";
         }
     }
 }

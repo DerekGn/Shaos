@@ -106,19 +106,19 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestAddInstanceInvalidAssembly()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.AddInstance(1, "name", null));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.AddInstance(1, "name", null!));
         }
 
         [Fact]
         public void TestAddInstanceInvalidId()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.AddInstance(0, null, null));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.AddInstance(0, null!, null!));
         }
 
         [Fact]
         public void TestAddInstanceInvalidName()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.AddInstance(1, null, null));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.AddInstance(1, null!, null!));
         }
 
         [Fact]

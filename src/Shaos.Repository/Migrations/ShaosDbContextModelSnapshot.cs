@@ -130,6 +130,9 @@ namespace Shaos.Repository.Migrations
                                 .HasMaxLength(40)
                                 .HasColumnType("TEXT");
 
+                            b1.Property<string>("ConfigurationType")
+                                .HasColumnType("TEXT");
+
                             b1.Property<string>("FileName")
                                 .IsRequired()
                                 .HasMaxLength(40)

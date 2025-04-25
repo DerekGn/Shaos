@@ -245,13 +245,14 @@ namespace Shaos.Services
                         $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
                 }
 
-                _plugInTypeValidator.Validate(plugInFile, out var version);
+                _plugInTypeValidator.Validate(plugInFile, out var configurationType, out var version);
 
                 await CreateOrUpdatePlugInPackageAsync(
                         plugIn,
+                        version,
                         packageFileName,
                         Path.GetFileName(plugInFile),
-                        version,
+                        configurationType,
                         cancellationToken);
             },
             false,
@@ -301,9 +302,10 @@ namespace Shaos.Services
 
         private async Task CreateOrUpdatePlugInPackageAsync(
             PlugIn plugIn,
+            string version,
             string packagFileName,
             string assemblyFileName,
-            string version,
+            Type? configurationType,
             CancellationToken cancellationToken)
         {
             if (plugIn.Package == null)
@@ -316,6 +318,7 @@ namespace Shaos.Services
                 var package = new Package()
                 {
                     AssemblyFile = assemblyFileName,
+                    ConfigurationType = configurationType?.AssemblyQualifiedName,
                     FileName = packagFileName,
                     Version = version
                 };
@@ -332,6 +335,7 @@ namespace Shaos.Services
                     assemblyFileName,
                     version);
 
+                plugIn.Package.ConfigurationType = configurationType?.AssemblyQualifiedName;
                 plugIn.Package.AssemblyFile = assemblyFileName;
                 plugIn.Package.FileName = packagFileName;
                 plugIn.Package.Version = version;

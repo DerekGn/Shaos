@@ -70,8 +70,8 @@ namespace Shaos.Services.Runtime.Host
             string assemblyFileName)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFileName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFileName);
 
             VerifyInstanceCount();
 
