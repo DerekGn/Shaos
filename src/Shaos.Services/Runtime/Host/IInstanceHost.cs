@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Options;
+using Shaos.Sdk;
+
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
@@ -40,19 +43,40 @@ namespace Shaos.Services.Runtime.Host
         IReadOnlyList<Instance> Instances { get; }
 
         /// <summary>
-        /// Add an <see cref="Instance"/> to the <see cref="InstanceHost"/>
+        /// Create an <see cref="Instance"/> in the <see cref="InstanceHost"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="Instance"/></param>
         /// <param name="name">The name of the <see cref="Instance"/></param>
-        /// <param name="assemblyFileName">The name of the assembly file for the <see cref="Instance"/></param>
+        /// <param name="assemblyFilePath">The path of the assembly file for the <see cref="Instance"/></param>
         /// <returns>The <see cref="Instance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyFileName"/> is nul of empty</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyFilePath"/> is null of empty</exception>
         /// <exception cref="InstanceExistsException">Thrown if the <see cref="InstanceHost"/> already contains an <see cref="Instance"/> with <paramref name="id"/></exception>
-        Instance AddInstance(
+        Instance CreateInstance(
             int id,
             string name,
-            string assemblyFileName);
+            string assemblyFilePath);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="plugIn"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="plugIn"/> is null</exception>
+        /// <exception cref="InstanceNotFoundException">Thrown if an <see cref="Instance"/> </exception>
+        Instance InitialiseInstance(
+            int id,
+            IPlugIn plugIn,
+            IOptions<object>? options = default);
+
+        /// <summary>
+        /// Indicates if an <see cref="Instance"/> exists in the runtime
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> to check</param>
+        /// <returns>true if the <see cref="Instance"/> exists in the <see cref="InstanceHost"/></returns>
+        bool InstanceExists(int id);
 
         /// <summary>
         /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
@@ -84,12 +108,5 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="Instance"/> is not synchronously stopped
         /// </remarks>
         Instance StopInstance(int id);
-
-        /// <summary>
-        /// Indicates if an <see cref="Instance"/> exists in the runtime
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/> to check</param>
-        /// <returns>true if the <see cref="Instance"/> exists in the <see cref="InstanceHost"/></returns>
-        bool InstanceExists(int id);
     }
 }

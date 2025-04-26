@@ -106,6 +106,7 @@ namespace Shaos.Services.Runtime
         /// The <see cref="IRuntimeAssemblyLoadContext"/> for the loaded <see cref="PlugIn"/>
         /// </summary>
         public UnloadingWeakReference<IRuntimeAssemblyLoadContext>? Context { get; internal set; }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -143,7 +144,7 @@ namespace Shaos.Services.Runtime
         {
             TimeSpan timeSpan = TimeSpan.Zero;
 
-            if(StartTime != null)
+            if (StartTime != null)
             {
                 if (StopTime != null)
                 {

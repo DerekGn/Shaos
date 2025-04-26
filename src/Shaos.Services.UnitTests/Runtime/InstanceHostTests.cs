@@ -28,11 +28,9 @@ using Moq;
 using Shaos.Sdk;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Exceptions;
-using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,7 +43,6 @@ namespace Shaos.Services.UnitTests.Runtime
 
         private readonly AutoResetEvent _autoResetEvent;
         private readonly InstanceHost _instanceHost;
-        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private InstanceState _waitingState;
@@ -57,7 +54,6 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
-            _mockPlugInFactory = new Mock<IPlugInFactory>();
 
             var optionsInstance = new InstanceHostOptions()
             {
@@ -66,7 +62,6 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _instanceHost = new InstanceHost(
                 LoggerFactory!.CreateLogger<InstanceHost>(),
-                _mockPlugInFactory.Object,
                 Options.Create(optionsInstance),
                 _mockRuntimeAssemblyLoadContextFactory.Object);
 
@@ -81,48 +76,21 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public void TestAddInstance()
-        {
-            var mockPlugIn = new Mock<IPlugIn>();
-
-            SetupMockPlugIn(mockPlugIn.Object);
-
-            SetupStateWait(InstanceState.PlugInLoaded);
-
-            var instance = _instanceHost.AddInstance(1, "name", "assembly");
-
-            Assert.True(WaitForStateChange());
-
-            Assert.NotNull(instance);
-        }
-
-        [Fact]
-        public void TestAddInstanceExists()
-        {
-            _instanceHost._executingInstances.Add(new Instance()
-            {
-                Id = 1
-            });
-
-            Assert.Throws<InstanceExistsException>(() => _instanceHost.AddInstance(1, "name", "assembly"));
-        }
-
-        [Fact]
         public void TestAddInstanceInvalidAssembly()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.AddInstance(1, "name", null!));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, "name", null!));
         }
 
         [Fact]
         public void TestAddInstanceInvalidId()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.AddInstance(0, null!, null!));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.CreateInstance(0, null!, null!));
         }
 
         [Fact]
         public void TestAddInstanceInvalidName()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.AddInstance(1, null!, null!));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, null!, null!));
         }
 
         [Fact]
@@ -137,7 +105,103 @@ namespace Shaos.Services.UnitTests.Runtime
                 });
             }
 
-            Assert.Throws<RuntimeMaxInstancesRunningException>(() => _instanceHost.AddInstance(10, "name", "assembly"));
+            Assert.Throws<RuntimeMaxInstancesRunningException>(() => _instanceHost.CreateInstance(10, "name", "assembly"));
+        }
+
+        [Fact]
+        public void TestCreateInstanceException()
+        {
+            SetupAssemblyLoadContext();
+
+            SetupStateWait(InstanceState.AwaitingInitialisation);
+
+            var instance = _instanceHost.CreateInstance(1, "name", "assembly");
+
+            Assert.True(WaitForStateChange());
+
+            Assert.NotNull(instance);
+            Assert.Equal(InstanceState.AwaitingInitialisation, instance.State);
+        }
+
+        [Fact]
+        public void TestCreateInstanceExists()
+        {
+            _instanceHost._executingInstances.Add(new Instance()
+            {
+                Id = 1
+            });
+
+            Assert.Throws<InstanceExistsException>(() => _instanceHost.CreateInstance(1, "name", "assembly"));
+        }
+
+        [Fact]
+        public void TestInitialiseInstance()
+        {
+            var mockPlugIn = new Mock<IPlugIn>();
+
+            _instanceHost._executingInstances.Add(new Instance()
+            {
+                Id = 1,
+                Name = "Test",
+                State = InstanceState.AwaitingInitialisation
+            });
+
+            var instance = _instanceHost.InitialiseInstance(1, mockPlugIn.Object);
+
+            Assert.NotNull(instance);
+            Assert.Equal(InstanceState.PlugInLoaded, instance.State);
+        }
+
+        [Fact]
+        public void TestInitialiseInstanceNotFound()
+        {
+            var mockPlugIn = new Mock<IPlugIn>();
+
+            Assert.Throws<InstanceNotFoundException>(() => _instanceHost.InitialiseInstance(1, mockPlugIn.Object));
+        }
+
+        [Fact]
+        public void TestInstanceExistsFalse()
+        {
+            Assert.False(_instanceHost.InstanceExists(1));
+        }
+
+        [Fact]
+        public void TestInstanceExistsTrue()
+        {
+            _instanceHost._executingInstances.Add(new Instance()
+            {
+                Id = 1
+            });
+
+            Assert.True(_instanceHost.InstanceExists(1));
+        }
+
+        [Fact]
+        public void TestRemoveInstance()
+        {
+            _instanceHost._executingInstances.Add(new Instance()
+            {
+                Id = 1,
+                Name = "Test",
+                State = InstanceState.Complete
+            });
+
+            _instanceHost.RemoveInstance(1);
+
+            Assert.Empty(_instanceHost._executingInstances);
+        }
+
+        [Fact]
+        public void TestRemoveInstanceInvalidId()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.RemoveInstance(0));
+        }
+
+        [Fact]
+        public void TestRemoveInstanceNotFound()
+        {
+            Assert.Throws<InstanceNotFoundException>(() => _instanceHost.RemoveInstance(1));
         }
 
         [Fact]
@@ -154,47 +218,15 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
-        public void TestRemoveInstanceInvalidId()
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.RemoveInstance(0));
-        }
-
-        [Fact]
-        public void TestRemoveInstanceNotFound()
-        {
-            Assert.Throws<InstanceNotFoundException>(() => _instanceHost.RemoveInstance(1));
-        }
-
-        [Fact]
-        public void TestStartInstanceComplete()
+        public void TestStartInstanceAwaitingIn()
         {
             var mockPlugIn = new Mock<IPlugIn>();
 
             _instanceHost._executingInstances.Add(new Instance()
             {
                 Id = 1,
-                PlugIn = mockPlugIn.Object
-            });
-
-            SetupStateWait(InstanceState.Complete);
-
-            var instance = _instanceHost.StartInstance(1);
-
-            Assert.True(WaitForStateChange());
-
-            Assert.NotNull(instance);
-            Assert.Equal(InstanceState.Complete, instance.State);
-        }
-
-        [Fact]
-        public void TestStartInstanceFaulted()
-        {
-            var mockPlugIn = new Mock<IPlugIn>();
-
-            _instanceHost._executingInstances.Add(new Instance()
-            {
-                Id = 1,
-                PlugIn = mockPlugIn.Object
+                PlugIn = mockPlugIn.Object,
+                State = InstanceState.PlugInLoaded
             });
 
             mockPlugIn
@@ -221,9 +253,46 @@ namespace Shaos.Services.UnitTests.Runtime
         }
 
         [Fact]
+        public void TestStartInstanceComplete()
+        {
+            var mockPlugIn = new Mock<IPlugIn>();
+
+            _instanceHost._executingInstances.Add(new Instance()
+            {
+                Id = 1,
+                PlugIn = mockPlugIn.Object,
+                State = InstanceState.PlugInLoaded
+            });
+
+            SetupStateWait(InstanceState.Complete);
+
+            var instance = _instanceHost.StartInstance(1);
+
+            Assert.True(WaitForStateChange());
+
+            Assert.NotNull(instance);
+            Assert.Equal(InstanceState.Complete, instance.State);
+        }
+
+        [Fact]
         public void TestStartInstanceNotFound()
         {
             Assert.Throws<InstanceNotFoundException>(() => _instanceHost.StartInstance(1));
+        }
+
+        [Fact]
+        public void TestStartInstanceNotInitialisedException()
+        {
+            var mockPlugIn = new Mock<IPlugIn>();
+
+            _instanceHost._executingInstances.Add(new Instance()
+            {
+                Id = 1,
+                PlugIn = mockPlugIn.Object,
+                State = InstanceState.AwaitingInitialisation
+            });
+
+            Assert.Throws<InstanceNotInitialisedException>(() => _instanceHost.StartInstance(1));
         }
 
         [Fact]
@@ -298,7 +367,7 @@ namespace Shaos.Services.UnitTests.Runtime
             }
         }
 
-        private void SetupMockPlugIn(IPlugIn? plugIn)
+        private void SetupAssemblyLoadContext()
         {
             _mockRuntimeAssemblyLoadContextFactory
                .Setup(_ => _.Create(
@@ -309,12 +378,6 @@ namespace Shaos.Services.UnitTests.Runtime
                 .Setup(_ => _.LoadFromAssemblyPath(
                     It.IsAny<string>()))
                 .Returns(typeof(object).Assembly);
-
-            _mockPlugInFactory
-                .Setup(_ => _.CreateInstance(
-                    It.IsAny<Assembly>(),
-                    It.IsAny<IOptions<object>?>()))
-                .Returns(plugIn);
         }
 
         private void SetupStateWait(InstanceState state)

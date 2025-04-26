@@ -29,9 +29,9 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
-using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
 using System.Linq.Expressions;
@@ -44,6 +44,7 @@ namespace Shaos.Services.UnitTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
+        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IPlugInInstanceRepository> _mockPlugInInstanceRepository;
         private readonly Mock<IPlugInRepository> _mockPlugInRepository;
         private readonly Mock<IPlugInTypeValidator> _mockPlugInTypeValidator;
@@ -53,6 +54,7 @@ namespace Shaos.Services.UnitTests
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockInstanceHost = new Mock<IInstanceHost>();
+            _mockPlugInFactory = new Mock<IPlugInFactory>();
             _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
             _mockPlugInRepository = new Mock<IPlugInRepository>();
             _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
@@ -60,6 +62,7 @@ namespace Shaos.Services.UnitTests
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
                 _mockInstanceHost.Object,
+                _mockPlugInFactory.Object,
                 _mockFileStoreService.Object,
                 _mockPlugInRepository.Object,
                 _mockPlugInTypeValidator.Object,
@@ -295,7 +298,7 @@ namespace Shaos.Services.UnitTests
 
             await _plugInService.StartEnabledInstancesAsync();
 
-            _mockInstanceHost.Verify(_ => _.AddInstance(
+            _mockInstanceHost.Verify(_ => _.CreateInstance(
                 It.IsAny<int>(),
                 It.IsAny<string>(),
                 It.IsAny<string>()),

@@ -24,9 +24,9 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shaos.Sdk;
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
-using Shaos.Services.Runtime.Factories;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -35,23 +35,19 @@ namespace Shaos.Services.Runtime.Host
         internal readonly List<Instance> _executingInstances;
         private readonly ILogger<InstanceHost> _logger;
         private readonly IOptions<InstanceHostOptions> _options;
-        private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public InstanceHost(
             ILogger<InstanceHost> logger,
-            IPlugInFactory plugInFactory,
             IOptions<InstanceHostOptions> options,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(options);
-            ArgumentNullException.ThrowIfNull(plugInFactory);
             ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
             _options = options;
-            _plugInFactory = plugInFactory;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
 
             _executingInstances = new List<Instance>();
@@ -64,22 +60,25 @@ namespace Shaos.Services.Runtime.Host
         public IReadOnlyList<Instance> Instances => _executingInstances.AsReadOnly();
 
         // </inheritdoc>
-        public Instance AddInstance(
+        public Instance CreateInstance(
             int id,
             string name,
-            string assemblyFileName)
+            string assemblyFilePath)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFileName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFilePath);
 
             VerifyInstanceCount();
 
-            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
+            var instance = _executingInstances
+                .FirstOrDefault(_ => _.Id == id);
 
             if (instance == null)
             {
-                instance = CreateInstance(id, name, assemblyFileName);
+                _logger.LogInformation("Creating Instance: [{Id}] Name: [{Name}]", id, name);
+
+                instance = InitialiseNewInstance(id, name, assemblyFilePath);
 
                 _executingInstances.Add(instance);
 
@@ -90,8 +89,40 @@ namespace Shaos.Services.Runtime.Host
             }
             else
             {
+                _logger.LogError("Instance Id: [{Id}] exists", id);
+
                 throw new InstanceExistsException(id);
             }
+        }
+
+        // </inheritdoc>
+        public Instance InitialiseInstance(
+            int id,
+            IPlugIn plugIn,
+            IOptions<object>? options = default)
+        {
+            ArgumentNullException.ThrowIfNull(plugIn);
+
+            var instance = _executingInstances
+                .FirstOrDefault(_ => _.Id == id);
+
+            if (instance != null)
+            {
+                _logger.LogDebug("Initialising instance Id: [{Id}]", id);
+
+                instance.PlugIn = plugIn;
+                instance.Options = options;
+                instance.State = InstanceState.PlugInLoaded;
+
+                InstanceStateChanged?.Invoke(this,
+                    new InstanceStateEventArgs(instance.Id, instance.State));
+            }
+            else
+            {
+                HandleInstanceNotFound(id);
+            }
+
+            return instance;
         }
 
         // </inheritdoc>
@@ -111,6 +142,8 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State == InstanceState.Running)
                 {
+                    _logger.LogError("Instance Id: [{Id}] is already running", id);
+
                     throw new InstanceRunningException(id);
                 }
 
@@ -118,7 +151,7 @@ namespace Shaos.Services.Runtime.Host
             }
             else
             {
-                throw new InstanceNotFoundException(id);
+                HandleInstanceNotFound(id);
             }
         }
 
@@ -133,6 +166,15 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State != InstanceState.Running)
                 {
+                    if (instance.State == InstanceState.AwaitingInitialisation)
+                    {
+                        _logger.LogError("PlugIn: [{Id}] Name: [{Name}] not loaded",
+                            instance.Id,
+                            instance.Name);
+
+                        throw new InstanceNotInitialisedException();
+                    }
+
                     instance.StartTime = DateTime.UtcNow;
 
                     _ = Task.Run(() => StartExecutingInstance(instance));
@@ -146,7 +188,7 @@ namespace Shaos.Services.Runtime.Host
             }
             else
             {
-                throw new InstanceNotFoundException(id);
+                HandleInstanceNotFound(id);
             }
 
             return instance;
@@ -161,9 +203,7 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                _logger.LogWarning("Instance: [{Id}] Not Found", id);
-
-                throw new InstanceNotFoundException(id);
+                HandleInstanceNotFound(id);
             }
             else
             {
@@ -183,15 +223,27 @@ namespace Shaos.Services.Runtime.Host
             return instance;
         }
 
-        private Instance CreateInstance(
+        private async Task ExecutePlugInMethod(Instance instance)
+        {
+            instance.State = InstanceState.Running;
+            InstanceStateChanged?.Invoke(this,
+                new InstanceStateEventArgs(instance.Id, instance.State));
+
+            await instance.PlugIn!.ExecuteAsync(instance.TokenSource!.Token);
+        }
+
+        private void HandleInstanceNotFound(int id)
+        {
+            _logger.LogError("Unable to find instance Id: [{Id}]", id);
+
+            throw new InstanceNotFoundException(id);
+        }
+
+        private Instance InitialiseNewInstance(
             int id,
             string name,
             string assemblyFilePath)
         {
-            _logger.LogInformation("Creating Instance: [{Id}] Name: [{Name}]",
-                id,
-                name);
-
             var instance = new Instance()
             {
                 Id = id,
@@ -205,9 +257,7 @@ namespace Shaos.Services.Runtime.Host
                 instance.Context = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(
                     _runtimeAssemblyLoadContextFactory.Create(instance.AssemblyFilePath));
                 instance.Assembly = instance.Context.Target.LoadFromAssemblyPath(instance.AssemblyFilePath);
-                instance.Options = _plugInFactory.LoadOptions(instance.Assembly);
-                instance.PlugIn = _plugInFactory.CreateInstance(instance.Assembly, instance.Options);
-                instance.State = InstanceState.PlugInLoaded;
+                instance.State = InstanceState.AwaitingInitialisation;
             }
             catch (Exception exception)
             {
@@ -231,35 +281,14 @@ namespace Shaos.Services.Runtime.Host
                 instance.Id,
                 instance.Name);
 
-            StartInstanceExecution(instance);
-        }
+            instance.State = InstanceState.Starting;
+            instance.TokenSource = new CancellationTokenSource();
+            instance.Task = Task.Run(
+                async () => await ExecutePlugInMethod(instance))
+                .ContinueWith((antecedent) => UpdateStateOnCompletion(instance, antecedent));
 
-        private void StartInstanceExecution(Instance instance)
-        {
-            try
-            {
-                instance.State = InstanceState.Activating;
-                instance.TokenSource = new CancellationTokenSource();
-                instance.Task = Task.Run(
-                    async () => await instance.PlugIn!.ExecuteAsync(instance.TokenSource!.Token))
-                    .ContinueWith((antecedent) => UpdateStateOnCompletion(instance, antecedent));
-                instance.State = InstanceState.Running;
-
-                InstanceStateChanged?.Invoke(this,
-                    new InstanceStateEventArgs(instance.Id, instance.State));
-            }
-            catch (Exception exception)
-            {
-                _logger.LogCritical(exception, "Exception occurred during instance execution start. Id: [{Id}] Name: [{Name}]",
-                    instance.Id,
-                    instance.Name);
-
-                instance.State = InstanceState.ActivationFaulted;
-                instance.Exception = exception;
-
-                InstanceStateChanged?.Invoke(this,
-                    new InstanceStateEventArgs(instance.Id, instance.State));
-            }
+            InstanceStateChanged?.Invoke(this,
+                new InstanceStateEventArgs(instance.Id, instance.State));
         }
 
         private async Task StopExecutingInstanceAsync(Instance instance)

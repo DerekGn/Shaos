@@ -61,13 +61,9 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         None,
         /// <summary>
-        /// The <see cref="Instance"/> is activating
+        /// The <see cref="Instance"/> is starting
         /// </summary>
-        Activating,
-        /// <summary>
-        /// The <see cref="Instance"/> is activation faulted
-        /// </summary>
-        ActivationFaulted,
+        Starting,
         /// <summary>
         /// The <see cref="Instance"/> is running
         /// </summary>
@@ -97,6 +93,6 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// The <see cref="Instance"/> <see cref="IPlugIn"/> is loading from its <see cref="Assembly"/>
         /// </summary>
-        PlugInLoading
+        AwaitingInitialisation
     }
 }

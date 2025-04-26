@@ -27,6 +27,7 @@ using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
+using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
 
@@ -39,6 +40,7 @@ namespace Shaos.Services
         private readonly IFileStoreService _fileStoreService;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
+        private readonly IPlugInFactory _plugInFactory;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
         private readonly IPlugInRepository _plugInRepository;
         private readonly IPlugInTypeValidator _plugInTypeValidator;
@@ -46,6 +48,7 @@ namespace Shaos.Services
         public PlugInService(
             ILogger<PlugInService> logger,
             IInstanceHost instanceHost,
+            IPlugInFactory plugInFactory,
             IFileStoreService fileStoreService,
             IPlugInRepository plugInRepository,
             IPlugInTypeValidator plugInTypeValidator,
@@ -53,6 +56,7 @@ namespace Shaos.Services
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(plugInFactory);
             ArgumentNullException.ThrowIfNull(fileStoreService);
             ArgumentNullException.ThrowIfNull(plugInRepository);
             ArgumentNullException.ThrowIfNull(plugInTypeValidator);
@@ -258,7 +262,9 @@ namespace Shaos.Services
             cancellationToken);
         }
 
-        private void AddInstanceToHost(PlugIn plugIn, PlugInInstance plugInInstance)
+        private void AddInstanceToHost(
+            PlugIn plugIn,
+            PlugInInstance plugInInstance)
         {
             var assemblyFilePath = Path
                 .Combine(_fileStoreService
@@ -268,17 +274,18 @@ namespace Shaos.Services
                 plugInInstance.Id,
                 plugInInstance.Name);
 
-            var instance = _instanceHost.AddInstance(
+            var instance = _instanceHost.CreateInstance(
                 plugInInstance.Id,
                 plugInInstance.Name,
                 assemblyFilePath);
 
             if (instance != null)
             {
-                if(instance.Options != null)
-                {
-#warning load configuration
-                }
+#warning TODO Load options settings
+                _instanceHost.InitialiseInstance(
+                    plugInInstance.Id,
+                    _plugInFactory.CreateInstance(instance.Assembly!, instance.Options),
+                    _plugInFactory.LoadOptions(instance.Assembly!));
             }
         }
 
