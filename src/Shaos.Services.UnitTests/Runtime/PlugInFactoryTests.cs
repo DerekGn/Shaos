@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;

@@ -258,20 +258,22 @@ namespace Shaos.Services
             cancellationToken);
         }
 
-        private void AddInstanceToHost(PlugIn plugIn, PlugInInstance instance)
+        private void AddInstanceToHost(PlugIn plugIn, PlugInInstance plugInInstance)
         {
             var assemblyFilePath = Path
                 .Combine(_fileStoreService
-                .GetAssemblyPath(instance.Id), plugIn.Package!.AssemblyFile);
+                .GetAssemblyPath(plugInInstance.Id), plugIn.Package!.AssemblyFile);
 
             _logger.LogInformation("Adding Instance [{Id}] Name: [{Name}] to InstanceHost",
-                instance.Id,
-                instance.Name);
+                plugInInstance.Id,
+                plugInInstance.Name);
 
-            _instanceHost.AddInstance(
-                instance.Id,
-                instance.Name,
+            var instance = _instanceHost.AddInstance(
+                plugInInstance.Id,
+                plugInInstance.Name,
                 assemblyFilePath);
+
+
         }
 
         private bool CheckPlugInRunning(PlugIn plugIn, out int plugInInstanceId)

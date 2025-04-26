@@ -25,22 +25,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
+using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class CreateModel : PageModel
     {
-        private readonly IPlugInRepository _plugInRepository;
-        private readonly IPlugInInstanceRepository _plugInInstanceRepository;
+        private readonly IPlugInService _plugInService;
 
-        public CreateModel(
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository)
+        public CreateModel(IPlugInService plugInService)
         {
-            _plugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
-            _plugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
+            ArgumentNullException.ThrowIfNull(plugInService);
+
+            _plugInService = plugInService;
         }
 
         [BindProperty]
@@ -69,9 +67,7 @@ namespace Shaos.Pages.PlugInInstances
 
             try
             {
-                var plugIn = await _plugInRepository.GetByIdAsync(Id, false, cancellationToken: cancellationToken);
-
-                await _plugInInstanceRepository.CreateAsync(plugIn!, PlugInInstance, cancellationToken);
+                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
             }
             catch (PlugInInstanceNameExistsException ex)
             {

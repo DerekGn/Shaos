@@ -28,6 +28,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Reflection;
 using Shaos.Services.Runtime.Host;
+using Microsoft.Extensions.Options;
 
 namespace Shaos.Services.Runtime
 {
@@ -62,14 +63,34 @@ namespace Shaos.Services.Runtime
         public string Name { get; init; }
 
         /// <summary>
+        /// The <see cref="IPlugIn"/> <see cref="IOptions"/> configuration settings
+        /// </summary>
+        public IOptions<object>? Options { get; internal set; }
+
+        /// <summary>
         /// The <see cref="IPlugIn"/> instance that executes its functions
         /// </summary>
         public IPlugIn? PlugIn { get; internal set; }
 
         /// <summary>
+        /// The total running time of this instance
+        /// </summary>
+        public TimeSpan RunningTime => CalculateRunningTime();
+
+        /// <summary>
+        /// The last start time of this instance
+        /// </summary>
+        public DateTime? StartTime { get; internal set; }
+
+        /// <summary>
         /// The <see cref="ExecutingState"/> of the <see cref="Instance"/>
         /// </summary>
         public InstanceState State { get; internal set; }
+
+        /// <summary>
+        /// The last stop time of this instance
+        /// </summary>
+        public DateTime? StopTime { get; internal set; }
 
         /// <summary>
         /// The <see cref="Task"/> that is executing the <see cref="Instance"/>
@@ -84,42 +105,7 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The <see cref="IRuntimeAssemblyLoadContext"/> for the loaded <see cref="PlugIn"/>
         /// </summary>
-        public UnloadingWeakReference<IRuntimeAssemblyLoadContext>? UnloadingContext { get; internal set; }
-
-        /// <summary>
-        /// The last start time of this instance
-        /// </summary>
-        public DateTime? StartTime { get; internal set; }
-
-        /// <summary>
-        /// The last stop time of this instance
-        /// </summary>
-        public DateTime? StopTime { get; internal set; }
-
-        /// <summary>
-        /// The total running time of this instance
-        /// </summary>
-        public TimeSpan RunningTime => CalculateRunningTime();
-
-        private TimeSpan CalculateRunningTime()
-        {
-            TimeSpan timeSpan = TimeSpan.Zero;
-
-            if(StartTime != null)
-            {
-                if (StopTime != null)
-                {
-                    timeSpan = StopTime.Value.Subtract(StartTime.Value);
-                }
-                else
-                {
-                    timeSpan = DateTime.UtcNow.Subtract(StartTime.Value);
-                }
-            }
-
-            return timeSpan;
-        }
-
+        public UnloadingWeakReference<IRuntimeAssemblyLoadContext>? Context { get; internal set; }
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -138,7 +124,7 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
             stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
-            stringBuilder.AppendLine($"{nameof(UnloadingContext)}: {(UnloadingContext == null ? "Empty" : UnloadingContext.Target.Name)}");
+            stringBuilder.AppendLine($"{nameof(Context)}: {(Context == null ? "Empty" : Context.Target.Name)}");
 
             return stringBuilder.ToString();
         }
@@ -150,7 +136,26 @@ namespace Shaos.Services.Runtime
             Task = null;
             TokenSource = null;
 
-            UnloadingContext?.Dispose();
+            Context?.Dispose();
+        }
+
+        private TimeSpan CalculateRunningTime()
+        {
+            TimeSpan timeSpan = TimeSpan.Zero;
+
+            if(StartTime != null)
+            {
+                if (StopTime != null)
+                {
+                    timeSpan = StopTime.Value.Subtract(StartTime.Value);
+                }
+                else
+                {
+                    timeSpan = DateTime.UtcNow.Subtract(StartTime.Value);
+                }
+            }
+
+            return timeSpan;
         }
     }
 }

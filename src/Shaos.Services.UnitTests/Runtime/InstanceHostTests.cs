@@ -83,7 +83,11 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestAddInstance()
         {
-            SetupStateWait(InstanceState.None);
+            var mockPlugIn = new Mock<IPlugIn>();
+
+            SetupMockPlugIn(mockPlugIn.Object);
+
+            SetupStateWait(InstanceState.PlugInLoaded);
 
             var instance = _instanceHost.AddInstance(1, "name", "assembly");
 
@@ -164,13 +168,13 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestStartInstanceComplete()
         {
+            var mockPlugIn = new Mock<IPlugIn>();
+
             _instanceHost._executingInstances.Add(new Instance()
             {
                 Id = 1,
+                PlugIn = mockPlugIn.Object
             });
-
-            var mockPlugIn = new Mock<IPlugIn>();
-            SetupMockPlugIn(mockPlugIn.Object);
 
             SetupStateWait(InstanceState.Complete);
 
@@ -185,13 +189,13 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestStartInstanceFaulted()
         {
+            var mockPlugIn = new Mock<IPlugIn>();
+
             _instanceHost._executingInstances.Add(new Instance()
             {
                 Id = 1,
+                PlugIn = mockPlugIn.Object
             });
-
-            var mockPlugIn = new Mock<IPlugIn>();
-            SetupMockPlugIn(mockPlugIn.Object);
 
             mockPlugIn
                 .Setup(_ => _.ExecuteAsync(It.IsAny<CancellationToken>()))
@@ -207,11 +211,6 @@ namespace Shaos.Services.UnitTests.Runtime
             Assert.NotNull(instance.Exception);
             Assert.NotNull(instance.PlugIn);
             Assert.Equal(InstanceState.Faulted, instance.State);
-
-            _mockPlugInFactory
-                .Verify(_ => _.CreateInstance(
-                    It.IsAny<Assembly>()),
-                    Times.Once);
 
             mockPlugIn
                 .Verify(_ => _.ExecuteAsync(
@@ -313,7 +312,8 @@ namespace Shaos.Services.UnitTests.Runtime
 
             _mockPlugInFactory
                 .Setup(_ => _.CreateInstance(
-                    It.IsAny<Assembly>()))
+                    It.IsAny<Assembly>(),
+                    It.IsAny<IOptions<object>?>()))
                 .Returns(plugIn);
         }
 

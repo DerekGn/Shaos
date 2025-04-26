@@ -36,6 +36,8 @@ namespace Shaos.Services
         /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to create</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the created <see cref="PlugInInstance"/></returns>
+        /// <exception cref="PlugInNotFoundException">Thrown if the <see cref="PlugIn"/> is not found</exception>
+        /// <exception cref="PlugInInstanceNameExistsException">Thrown if a <see cref="PlugInInstance"/> with the same name already exists</exception>
         Task<int> CreatePlugInInstanceAsync(
             int id,
             PlugInInstance plugInInstance,

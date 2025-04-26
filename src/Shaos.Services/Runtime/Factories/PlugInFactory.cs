@@ -42,7 +42,7 @@ namespace Shaos.Services.Runtime.Factories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public IPlugIn? CreateInstance(Assembly assembly)
+        public IPlugIn? CreateInstance(Assembly assembly, IOptions<object>? options = default)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
@@ -53,6 +53,39 @@ namespace Shaos.Services.Runtime.Factories
             var constructorParameters = GetConstructorParameters(plugInType);
 
             return Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
+        }
+
+        public IOptions<object>? LoadOptions(Assembly assembly)
+        {
+            ArgumentNullException.ThrowIfNull(assembly);
+
+            var plugInType = ResolvePlugInType(assembly);
+
+            var constructors = plugInType.GetConstructors();
+            var parameterInfos = constructors[0].GetParameters();
+            var parameterTypes = (from parameterInfo in parameterInfos
+                                  let parameterType = parameterInfo.ParameterType
+                                  select parameterType)
+                                  .ToList();
+
+            var optionsType = parameterTypes.FirstOrDefault(_ => _.IsGenericType && _.GetGenericTypeDefinition() == typeof(IOptions<>));
+
+            IOptions<object>? options = null;
+
+            if(optionsType != null)
+            {
+                MethodInfo createMethodInfo = typeof(Options).GetMethod(nameof(Options.Create), BindingFlags.Static | BindingFlags.Public);
+
+                var configurationType = optionsType.GenericTypeArguments[0];
+
+                var genericMethod = createMethodInfo.MakeGenericMethod(configurationType)!;
+
+                var configurationInstance = Activator.CreateInstance(configurationType);
+
+                options = genericMethod.Invoke(null, [configurationInstance]) as IOptions<object>;
+            }
+
+            return options;
         }
 
         private List<object> GetConstructorParameters(Type plugInType)
@@ -70,11 +103,11 @@ namespace Shaos.Services.Runtime.Factories
 
             foreach (var parameterType in parameterTypes)
             {
-                if(parameterType.IsGenericType)
+                if (parameterType.IsGenericType)
                 {
                     var genericType = parameterType.GetGenericTypeDefinition();
 
-                    if(genericType == typeof(ILogger<>))
+                    if (genericType == typeof(ILogger<>))
                     {
                         Type[] typeArgs = { parameterType.GenericTypeArguments[0] };
                         Type loggerType = typeof(Logger<>).MakeGenericType(typeArgs);

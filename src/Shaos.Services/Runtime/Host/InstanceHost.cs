@@ -27,6 +27,7 @@ using Microsoft.Extensions.Options;
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Factories;
+using System;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -50,8 +51,8 @@ namespace Shaos.Services.Runtime.Host
             ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
-            _plugInFactory = plugInFactory;
             _options = options;
+            _plugInFactory = plugInFactory;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
 
             _executingInstances = new List<Instance>();
@@ -79,17 +80,7 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                _logger.LogInformation("Creating ExecutingInstance: [{Id}] Name: [{Name}]",
-                    id,
-                    name);
-
-                instance = new Instance()
-                {
-                    Id = id,
-                    Name = name,
-                    State = InstanceState.None,
-                    AssemblyFilePath = assemblyFileName
-                };
+                instance = CreateInstance(id, name, assemblyFileName);
 
                 _executingInstances.Add(instance);
 
@@ -193,21 +184,31 @@ namespace Shaos.Services.Runtime.Host
             return instance;
         }
 
-        private bool LoadInstancePlugInFromAssembly(Instance instance)
+        private Instance CreateInstance(
+            int id,
+            string name,
+            string assemblyFilePath)
         {
+            _logger.LogInformation("Creating Instance: [{Id}] Name: [{Name}]",
+                id,
+                name);
+
+            var instance = new Instance()
+            {
+                Id = id,
+                Name = name,
+                State = InstanceState.None,
+                AssemblyFilePath = assemblyFilePath
+            };
+
             try
             {
-                instance.State = InstanceState.PlugInLoading;
-
-                instance.UnloadingContext = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(
+                instance.Context = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(
                     _runtimeAssemblyLoadContextFactory.Create(instance.AssemblyFilePath));
-                instance.Assembly = instance.UnloadingContext.Target.LoadFromAssemblyPath(instance.AssemblyFilePath);
-                instance.PlugIn = _plugInFactory.CreateInstance(instance.Assembly);
-
+                instance.Assembly = instance.Context.Target.LoadFromAssemblyPath(instance.AssemblyFilePath);
+                instance.Options = _plugInFactory.LoadOptions(instance.Assembly);
+                instance.PlugIn = _plugInFactory.CreateInstance(instance.Assembly, instance.Options);
                 instance.State = InstanceState.PlugInLoaded;
-
-                InstanceStateChanged?.Invoke(this,
-                    new InstanceStateEventArgs(instance.Id, instance.State));
             }
             catch (Exception exception)
             {
@@ -222,24 +223,16 @@ namespace Shaos.Services.Runtime.Host
                     new InstanceStateEventArgs(instance.Id, instance.State));
             }
 
-            return instance.State == InstanceState.PlugInLoaded;
+            return instance;
         }
 
         private void StartExecutingInstance(Instance instance)
         {
-            _logger.LogInformation("Loading PlugIn from assembly Id: [{Id}] Name: [{Name}] AssemblyFilePath: [{AssemblyFilePath}]",
-                    instance.Id,
-                    instance.Name,
-                    instance.AssemblyFilePath);
+            _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
+                instance.Id,
+                instance.Name);
 
-            if (LoadInstancePlugInFromAssembly(instance))
-            {
-                _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
-                    instance.Id,
-                    instance.Name);
-
-                StartInstanceExecution(instance);
-            }
+            StartInstanceExecution(instance);
         }
 
         private void StartInstanceExecution(Instance instance)

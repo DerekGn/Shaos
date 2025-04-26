@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using System.Reflection;
 
@@ -37,6 +38,13 @@ namespace Shaos.Services.Runtime.Factories
         /// </summary>
         /// <param name="assembly">The <see cref="Assembly"/> to load the </param>
         /// <returns>A <see cref="IPlugIn"/> instance</returns>
-        IPlugIn? CreateInstance(Assembly assembly);
+        IPlugIn? CreateInstance(Assembly assembly, IOptions<object>? options = default);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        IOptions<object>? LoadOptions(Assembly assembly);
     }
 }
