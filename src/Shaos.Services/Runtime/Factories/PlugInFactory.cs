@@ -52,6 +52,11 @@ namespace Shaos.Services.Runtime.Factories
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
+            if(options != null)
+            {
+                constructorParameters.Add(options);
+            }
+
             return Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
         }
 
