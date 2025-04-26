@@ -27,7 +27,6 @@ using Microsoft.Extensions.Options;
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Factories;
-using System;
 
 namespace Shaos.Services.Runtime.Host
 {

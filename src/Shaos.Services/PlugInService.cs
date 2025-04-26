@@ -273,7 +273,13 @@ namespace Shaos.Services
                 plugInInstance.Name,
                 assemblyFilePath);
 
-
+            if (instance != null)
+            {
+                if(instance.Options != null)
+                {
+#warning load configuration
+                }
+            }
         }
 
         private bool CheckPlugInRunning(PlugIn plugIn, out int plugInInstanceId)
