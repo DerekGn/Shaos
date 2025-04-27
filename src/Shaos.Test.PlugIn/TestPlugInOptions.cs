@@ -31,6 +31,6 @@ namespace Shaos.Test.PlugIn
     public class TestPlugInOptions
     {
         [Required]
-        public required TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(1);
+        public required TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(5);
     }
 }

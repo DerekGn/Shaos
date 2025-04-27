@@ -64,6 +64,7 @@ namespace Shaos.Services
 
             _logger = logger;
             _instanceHost = instanceHost;
+            _plugInFactory = plugInFactory;
             _fileStoreService = fileStoreService;
             _plugInRepository = plugInRepository;
             _plugInTypeValidator = plugInTypeValidator;
@@ -282,10 +283,13 @@ namespace Shaos.Services
             if (instance != null)
             {
 #warning TODO Load options settings
+                var options = _plugInFactory.LoadOptions(instance.Assembly!);
+                var plugInTypeInstance = _plugInFactory.CreateInstance(instance.Assembly!, options);
+
                 _instanceHost.InitialiseInstance(
                     plugInInstance.Id,
-                    _plugInFactory.CreateInstance(instance.Assembly!, instance.Options),
-                    _plugInFactory.LoadOptions(instance.Assembly!));
+                    plugInTypeInstance,
+                    options);
             }
         }
 
