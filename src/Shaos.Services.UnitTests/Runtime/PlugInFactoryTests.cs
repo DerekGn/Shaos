@@ -54,8 +54,8 @@ namespace Shaos.Services.UnitTests.Runtime
             var context = _fixture.AssemblyLoadContextReference.Target;
             var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
 
-            var options = _plugInFactory.LoadOptions(assembly);
-            var plugIn = _plugInFactory.CreateInstance(assembly, options);
+            var configuration = _plugInFactory.LoadConfiguration(assembly);
+            var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
 
             Assert.NotNull(plugIn);
 

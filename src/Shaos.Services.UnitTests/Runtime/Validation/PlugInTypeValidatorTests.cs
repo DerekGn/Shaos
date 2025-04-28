@@ -100,7 +100,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInValidLoggerWithInvalid)));
 
             Assert.Equal(
-                "PlugIn [TestPlugInValidLoggerWithInvalid] contains an invalid constructor parameters [ILogger`1,Int32]",
+                "PlugIn [TestPlugInValidLoggerWithInvalid] contains an invalid constructor parameters [System.Int32]",
                 exception.Message);
         }
 

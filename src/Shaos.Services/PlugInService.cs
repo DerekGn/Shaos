@@ -283,13 +283,13 @@ namespace Shaos.Services
             if (instance != null)
             {
 #warning TODO Load options settings
-                var options = _plugInFactory.LoadOptions(instance.Assembly!);
-                var plugInTypeInstance = _plugInFactory.CreateInstance(instance.Assembly!, options);
+                var configuration = _plugInFactory.LoadConfiguration(instance.Assembly!);
+                var plugInTypeInstance = _plugInFactory.CreateInstance(instance.Assembly!, configuration);
 
                 _instanceHost.InitialiseInstance(
                     plugInInstance.Id,
                     plugInTypeInstance,
-                    options);
+                    configuration);
             }
         }
 

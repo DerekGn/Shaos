@@ -23,7 +23,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using System.Reflection;
 
@@ -42,7 +41,7 @@ namespace Shaos.Services.Runtime.Factories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public IPlugIn? CreateInstance(Assembly assembly, IOptions<object>? options = default)
+        public IPlugIn? CreateInstance(Assembly assembly, object? configuration = default)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
@@ -52,15 +51,15 @@ namespace Shaos.Services.Runtime.Factories
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
-            if(options != null)
+            if(configuration != null)
             {
-                constructorParameters.Add(options);
+                constructorParameters.Add(configuration);
             }
 
             return Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
         }
 
-        public IOptions<object>? LoadOptions(Assembly assembly)
+        public object? LoadConfiguration(Assembly assembly)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
@@ -73,24 +72,16 @@ namespace Shaos.Services.Runtime.Factories
                                   select parameterType)
                                   .ToList();
 
-            var optionsType = parameterTypes.FirstOrDefault(_ => _.IsGenericType && _.GetGenericTypeDefinition() == typeof(IOptions<>));
+            var configurationType = parameterTypes.FirstOrDefault(_ => _.CustomAttributes.Any(_ => _.AttributeType == typeof(PlugInConfigurationAttribute)));
 
-            IOptions<object>? options = null;
+            object? configuration = null;
 
-            if(optionsType != null)
+            if (configurationType != null)
             {
-                MethodInfo createMethodInfo = typeof(Options).GetMethod(nameof(Options.Create), BindingFlags.Static | BindingFlags.Public);
-
-                var configurationType = optionsType.GenericTypeArguments[0];
-
-                var genericMethod = createMethodInfo.MakeGenericMethod(configurationType)!;
-
-                var configurationInstance = Activator.CreateInstance(configurationType);
-
-                options = genericMethod.Invoke(null, [configurationInstance]) as IOptions<object>;
+                configuration = Activator.CreateInstance(configurationType);
             }
 
-            return options;
+            return configuration;
         }
 
         private List<object> GetConstructorParameters(Type plugInType)

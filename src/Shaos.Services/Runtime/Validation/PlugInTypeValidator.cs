@@ -27,6 +27,7 @@ using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
+using System.Linq;
 
 namespace Shaos.Services.Runtime.Validation
 {
@@ -37,7 +38,6 @@ namespace Shaos.Services.Runtime.Validation
 
         private readonly ILogger<PlugInTypeValidator> _logger;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
-        private readonly List<Type> _validConstructorParameterTypes;
 
         public PlugInTypeValidator(
             ILogger<PlugInTypeValidator> logger,
@@ -48,12 +48,6 @@ namespace Shaos.Services.Runtime.Validation
 
             _logger = logger;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
-
-            _validConstructorParameterTypes =
-            [
-                typeof(ILogger<>),
-                typeof(IOptions<>)
-            ];
         }
 
         public void Validate(string assemblyFile, out string version)
@@ -138,9 +132,7 @@ namespace Shaos.Services.Runtime.Validation
                                 select genericType)
                                 .ToList();
 
-            var validParameters = _validConstructorParameterTypes.Intersect(genericTypes).ToList();
-
-            if(validParameters.Count == 0 || validParameters.Count != parameterTypes.Count)
+            if(genericTypes.Count == 0)
             {
                 var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
 
@@ -151,7 +143,18 @@ namespace Shaos.Services.Runtime.Validation
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{constructorParameterList}]");
             }
 
-            var loggerType = parameterTypes.FirstOrDefault(_ => _.GetGenericTypeDefinition() == _validConstructorParameterTypes[0]);
+            if (genericTypes.Count == 1 && !genericTypes.Contains(typeof(ILogger<>)))
+            {
+                var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
+
+                _logger.LogError("PlugIn [{Name}] contains an invalid constructor parameters [{List}]",
+                    plugInType.Name,
+                    constructorParameterList);
+
+                throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{constructorParameterList}]");
+            }
+
+            var loggerType = parameterTypes.FirstOrDefault(_ => _.GetGenericTypeDefinition() == typeof(ILogger<>));
 
             if (loggerType != null)
             {
@@ -167,6 +170,13 @@ namespace Shaos.Services.Runtime.Validation
                     throw new PlugInConstructorException(
                         $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerGenericType.Name}]");
                 }
+            }
+
+            var lastConstructorParameterType = parameterTypes.Except([loggerType]).FirstOrDefault();
+
+            if (!lastConstructorParameterType!.IsClass && !lastConstructorParameterType.CustomAttributes.Any(_ => _.AttributeType == typeof(PlugInConfigurationAttribute)))
+            {
+                throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{lastConstructorParameterType}]");
             }
         }
     }

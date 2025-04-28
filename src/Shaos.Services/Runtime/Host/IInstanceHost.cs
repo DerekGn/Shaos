@@ -62,14 +62,14 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id"></param>
         /// <param name="plugIn"></param>
-        /// <param name="options"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="plugIn"/> is null</exception>
         /// <exception cref="InstanceNotFoundException">Thrown if an <see cref="Instance"/> </exception>
         Instance InitialiseInstance(
             int id,
             IPlugIn plugIn,
-            IOptions<object>? options = default);
+            object? configuration = default);
 
         /// <summary>
         /// Indicates if an <see cref="Instance"/> exists in the runtime

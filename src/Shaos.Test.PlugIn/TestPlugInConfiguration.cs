@@ -22,40 +22,18 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Test.PlugIn
 {
+    [PlugInConfiguration]
     [ExcludeFromCodeCoverage]
-    public class TestPlugIn : IPlugIn
+    public class TestPlugInConfiguration
     {
-        private readonly ILogger<TestPlugIn> _logger;
-        private readonly TestPlugInConfiguration _configuration;
-
-        public TestPlugIn(
-            ILogger<TestPlugIn> logger,
-            TestPlugInConfiguration configuration)
-        {
-            ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(configuration);
-
-            _logger = logger;
-            _configuration = configuration;
-        }
-
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Starting [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
-
-            do
-            {
-                await Task.Delay(_configuration.Delay, cancellationToken);
-                _logger.LogInformation("Executing [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
-            } while (!cancellationToken.IsCancellationRequested);
-
-            _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
-        }
+        [Required]
+        [PlugInConfigurationSetting("Sets the internal plugin loop delay")]
+        public required TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(5);
     }
 }

@@ -99,7 +99,7 @@ namespace Shaos.Services.Runtime.Host
         public Instance InitialiseInstance(
             int id,
             IPlugIn plugIn,
-            IOptions<object>? options = default)
+            object? configuration = default)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
 
@@ -111,7 +111,7 @@ namespace Shaos.Services.Runtime.Host
                 _logger.LogDebug("Initialising instance Id: [{Id}]", id);
 
                 instance.PlugIn = plugIn;
-                instance.Options = options;
+                instance.Configuration = configuration;
                 instance.State = InstanceState.PlugInLoaded;
 
                 InstanceStateChanged?.Invoke(this,

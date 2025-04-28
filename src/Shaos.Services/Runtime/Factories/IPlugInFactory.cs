@@ -36,15 +36,16 @@ namespace Shaos.Services.Runtime.Factories
         /// <summary>
         /// Create a new <see cref="IPlugIn"/> instance
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to load the </param>
+        /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="IPlugIn"/></param>
+        /// <param name="configuration"></param>
         /// <returns>A <see cref="IPlugIn"/> instance</returns>
-        IPlugIn? CreateInstance(Assembly assembly, IOptions<object>? options = default);
+        IPlugIn? CreateInstance(Assembly assembly, object? configuration = default);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        IOptions<object>? LoadOptions(Assembly assembly);
+        object? LoadConfiguration(Assembly assembly);
     }
 }

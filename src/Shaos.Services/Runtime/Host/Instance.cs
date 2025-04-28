@@ -63,9 +63,9 @@ namespace Shaos.Services.Runtime
         public string Name { get; init; }
 
         /// <summary>
-        /// The <see cref="IPlugIn"/> <see cref="IOptions"/> configuration settings
+        /// The <see cref="IPlugIn"/> configuration settings
         /// </summary>
-        public IOptions<object>? Options { get; internal set; }
+        public object? Configuration { get; internal set; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance that executes its functions

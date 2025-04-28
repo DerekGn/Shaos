@@ -22,15 +22,18 @@
 * SOFTWARE.
 */
 
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Shaos.Test.PlugIn
+namespace Shaos.Sdk
 {
-    [ExcludeFromCodeCoverage]
-    public class TestPlugInOptions
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class PlugInConfigurationSettingAttribute : Attribute
     {
-        [Required]
-        public required TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(5);
+        public PlugInConfigurationSettingAttribute(string description)
+        {
+            ArgumentNullException.ThrowIfNull(description);
+
+            Description = description;
+        }
+
+        public string Description { get; }
     }
 }
