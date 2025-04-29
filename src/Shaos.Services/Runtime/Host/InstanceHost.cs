@@ -305,7 +305,7 @@ namespace Shaos.Services.Runtime.Host
                     instance.Id,
                     instance.Name);
 
-                instance.CleanUp();
+                instance.Dispose();
             }
             else
             {
