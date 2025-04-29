@@ -28,15 +28,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Reflection;
 using Shaos.Services.Runtime.Host;
-using Microsoft.Extensions.Options;
 
 namespace Shaos.Services.Runtime
 {
     /// <summary>
     /// An executing <see cref="PlugIn"/> instance
     /// </summary>
-    public class Instance()
+    public class Instance() : IDisposable
     {
+        private bool disposedValue;
+
         /// <summary>
         /// The <see cref="Assembly"/> the <see cref="PlugIn"/> was loaded
         /// </summary>
@@ -130,16 +131,6 @@ namespace Shaos.Services.Runtime
             return stringBuilder.ToString();
         }
 
-        internal void CleanUp()
-        {
-            Assembly = null;
-            PlugIn = null;
-            Task = null;
-            TokenSource = null;
-
-            Context?.Dispose();
-        }
-
         private TimeSpan CalculateRunningTime()
         {
             TimeSpan timeSpan = TimeSpan.Zero;
@@ -157,6 +148,33 @@ namespace Shaos.Services.Runtime
             }
 
             return timeSpan;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Assembly = null;
+                    PlugIn = null;
+                    Task = null;
+                    TokenSource = null;
+
+                    Context?.Target.Unload();
+
+                    Context?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
