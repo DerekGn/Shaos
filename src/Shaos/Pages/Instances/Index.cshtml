@@ -82,6 +82,11 @@
                 @Html.DisplayFor(modelItem => item.Exception)
             </td>
             <td>
+                <form method="post">
+                    <button asp-page-handler="Start" asp-route-id="@item.Id">Start</button>
+                    <button asp-page-handler="Stop" asp-route-id="@item.Id">Stop</button>
+                </form>
+                <a asp-page="./Configuration" asp-route-id="@item.Id">Configuration</a>
             </td>
         </tr>
 }

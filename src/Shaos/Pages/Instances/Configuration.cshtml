@@ -6,23 +6,44 @@
 
 <hr />
 
-@{
-    if (Model.Configuration != null)
-    {
-        var properties = Model.Configuration.GetType().GetProperties();
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @{
+                if (Model.Configuration != null)
+                {
+                    var properties = Model.Configuration.GetType().GetProperties();
 
-        foreach (var property in properties)
-        {
-            var propertyValue = @property
-                .GetValue(@Model.Configuration, null);
-            var propertyAttribute = @property
-                .GetCustomAttributes(false)
-                .FirstOrDefault(_ => _.GetType() == typeof(PlugInConfigurationSettingAttribute)) as PlugInConfigurationSettingAttribute;
+                    foreach (var property in properties)
+                    {
+                        var propertyValue = @property
+                        .GetValue(@Model.Configuration, null);
+                        var propertyAttribute = @property
+                        .GetCustomAttributes(false)
+                        .FirstOrDefault(_ => _.GetType() == typeof(PlugInConfigurationSettingAttribute)) as PlugInConfigurationSettingAttribute;
 
+                        <div class="form-group">
+                            <label asp-for="@property.Name" class="control-label">@property.Name</label>
+                            <input asp-for="@propertyValue" name="@property.Name" id="@property.Name" class="form-control" title="@propertyAttribute.Description" />
+                            <span asp-validation-for="@property.Name" class="text-danger"></span>
+                        </div>
+                    }
+                }
+            }
             <div class="form-group">
-                <label asp-for="@property.Name" class="control-label">@property.Name</label>
-                <input asp-for="@propertyValue" name="@property.Name" id="@property.Name" class="form-control" title="@propertyAttribute.Description"/>
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
-        }
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

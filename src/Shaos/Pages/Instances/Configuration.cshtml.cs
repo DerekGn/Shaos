@@ -24,6 +24,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Pages.Instances
@@ -31,12 +32,16 @@ namespace Shaos.Pages.Instances
     public class ConfigurationModel : PageModel
     {
         private readonly IInstanceHost _instanceHost;
+        private readonly IPlugInInstanceRepository _repository;
 
-        public ConfigurationModel(IInstanceHost instanceHost)
+        public ConfigurationModel(
+            IInstanceHost instanceHost,
+            IPlugInInstanceRepository repository)
         {
             ArgumentNullException.ThrowIfNull(instanceHost);
 
             _instanceHost = instanceHost;
+            _repository = repository;
         }
 
         [BindProperty]
@@ -47,6 +52,18 @@ namespace Shaos.Pages.Instances
             var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
 
             Configuration = instance?.Configuration;
+        }
+
+        public async Task<IActionResult> OnPostAsync(int id, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            var plugInInstance = await _repository.GetByIdAsync(id);
+
+            return RedirectToPage("./Index");
         }
     }
 }

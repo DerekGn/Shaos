@@ -113,5 +113,14 @@ namespace Shaos.Pages.Instances
                     queryable, pageIndex ?? 1,
                     _configuration.GetValue("PageSize", 5));
         }
+
+        public async Task<IActionResult> OnPostStartAsync()
+        {
+            return RedirectToPage();
+        }
+        public async Task<IActionResult> OnPostStopAsync()
+        {
+            return RedirectToPage();
+        }
     }
 }
