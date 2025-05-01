@@ -20,7 +20,6 @@
     </div>
 </form>
 
-
 <table class="table">
     <thead>
         <tr>
@@ -83,8 +82,11 @@
             </td>
             <td>
                 <form method="post">
-                    <button asp-page-handler="Start" asp-route-id="@item.Id">Start</button>
-                    <button asp-page-handler="Stop" asp-route-id="@item.Id">Stop</button>
+                        @{
+                            var running = item.State == Services.Runtime.Host.InstanceState.Running;
+                        }
+                        <input type="submit" asp-page-handler="Start" class="btn btn-success" value="Start" disabled="@(running ? "disabled" : null)" />
+                        <input type="submit" asp-page-handler="Stop" class="btn btn-danger" value="Stop" disabled="@(running ? null : "disabled")" />
                 </form>
                 <a asp-page="./Configuration" asp-route-id="@item.Id">Configuration</a>
             </td>
