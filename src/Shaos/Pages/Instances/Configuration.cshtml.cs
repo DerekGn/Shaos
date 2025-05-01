@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Host;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Pages.Instances
 {
@@ -54,7 +55,7 @@ namespace Shaos.Pages.Instances
             Configuration = instance?.Configuration;
         }
 
-        public async Task<IActionResult> OnPostAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync(int id, [FromBody] object? x, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {

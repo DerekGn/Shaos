@@ -29,7 +29,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugInInvalidLogger : IPlugIn
+    public class TestPlugInInvalidLogger : PlugInBase, IPlugIn
     {
         public TestPlugInInvalidLogger(ILogger<TestPlugIn> logger)
         {

@@ -24,9 +24,16 @@
 
 namespace Shaos.Sdk
 {
+    /// <summary>
+    /// An <see cref="Attribute"/> that is applied to a class property to indicate that its a <see cref="IPlugIn"/> instance configuration property
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class PlugInConfigurationSettingAttribute : Attribute
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInConfigurationSettingAttribute"/>
+        /// </summary>
+        /// <param name="description">The description of the configuration property</param>
         public PlugInConfigurationSettingAttribute(string description)
         {
             ArgumentNullException.ThrowIfNull(description);
@@ -34,6 +41,9 @@ namespace Shaos.Sdk
             Description = description;
         }
 
+        /// <summary>
+        /// The description of the configuration setting
+        /// </summary>
         public string Description { get; }
     }
 }

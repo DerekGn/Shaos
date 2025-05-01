@@ -114,12 +114,22 @@ namespace Shaos.Pages.Instances
                     _configuration.GetValue("PageSize", 5));
         }
 
-        public async Task<IActionResult> OnPostStartAsync()
+        public IActionResult OnPostStart(int id)
         {
+            if(_instanceHost.InstanceExists(id))
+            {
+                _instanceHost.StartInstance(id);
+            }
+
             return RedirectToPage();
         }
-        public async Task<IActionResult> OnPostStopAsync()
+        public IActionResult OnPostStop(int id)
         {
+            if (_instanceHost.InstanceExists(id))
+            {
+                _instanceHost.StopInstance(id);
+            }
+
             return RedirectToPage();
         }
     }

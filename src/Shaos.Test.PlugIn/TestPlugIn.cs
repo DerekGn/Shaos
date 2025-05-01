@@ -29,11 +29,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugIn : IPlugIn
+    public class TestPlugIn : PlugInBase, IPlugIn
     {
         private readonly ILogger<TestPlugIn> _logger;
         private readonly TestPlugInConfiguration _configuration;
-
+        
         public TestPlugIn(
             ILogger<TestPlugIn> logger,
             TestPlugInConfiguration configuration)

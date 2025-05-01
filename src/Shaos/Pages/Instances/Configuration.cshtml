@@ -25,8 +25,7 @@
 
                         <div class="form-group">
                             <label asp-for="@property.Name" class="control-label">@property.Name</label>
-                            <input asp-for="@propertyValue" name="@property.Name" id="@property.Name" class="form-control" title="@propertyAttribute.Description" />
-                            <span asp-validation-for="@property.Name" class="text-danger"></span>
+                            <input asp-for="@propertyValue" name="Configuration.Name" id="Configuration.Name" class="form-control" title="@propertyAttribute.Description" />
                         </div>
                     }
                 }
