@@ -46,17 +46,16 @@ namespace Shaos.Pages.PlugIns
 
         public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var plugin = await _repository.GetByIdAsync(id.Value, cancellationToken: cancellationToken);
             if (plugin == null)
             {
-                return NotFound();
+                ModelState.AddModelError("NotFound", $"PlugIn: [{id}] was not found");
             }
-            PlugIn = plugin;
+            else
+            {
+                PlugIn = plugin;
+            }
+
             return Page();
         }
 
@@ -83,7 +82,7 @@ namespace Shaos.Pages.PlugIns
             {
                 if (!await _repository.ExistsAsync(PlugIn.Id, cancellationToken))
                 {
-                    return NotFound();
+                    ModelState.AddModelError("NotFound", $"PlugIn: [{PlugIn.Id}] was not found");
                 }
                 else
                 {

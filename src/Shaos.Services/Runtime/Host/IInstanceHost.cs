@@ -21,9 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-
-using Microsoft.Extensions.Options;
-using Shaos.Sdk;
+using Shaos.Services.Runtime.Exceptions;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -47,29 +45,16 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The identifier of the <see cref="Instance"/></param>
         /// <param name="name">The name of the <see cref="Instance"/></param>
-        /// <param name="assemblyFilePath">The path of the assembly file for the <see cref="Instance"/></param>
+        /// <param name="assemblyPath">The path of the assembly file for the <see cref="Instance"/></param>
         /// <returns>The <see cref="Instance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyFilePath"/> is null of empty</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyPath"/> is null of empty</exception>
         /// <exception cref="InstanceExistsException">Thrown if the <see cref="InstanceHost"/> already contains an <see cref="Instance"/> with <paramref name="id"/></exception>
+        /// <exception cref="MaxInstancesRunningException">Thrown if the maximum number of instances are loaded</exception>
         Instance CreateInstance(
             int id,
             string name,
-            string assemblyFilePath);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="plugIn"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="plugIn"/> is null</exception>
-        /// <exception cref="InstanceNotFoundException">Thrown if an <see cref="Instance"/> </exception>
-        Instance InitialiseInstance(
-            int id,
-            IPlugIn plugIn,
-            object? configuration = default);
+            string assemblyPath);
 
         /// <summary>
         /// Indicates if an <see cref="Instance"/> exists in the runtime
@@ -90,13 +75,16 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// Start the execution of a <see cref="Instance"/>
         /// </summary>
+        /// <param name="id">The id of the <see cref="Instance"/> to start</param>
+        /// <param name="configuration">The configuration json</param>
         /// <returns>An <see cref="Instance"/></returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
+        /// <exception cref="InstanceCreateException">Thrown if the <see cref="PlugIn"/> instance cannot be created</exception>
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
         /// <remarks>
         /// The <see cref="Instance"/> is not synchronously started
         /// </remarks>
-        Instance StartInstance(int id);
+        Instance StartInstance(int id, object? configuration = default);
 
         /// <summary>
         /// Stop a running <see cref="Instance"/>

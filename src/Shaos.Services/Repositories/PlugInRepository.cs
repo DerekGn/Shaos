@@ -170,7 +170,7 @@ namespace Shaos.Services.Repositories
             {
                 plugIn.Package.FileName = fileName;
                 plugIn.Package.AssemblyFile = assemblyFile;
-                plugIn.Package.Version = version;
+                plugIn.Package.AssemblyVersion = version;
 
                 await Context.SaveChangesAsync(cancellationToken);
             }

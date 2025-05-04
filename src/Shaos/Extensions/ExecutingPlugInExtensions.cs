@@ -29,14 +29,15 @@ namespace Shaos.Extensions
 {
     internal static class ExecutingPlugInExtensions
     {
+#warning TODO
         internal static InstanceApi ToApi(this InstanceModel instance)
         {
             return new InstanceApi()
             {
                 Id = instance.Id,
                 Name = instance.Name,
-                Status = Enum.Parse<Api.Model.v1.InstanceState>(instance.State.ToString()),
-                Exception = instance.Exception == null ? null : instance.Exception.ToString(),
+                //Status = Enum.Parse<Api.Model.v1.InstanceState>(instance.State.ToString()),
+                //Exception = instance.Exception == null ? null : instance.Exception.ToString(),
             };
         }
     }

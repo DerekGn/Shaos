@@ -43,17 +43,17 @@ namespace Shaos.Pages.PlugInInstances
 
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
-            if (id == 0)
-            {
-                return NotFound();
-            }
-
             var plugininstance = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
+
             if (plugininstance == null)
             {
-                return NotFound();
+                ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
             }
-            PlugInInstance = plugininstance;
+            else
+            {
+                PlugInInstance = plugininstance;
+            }
+
             return Page();
         }
 

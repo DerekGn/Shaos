@@ -72,7 +72,7 @@ namespace Shaos.Services.Runtime.Factories
                                   select parameterType)
                                   .ToList();
 
-            var configurationType = parameterTypes.FirstOrDefault(_ => _.CustomAttributes.Any(_ => _.AttributeType == typeof(PlugInConfigurationAttribute)));
+            var configurationType = parameterTypes.FirstOrDefault(_ => _.BaseType == typeof(BasePlugInConfiguration));
 
             object? configuration = null;
 

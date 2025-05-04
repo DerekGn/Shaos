@@ -81,18 +81,6 @@ namespace Shaos.Services.Runtime.Host
         /// <remarks>
         /// This is the result of the <see cref="Instance"/> self terminating due to an exception.
         /// </remarks>
-        Faulted,
-        /// <summary>
-        /// The <see cref="Instance"/> <see cref="IPlugIn"/> was loaded from its <see cref="Assembly"/>
-        /// </summary>
-        PlugInLoaded,
-        /// <summary>
-        /// The <see cref="Instance"/> <see cref="IPlugIn"/> load failed.
-        /// </summary>
-        PlugInLoadFailure,
-        /// <summary>
-        /// The <see cref="Instance"/> <see cref="IPlugIn"/> is loading from its <see cref="Assembly"/>
-        /// </summary>
-        AwaitingInitialisation
+        Faulted
     }
 }

@@ -64,6 +64,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model.List) {
+        var instancesDisabled = item.Package == null ? "disabled" : "";
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Id)
@@ -78,7 +79,7 @@
                 @(item.Package != null ? item.Package.FileName : "Unassigned")
             </td>
             <td>
-                @(item.Package != null ? item.Package.Version : "Unassigned")
+                @(item.Package != null ? item.Package.AssemblyVersion : "Unassigned")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Instances.Count)
@@ -92,8 +93,8 @@
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-page="./Package" asp-route-id="@item.Id">Package</a> |
-                <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id">Instances</a>
+                <a asp-page="./Package" asp-route-id="@item.Id" class="nav-link">Package</a> |
+                <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id" class="nav-link @instancesDisabled">Instances</a>
             </td>
         </tr>
 }

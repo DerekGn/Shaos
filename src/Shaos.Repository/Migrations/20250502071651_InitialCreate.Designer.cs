@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250425200307_InitialCreate")]
+    [Migration("20250502071651_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -88,6 +88,9 @@ namespace Shaos.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Configuration")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
@@ -133,7 +136,9 @@ namespace Shaos.Repository.Migrations
                                 .HasMaxLength(40)
                                 .HasColumnType("TEXT");
 
-                            b1.Property<string>("ConfigurationType")
+                            b1.Property<string>("AssemblyVersion")
+                                .IsRequired()
+                                .HasMaxLength(10)
                                 .HasColumnType("TEXT");
 
                             b1.Property<string>("FileName")
@@ -141,10 +146,11 @@ namespace Shaos.Repository.Migrations
                                 .HasMaxLength(40)
                                 .HasColumnType("TEXT");
 
-                            b1.Property<string>("Version")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("TEXT");
+                            b1.Property<bool>("HasConfiguration")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<bool>("HasLogger")
+                                .HasColumnType("INTEGER");
 
                             b1.HasKey("PlugInId");
 

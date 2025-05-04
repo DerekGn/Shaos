@@ -22,21 +22,25 @@
 * SOFTWARE.
 */
 
-using System.Reflection;
-
-namespace Shaos.Services.Version
+namespace Shaos.Services.Runtime.Validation
 {
-    /// <summary>
-    /// The <see cref="IAppVersionService"/> implementation
-    /// </summary>
-    public class AppVersionService : IAppVersionService
+    public class PlugInTypeInformation
     {
-        /// <inheritdoc/>
-        public string Version =>
-            Assembly
-            .GetEntryAssembly()!
-            .GetName()!
-            .Version!
-            .ToString();
+        public PlugInTypeInformation(
+            string name,
+            bool hasLogger,
+            bool hasConfiguration,
+            Version assemblyVersion)
+        {
+            Name = name;
+            HasLogger = hasLogger;
+            HasConfiguration = hasConfiguration;
+            AssemblyVersion = assemblyVersion;
+        }
+
+        public string Name { get; }
+        public bool HasLogger { get; }
+        public bool HasConfiguration { get; }
+        public Version AssemblyVersion { get; }
     }
 }

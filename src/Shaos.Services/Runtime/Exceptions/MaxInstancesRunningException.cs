@@ -22,13 +22,22 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Runtime.Exceptions
 {
-    /// <summary>
-    /// An <see cref="Attribute"/> that is applied to a class to indicate that its a <see cref="IPlugIn"/> instance configuration class
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class PlugInConfigurationAttribute : Attribute
+    [ExcludeFromCodeCoverage]
+    public class MaxInstancesRunningException : Exception
     {
+        public MaxInstancesRunningException()
+        { }
+
+        public MaxInstancesRunningException(string message) : base(message)
+        {
+        }
+
+        public MaxInstancesRunningException(string message, Exception inner) : base(message, inner)
+        {
+        }
     }
 }

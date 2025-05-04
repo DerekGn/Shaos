@@ -25,4 +25,8 @@
         <Folder Include="Migrations\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
+    </ItemGroup>
+
 </Project>

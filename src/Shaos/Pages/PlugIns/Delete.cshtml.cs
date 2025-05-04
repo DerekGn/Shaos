@@ -49,31 +49,22 @@ namespace Shaos.Pages.PlugIns
 
         public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var plugin = await _repository.GetByIdAsync(id.Value, cancellationToken: cancellationToken);
 
             if (plugin == null)
             {
-                return NotFound();
+                ModelState.AddModelError("NotFound", $"PlugIn: [{id}] was not found");
             }
             else
             {
                 PlugIn = plugin;
             }
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id, CancellationToken cancellationToken)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             try
             {
                 await _plugInService.DeletePlugInAsync(id.Value, cancellationToken);

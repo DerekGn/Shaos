@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using System.Xml.Linq;
 
 namespace Shaos.Repository.Models
 {
@@ -42,7 +45,7 @@ namespace Shaos.Repository.Models
         /// The version of the <see cref="Package"/>
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
-        public string? ConfigurationType { get; set; } = string.Empty;
+        public string AssemblyVersion { get; set; } = string.Empty;
 
         /// <summary>
         /// The file name of the <see cref="Package"/>
@@ -51,20 +54,30 @@ namespace Shaos.Repository.Models
         public string FileName { get; set; } = string.Empty;
 
         /// <summary>
-        /// The version of the <see cref="Package"/>
+        /// Indicates if the <see cref="Package"/> <see cref="IPlugIn"/> has a configuration constructor argument
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
-        public string Version { get; set; } = string.Empty;
+        public bool HasConfiguration { get; set; }
+
+        /// <summary>
+        /// Indicates if the <see cref="Package"/> <see cref="IPlugIn"/> has a logger constructor argument
+        /// </summary>
+        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
+        public bool HasLogger { get; set; }
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
         {
-            return
-                $"{nameof(AssemblyFile)}: {AssemblyFile} " +
-                $"{nameof(ConfigurationType)}: {ConfigurationType} " +
-                $"{nameof(FileName)}: {FileName} " +
-                $"{nameof(Version)}: {Version}";
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append($"{nameof(AssemblyFile)}: {AssemblyFile} ");
+            stringBuilder.Append($"{nameof(AssemblyVersion)}: {AssemblyVersion}");
+            stringBuilder.Append($"{nameof(FileName)}: {FileName}");
+            stringBuilder.Append($"{nameof(HasConfiguration)}: {HasConfiguration}");
+            stringBuilder.Append($"{nameof(HasLogger)}: {HasLogger}");
+
+            return stringBuilder.ToString();
         }
     }
 }

@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Version;
 using Xunit;
 
 namespace Shaos.Services.UnitTests.Version

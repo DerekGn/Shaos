@@ -22,56 +22,59 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
 using Shaos.Repository.Models;
+using Shaos.Sdk;
+using Shaos.Services.Runtime.Host;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using System.Reflection;
-using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services.Runtime
 {
     /// <summary>
     /// An executing <see cref="PlugIn"/> instance
     /// </summary>
-    public class Instance() : IDisposable
+    public class Instance
     {
-        private bool disposedValue;
+        public Instance(int id, string name, string assemblyPath)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
-        /// <summary>
-        /// The <see cref="Assembly"/> the <see cref="PlugIn"/> was loaded
-        /// </summary>
-        public Assembly? Assembly { get; internal set; }
+            Id = id;
+            Name = name;
+            AssemblyPath = assemblyPath;
+        }
+
+        internal Instance(int id, string name, string assemblyPath, InstanceState state)
+            : this(id, name, assemblyPath)
+        {
+            State = state;
+        }
 
         /// <summary>
         /// The assembly file path
         /// </summary>
-        public string AssemblyFilePath { get; internal set; } = string.Empty;
+        public string AssemblyPath { get; }
+
+        /// <summary>
+        /// The <see cref="IPlugIn"/> instance execution context
+        /// </summary>
+        public PlugInContext? Context { get; private set; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
         /// </summary>
-        public Exception? Exception { get; internal set; }
+        public Exception? Exception { get; private set; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
-        public int Id { get; init; }
+        public int Id { get; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public string Name { get; init; }
-
-        /// <summary>
-        /// The <see cref="IPlugIn"/> configuration settings
-        /// </summary>
-        public object? Configuration { get; internal set; }
-
-        /// <summary>
-        /// The <see cref="IPlugIn"/> instance that executes its functions
-        /// </summary>
-        public IPlugIn? PlugIn { get; internal set; }
+        public string Name { get; }
 
         /// <summary>
         /// The total running time of this instance
@@ -81,32 +84,17 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The last start time of this instance
         /// </summary>
-        public DateTime? StartTime { get; internal set; }
+        public DateTime? StartTime { get; }
 
         /// <summary>
-        /// The <see cref="ExecutingState"/> of the <see cref="Instance"/>
+        /// The <see cref="InstanceState"/> of the <see cref="Instance"/>
         /// </summary>
-        public InstanceState State { get; internal set; }
+        public InstanceState State { get; private set; }
 
         /// <summary>
         /// The last stop time of this instance
         /// </summary>
-        public DateTime? StopTime { get; internal set; }
-
-        /// <summary>
-        /// The <see cref="Task"/> that is executing the <see cref="Instance"/>
-        /// </summary>
-        public Task? Task { get; internal set; }
-
-        /// <summary>
-        /// The <see cref="CancellationTokenSource"/> used to cancel the executing <see cref="Instance"/>
-        /// </summary>
-        public CancellationTokenSource? TokenSource { get; internal set; }
-
-        /// <summary>
-        /// The <see cref="IRuntimeAssemblyLoadContext"/> for the loaded <see cref="PlugIn"/>
-        /// </summary>
-        public UnloadingWeakReference<IRuntimeAssemblyLoadContext>? Context { get; internal set; }
+        public DateTime? StopTime { get; private set; }
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
@@ -120,15 +108,54 @@ namespace Shaos.Services.Runtime
             stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
             stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
             stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
-            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
-            stringBuilder.AppendLine($"{nameof(Assembly)}: {(Assembly == null ? "Empty" : Assembly.ToString())}");
-            stringBuilder.AppendLine($"{nameof(AssemblyFilePath)}: {(AssemblyFilePath == null ? "Empty" : AssemblyFilePath.ToString())}");
-            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : Task.Id)}");
-            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : TokenSource.IsCancellationRequested)}");
+            stringBuilder.AppendLine($"{nameof(AssemblyPath)}: {(AssemblyPath == null ? "Empty" : AssemblyPath.ToString())}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
-            stringBuilder.AppendLine($"{nameof(Context)}: {(Context == null ? "Empty" : Context.Target.Name)}");
+            stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
 
             return stringBuilder.ToString();
+        }
+
+        internal async Task ExecuteAsync(CancellationToken cancellationToken = default)
+        {
+            await Context!.PlugIn!.ExecuteAsync(cancellationToken);
+        }
+
+        internal void LoadContext(
+            IPlugIn plugIn,
+            IRuntimeAssemblyLoadContext assemblyLoadContext)
+        {
+            ArgumentNullException.ThrowIfNull(plugIn);
+            ArgumentNullException.ThrowIfNull(assemblyLoadContext);
+
+            Context = new PlugInContext(plugIn, assemblyLoadContext);
+        }
+
+        internal void SetComplete()
+        {
+            State = InstanceState.Complete;
+            StopTime = DateTime.UtcNow;
+        }
+
+        internal void SetFaulted(AggregateException? exception)
+        {
+            State = InstanceState.Faulted;
+            Exception = exception;
+        }
+
+        internal void StartExecution(
+            Func<CancellationToken, Task> executeTask,
+            Action<Task> completionTask)
+        {
+            State = InstanceState.Starting;
+
+            Context!.StartExecution(executeTask, completionTask);
+        }
+
+        internal async Task<bool> StopExecutionAsync(TimeSpan stopTimeout)
+        {
+            await Context!.TokenSource!.CancelAsync();
+
+            return await Task.WhenAny(Context!.Task!, Task.Delay(stopTimeout)) == Context.Task;
         }
 
         private TimeSpan CalculateRunningTime()
@@ -148,33 +175,6 @@ namespace Shaos.Services.Runtime
             }
 
             return timeSpan;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    Assembly = null;
-                    PlugIn = null;
-                    Task = null;
-                    TokenSource = null;
-
-                    Context?.Target.Unload();
-
-                    Context?.Dispose();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

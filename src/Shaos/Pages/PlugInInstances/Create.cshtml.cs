@@ -27,18 +27,25 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Repositories;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class CreateModel : PageModel
     {
         private readonly IPlugInService _plugInService;
+        private readonly IPlugInRepository _repository;
 
-        public CreateModel(IPlugInService plugInService)
+        public CreateModel(
+            IPlugInService plugInService,
+            IPlugInRepository repository)
         {
             ArgumentNullException.ThrowIfNull(plugInService);
+            ArgumentNullException.ThrowIfNull(repository);
 
             _plugInService = plugInService;
+            _repository = repository;
         }
 
         [BindProperty]
@@ -76,7 +83,16 @@ namespace Shaos.Pages.PlugInInstances
                 return Page();
             }
 
-            return RedirectToPage("./Index", new { id = Id.ToString() });
+            var plugIn = await _repository.GetByIdAsync(Id, false, [nameof(Package)], cancellationToken);
+
+            if(plugIn!.Package!.HasConfiguration)
+            {
+                return RedirectToPage("./Configuration", new { id = Id.ToString() });
+            }
+            else
+            {
+                return RedirectToPage("./Index", new { id = Id.ToString() });
+            }
         }
     }
 }

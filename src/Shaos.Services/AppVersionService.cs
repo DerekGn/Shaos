@@ -22,16 +22,21 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Version
+using System.Reflection;
+
+namespace Shaos.Services
 {
     /// <summary>
-    /// An application version service
+    /// The <see cref="IAppVersionService"/> implementation
     /// </summary>
-    public interface IAppVersionService
+    public class AppVersionService : IAppVersionService
     {
-        /// <summary>
-        /// Get the version number
-        /// </summary>
-        string Version { get; }
+        /// <inheritdoc/>
+        public string Version =>
+            Assembly
+            .GetEntryAssembly()!
+            .GetName()!
+            .Version!
+            .ToString();
     }
 }

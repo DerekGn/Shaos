@@ -23,7 +23,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Exceptions;
@@ -68,14 +67,14 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            Assert.Throws<FileNotFoundException>(() => _pluginTypeValidator.Validate("z:\non-exists", out var _));
+            Assert.Throws<FileNotFoundException>(() => _pluginTypeValidator.Validate("z:\non-exists"));
         }
 
         [Fact]
         public void TestValidatePlugInTypeMultipleConstructors()
         {
             var exception = Assert.Throws<PlugInConstructorsException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleConstructors)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleConstructors), out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInMultipleConstructors] contains invalid number of constructors [2]",
@@ -86,7 +85,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeMultipleParameters()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleParameters)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleParameters), out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInMultipleParameters] constructor contains invalid number of constructor parameters [3]",
@@ -97,7 +96,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidateTestPlugInValidLoggerWithInvalid()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInValidLoggerWithInvalid)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInValidLoggerWithInvalid), out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInValidLoggerWithInvalid] contains an invalid constructor parameters [System.Int32]",
@@ -108,7 +107,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeLogger()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidLogger)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidLogger), out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInInvalidLogger] [ILogger] parameter invalid generic type parameter [TestPlugIn]",
@@ -119,7 +118,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeInvalidParameters()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters)));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters), out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInInvalidParameters] contains an invalid constructor parameters [Int32,Int32]",
@@ -136,7 +135,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(object).Assembly);
 
-            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var _));
+            Assert.Throws<PlugInTypeNotFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePath));
         }
 
         [Fact]
@@ -149,7 +148,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(Test.PlugIn.Invalid.TestPlugIn).Assembly);
 
-            Assert.Throws<PlugInTypesFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePathInvalid, out var _));
+            Assert.Throws<PlugInTypesFoundException>(() => _pluginTypeValidator.Validate(_fixture.AssemblyFilePathInvalid));
         }
 
         [Fact]
@@ -162,9 +161,13 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
                 It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            _pluginTypeValidator.Validate(_fixture.AssemblyFilePath, out var version);
+            var plugInTypeInfo = _pluginTypeValidator.Validate(_fixture.AssemblyFilePath);
 
-            Assert.Equal("1.0.0.0", version);
+            Assert.NotNull(plugInTypeInfo);
+            Assert.Equal("TestPlugIn", plugInTypeInfo.Name);
+            Assert.Equal("1.0.0.0", plugInTypeInfo.AssemblyVersion.ToString());
+            Assert.True(plugInTypeInfo.HasLogger);
+            Assert.False(plugInTypeInfo.HasConfiguration);
         }
     }
 }

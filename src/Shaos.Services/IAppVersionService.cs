@@ -22,23 +22,16 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
-using Shaos.Services.Runtime.Exceptions;
-
-namespace Shaos.Services.Runtime.Validation
+namespace Shaos.Services
 {
-    public interface IPlugInTypeValidator
+    /// <summary>
+    /// An application version service
+    /// </summary>
+    public interface IAppVersionService
     {
         /// <summary>
-        /// Validate that an assembly contains valid <see cref="IPlugIn"/>
+        /// Get the version number
         /// </summary>
-        /// <param name="assemblyFile">The fully qualified path to the <see cref="Assembly"/></param>
-        /// <param name="version">The assembly version</param>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="assemblyFile"/> is empty or white space</exception>
-        /// <exception cref="FileNotFoundException">Thrown if <paramref name="assemblyFile"/> does not exist</exception>
-        /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the <paramref name="assemblyFile"/></exception>
-        /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the <paramref name="assemblyFile"/></exception>
-        /// <returns>A <see cref="PlugInTypeInformation"/> which contains information about a <see cref="IPlugIn"/> instance</returns>
-        PlugInTypeInformation Validate(string assemblyFile);
+        string Version { get; }
     }
 }

@@ -8,7 +8,7 @@ namespace Shaos.Repository
         public ShaosDbContext CreateDbContext(string[] args)
         {
             var builder = new DbContextOptionsBuilder<ShaosDbContext>();
-            builder.UseSqlite("Data Source=shaos.db;");
+            builder.UseSqlite("Data Source=..\\Shaos\\shaos.db;");
             return new ShaosDbContext(builder.Options);
         }
     }

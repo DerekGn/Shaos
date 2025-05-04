@@ -50,7 +50,9 @@ namespace Shaos.Pages.Logging
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                return NotFound();
+                ModelState.AddModelError("NotFound", $"{nameof(LogLevelSwitch)}: [{name}] was not found");
+
+                return Page();
             }
 
             var logLevelSwitch = await _loggingConfigurationRepository.GetByNameAsync(name, cancellationToken);

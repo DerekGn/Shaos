@@ -24,12 +24,14 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
+using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
+using System.Text.Json;
 
 namespace Shaos.Services
 {
@@ -81,14 +83,26 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                _logger.LogInformation("Creating PlugInInstance and adding to runtime. PlugIn: [{Id}]", id);
+                _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
 
-                result = await _plugInInstanceRepository.CreateAsync(
+                if (plugIn.Package != null)
+                {
+                    result = await _plugInInstanceRepository.CreateAsync(
                     plugIn,
                     plugInInstance,
                     cancellationToken);
 
-                AddInstanceToHost(plugIn, plugInInstance);
+                    if (!plugIn.Package.HasConfiguration)
+                    {
+                        _logger.LogInformation("Adding PlugInInstance to the runtime. PlugIn: [{Id}]", id);
+
+                        AddInstanceToHost(plugIn, plugInInstance);
+                    }
+                }
+                else
+                {
+                    throw new PlugInPackageNotAssignedException(id);
+                }
             },
             false,
             cancellationToken);
@@ -191,19 +205,33 @@ namespace Shaos.Services
 
             await foreach (var plugIn in plugIns)
             {
-                foreach (var instance in plugIn.Instances)
+                foreach (var plugInInstance in plugIn.Instances)
                 {
-                    if (!_instanceHost.InstanceExists(instance.Id))
-                    {
-                        AddInstanceToHost(plugIn, instance);
+                    AddInstanceToHost(plugIn, plugInInstance);
 
-                        if (instance.Enabled)
+                    if (plugInInstance.Enabled)
+                    {
+                        object? plugInConfiguration = null;
+
+                        if (plugIn.Package!.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))
+                        {
+                            _logger.LogWarning("Instance [{Id}] Name: [{Name}] cannot be started no configuration stored",
+                                plugInInstance.Id,
+                                plugInInstance.Name);
+#warning TODO throw
+                        }
+                        else
                         {
                             _logger.LogInformation("Starting Instance [{Id}] Name: [{Name}]",
-                                instance.Id,
-                                instance.Name);
+                                plugInInstance.Id,
+                                plugInInstance.Name);
 
-                            _instanceHost.StartInstance(instance.Id);
+                            if (!string.IsNullOrEmpty(plugInInstance.Configuration))
+                            {
+                                plugInConfiguration = JsonSerializer.Deserialize<BasePlugInConfiguration>(plugInInstance.Configuration);
+                            }
+
+                            _instanceHost.StartInstance(plugInInstance.Id, plugInConfiguration);
                         }
                     }
                 }
@@ -250,13 +278,11 @@ namespace Shaos.Services
                         $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
                 }
 
-                _plugInTypeValidator.Validate(plugInFile, out var version);
-
                 await CreateOrUpdatePlugInPackageAsync(
                         plugIn,
-                        version,
                         packageFileName,
                         Path.GetFileName(plugInFile),
+                        _plugInTypeValidator.Validate(plugInFile),
                         cancellationToken);
             },
             false,
@@ -267,29 +293,13 @@ namespace Shaos.Services
             PlugIn plugIn,
             PlugInInstance plugInInstance)
         {
-            var assemblyFilePath = Path
-                .Combine(_fileStoreService
-                .GetAssemblyPath(plugInInstance.Id), plugIn.Package!.AssemblyFile);
-
-            _logger.LogInformation("Adding Instance [{Id}] Name: [{Name}] to InstanceHost",
-                plugInInstance.Id,
-                plugInInstance.Name);
-
-            var instance = _instanceHost.CreateInstance(
-                plugInInstance.Id,
-                plugInInstance.Name,
-                assemblyFilePath);
-
-            if (instance != null)
+            if (!_instanceHost.InstanceExists(plugInInstance.Id))
             {
-#warning TODO Load options settings
-                var configuration = _plugInFactory.LoadConfiguration(instance.Assembly!);
-                var plugInTypeInstance = _plugInFactory.CreateInstance(instance.Assembly!, configuration);
+                var assemblyFile = Path.Combine(_fileStoreService
+                    .GetAssemblyPath(plugInInstance.Id), plugIn.Package!.AssemblyFile);
 
-                _instanceHost.InitialiseInstance(
-                    plugInInstance.Id,
-                    plugInTypeInstance,
-                    configuration);
+                _instanceHost
+                    .CreateInstance(plugInInstance.Id, plugInInstance.Name, assemblyFile);
             }
         }
 
@@ -320,23 +330,25 @@ namespace Shaos.Services
 
         private async Task CreateOrUpdatePlugInPackageAsync(
             PlugIn plugIn,
-            string version,
             string packagFileName,
             string assemblyFileName,
+            PlugInTypeInformation plugInTypeInformation,
             CancellationToken cancellationToken)
         {
             if (plugIn.Package == null)
             {
-                _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{Version}]",
+                _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
                     plugIn.Id,
                     assemblyFileName,
-                    version);
+                    plugInTypeInformation.AssemblyVersion);
 
                 var package = new Package()
                 {
                     AssemblyFile = assemblyFileName,
+                    AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString(),
                     FileName = packagFileName,
-                    Version = version
+                    HasConfiguration = plugInTypeInformation.HasConfiguration,
+                    HasLogger = plugInTypeInformation.HasLogger
                 };
 
                 await _plugInRepository.CreatePackageAsync(
@@ -346,14 +358,16 @@ namespace Shaos.Services
             }
             else
             {
-                _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{Version}]",
+                _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
                     plugIn.Id,
                     assemblyFileName,
-                    version);
+                    plugInTypeInformation.AssemblyVersion.ToString());
 
                 plugIn.Package.AssemblyFile = assemblyFileName;
+                plugIn.Package.AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString();
                 plugIn.Package.FileName = packagFileName;
-                plugIn.Package.Version = version;
+                plugIn.Package.HasConfiguration = plugInTypeInformation.HasConfiguration;
+                plugIn.Package.HasLogger = plugInTypeInformation.HasLogger;
 
                 await _plugInRepository.SaveChangesAsync(cancellationToken);
             }

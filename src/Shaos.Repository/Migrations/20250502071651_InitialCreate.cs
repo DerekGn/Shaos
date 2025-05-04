@@ -49,9 +49,10 @@ namespace Shaos.Repository.Migrations
                 {
                     PlugInId = table.Column<int>(type: "INTEGER", nullable: false),
                     AssemblyFile = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    ConfigurationType = table.Column<string>(type: "TEXT", nullable: true),
+                    AssemblyVersion = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     FileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    Version = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false)
+                    HasConfiguration = table.Column<bool>(type: "INTEGER", nullable: false),
+                    HasLogger = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,9 +71,10 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Configuration = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     PlugInId = table.Column<int>(type: "INTEGER", nullable: true)

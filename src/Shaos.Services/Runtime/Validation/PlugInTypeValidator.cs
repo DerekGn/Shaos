@@ -50,7 +50,7 @@ namespace Shaos.Services.Runtime.Validation
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
-        public void Validate(string assemblyFile, out string version)
+        public PlugInTypeInformation Validate(string assemblyFile)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFile);
 
@@ -82,10 +82,14 @@ namespace Shaos.Services.Runtime.Validation
                 }
 
                 var plugInType = resolvedPlugIns.First();
+                
+                ValidatePlugInType(plugInType, out var hasLogger, out var hasConfiguration);
 
-                ValidatePlugInType(plugInType);
-
-                version = assembly.GetName().Version!.ToString();
+                return new PlugInTypeInformation(
+                    plugInType.Name,
+                    hasLogger,
+                    hasConfiguration,
+                    assembly.GetName().Version);
             }
             finally
             {
@@ -95,8 +99,11 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        internal void ValidatePlugInType(Type plugInType)
+        internal void ValidatePlugInType(Type plugInType, out bool hasLogger, out bool hasConfiguration)
         {
+            hasConfiguration = false;
+            hasLogger = false;
+
             var constructors = plugInType.GetConstructors();
 
             if (constructors.Length != AllowedConstructorCount)
@@ -170,13 +177,20 @@ namespace Shaos.Services.Runtime.Validation
                     throw new PlugInConstructorException(
                         $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerGenericType.Name}]");
                 }
+
+                hasLogger = true;
             }
 
             var lastConstructorParameterType = parameterTypes.Except([loggerType]).FirstOrDefault();
 
-            if (!lastConstructorParameterType!.IsClass && !lastConstructorParameterType.CustomAttributes.Any(_ => _.AttributeType == typeof(PlugInConfigurationAttribute)))
+            if (lastConstructorParameterType != null && !lastConstructorParameterType!.IsClass && lastConstructorParameterType.BaseType != typeof(BasePlugInConfiguration))
             {
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{lastConstructorParameterType}]");
+            }
+            
+            if(lastConstructorParameterType != null)
+            {
+                hasConfiguration = true;
             }
         }
     }

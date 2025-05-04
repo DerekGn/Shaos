@@ -28,9 +28,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Test.PlugIn
 {
-    [PlugInConfiguration]
     [ExcludeFromCodeCoverage]
-    public class TestPlugInConfiguration
+    public class TestPlugInConfiguration : BasePlugInConfiguration
     {
         [Required]
         [PlugInConfigurationSetting("Sets the internal plugin loop delay")]

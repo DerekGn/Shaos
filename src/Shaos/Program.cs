@@ -43,7 +43,6 @@ using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
 using Shaos.Services.System;
 using Shaos.Services.Validation;
-using Shaos.Services.Version;
 using Shaos.Startup;
 using System.Text.Json.Serialization;
 
