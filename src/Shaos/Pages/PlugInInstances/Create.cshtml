@@ -32,13 +32,10 @@
             <input type="hidden" asp-for="PlugInInstance.UpdatedDate" />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-page="./Index" class="btn btn-primary">Cancel</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="Index" asp-route-id="@Model.Id">Back to List</a>
 </div>
 
 @section Scripts {

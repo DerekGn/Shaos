@@ -8,15 +8,13 @@
 <h1>PlugIns</h1>
 
 <p>
-    <a asp-page="Create" class="btn btn-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plugin" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M1 8a7 7 0 1 1 2.898 5.673c-.167-.121-.216-.406-.002-.62l1.8-1.8a3.5 3.5 0 0 0 4.572-.328l1.414-1.415a.5.5 0 0 0 0-.707l-.707-.707 1.559-1.563a.5.5 0 1 0-.708-.706l-1.559 1.562-1.414-1.414 1.56-1.562a.5.5 0 1 0-.707-.706l-1.56 1.56-.707-.706a.5.5 0 0 0-.707 0L5.318 5.975a3.5 3.5 0 0 0-.328 4.571l-1.8 1.8c-.58.58-.62 1.6.121 2.137A8 8 0 1 0 0 8a.5.5 0 0 0 1 0" />
-        </svg>
-        Create</a>
+    <a asp-page="Create" title="Create a PlugIn">
+        <svg bootstrap-icon="Plugin" width="24" height="24" aria-label="PlugIn"></svg>
+    </a>
 </p>
 
 @{
-    var backToListDisabled = Model.List.Count == 0 ? "disabled" : "";
+    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
 }
 
 <form asp-page="./Index" method="get">
@@ -67,41 +65,50 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.List) {
-        var instancesDisabled = item.Package == null ? "disabled" : "";
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @(item.Package != null ? item.Package.FileName : "Unassigned")
-            </td>
-            <td>
-                @(item.Package != null ? item.Package.AssemblyVersion : "Unassigned")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Instances.Count)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedDate)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-page="./Package" asp-route-id="@item.Id" class="nav-link">Package</a> |
-                <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id" class="nav-link @instancesDisabled">Instances</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.List)
+        {
+            var instancesDisabled = item.Package == null ? "disabled" : "";
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @(item.Package != null ? item.Package.FileName : "Unassigned")
+                </td>
+                <td>
+                    @(item.Package != null ? item.Package.AssemblyVersion : "Unassigned")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Instances.Count)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedDate)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id" title="Edit PlugIn">
+                        <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Create"></svg>
+                    </a>
+                    <a asp-page="./Delete" asp-route-id="@item.Id" title="Delete PlugIn">
+                        <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                    </a>
+                    <a asp-page="./Package" asp-route-id="@item.Id" title="PlugIn Package">
+                        <svg bootstrap-icon="BoxFill" width="24" height="24" aria-label="Package"></svg>
+                    </a>
+                    <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id" class="btn @instancesDisabled" title="PlugIn Instances">
+                        <svg bootstrap-icon="CardList" width="24" height="24" aria-label="Instances"></svg>
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
