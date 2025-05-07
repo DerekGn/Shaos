@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using System.Reflection;
 

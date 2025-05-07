@@ -59,9 +59,9 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn? PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
-            var plugin = await _repository.GetByIdAsync(id.Value, cancellationToken: cancellationToken);
+            var plugin = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
 
             if (plugin == null)
             {
@@ -76,8 +76,6 @@ namespace Shaos.Pages.PlugIns
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)

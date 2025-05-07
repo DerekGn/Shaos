@@ -28,10 +28,11 @@
                 <input asp-for="PlugInInstance.Description" class="form-control" />
                 <span asp-validation-for="PlugInInstance.Description" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="PlugInInstance.CreatedDate" />
-            <input type="hidden" asp-for="PlugInInstance.UpdatedDate" />
+            @* <input type="hidden" asp-for="PlugInInstance.CreatedDate" />
+            <input type="hidden" asp-for="PlugInInstance.UpdatedDate" /> *@
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" asp-page-handler="Create" asp-route-id="@Model.Id" value="Create" class="btn btn-primary" condition="@Model.CreateEnabled" />
+                <input type="submit" asp-page-handler="Configure" asp-route-id="@Model.Id" value="Configure" class="btn btn-primary" condition="!@Model.CreateEnabled" />
                 <a asp-page="./Index" class="btn btn-primary">Cancel</a>
             </div>
         </form>

@@ -22,12 +22,14 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
+using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
@@ -44,6 +46,7 @@ namespace Shaos.Services
         private readonly ILogger<PlugInService> _logger;
         private readonly IPlugInFactory _plugInFactory;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
+        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly IPlugInRepository _plugInRepository;
         private readonly IPlugInTypeValidator _plugInTypeValidator;
 
@@ -54,7 +57,8 @@ namespace Shaos.Services
             IFileStoreService fileStoreService,
             IPlugInRepository plugInRepository,
             IPlugInTypeValidator plugInTypeValidator,
-            IPlugInInstanceRepository plugInInstanceRepository)
+            IPlugInInstanceRepository plugInInstanceRepository,
+            IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
@@ -63,6 +67,7 @@ namespace Shaos.Services
             ArgumentNullException.ThrowIfNull(plugInRepository);
             ArgumentNullException.ThrowIfNull(plugInTypeValidator);
             ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
+            ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
             _instanceHost = instanceHost;
@@ -71,6 +76,7 @@ namespace Shaos.Services
             _plugInRepository = plugInRepository;
             _plugInTypeValidator = plugInTypeValidator;
             _plugInInstanceRepository = plugInInstanceRepository;
+            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
         /// <inheritdoc/>
@@ -169,6 +175,59 @@ namespace Shaos.Services
             {
                 _logger.LogWarning("Instance [{Id}] not found", id);
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<BasePlugInConfiguration> LoadPlugInInstanceConfigurationAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(
+                id,
+                includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
+                cancellationToken: cancellationToken);
+
+            if(plugInInstance == null)
+            {
+                throw new PlugInInstanceNotFoundException(id);
+            }
+
+            BasePlugInConfiguration? configuration = null;
+
+            if (string.IsNullOrEmpty(plugInInstance.Configuration))
+            {
+                configuration = LoadConfiguration(plugInInstance.PlugIn!);
+            }
+            else
+            {
+                configuration = JsonSerializer.Deserialize<BasePlugInConfiguration>(plugInInstance.Configuration);
+            }
+
+            return configuration!;
+        }
+
+        private BasePlugInConfiguration? LoadConfiguration(PlugIn plugIn)
+        {
+            var assemblyPath = Path
+                .Combine(_fileStoreService.GetAssemblyPath(plugIn.Id),
+                plugIn.Package!.AssemblyFile);
+
+            IRuntimeAssemblyLoadContext? context = null;
+            BasePlugInConfiguration? configuration = null;
+
+            try
+            {
+                context = _runtimeAssemblyLoadContextFactory.Create(assemblyPath);
+                var assembly = context.LoadFromAssemblyPath(assemblyPath);
+
+                configuration = (BasePlugInConfiguration?)_plugInFactory.LoadConfiguration(assembly);
+            }
+            finally
+            {
+                context?.Unload();
+            }
+
+            return configuration!;
         }
 
         /// <inheritdoc/>
@@ -296,7 +355,7 @@ namespace Shaos.Services
             if (!_instanceHost.InstanceExists(plugInInstance.Id))
             {
                 var assemblyFile = Path.Combine(_fileStoreService
-                    .GetAssemblyPath(plugInInstance.Id), plugIn.Package!.AssemblyFile);
+                    .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
 
                 _instanceHost
                     .CreateInstance(plugInInstance.Id, plugInInstance.Name, assemblyFile);

@@ -50,7 +50,7 @@ namespace Shaos.Pages.PlugIns
             CancellationToken cancellationToken = default)
         {
             CurrentSort = sortOrder;
-            NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             IdSort = sortOrder == nameof(PlugIn.Id) ? "id_desc" : nameof(PlugIn.Id);
 
             if (searchString != null)

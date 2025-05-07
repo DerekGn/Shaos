@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,32 +22,21 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Sdk;
-using Shaos.Services;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.TagHelpers
 {
-    public class ConfigurationModel : PageModel
+    [HtmlTargetElement(Attributes = nameof(Condition))]
+    public class ConditionTagHelper : TagHelper
     {
-        private readonly IPlugInService _plugInService;
+        public bool Condition { get; set; }
 
-        public ConfigurationModel(IPlugInService plugInService)
+        public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            ArgumentNullException.ThrowIfNull(plugInService);
-
-            _plugInService = plugInService;
-        }
-
-        [BindProperty]
-        public BasePlugInConfiguration Configuration { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(int id)
-        {
-            Configuration = await _plugInService.LoadPlugInInstanceConfigurationAsync(id);
-
-            return Page();
+            if (!Condition)
+            {
+                output.SuppressOutput();
+            }
         }
     }
 }

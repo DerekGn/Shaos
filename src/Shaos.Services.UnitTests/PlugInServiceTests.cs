@@ -48,6 +48,7 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IPlugInInstanceRepository> _mockPlugInInstanceRepository;
         private readonly Mock<IPlugInRepository> _mockPlugInRepository;
         private readonly Mock<IPlugInTypeValidator> _mockPlugInTypeValidator;
+        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly PlugInService _plugInService;
 
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
@@ -58,6 +59,7 @@ namespace Shaos.Services.UnitTests
             _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
             _mockPlugInRepository = new Mock<IPlugInRepository>();
             _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
+            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
 
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
@@ -66,7 +68,8 @@ namespace Shaos.Services.UnitTests
                 _mockFileStoreService.Object,
                 _mockPlugInRepository.Object,
                 _mockPlugInTypeValidator.Object,
-                _mockPlugInInstanceRepository.Object);
+                _mockPlugInInstanceRepository.Object,
+                _mockRuntimeAssemblyLoadContextFactory.Object);
         }
 
         [Fact]

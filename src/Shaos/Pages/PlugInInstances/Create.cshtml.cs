@@ -28,7 +28,7 @@ using Shaos.Repository.Models;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
-using Shaos.Services.Runtime.Host;
+using System.Threading.Tasks;
 
 namespace Shaos.Pages.PlugInInstances
 {
@@ -49,24 +49,30 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
+        public bool CreateEnabled { get; set; }
+
+        [BindProperty]
         public int Id { get; set; } = default!;
 
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public IActionResult OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
             Id = id;
+
+            var plugIn = await _repository.GetByIdAsync(id, true, [nameof(PlugIn.Package)], cancellationToken);
+
+            if (plugIn != null)
+            {
+                CreateEnabled = !plugIn.Package!.HasConfiguration;
+            }
 
             return Page();
         }
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnPostConfigureAsync(CancellationToken cancellationToken = default)
         {
-            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.CreatedDate)}");
-            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.UpdatedDate)}");
-
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -76,23 +82,35 @@ namespace Shaos.Pages.PlugInInstances
             {
                 await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
             }
-            catch (PlugInInstanceNameExistsException ex)
+            catch (PlugInInstanceNameExistsException)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
 
                 return Page();
             }
 
-            var plugIn = await _repository.GetByIdAsync(Id, false, [nameof(Package)], cancellationToken);
+            return RedirectToPage("./Configuration", new { id = PlugInInstance.Id });
+        }
 
-            if(plugIn!.Package!.HasConfiguration)
+        public async Task<IActionResult> OnPostCreateAsync(CancellationToken cancellationToken = default)
+        {
+            if (!ModelState.IsValid)
             {
-                return RedirectToPage("./Configuration", new { id = Id.ToString() });
+                return Page();
             }
-            else
+
+            try
             {
-                return RedirectToPage("./Index", new { id = Id.ToString() });
+                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
             }
+            catch (PlugInInstanceNameExistsException)
+            {
+                ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
+
+                return Page();
+            }
+
+            return RedirectToPage("./Index", new { id = Id });
         }
     }
 }
