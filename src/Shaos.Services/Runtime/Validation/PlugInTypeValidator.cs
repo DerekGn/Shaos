@@ -23,11 +23,9 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
-using System.Linq;
 
 namespace Shaos.Services.Runtime.Validation
 {
