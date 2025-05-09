@@ -24,7 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Services.IntTests.Fixtures;
-using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Factories;
 using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
@@ -51,7 +51,8 @@ namespace Shaos.Services.IntTests
             var context = _fixture.AssemblyLoadContextReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var plugIn = _plugInFactory.CreateInstance(assembly);
+            var configuration = _plugInFactory.LoadConfiguration(assembly);
+            var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
 
             Assert.NotNull(plugIn);
 

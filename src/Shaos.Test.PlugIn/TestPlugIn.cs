@@ -29,13 +29,20 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugIn : IPlugIn
+    public class TestPlugIn : PlugInBase, IPlugIn
     {
         private readonly ILogger<TestPlugIn> _logger;
-
-        public TestPlugIn(ILogger<TestPlugIn> logger)
+        private readonly TestPlugInConfiguration _configuration;
+        
+        public TestPlugIn(
+            ILogger<TestPlugIn> logger,
+            TestPlugInConfiguration configuration)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(configuration);
+
+            _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -44,7 +51,7 @@ namespace Shaos.Test.PlugIn
 
             do
             {
-                await Task.Delay(100, cancellationToken);
+                await Task.Delay(_configuration.Delay, cancellationToken);
                 _logger.LogInformation("Executing [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
             } while (!cancellationToken.IsCancellationRequested);
 

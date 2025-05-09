@@ -85,6 +85,9 @@ namespace Shaos.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Configuration")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
@@ -130,15 +133,21 @@ namespace Shaos.Repository.Migrations
                                 .HasMaxLength(40)
                                 .HasColumnType("TEXT");
 
+                            b1.Property<string>("AssemblyVersion")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("TEXT");
+
                             b1.Property<string>("FileName")
                                 .IsRequired()
                                 .HasMaxLength(40)
                                 .HasColumnType("TEXT");
 
-                            b1.Property<string>("Version")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("TEXT");
+                            b1.Property<bool>("HasConfiguration")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<bool>("HasLogger")
+                                .HasColumnType("INTEGER");
 
                             b1.HasKey("PlugInId");
 

@@ -25,23 +25,31 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
+using Shaos.Services;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
+using System.Threading.Tasks;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class CreateModel : PageModel
     {
-        private readonly IPlugInRepository _plugInRepository;
-        private readonly IPlugInInstanceRepository _plugInInstanceRepository;
+        private readonly IPlugInService _plugInService;
+        private readonly IPlugInRepository _repository;
 
         public CreateModel(
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository)
+            IPlugInService plugInService,
+            IPlugInRepository repository)
         {
-            _plugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
-            _plugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
+            ArgumentNullException.ThrowIfNull(plugInService);
+            ArgumentNullException.ThrowIfNull(repository);
+
+            _plugInService = plugInService;
+            _repository = repository;
         }
+
+        [BindProperty]
+        public bool CreateEnabled { get; set; }
 
         [BindProperty]
         public int Id { get; set; } = default!;
@@ -49,19 +57,22 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public IActionResult OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
             Id = id;
+
+            var plugIn = await _repository.GetByIdAsync(id, true, [nameof(PlugIn.Package)], cancellationToken);
+
+            if (plugIn != null)
+            {
+                CreateEnabled = !plugIn.Package!.HasConfiguration;
+            }
 
             return Page();
         }
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnPostConfigureAsync(CancellationToken cancellationToken = default)
         {
-            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.CreatedDate)}");
-            ModelState.Remove($"{nameof(PlugInInstance)}.{nameof(PlugInInstance.UpdatedDate)}");
-
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -69,18 +80,37 @@ namespace Shaos.Pages.PlugInInstances
 
             try
             {
-                var plugIn = await _plugInRepository.GetByIdAsync(Id, false, cancellationToken: cancellationToken);
-
-                await _plugInInstanceRepository.CreateAsync(plugIn!, PlugInInstance, cancellationToken);
+                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
             }
-            catch (PlugInInstanceNameExistsException ex)
+            catch (PlugInInstanceNameExistsException)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
 
                 return Page();
             }
 
-            return RedirectToPage("./Index", new { id = Id.ToString() });
+            return RedirectToPage("./Configuration", new { id = PlugInInstance.Id });
+        }
+
+        public async Task<IActionResult> OnPostCreateAsync(CancellationToken cancellationToken = default)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            try
+            {
+                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
+            }
+            catch (PlugInInstanceNameExistsException)
+            {
+                ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
+
+                return Page();
+            }
+
+            return RedirectToPage("./Index", new { id = Id });
         }
     }
 }

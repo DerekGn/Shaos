@@ -23,7 +23,7 @@
 */
 
 using SystemEnvironmentApi = Shaos.Api.Model.v1.SystemEnvironment;
-using SystemEnvironmentModel = Shaos.Services.System.SystemEnvironment;
+using SystemEnvironmentModel = Shaos.Services.SystemInformation.SystemEnvironment;
 
 namespace Shaos.Extensions
 {

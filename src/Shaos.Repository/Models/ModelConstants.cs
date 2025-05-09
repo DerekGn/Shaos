@@ -30,14 +30,19 @@ namespace Shaos.Repository.Models
     public static class ModelConstants
     {
         /// <summary>
-        /// The maximum file path length
+        /// The maximum configuration type name field length
         /// </summary>
-        public const int MaxFilePathLength = 40;
+        public const int MaxConfigTypeLength = 100;
 
         /// <summary>
         /// The maximum description length
         /// </summary>
         public const int MaxDescriptionLength = 100;
+
+        /// <summary>
+        /// The maximum file path length
+        /// </summary>
+        public const int MaxFilePathLength = 40;
 
         /// <summary>
         /// The maximum name field length

@@ -37,16 +37,28 @@
                     @Html.DisplayFor(model => model.Package!.AssemblyFile)
                 </dd>
                 <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package!.AssemblyVersion)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package!.AssemblyVersion)
+                </dd>
+                <dt class="col-sm-4">
                     @Html.DisplayNameFor(model => model.Package!.FileName)
                 </dt>
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.Package!.FileName)
                 </dd>
                 <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Package!.Version)
+                    @Html.DisplayNameFor(model => model.Package!.HasConfiguration)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package!.Version)
+                    @Html.DisplayFor(model => model.Package!.HasConfiguration)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Package!.HasLogger)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Package!.HasLogger)
                 </dd>
                 <dt class="col-sm-4">
                     Upload Package
@@ -57,14 +69,13 @@
             </dl>
 
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">
+                    <svg bootstrap-icon="CloudArrowUp" width="24" height="24" aria-label="Save"></svg>
+                </button>
+                <a asp-page="./Index" class="btn btn-primary">Cancel</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

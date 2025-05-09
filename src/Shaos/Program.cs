@@ -38,9 +38,11 @@ using Shaos.Services.IO;
 using Shaos.Services.Logging;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
-using Shaos.Services.System;
+using Shaos.Services.Runtime.Factories;
+using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime.Validation;
+using Shaos.Services.SystemInformation;
 using Shaos.Services.Validation;
-using Shaos.Services.Version;
 using Shaos.Startup;
 using System.Text.Json.Serialization;
 
@@ -141,8 +143,8 @@ namespace Shaos
 
             // Application defined services
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
-            builder.Services.AddScoped<ILoggingConfigurationRepository, LoggingConfigurationRepository>();
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
+            builder.Services.AddScoped<ILoggingConfigurationRepository, LoggingConfigurationRepository>();
             builder.Services.AddScoped<IPlugInInstanceRepository, PlugInInstanceRepository>();
             builder.Services.AddScoped<IPlugInRepository, PlugInRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
@@ -152,6 +154,7 @@ namespace Shaos
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IInstanceHost, InstanceHost>();
             builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
+            builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
 

@@ -43,22 +43,20 @@ namespace Shaos.Pages.PlugInInstances
 
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
-            if (id == 0)
-            {
-                return NotFound();
-            }
-
             var plugininstance = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
+
             if (plugininstance == null)
             {
-                return NotFound();
+                ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
             }
-            PlugInInstance = plugininstance;
+            else
+            {
+                PlugInInstance = plugininstance;
+            }
+
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)

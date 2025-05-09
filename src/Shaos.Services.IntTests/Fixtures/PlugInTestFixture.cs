@@ -23,7 +23,6 @@
 */
 
 using Shaos.Services.Runtime;
-using System.IO.Compression;
 using System.Reflection;
 
 namespace Shaos.Services.IntTests.Fixtures
@@ -32,21 +31,11 @@ namespace Shaos.Services.IntTests.Fixtures
     {
         public PlugInFactoryTestFixture()
         {
-            var assemblyDirectory = Path.Combine(BinariesPath, "1");
-
-            ZipFile.ExtractToDirectory(PackageFilePath, assemblyDirectory, true);
-
-            AssemblyFilePath = Path.Combine(assemblyDirectory, AssemblyFileName);
-
-#warning May not need this
-            AssemblyName = AssemblyName.GetAssemblyName(AssemblyFilePath);
-
-            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyFilePath, true);
-
+            var assemblyLoadContext = new RuntimeAssemblyLoadContext(AssemblyFilePath);
+            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(AssemblyFilePath));
             AssemblyLoadContextReference = new UnloadingWeakReference<RuntimeAssemblyLoadContext>(assemblyLoadContext);
         }
 
-        public string AssemblyFilePath { get; }
         public UnloadingWeakReference<RuntimeAssemblyLoadContext> AssemblyLoadContextReference { get; }
         public AssemblyName AssemblyName { get; }
 

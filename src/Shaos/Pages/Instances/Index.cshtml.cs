@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Pages.Instances
 {
@@ -111,6 +112,25 @@ namespace Shaos.Pages.Instances
                 .Create(
                     queryable, pageIndex ?? 1,
                     _configuration.GetValue("PageSize", 5));
+        }
+
+        public IActionResult OnPostStart(int id)
+        {
+            if(_instanceHost.InstanceExists(id))
+            {
+                _instanceHost.StartInstance(id);
+            }
+
+            return RedirectToPage();
+        }
+        public IActionResult OnPostStop(int id)
+        {
+            if (_instanceHost.InstanceExists(id))
+            {
+                _instanceHost.StopInstance(id);
+            }
+
+            return RedirectToPage();
         }
     }
 }

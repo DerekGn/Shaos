@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -33,6 +34,16 @@ namespace Shaos.Repository.Models
     public class PlugInInstance : PlugInChildBase
     {
         /// <summary>
+        /// The <see cref="IPlugIn"/> serialised configuration
+        /// </summary>
+        public string? Configuration { get; set; }
+
+        /// <summary>
+        /// The description of the <see cref="PlugInInstance"/>
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>
         /// Indicates if the <see cref="PlugInInstance"/> is enabled
         /// </summary>
         public bool Enabled { get; set; } = false;
@@ -40,12 +51,7 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The name of this <see cref="PlugInInstance"/>
         /// </summary>
-        public required string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The description of the <see cref="PlugInInstance"/>
-        /// </summary>
-        public required string Description {  get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
@@ -53,9 +59,9 @@ namespace Shaos.Repository.Models
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            stringBuilder.Append($"{nameof(Name)}: {Name} ");
-            stringBuilder.Append($"{nameof(Description)}: {Description??string.Empty} ");
+            stringBuilder.Append($"{nameof(Description)}: {Description ?? string.Empty} ");
             stringBuilder.Append($"{nameof(Enabled)}: {Enabled}");
+            stringBuilder.Append($"{nameof(Name)}: {Name} ");
 
             return stringBuilder.ToString();
         }

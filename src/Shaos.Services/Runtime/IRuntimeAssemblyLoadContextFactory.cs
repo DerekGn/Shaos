@@ -33,8 +33,8 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// Create a new <see cref="IRuntimeAssemblyLoadContext"/>
         /// </summary>
-        /// <param name="assemblyFilePath">The assembly file path</param>
+        /// <param name="assemblyPath">The assembly file path</param>
         /// <returns>A new instance <see cref="IRuntimeAssemblyLoadContext"/></returns>
-        IRuntimeAssemblyLoadContext Create(string assemblyFilePath);
+        IRuntimeAssemblyLoadContext Create(string assemblyPath);
     }
 }

@@ -22,16 +22,17 @@
 * SOFTWARE.
 */
 
-
-// Ignore Spelling: Shaos
-
 namespace Shaos.Sdk
 {
     /// <summary>
-    /// Defines the interface for a plug in
+    /// Defines the interface for a PlugIn
     /// </summary>
     public interface IPlugIn
     {
+        /// <summary>
+        /// The entry point of the<see cref="IPlugIn"/> instance
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the <see cref="IPlugIn"/> method execution</param>
         Task ExecuteAsync(CancellationToken cancellationToken);
     }
 }

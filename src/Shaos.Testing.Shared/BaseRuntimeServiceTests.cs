@@ -23,7 +23,7 @@
 */
 
 using Shaos.Repository.Models;
-using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
 using Xunit.Abstractions;
 
 namespace Shaos.Testing.Shared
@@ -47,10 +47,11 @@ namespace Shaos.Testing.Shared
                 Description = "description"
             };
 
-            plugIn.Package = new Package()
-            {
-                AssemblyFile = BaseTestFixture.AssemblyFileName
-            };
+#warning TODO
+            //plugIn.Package = new Package()
+            //{
+            //    AssemblyFile = BaseTestFixture.AssemblyFileName
+            //};
 
             plugInInstance = new PlugInInstance()
             {

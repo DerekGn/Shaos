@@ -24,11 +24,14 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using NuGet.Packaging;
 using Shaos.Api.Model.v1;
 using Shaos.Extensions;
+using Shaos.Sdk;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
+using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Validation;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
@@ -333,7 +336,7 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("{id}/upload")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn package is uploaded, extracted and verified", Type = typeof(UploadPackageResult))]
+        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn package is uploaded, extracted and verified")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Indicates if there was a problem with the upload file", Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound, Type = typeof(ProblemDetails))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
@@ -355,11 +358,13 @@ namespace Shaos.Controllers
 
                 try
                 {
-                    return Accepted(await PlugInService.UploadPlugInPackageAsync(
+                    await PlugInService.UploadPlugInPackageAsync(
                         id,
                         fileName,
                         formFile.OpenReadStream(),
-                        cancellationToken));
+                        cancellationToken);
+
+                    return Accepted();
                 }
                 catch (PlugInNotFoundException ex)
                 {
@@ -367,6 +372,34 @@ namespace Shaos.Controllers
                         CreateProblemDetails(
                             HttpStatusCode.NotFound,
                             ex.Message));
+                }
+                catch (PlugInInstanceRunningException ex)
+                {
+                    return BadRequest(
+                        CreateProblemDetails(
+                            HttpStatusCode.BadRequest,
+                            $"The PlugIn: [{id}] currently has running instances Id: [{ex.Id}]"));
+                }
+                catch (NoValidPlugInAssemblyFoundException)
+                {
+                    return BadRequest(
+                        CreateProblemDetails(
+                            HttpStatusCode.BadRequest,
+                            $"No valid assembly file found [{fileName}]"));
+                }
+                catch (PlugInTypeNotFoundException)
+                {
+                    return BadRequest(
+                        CreateProblemDetails(
+                            HttpStatusCode.BadRequest,
+                            $"No valid [{nameof(IPlugIn)}] implementation found in package file [{fileName}]"));
+                }
+                catch (PlugInTypesFoundException)
+                {
+                    return BadRequest(
+                        CreateProblemDetails(
+                            HttpStatusCode.BadRequest,
+                            $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{fileName}]"));
                 }
             }
             else

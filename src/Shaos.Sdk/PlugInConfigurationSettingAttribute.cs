@@ -1,0 +1,49 @@
+﻿/*
+* MIT License
+*
+* Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
+namespace Shaos.Sdk
+{
+    /// <summary>
+    /// An <see cref="Attribute"/> that is applied to a class property to indicate that its a <see cref="IPlugIn"/> instance configuration property
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class PlugInConfigurationSettingAttribute : Attribute
+    {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInConfigurationSettingAttribute"/>
+        /// </summary>
+        /// <param name="description">The description of the configuration property</param>
+        public PlugInConfigurationSettingAttribute(string description)
+        {
+            ArgumentNullException.ThrowIfNull(description);
+
+            Description = description;
+        }
+
+        /// <summary>
+        /// The description of the configuration setting
+        /// </summary>
+        public string Description { get; }
+    }
+}

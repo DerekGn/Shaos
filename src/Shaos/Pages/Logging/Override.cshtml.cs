@@ -50,7 +50,9 @@ namespace Shaos.Pages.Logging
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                return NotFound();
+                ModelState.AddModelError("NotFound", $"{nameof(LogLevelSwitch)}: [{name}] was not found");
+
+                return Page();
             }
 
             var logLevelSwitch = await _loggingConfigurationRepository.GetByNameAsync(name, cancellationToken);
@@ -70,8 +72,6 @@ namespace Shaos.Pages.Logging
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)

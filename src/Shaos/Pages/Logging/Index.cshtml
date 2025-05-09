@@ -20,19 +20,24 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.LoggingLevelSwitches) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Key)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value.MinimumLevel)
-            </td>
-            <td>
-                <a asp-page="./Override" asp-route-name="@item.Key">Override</a> |
-                <a asp-page="./Delete" asp-route-name="@item.Key">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.LoggingLevelSwitches)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value.MinimumLevel)
+                </td>
+                <td>
+                    <a asp-page="./Override" asp-route-id="@item.Key" title="Override Logging">
+                        <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Override"></svg>
+                    </a>
+                    <a asp-page="./Delete" asp-route-id="@item.Key" title="Delete Logging Override">
+                        <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -105,7 +105,9 @@ namespace Shaos.Repository
                     {
                         _.Property(_ => _.AssemblyFile).HasMaxLength(ModelConstants.MaxFilePathLength).IsRequired();
                         _.Property(_ => _.FileName).HasMaxLength(ModelConstants.MaxNameLength).IsRequired();
-                        _.Property(_ => _.Version).HasMaxLength(ModelConstants.MaxVersionLength).IsRequired();
+                        _.Property(_ => _.HasConfiguration).IsRequired();
+                        _.Property(_ => _.HasLogger).IsRequired();
+                        _.Property(_ => _.AssemblyVersion).HasMaxLength(ModelConstants.MaxVersionLength).IsRequired();
                     });
 
             modelBuilder.Entity<PlugInInstance>()

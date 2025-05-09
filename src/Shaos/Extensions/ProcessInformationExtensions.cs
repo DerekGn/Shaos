@@ -23,7 +23,7 @@
 */
 
 using ProcessInformationApi = Shaos.Api.Model.v1.ProcessInformation;
-using ProcessInformationModel = Shaos.Services.System.ProcessInformation;
+using ProcessInformationModel = Shaos.Services.SystemInformation.ProcessInformation;
 
 namespace Shaos.Extensions
 {

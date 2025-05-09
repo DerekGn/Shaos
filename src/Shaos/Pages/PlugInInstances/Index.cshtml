@@ -8,11 +8,11 @@
 <h1>PlugIn Instances</h1>
 
 <p>
-    <a asp-page="Create" asp-route-id="@Model.Id">Create New PlugIn Instance</a>
+    <a asp-page="Create" asp-route-id="@Model.Id" class="bi bi-plugin">Create</a>
 </p>
 
 @{
-    var backToListDisabled = Model.List.Count == 0 ? "disabled" : "";
+    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
 }
 
 <form asp-page="./Index" method="get">
@@ -21,7 +21,7 @@
             Find by name:
             <input type="text" name="SearchString" value="@Model.CurrentFilter" />
             <input type="submit" value="Search" class="btn btn-primary" /> |
-            <a asp-page="./Index" class="btn @backToListDisabled">Back To List</a>
+            <a asp-page="./Index" class="btn  btn-primary @backToListDisabled">Back To List</a>
         </p>
     </div>
 </form>
@@ -83,7 +83,8 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-page="./Configuration" asp-route-id="@item.Id">Configuration</a>
             </td>
         </tr>
 }

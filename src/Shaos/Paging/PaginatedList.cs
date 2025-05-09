@@ -31,6 +31,11 @@ namespace Shaos.Paging
         public int PageIndex { get; private set; }
         public int TotalPages { get; private set; }
 
+
+        public PaginatedList() : this([], 0, 1, 5)
+        {
+        }
+
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
             PageIndex = pageIndex;

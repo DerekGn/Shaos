@@ -47,7 +47,6 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn PlugIn { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
         {
             ModelState.Remove($"{nameof(PlugIn)}.{nameof(PlugIn.CreatedDate)}");
