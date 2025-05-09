@@ -33,9 +33,9 @@ namespace Shaos.Services.Runtime
     public class RuntimeAssemblyLoadContextFactory : IRuntimeAssemblyLoadContextFactory
     {
         /// <inheritdoc/>
-        public IRuntimeAssemblyLoadContext Create(string assemblyFilePath)
+        public IRuntimeAssemblyLoadContext Create(string assemblyPath)
         {
-            return new RuntimeAssemblyLoadContext(assemblyFilePath, true);
+            return new RuntimeAssemblyLoadContext(assemblyPath, true);
         }
     }
 }
