@@ -25,7 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Services;
-using Shaos.Services.System;
+using Shaos.Services.SystemInformation;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Shaos.Controllers

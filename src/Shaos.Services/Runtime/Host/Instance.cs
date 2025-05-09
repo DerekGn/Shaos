@@ -84,7 +84,7 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The last start time of this instance
         /// </summary>
-        public DateTime? StartTime { get; }
+        public DateTime? StartTime { get; private set; }
 
         /// <summary>
         /// The <see cref="InstanceState"/> of the <see cref="Instance"/>
@@ -140,6 +140,12 @@ namespace Shaos.Services.Runtime
         {
             State = InstanceState.Faulted;
             Exception = exception;
+        }
+
+        internal void SetRunning()
+        {
+            State = InstanceState.Running;
+            StartTime = DateTime.UtcNow;
         }
 
         internal void StartExecution(

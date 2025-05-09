@@ -25,12 +25,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Shaos.Services.System;
+using Shaos.Services.SystemInformation;
 using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests.System
+namespace Shaos.Services.UnitTests.SystemInformation
 {
     public class SystemServiceTests : BaseTests
     {

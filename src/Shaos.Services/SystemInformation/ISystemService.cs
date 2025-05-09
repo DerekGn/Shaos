@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.System
+namespace Shaos.Services.SystemInformation
 {
     /// <summary>
     /// Represents a system service for query of system runtime information

@@ -26,7 +26,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace Shaos.Services.System
+namespace Shaos.Services.SystemInformation
 {
     /// <summary>
     /// The <see cref="ISystemService"/> implementation

@@ -41,7 +41,7 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
-using Shaos.Services.System;
+using Shaos.Services.SystemInformation;
 using Shaos.Services.Validation;
 using Shaos.Startup;
 using System.Text.Json.Serialization;
