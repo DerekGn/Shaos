@@ -167,7 +167,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
             Assert.Equal("TestPlugIn", plugInTypeInfo.Name);
             Assert.Equal("1.0.0.0", plugInTypeInfo.AssemblyVersion.ToString());
             Assert.True(plugInTypeInfo.HasLogger);
-            Assert.False(plugInTypeInfo.HasConfiguration);
+            Assert.True(plugInTypeInfo.HasConfiguration);
         }
     }
 }
