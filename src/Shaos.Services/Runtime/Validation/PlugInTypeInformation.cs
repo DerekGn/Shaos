@@ -30,7 +30,7 @@ namespace Shaos.Services.Runtime.Validation
             string name,
             bool hasLogger,
             bool hasConfiguration,
-            Version assemblyVersion)
+            string assemblyVersion)
         {
             Name = name;
             HasLogger = hasLogger;
@@ -41,6 +41,6 @@ namespace Shaos.Services.Runtime.Validation
         public string Name { get; }
         public bool HasLogger { get; }
         public bool HasConfiguration { get; }
-        public Version AssemblyVersion { get; }
+        public string AssemblyVersion { get; }
     }
 }

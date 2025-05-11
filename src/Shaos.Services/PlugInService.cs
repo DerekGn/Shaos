@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
@@ -277,7 +276,6 @@ namespace Shaos.Services
                             _logger.LogWarning("Instance [{Id}] Name: [{Name}] cannot be started no configuration stored",
                                 plugInInstance.Id,
                                 plugInInstance.Name);
-#warning TODO throw
                         }
                         else
                         {

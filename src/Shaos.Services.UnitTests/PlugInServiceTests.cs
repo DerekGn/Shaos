@@ -414,7 +414,7 @@ namespace Shaos.Services.UnitTests
 
             _mockPlugInTypeValidator
                 .Setup(_ => _.Validate(It.IsAny<string>()))
-                .Returns(new PlugInTypeInformation("name", true, true, new System.Version()));
+                .Returns(new PlugInTypeInformation("name", true, true, "1.0.0"));
 
             await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
@@ -457,7 +457,7 @@ namespace Shaos.Services.UnitTests
 
             _mockPlugInTypeValidator
                .Setup(_ => _.Validate(It.IsAny<string>()))
-               .Returns(new PlugInTypeInformation("name", true, true, new System.Version()));
+               .Returns(new PlugInTypeInformation("name", true, true, "1.0.0"));
 
             await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
