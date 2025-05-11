@@ -56,43 +56,15 @@ namespace Shaos.Services.Runtime.Validation
             {
                 throw new FileNotFoundException("Assembly file not found", assemblyFile);
             }
-            var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
-            var unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
+
+            UnloadingWeakReference<IRuntimeAssemblyLoadContext>? unloadingWeakReference = null;
 
             try
             {
-                var assembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
-
-                var resolvedPlugIns = assembly.ResolveAssemblyDerivedTypes(typeof(IPlugIn));
-
-                var count = resolvedPlugIns.Count();
-
-                if (count == 0)
-                {
-                    _logger.LogError("No PlugIn type found in assembly [{Assembly}]", assembly.FullName);
-                    throw new PlugInTypeNotFoundException();
-                }
-
-                if (count > 1)
-                {
-                    _logger.LogError("More than one PlugIn type found in assembly [{Assembly}]", assembly.FullName);
-                    throw new PlugInTypesFoundException(count);
-                }
-
-                var plugInType = resolvedPlugIns.First();
-                
-                ValidatePlugInType(plugInType, out var hasLogger, out var hasConfiguration);
-
-                return new PlugInTypeInformation(
-                    plugInType.Name,
-                    hasLogger,
-                    hasConfiguration,
-                    assembly.GetName().Version);
+                return ValidatePlugInAssembly(assemblyFile, out unloadingWeakReference);
             }
             finally
             {
-                runtimeAssemblyLoadContext.Unload();
-
                 unloadingWeakReference.Dispose();
             }
         }
@@ -137,7 +109,7 @@ namespace Shaos.Services.Runtime.Validation
                                 select genericType)
                                 .ToList();
 
-            if(genericTypes.Count == 0)
+            if (genericTypes.Count == 0)
             {
                 var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
 
@@ -185,10 +157,51 @@ namespace Shaos.Services.Runtime.Validation
             {
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{lastConstructorParameterType}]");
             }
-            
-            if(lastConstructorParameterType != null)
+
+            if (lastConstructorParameterType != null)
             {
                 hasConfiguration = true;
+            }
+        }
+
+        private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile, out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
+        {
+            var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
+            unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
+
+            try
+            {
+                var assembly = runtimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyFile);
+
+                var resolvedPlugIns = assembly.ResolveAssemblyDerivedTypes(typeof(IPlugIn));
+
+                var count = resolvedPlugIns.Count();
+
+                if (count == 0)
+                {
+                    _logger.LogError("No PlugIn type found in assembly [{Assembly}]", assembly.FullName);
+                    throw new PlugInTypeNotFoundException();
+                }
+
+                if (count > 1)
+                {
+                    _logger.LogError("More than one PlugIn type found in assembly [{Assembly}]", assembly.FullName);
+                    throw new PlugInTypesFoundException(count);
+                }
+
+                var plugInType = resolvedPlugIns.First();
+
+                ValidatePlugInType(plugInType, out var hasLogger, out var hasConfiguration);
+
+                return new PlugInTypeInformation(
+                    plugInType.Name,
+                    hasLogger,
+                    hasConfiguration,
+                    assembly.GetName().Version.ToString());
+            }
+            finally
+            {
+                runtimeAssemblyLoadContext.Unload();
             }
         }
     }
