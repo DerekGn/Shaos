@@ -24,25 +24,32 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
+using Shaos.Services;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace Shaos.Pages.Instances
 {
     public class IndexModel : PaginatedModel<Instance>
     {
-        private readonly IInstanceHost _instanceHost;
         private readonly IConfiguration _configuration;
+        private readonly IInstanceHost _instanceHost;
+        private readonly IInstanceHostService _instanceHostService;
 
         public IndexModel(
             IInstanceHost instanceHost,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IInstanceHostService instanceHostService)
         {
             ArgumentNullException.ThrowIfNull(instanceHost);
             ArgumentNullException.ThrowIfNull(configuration);
+            ArgumentNullException.ThrowIfNull(instanceHostService);
 
             _instanceHost = instanceHost;
             _configuration = configuration;
+            _instanceHostService = instanceHostService;
         }
 
         [BindProperty]
@@ -69,7 +76,6 @@ namespace Shaos.Pages.Instances
             }
 
             CurrentFilter = searchString;
-
 
             var queryable = _instanceHost.Instances.AsQueryable();
 
@@ -114,21 +120,23 @@ namespace Shaos.Pages.Instances
                     _configuration.GetValue("PageSize", 5));
         }
 
-        public IActionResult OnPostStart(int id)
+        public async Task<IActionResult> OnPostStartAsync(int id, CancellationToken cancellationToken)
         {
-            if(_instanceHost.InstanceExists(id))
+            try
             {
-                _instanceHost.StartInstance(id);
+                await _instanceHostService.StartInstanceAsync(id, cancellationToken);
             }
-
+            catch (PlugInInstanceNotConfiguredException)
+            {
+                ModelState.AddModelError(string.Empty, "Instance not configured");
+            }
+            
             return RedirectToPage();
         }
+
         public IActionResult OnPostStop(int id)
         {
-            if (_instanceHost.InstanceExists(id))
-            {
-                _instanceHost.StopInstance(id);
-            }
+            _instanceHostService.StopInstance(id);
 
             return RedirectToPage();
         }
