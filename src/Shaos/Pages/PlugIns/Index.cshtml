@@ -8,8 +8,11 @@
 <h1>PlugIns</h1>
 
 <p>
-    <a asp-page="Create" title="Create a PlugIn">
-        <svg bootstrap-icon="Plugin" width="24" height="24" aria-label="PlugIn"></svg>
+    <a asp-page="Create" title="Create a PlugIn" class="btn btn-sm btn-primary">
+        <span>
+            <svg bootstrap-icon="Plugin" width="24" height="24" aria-label="PlugIn"></svg>
+        </span>
+        Create
     </a>
 </p>
 
@@ -22,8 +25,8 @@
         <p>
             Find by name:
             <input type="text" name="SearchString" value="@Model.CurrentFilter" />
-            <input type="submit" value="Search" class="btn btn-primary" /> |
-            <a asp-page="./Index" class="btn @backToListDisabled">Back To List</a>
+            <input type="submit" value="Search" class="btn btn-sm btn-primary" /> |
+            <a asp-page="./Index" class="btn btn-sm btn-primary @backToListDisabled">Back To List</a>
         </p>
     </div>
 </form>
@@ -94,17 +97,25 @@
                     @Html.DisplayFor(modelItem => item.UpdatedDate)
                 </td>
                 <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id" title="Edit PlugIn">
-                        <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Create"></svg>
+                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Edit PlugIn">
+                        <span>
+                            <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Edit"></svg>
+                        </span>
                     </a>
-                    <a asp-page="./Delete" asp-route-id="@item.Id" title="Delete PlugIn">
-                        <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                    <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Delete PlugIn">
+                        <span>
+                            <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                        </span>
                     </a>
-                    <a asp-page="./Package" asp-route-id="@item.Id" title="PlugIn Package">
-                        <svg bootstrap-icon="BoxFill" width="24" height="24" aria-label="Package"></svg>
+                    <a asp-page="./Package" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="PlugIn Package">
+                        <span>
+                            <svg bootstrap-icon="BoxFill" width="24" height="24" aria-label="Package"></svg>
+                        </span>
                     </a>
-                    <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id" class="btn @instancesDisabled" title="PlugIn Instances">
-                        <svg bootstrap-icon="CardList" width="24" height="24" aria-label="Instances"></svg>
+                    <a asp-page="/PlugInInstances/Index" asp-route-id="@item.Id" class="btn btn-sm btn-primary @instancesDisabled" title="PlugIn Instances">
+                        <span>
+                            <svg bootstrap-icon="CardList" width="24" height="24" aria-label="Instances"></svg>
+                        </span>
                     </a>
                 </td>
             </tr>
@@ -121,13 +132,13 @@
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
-   class="btn btn-primary @prevDisabled">
+   class="btn btn-sm btn-primary @prevDisabled">
     Previous
 </a>
 <a asp-page="./Index"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
-   class="btn btn-primary @nextDisabled">
+   class="btn btn-sm btn-primary @nextDisabled">
     Next
 </a>

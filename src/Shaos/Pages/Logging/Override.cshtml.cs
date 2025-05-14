@@ -46,22 +46,22 @@ namespace Shaos.Pages.Logging
         [BindProperty]
         public LogLevelSwitch LogLevelSwitch { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(string id, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(id))
             {
-                ModelState.AddModelError("NotFound", $"{nameof(LogLevelSwitch)}: [{name}] was not found");
+                ModelState.AddModelError("NotFound", $"{nameof(LogLevelSwitch)}: [{id}] was not found");
 
                 return Page();
             }
 
-            var logLevelSwitch = await _loggingConfigurationRepository.GetByNameAsync(name, cancellationToken);
+            var logLevelSwitch = await _loggingConfigurationRepository.GetByNameAsync(id, cancellationToken);
 
             if (logLevelSwitch == null)
             {
                 LogLevelSwitch = new LogLevelSwitch()
                 {
-                    Name = name
+                    Name = id
                 };
             }
             else

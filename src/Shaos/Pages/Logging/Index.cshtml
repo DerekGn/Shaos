@@ -30,11 +30,15 @@
                     @Html.DisplayFor(modelItem => item.Value.MinimumLevel)
                 </td>
                 <td>
-                    <a asp-page="./Override" asp-route-id="@item.Key" title="Override Logging">
-                        <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Override"></svg>
+                    <a asp-page="./Override" asp-route-id="@item.Key" class="btn btn-sm btn-primary" title="Override Logging">
+                        <span>
+                            <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Override"></svg>
+                        </span>
                     </a>
-                    <a asp-page="./Delete" asp-route-id="@item.Key" title="Delete Logging Override">
-                        <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                    <a asp-page="./Delete" asp-route-id="@item.Key" class="btn btn-sm btn-primary" title="Delete Logging Override">
+                        <span>
+                            <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                        </span>
                     </a>
                 </td>
             </tr>

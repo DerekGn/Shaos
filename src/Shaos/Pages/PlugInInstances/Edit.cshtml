@@ -33,14 +33,11 @@
             <input type="hidden" asp-for="PlugInInstance.CreatedDate" />
             <input type="hidden" asp-for="PlugInInstance.UpdatedDate" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-sm btn-success" />
+                <a asp-page="./Index" asp-route-id="@Model.PlugInInstance.PlugInId" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-page="./Index" asp-route-id="@Model.PlugInInstance.PlugInId">Back to List</a>
 </div>
 
 @section Scripts {
