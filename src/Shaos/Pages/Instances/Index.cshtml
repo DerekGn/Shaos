@@ -6,7 +6,7 @@
 <h1>Instances</h1>
 
 @{
-    var backToListDisabled = Model.List.Count == 0 ? "disabled" : "";
+    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
 }
 
 <form asp-page="./Index" method="get">
@@ -14,8 +14,8 @@
         <p>
             Find by name:
             <input type="text" name="SearchString" value="@Model.CurrentFilter" />
-            <input type="submit" value="Search" class="btn btn-primary" /> |
-            <a asp-page="./Index" class="btn @backToListDisabled">Back To List</a>
+            <input type="submit" value="Search" class="btn btn-sm btn-primary" /> |
+            <a asp-page="./Index" class="btn btn-sm btn-primary @backToListDisabled">Back To List</a>
         </p>
     </div>
 </form>
@@ -87,8 +87,8 @@
                         @{
                             var running = item.State == Services.Runtime.Host.InstanceState.Running;
                         }
-                        <input type="submit" asp-page-handler="Start" class="btn btn-success" asp-route-id="@item.Id" value="Start" disabled="@(running ? "disabled" : null)" />
-                        <input type="submit" asp-page-handler="Stop" class="btn btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(running ? null : "disabled")" />
+                        <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Start" disabled="@(running ? "disabled" : null)" />
+                        <input type="submit" asp-page-handler="Stop" class="btn btn-sm btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(running ? null : "disabled")" />
                 </form>
             </td>
         </tr>
@@ -105,13 +105,13 @@
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
-   class="btn btn-primary @prevDisabled">
+   class="btn btn-sm btn-primary @prevDisabled">
     Previous
 </a>
 <a asp-page="./Index"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
-   class="btn btn-primary @nextDisabled">
+   class="btn btn-sm btn-primary @nextDisabled">
     Next
 </a>

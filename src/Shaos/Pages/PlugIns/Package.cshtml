@@ -14,13 +14,13 @@
         <form method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <dl class="row">
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     @Html.DisplayNameFor(model => model.PlugIn!.Name)
                 </dt>
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.PlugIn!.Name)
                 </dd>
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     @Html.DisplayNameFor(model => model.PlugIn!.Description)
                 </dt>
                 <dd class="col-sm-6">
@@ -30,37 +30,37 @@
             <h4>Package</h4>
             <hr />
             <dl class="row">
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     @Html.DisplayNameFor(model => model.Package!.AssemblyFile)
                 </dt>
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.Package!.AssemblyFile)
                 </dd>
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     @Html.DisplayNameFor(model => model.Package!.AssemblyVersion)
                 </dt>
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.Package!.AssemblyVersion)
                 </dd>
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     @Html.DisplayNameFor(model => model.Package!.FileName)
                 </dt>
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.Package!.FileName)
                 </dd>
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     @Html.DisplayNameFor(model => model.Package!.HasConfiguration)
                 </dt>
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.Package!.HasConfiguration)
                 </dd>
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     @Html.DisplayNameFor(model => model.Package!.HasLogger)
                 </dt>
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.Package!.HasLogger)
                 </dd>
-                <dt class="col-sm-4">
+                <dt class="col-sm-6">
                     Upload Package
                 </dt>
                 <dd class="col-sm-6">
@@ -69,10 +69,12 @@
             </dl>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <svg bootstrap-icon="CloudArrowUp" width="24" height="24" aria-label="Save"></svg>
+                <button type="submit" class="btn btn-sm btn-success">
+                    <span>
+                        <svg bootstrap-icon="CloudArrowUp" width="18" height="18" aria-label="Save"></svg>
+                    </span>
                 </button>
-                <a asp-page="./Index" class="btn btn-primary">Cancel</a>
+                <a asp-page="./Index" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>
     </div>

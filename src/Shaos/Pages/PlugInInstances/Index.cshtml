@@ -8,7 +8,12 @@
 <h1>PlugIn Instances</h1>
 
 <p>
-    <a asp-page="Create" asp-route-id="@Model.Id" class="bi bi-plugin">Create</a>
+    <a asp-page="Create" asp-route-id="@Model.Id" class="btn btn-sm btn-primary" title="Create a PlugIn Instance">
+        <span>
+            <svg bootstrap-icon="Plus" width="24" height="24" aria-label="PlugIn"></svg>
+        </span>
+        Create
+    </a>
 </p>
 
 @{
@@ -20,8 +25,8 @@
         <p>
             Find by name:
             <input type="text" name="SearchString" value="@Model.CurrentFilter" />
-            <input type="submit" value="Search" class="btn btn-primary" /> |
-            <a asp-page="./Index" class="btn  btn-primary @backToListDisabled">Back To List</a>
+            <input type="submit" value="Search" class="btn btn-sm btn-primary" /> |
+            <a asp-page="./Index" class="btn btn-sm btn-primary @backToListDisabled">Back To List</a>
         </p>
     </div>
 </form>
@@ -34,17 +39,17 @@
             </th>
             <th>
                 <a asp-page="./Index"
-                    asp-route-id="@Model.Id"
-                    asp-route-sortOrder="@Model.IdSort"
-                    asp-route-currentFilter="@Model.CurrentFilter">
+                   asp-route-id="@Model.Id"
+                   asp-route-sortOrder="@Model.IdSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Id)
                 </a>
             </th>
             <th>
-                <a asp-page="./Index" 
-                    asp-route-id="@Model.Id"
-                    asp-route-sortOrder="@Model.NameSort"
-                    asp-route-currentFilter="@Model.CurrentFilter">
+                <a asp-page="./Index"
+                   asp-route-id="@Model.Id"
+                   asp-route-sortOrder="@Model.NameSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Name)
                 </a>
             </th>
@@ -61,33 +66,46 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.List) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Enabled)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedDate)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a> |
-                <a asp-page="./Configuration" asp-route-id="@item.Id">Configuration</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.List)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Enabled)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedDate)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
+                        <span>
+                            <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Edit"></svg>
+                        </span>
+                    </a>
+                    <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
+                        <span>
+                            <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                        </span>
+                    </a>
+                    <a asp-page="./Configuration" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
+                        <span>
+                            <svg bootstrap-icon="Gear" width="24" height="24" aria-label="Configure"></svg>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
@@ -101,7 +119,7 @@
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
-   class="btn btn-primary @prevDisabled">
+   class="btn btn-sm btn-primary @prevDisabled">
     Previous
 </a>
 <a asp-page="./Index"
@@ -109,10 +127,10 @@
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
-   class="btn btn-primary @nextDisabled">
+   class="btn btn-sm btn-primary @nextDisabled">
     Next
 </a>
 
-<a asp-page="/PlugIns/Index" class="btn btn-primary">
+<a asp-page="/PlugIns/Index" class="btn btn-sm btn-primary">
     Back
 </a>
