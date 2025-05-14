@@ -25,6 +25,7 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Reflection;
+using System.Linq;
 
 namespace Shaos.Services.Runtime.Factories
 {
@@ -51,7 +52,7 @@ namespace Shaos.Services.Runtime.Factories
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
-            if(configuration != null)
+            if (configuration != null)
             {
                 constructorParameters.Add(configuration);
             }
@@ -72,7 +73,12 @@ namespace Shaos.Services.Runtime.Factories
                                   select parameterType)
                                   .ToList();
 
-            var configurationType = parameterTypes.FirstOrDefault(_ => _.BaseType == typeof(BasePlugInConfiguration));
+            var configurationType = (from parameterType in parameterTypes
+                                     where parameterType.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any()
+                                     select parameterType)
+                                          .FirstOrDefault();
+
+            //var configurationType = parameterTypes.FirstOrDefault(_ => _.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any());
 
             object? configuration = null;
 

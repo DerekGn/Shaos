@@ -70,7 +70,7 @@ namespace Shaos.Services
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An instance of a <see cref="PlugInInstance"/> configuration</returns>
-        Task<BasePlugInConfiguration> LoadPlugInInstanceConfigurationAsync(int id, CancellationToken cancellationToken = default);
+        Task<object> LoadPlugInInstanceConfigurationAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set the <paramref name="enable"/> state of a <see cref="PlugIn"/>

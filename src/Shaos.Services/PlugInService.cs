@@ -177,7 +177,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<BasePlugInConfiguration> LoadPlugInInstanceConfigurationAsync(
+        public async Task<object> LoadPlugInInstanceConfigurationAsync(
             int id,
             CancellationToken cancellationToken = default)
         {
@@ -191,7 +191,7 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotFoundException(id);
             }
 
-            BasePlugInConfiguration? configuration = null;
+            object? configuration = null;
 
             if (string.IsNullOrEmpty(plugInInstance.Configuration))
             {
@@ -199,27 +199,27 @@ namespace Shaos.Services
             }
             else
             {
-                configuration = JsonSerializer.Deserialize<BasePlugInConfiguration>(plugInInstance.Configuration);
+                //configuration = JsonSerializer.Deserialize(plugInInstance.Configuration);
             }
 
             return configuration!;
         }
 
-        private BasePlugInConfiguration? LoadConfiguration(PlugIn plugIn)
+        private object? LoadConfiguration(PlugIn plugIn)
         {
             var assemblyPath = Path
                 .Combine(_fileStoreService.GetAssemblyPath(plugIn.Id),
                 plugIn.Package!.AssemblyFile);
 
             IRuntimeAssemblyLoadContext? context = null;
-            BasePlugInConfiguration? configuration = null;
+            object? configuration = null;
 
             try
             {
                 context = _runtimeAssemblyLoadContextFactory.Create(assemblyPath);
                 var assembly = context.LoadFromAssemblyPath(assemblyPath);
 
-                configuration = (BasePlugInConfiguration?)_plugInFactory.LoadConfiguration(assembly);
+                configuration = _plugInFactory.LoadConfiguration(assembly);
             }
             finally
             {
@@ -285,7 +285,7 @@ namespace Shaos.Services
 
                             if (!string.IsNullOrEmpty(plugInInstance.Configuration))
                             {
-                                plugInConfiguration = JsonSerializer.Deserialize<BasePlugInConfiguration>(plugInInstance.Configuration);
+                                plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
                             }
 
                             _instanceHost.StartInstance(plugInInstance.Id, plugInConfiguration);

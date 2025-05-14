@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Sdk;
 using Shaos.Services;
 
 namespace Shaos.Pages.PlugInInstances
@@ -41,13 +40,17 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
-        public BasePlugInConfiguration Configuration { get; set; }
+        public object Configuration { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Configuration = await _plugInService.LoadPlugInInstanceConfigurationAsync(id);
 
             return Page();
+        }
+
+        public void OnPostAsync()
+        {
         }
     }
 }
