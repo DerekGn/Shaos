@@ -25,23 +25,24 @@ namespace Shaos.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            output.Attributes.Add("class", "form-group");
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag;
+
+            var content = output.Content;
 
             foreach (var property in For.ModelExplorer.Properties)
             {
                 var modelExpression = new ModelExpression($"{property.Container.Metadata.Name}.{property.Metadata.Name}", property);
 
-                TagBuilder builder = new TagBuilder("div");
-                //group.Attributes.Add("class", styles.FormGroup);
-
-                builder.InnerHtml.AppendHtml(_generator.GenerateLabel(ViewContext,
+                content.AppendHtml(_generator.GenerateLabel(ViewContext,
                     modelExpression.ModelExplorer,
-                    modelExpression.Name, null, null));
+                    modelExpression.Name,
+                    null,
+                    new { @class = "control-label" }));
 
-                builder.InnerHtml.AppendHtml(GenerateInputTagHelper(modelExpression));
-
-                output.Content.AppendHtml(builder);
+                content.AppendHtml(GenerateInputTagHelper(modelExpression));
+                content.AppendHtml(GenerateValidation(modelExpression));
             }
         }
 
@@ -73,8 +74,19 @@ namespace Shaos.TagHelpers
 
             tagHelper.Init(tagContext);
             tagHelper.Process(tagContext, tagOutput);
-            //tagOutput.Attributes.Add(new TagHelperAttribute("class", css));
+            tagOutput.Attributes.Add(new TagHelperAttribute("class", "form-control"));
             return tagOutput;
+        }
+
+        private IHtmlContent GenerateValidation(ModelExpression modelExpression)
+        {
+            return _generator.GenerateValidationMessage(
+                ViewContext,
+                modelExpression.ModelExplorer,
+                modelExpression.Name,
+                null,
+                null,
+                new { @class = "text-danger field-validation-valid" });
         }
     }
 }

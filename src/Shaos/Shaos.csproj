@@ -35,6 +35,7 @@
     <ProjectReference Include="..\Shaos.Api.Model\Shaos.Api.Model.csproj" />
     <ProjectReference Include="..\Shaos.Repository\Shaos.Repository.csproj" />
     <ProjectReference Include="..\Shaos.Services\Shaos.Services.csproj" />
+    <ProjectReference Include="..\Shaos.Test.PlugIn\Shaos.Test.PlugIn.csproj" />
   </ItemGroup>
 
   <ItemGroup>
