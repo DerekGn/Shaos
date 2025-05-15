@@ -48,9 +48,6 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
-        public bool CreateEnabled { get; set; }
-
-        [BindProperty]
         public int Id { get; set; } = default!;
 
         [BindProperty]
@@ -60,35 +57,7 @@ namespace Shaos.Pages.PlugInInstances
         {
             Id = id;
 
-            var plugIn = await _repository.GetByIdAsync(id, true, [nameof(PlugIn.Package)], cancellationToken);
-
-            if (plugIn != null)
-            {
-                CreateEnabled = !plugIn.Package!.HasConfiguration;
-            }
-
             return Page();
-        }
-
-        public async Task<IActionResult> OnPostConfigureAsync(CancellationToken cancellationToken = default)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            try
-            {
-                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
-            }
-            catch (PlugInInstanceNameExistsException)
-            {
-                ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
-
-                return Page();
-            }
-
-            return RedirectToPage("./Configuration", new { id = PlugInInstance.Id });
         }
 
         public async Task<IActionResult> OnPostCreateAsync(CancellationToken cancellationToken = default)

@@ -13,12 +13,6 @@
             <config-edit asp-for="@Model.Configuration"></config-edit>
 
             <div class="form-group">
-                <label asp-for="PlugInConfiguration.Delay" class="control-label"></label>
-                <input asp-for="PlugInConfiguration.Delay" class="form-control" />
-                <span asp-validation-for="PlugInConfiguration.Delay" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-sm btn-success" />
                 <a asp-page="./Index" class="btn btn-sm btn-primary">Cancel</a>
             </div>
