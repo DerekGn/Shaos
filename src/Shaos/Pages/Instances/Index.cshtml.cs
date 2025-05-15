@@ -28,7 +28,6 @@ using Shaos.Services;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace Shaos.Pages.Instances
 {

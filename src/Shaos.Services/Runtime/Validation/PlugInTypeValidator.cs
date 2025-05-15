@@ -26,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
+using System.Reflection;
 
 namespace Shaos.Services.Runtime.Validation
 {
@@ -153,7 +154,7 @@ namespace Shaos.Services.Runtime.Validation
 
             var lastConstructorParameterType = parameterTypes.Except([loggerType]).FirstOrDefault();
 
-            if (lastConstructorParameterType != null && !lastConstructorParameterType!.IsClass && lastConstructorParameterType.BaseType != typeof(BasePlugInConfiguration))
+            if (lastConstructorParameterType != null && !lastConstructorParameterType!.IsClass && lastConstructorParameterType.GetCustomAttributes<PlugInConfigurationClassAttribute>() != null)
             {
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{lastConstructorParameterType}]");
             }

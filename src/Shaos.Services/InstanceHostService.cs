@@ -71,7 +71,7 @@ namespace Shaos.Services
                     {
                         if (!string.IsNullOrEmpty(plugInInstance.Configuration))
                         {
-                            plugInConfiguration = JsonSerializer.Deserialize<BasePlugInConfiguration>(plugInInstance.Configuration);
+                            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
                         }
                         else
                         {
