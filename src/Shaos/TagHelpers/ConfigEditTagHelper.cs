@@ -29,24 +29,49 @@ namespace Shaos.TagHelpers
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag;
 
-            var content = output.Content;
-
             foreach (var property in For.ModelExplorer.Properties)
             {
                 var modelExpression = new ModelExpression($"{property.Container.Metadata.Name}.{property.Metadata.Name}", property);
 
-                content.AppendHtml(_generator.GenerateLabel(ViewContext,
-                    modelExpression.ModelExplorer,
-                    modelExpression.Name,
-                    null,
-                    new { @class = "control-label" }));
 
-                content.AppendHtml(GenerateInputTagHelper(modelExpression));
-                content.AppendHtml(GenerateValidation(modelExpression));
+                TagBuilder tagBuilder = new TagBuilder("div");
+                tagBuilder.Attributes.Add("class", "form-group");
+                tagBuilder.InnerHtml.AppendHtml(GenerateLabel(modelExpression));
+
+                tagBuilder.InnerHtml.AppendHtml(GenerateInputTagHelper(modelExpression));
+                tagBuilder.InnerHtml.AppendHtml(GenerateValidation(modelExpression));
+                output.Content.AppendHtml(tagBuilder);
             }
         }
 
+        private TagBuilder GenerateLabel(ModelExpression modelExpression)
+        {
+            var cssClass = modelExpression.ModelExplorer.ModelType == typeof(bool) ? "form-check-label" : "control-label";
+
+            return _generator.GenerateLabel(ViewContext,
+                                modelExpression.ModelExplorer,
+                                modelExpression.Name,
+                                null,
+                                new { @class = cssClass });
+        }
+
         private TagHelperOutput GenerateInputTagHelper(ModelExpression modelExpression)
+        {
+            TagHelperOutput tagHelperOutput = null;
+
+            if(modelExpression.ModelExplorer.ModelType == typeof(bool))
+            {
+                tagHelperOutput = GenerateInputTagHelperWithClass(modelExpression, "form-check-input");
+            }
+            else
+            {
+                tagHelperOutput = GenerateInputTagHelperWithClass(modelExpression, "form-control");
+            }
+
+            return tagHelperOutput;
+        }
+
+        private TagHelperOutput GenerateInputTagHelperWithClass(ModelExpression modelExpression, string? cssClass = default)
         {
             var tagHelper = new InputTagHelper(_generator)
             {
@@ -74,7 +99,7 @@ namespace Shaos.TagHelpers
 
             tagHelper.Init(tagContext);
             tagHelper.Process(tagContext, tagOutput);
-            tagOutput.Attributes.Add(new TagHelperAttribute("class", "form-control"));
+            tagOutput.Attributes.Add(new TagHelperAttribute("class", cssClass));
             return tagOutput;
         }
 
