@@ -94,9 +94,13 @@ namespace Shaos.Services.IO
 
             var packageFilePath = Path.Combine(_options.Value.PackagesPath, packageFileName);
 
+            File.Delete(packageFilePath);
+
             using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 
             await stream.CopyToAsync(outputStream, cancellationToken);
+
+            await stream.FlushAsync(cancellationToken);
 
             return packageFilePath;
         }
