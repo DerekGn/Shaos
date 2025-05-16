@@ -24,7 +24,6 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
@@ -32,7 +31,6 @@ using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
-using System.Text.Json;
 
 namespace Shaos.Services
 {
@@ -192,15 +190,15 @@ namespace Shaos.Services
             }
 
             object? configuration = null;
-
-            if (string.IsNullOrEmpty(plugInInstance.Configuration))
-            {
-                configuration = LoadConfiguration(plugInInstance.PlugIn!);
-            }
-            else
-            {
-                //configuration = JsonSerializer.Deserialize(plugInInstance.Configuration);
-            }
+#warning TODO
+            //if (string.IsNullOrEmpty(plugInInstance.Configuration))
+            //{
+            //    configuration = LoadConfiguration(plugInInstance.PlugIn!);
+            //}
+            //else
+            //{
+            //    //configuration = JsonSerializer.Deserialize(plugInInstance.Configuration);
+            //}
 
             return configuration!;
         }
@@ -219,7 +217,8 @@ namespace Shaos.Services
                 context = _runtimeAssemblyLoadContextFactory.Create(assemblyPath);
                 var assembly = context.LoadFromAssemblyPath(assemblyPath);
 
-                configuration = _plugInFactory.LoadConfiguration(assembly);
+#warning TODO
+                //configuration = _plugInFactory.LoadConfiguration(assembly);
             }
             finally
             {
@@ -279,16 +278,17 @@ namespace Shaos.Services
                         }
                         else
                         {
-                            _logger.LogInformation("Starting Instance [{Id}] Name: [{Name}]",
-                                plugInInstance.Id,
-                                plugInInstance.Name);
+#warning TODO
+                            //_logger.LogInformation("Starting Instance [{Id}] Name: [{Name}]",
+                            //    plugInInstance.Id,
+                            //    plugInInstance.Name);
 
-                            if (!string.IsNullOrEmpty(plugInInstance.Configuration))
-                            {
-                                plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
-                            }
+                            //if (!string.IsNullOrEmpty(plugInInstance.Configuration))
+                            //{
+                            //    plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
+                            //}
 
-                            _instanceHost.StartInstance(plugInInstance.Id, plugInConfiguration);
+                            //_instanceHost.StartInstance(plugInInstance.Id);
                         }
                     }
                 }

@@ -25,7 +25,6 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Reflection;
-using System.Linq;
 
 namespace Shaos.Services.Runtime.Factories
 {
@@ -42,7 +41,7 @@ namespace Shaos.Services.Runtime.Factories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public IPlugIn? CreateInstance(Assembly assembly, object? configuration = default)
+        public void CreateInstance(Assembly assembly, out IPlugIn? plugIn, out object? configuration)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
@@ -52,42 +51,9 @@ namespace Shaos.Services.Runtime.Factories
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
-            if (configuration != null)
-            {
-                constructorParameters.Add(configuration);
-            }
+            configuration = constructorParameters.FirstOrDefault(_ => _.GetType().GetCustomAttributes<PlugInConfigurationClassAttribute>().Any());
 
-            return Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
-        }
-
-        public object? LoadConfiguration(Assembly assembly)
-        {
-            ArgumentNullException.ThrowIfNull(assembly);
-
-            var plugInType = ResolvePlugInType(assembly);
-
-            var constructors = plugInType.GetConstructors();
-            var parameterInfos = constructors[0].GetParameters();
-            var parameterTypes = (from parameterInfo in parameterInfos
-                                  let parameterType = parameterInfo.ParameterType
-                                  select parameterType)
-                                  .ToList();
-
-            var configurationType = (from parameterType in parameterTypes
-                                     where parameterType.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any()
-                                     select parameterType)
-                                          .FirstOrDefault();
-
-            //var configurationType = parameterTypes.FirstOrDefault(_ => _.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any());
-
-            object? configuration = null;
-
-            if (configurationType != null)
-            {
-                configuration = Activator.CreateInstance(configurationType);
-            }
-
-            return configuration;
+            plugIn = Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
         }
 
         private List<object> GetConstructorParameters(Type plugInType)
@@ -118,6 +84,13 @@ namespace Shaos.Services.Runtime.Factories
 
                         result.Add(Activator.CreateInstance(loggerType, _loggerFactory)!);
                     }
+                }
+
+                if(parameterType.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any())
+                {
+                    _logger.LogDebug("Creating instance of [{Name}]", parameterType.FullName);
+
+                    result.Add(Activator.CreateInstance(parameterType));
                 }
             }
 

@@ -21,6 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+
 using Shaos.Services.Runtime.Exceptions;
 
 namespace Shaos.Services.Runtime.Host
@@ -64,6 +65,13 @@ namespace Shaos.Services.Runtime.Host
         bool InstanceExists(int id);
 
         /// <summary>
+        /// Load an instance types
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> that is to be loaded</param>
+        /// <returns></returns>
+        Instance LoadInstance(int id);
+
+        /// <summary>
         /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
         /// </summary>
         /// <param name="id"></param>
@@ -76,7 +84,6 @@ namespace Shaos.Services.Runtime.Host
         /// Start the execution of a <see cref="Instance"/>
         /// </summary>
         /// <param name="id">The id of the <see cref="Instance"/> to start</param>
-        /// <param name="configuration">The configuration json</param>
         /// <returns>An <see cref="Instance"/></returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="InstanceCreateException">Thrown if the <see cref="PlugIn"/> instance cannot be created</exception>
@@ -84,7 +91,7 @@ namespace Shaos.Services.Runtime.Host
         /// <remarks>
         /// The <see cref="Instance"/> is not synchronously started
         /// </remarks>
-        Instance StartInstance(int id, object? configuration = default);
+        Instance StartInstance(int id);
 
         /// <summary>
         /// Stop a running <see cref="Instance"/>
@@ -96,5 +103,11 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="Instance"/> is not synchronously stopped
         /// </remarks>
         Instance StopInstance(int id);
+
+        /// <summary>
+        /// Unload loaded  <see cref="Instance"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> that is to be stopped</param>
+        Instance UnloadInstance(int id);
     }
 }

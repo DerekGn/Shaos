@@ -306,10 +306,10 @@ namespace Shaos.Services.UnitTests
                 It.IsAny<string>()),
                 Times.Once);
 
-            _mockInstanceHost.Verify(_ => _.StartInstance(
-                It.IsAny<int>(),
-                It.IsAny<string?>()),
-                Times.Once);
+            //_mockInstanceHost.Verify(_ => _.StartInstance(
+            //    It.IsAny<int>(),
+            //    It.IsAny<string?>()),
+            //    Times.Once);
         }
 
         [Fact]

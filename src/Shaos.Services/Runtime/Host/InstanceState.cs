@@ -47,8 +47,6 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
-
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
@@ -81,6 +79,8 @@ namespace Shaos.Services.Runtime.Host
         /// <remarks>
         /// This is the result of the <see cref="Instance"/> self terminating due to an exception.
         /// </remarks>
-        Faulted
+        Faulted,
+
+        Loaded
     }
 }

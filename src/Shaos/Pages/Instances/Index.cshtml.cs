@@ -119,6 +119,18 @@ namespace Shaos.Pages.Instances
                     _configuration.GetValue("PageSize", 5));
         }
 
+        public IActionResult OnPostConfigure(int id)
+        {
+            return RedirectToPage();
+        }
+
+        public IActionResult OnPostLoad(int id)
+        {
+            _instanceHost.LoadInstance(id);
+
+            return RedirectToPage();
+        }
+
         public async Task<IActionResult> OnPostStartAsync(int id, CancellationToken cancellationToken)
         {
             try
@@ -129,13 +141,20 @@ namespace Shaos.Pages.Instances
             {
                 ModelState.AddModelError(string.Empty, "Instance not configured");
             }
-            
+
             return RedirectToPage();
         }
 
         public IActionResult OnPostStop(int id)
         {
             _instanceHostService.StopInstance(id);
+
+            return RedirectToPage();
+        }
+
+        public IActionResult OnPostUnload(int id)
+        {
+            _instanceHost.UnloadInstance(id);
 
             return RedirectToPage();
         }

@@ -62,29 +62,29 @@ namespace Shaos.Services
             {
                 var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
 
-                if(plugInInstance != null)
-                {
-                    var package = plugInInstance.PlugIn.Package;
-                    object? plugInConfiguration = null;
+                //if(plugInInstance != null)
+                //{
+                //    var package = plugInInstance.PlugIn.Package;
+                //    object? plugInConfiguration = null;
 
-                    if (package != null && package.HasConfiguration)
-                    {
-                        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
-                        {
-                            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
-                        }
-                        else
-                        {
-                            throw new PlugInInstanceNotConfiguredException(id);
-                        }
-                    }
+                //    if (package != null && package.HasConfiguration)
+                //    {
+                //        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
+                //        {
+                //            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
+                //        }
+                //        else
+                //        {
+                //            throw new PlugInInstanceNotConfiguredException(id);
+                //        }
+                //    }
 
-                    _instanceHost.StartInstance(id, plugInConfiguration);
-                }
-                else
-                {
-                    _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
-                }
+                //    _instanceHost.StartInstance(id);
+                //}
+                //else
+                //{
+                //    _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
+                //}
             }
             else
             {

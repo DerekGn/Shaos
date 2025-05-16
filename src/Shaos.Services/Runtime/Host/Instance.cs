@@ -122,12 +122,14 @@ namespace Shaos.Services.Runtime
 
         internal void LoadContext(
             IPlugIn plugIn,
-            IRuntimeAssemblyLoadContext assemblyLoadContext)
+            IRuntimeAssemblyLoadContext assemblyLoadContext,
+            object? plugInConfiguration = default)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
-            Context = new PlugInContext(plugIn, assemblyLoadContext);
+            Context = new PlugInContext(plugIn, assemblyLoadContext, plugInConfiguration);
+            State = InstanceState.Loaded;
         }
 
         internal void SetComplete()
@@ -136,7 +138,7 @@ namespace Shaos.Services.Runtime
             StopTime = DateTime.UtcNow;
         }
 
-        internal void SetFaulted(AggregateException? exception)
+        internal void SetFaulted(Exception? exception)
         {
             State = InstanceState.Faulted;
             Exception = exception;
@@ -162,6 +164,13 @@ namespace Shaos.Services.Runtime
             await Context!.TokenSource!.CancelAsync();
 
             return await Task.WhenAny(Context!.Task!, Task.Delay(stopTimeout)) == Context.Task;
+        }
+
+        internal void UnloadContext()
+        {
+            Context?.Dispose();
+
+            State = InstanceState.None;
         }
 
         private TimeSpan CalculateRunningTime()

@@ -34,18 +34,33 @@ namespace Shaos.Services.Runtime
 
         public PlugInContext(
             IPlugIn plugIn,
-            IRuntimeAssemblyLoadContext assemblyLoadContext)
+            IRuntimeAssemblyLoadContext assemblyLoadContext,
+            object? plugInConfiguration = default)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
             _unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(assemblyLoadContext);
             PlugIn = plugIn;
+            PlugInConfiguration = plugInConfiguration;
         }
 
-        public IPlugIn? PlugIn { get; }
+        public IPlugIn? PlugIn { get; private set; }
+        public object? PlugInConfiguration { get; private set; }
         public Task? Task { get; internal set; }
         public CancellationTokenSource? TokenSource { get; internal set; }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
+            stringBuilder.AppendLine($"{nameof(PlugInConfiguration)}: {(PlugInConfiguration == null ? "Empty" : PlugInConfiguration.GetType().Name)}");
+            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : $"Id: {Task.Id} State: [{Task.Status}]")}");
+            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : $"{nameof(TokenSource.IsCancellationRequested)}: {TokenSource.IsCancellationRequested}")}");
+
+            return stringBuilder.ToString();
+        }
 
         internal void StartExecution(
             Func<CancellationToken, Task> executeTask,
@@ -61,17 +76,6 @@ namespace Shaos.Services.Runtime
                 .ContinueWith(completionTask);
         }
 
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
-            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : $"Id: {Task.Id} State: [{Task.Status}]" )}");
-            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : $"{nameof(TokenSource.IsCancellationRequested)}: {TokenSource.IsCancellationRequested}" )}");
-
-            return stringBuilder.ToString();
-        }
-
         #region Dispose
 
         public void Dispose()
@@ -85,13 +89,22 @@ namespace Shaos.Services.Runtime
         {
             if (!disposedValue)
             {
-                if (disposing)
+                if (PlugIn is IDisposable plugin)
                 {
-                    // TODO: dispose managed state (managed objects)
+                    plugin?.Dispose();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
+                PlugIn = null;
+
+                if (PlugInConfiguration is IDisposable config)
+                {
+                    config?.Dispose();
+                }
+
+                PlugInConfiguration = null;
+
+                _unloadingWeakReference?.Dispose();
+
                 disposedValue = true;
             }
         }
