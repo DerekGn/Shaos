@@ -110,7 +110,7 @@ namespace Shaos.Services.Runtime.Host
         // </inheritdoc>
         public Instance LoadInstance(int id)
         {
-            return ExecuteOperationOnInstance(id, (instance) =>
+            return ExecuteInstanceOperation(id, (instance) =>
             {
                 if (instance.State != InstanceState.None)
                 {
@@ -145,7 +145,7 @@ namespace Shaos.Services.Runtime.Host
         // </inheritdoc>
         public void RemoveInstance(int id)
         {
-            ExecuteOperationOnInstance(id, (instance) =>
+            ExecuteInstanceOperation(id, (instance) =>
             {
                 if (instance.State != InstanceState.None)
                 {
@@ -159,7 +159,7 @@ namespace Shaos.Services.Runtime.Host
         // </inheritdoc>
         public Instance StartInstance(int id)
         {
-            return ExecuteOperationOnInstance(id, (instance) =>
+            return ExecuteInstanceOperation(id, (instance) =>
             {
                 if (InvalidStartingState(instance.State))
                 {
@@ -180,7 +180,7 @@ namespace Shaos.Services.Runtime.Host
         // </inheritdoc>
         public Instance StopInstance(int id)
         {
-            return ExecuteOperationOnInstance(id, (instance) =>
+            return ExecuteInstanceOperation(id, (instance) =>
             {
                 if (instance.State != InstanceState.Running)
                 {
@@ -196,7 +196,7 @@ namespace Shaos.Services.Runtime.Host
         // </inheritdoc>
         public Instance UnloadInstance(int id)
         {
-            return ExecuteOperationOnInstance(id, (instance) =>
+            return ExecuteInstanceOperation(id, (instance) =>
             {
                 if (!InstanceUnloadable(instance.State))
                 {
@@ -218,18 +218,18 @@ namespace Shaos.Services.Runtime.Host
 
         private static bool InstanceUnloadable(InstanceState state)
         {
-            return state == InstanceState.Complete 
-                || state == InstanceState.Faulted 
+            return state == InstanceState.Complete
+                || state == InstanceState.Faulted
                 || state == InstanceState.Loaded;
         }
 
         private static bool InvalidStartingState(InstanceState state)
         {
-            return state == InstanceState.None 
+            return state == InstanceState.None
                 || state == InstanceState.Running;
         }
 
-        private Instance ExecuteOperationOnInstance(int id, Action<Instance> operation)
+        private Instance ExecuteInstanceOperation(int id, Action<Instance> operation)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 

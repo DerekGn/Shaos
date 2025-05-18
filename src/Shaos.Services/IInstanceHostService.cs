@@ -22,14 +22,23 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Primitives;
+
 namespace Shaos.Services
 {
     public interface IInstanceHostService
     {
-        Task<object?> GetInstanceConfigurationAsync(int id, CancellationToken cancellationToken = default);
+        Task<object?> GetInstanceConfigurationAsync(
+            int id,
+            CancellationToken cancellationToken = default);
 
         Task StartInstanceAsync(int id, CancellationToken cancellationToken = default);
 
         void StopInstance(int id);
+
+        Task UpdateInstanceConfigurationAsync(
+            int id,
+            IEnumerable<KeyValuePair<string, StringValues>> collection,
+            CancellationToken cancellationToken = default);
     }
 }

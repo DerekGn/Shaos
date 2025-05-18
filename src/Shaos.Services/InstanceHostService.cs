@@ -23,19 +23,18 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
+using System.Collections.Specialized;
 using System.Text.Json;
 
 namespace Shaos.Services
 {
-    /// <summary>
-    ///
-    /// </summary>
     public class InstanceHostService : IInstanceHostService
     {
         private readonly IInstanceHost _instanceHost;
@@ -60,32 +59,33 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            object? instanceConfiguration = null;
-
-            Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
-
-            if(instance.State != InstanceState.Loaded)
+            return await ExecuteInstanceOperationAsync(id, async (instance) =>
             {
-                throw new InstanceInvalidStateException(id, instance.State);
-            }
+                object? instanceConfiguration = null;
 
-            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
-
-            var package = plugInInstance?.PlugIn?.Package;
-
-            if (package != null && package.HasConfiguration)
-            {
-                if (!string.IsNullOrEmpty(plugInInstance?.Configuration))
+                if (instance.State != InstanceState.Loaded)
                 {
-                    instanceConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
+                    throw new InstanceInvalidStateException(id, instance.State);
                 }
-                else
+
+                var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+
+                var package = plugInInstance?.PlugIn?.Package;
+
+                if (package != null && package.HasConfiguration)
                 {
-                    instanceConfiguration = instance.Context.PlugInConfiguration;
+                    if (!string.IsNullOrEmpty(plugInInstance?.Configuration))
+                    {
+                        instanceConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
+                    }
+                    else
+                    {
+                        instanceConfiguration = instance.Context.PlugInConfiguration;
+                    }
                 }
-            }
-            
-            return instanceConfiguration;
+
+                return instanceConfiguration;
+            });
         }
 
         /// <inheritdoc/>
@@ -93,7 +93,7 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            if (_instanceHost.InstanceExists(id))
+            await ExecuteInstanceOperationAsync(id, async (instance) =>
             {
                 var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
 
@@ -102,42 +102,66 @@ namespace Shaos.Services
                     var package = plugInInstance.PlugIn.Package;
                     object? plugInConfiguration = null;
 
-                    //    if (package != null && package.HasConfiguration)
-                    //    {
-                    //        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
-                    //        {
-                    //            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
-                    //        }
-                    //        else
-                    //        {
-                    //            throw new PlugInInstanceNotConfiguredException(id);
-                    //        }
-                    //    }
+                    if (package != null && package.HasConfiguration)
+                    {
+                        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
+                        {
+                            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
+}
+                        else
+                        {
+                            throw new PlugInInstanceNotConfiguredException(id);
+                        }
+                    }
 
-                    //    _instanceHost.StartInstance(id);
+                    _instanceHost.StartInstance(id);
                 }
                 else
                 {
                     _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
                 }
-            }
-            else
-            {
-                _logger.LogWarning("Unable to start a PlugIn instance. Instance host does not contain instance Id: [{Id}]", id);
-            }
+            });
         }
 
         /// <inheritdoc/>
         public void StopInstance(int id)
         {
-            if (_instanceHost.InstanceExists(id))
+            ExecuteInstanceOperation(id, (instance) =>
             {
                 _instanceHost.StopInstance(id);
-            }
-            else
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdateInstanceConfigurationAsync(
+            int id,
+            IEnumerable<KeyValuePair<string, StringValues>> collection,
+            CancellationToken cancellationToken = default)
+        {
+            await ExecuteInstanceOperationAsync(id, async (instance) =>
             {
-                _logger.LogWarning("Unable to stop a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
-            }
+            });
+        }
+
+        private void ExecuteInstanceOperation(int id, Action<Instance> operation)
+        {
+            Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
+
+            operation(instance);
+        }
+
+        private async Task ExecuteInstanceOperationAsync(int id, Func<Instance, Task> operation)
+        {
+            Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
+
+            await operation(instance);
+        }
+
+        private async Task<T> ExecuteInstanceOperationAsync<T>(int id, Func<Instance, Task<T>> operation)
+        {
+            Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
+
+            return await operation(instance);
         }
 
         private async Task<PlugInInstance> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)

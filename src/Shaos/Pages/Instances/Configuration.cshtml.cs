@@ -43,15 +43,26 @@ namespace Shaos.Pages.Instances
         [BindProperty]
         public object? Configuration { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnGetAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
-            Configuration = await _instanceHostService.GetInstanceConfigurationAsync(id, cancellationToken);
+            Configuration = await _instanceHostService
+                .GetInstanceConfigurationAsync(id, cancellationToken);
 
             return Page();
         }
 
-        public async Task OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
+            await _instanceHostService.UpdateInstanceConfigurationAsync(
+                id,
+                Request.Form,
+                cancellationToken);
+
+            return RedirectToPage("./Index");
         }
     }
 }

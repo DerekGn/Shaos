@@ -74,7 +74,7 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The identifier of the <see cref="Instance"/> that is to be removed</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is still running</exception>
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>

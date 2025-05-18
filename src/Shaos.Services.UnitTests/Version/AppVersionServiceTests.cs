@@ -28,7 +28,7 @@ namespace Shaos.Services.UnitTests.Version
 {
     public class AppVersionServiceTests
     {
-        private AppVersionService _appVersionService;
+        private readonly AppVersionService _appVersionService;
 
         public AppVersionServiceTests()
         {
@@ -36,7 +36,7 @@ namespace Shaos.Services.UnitTests.Version
         }
         
         [Fact]
-        public void TestVesrsion()
+        public void TestVersion()
         {
             Assert.NotEmpty(_appVersionService.Version);
         }

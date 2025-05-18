@@ -315,32 +315,33 @@ namespace Shaos.Services
 
                 _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
 
-                await _fileStoreService.WritePackageFileStreamAsync(
+                var packagePath = await _fileStoreService.WritePackageFileStreamAsync(
                     plugIn.Id,
                     packageFileName,
                     stream,
                     cancellationToken);
 
-                var plugInFile = _fileStoreService
-                    .ExtractPackage(packageFileName, plugIn.Id.ToString())
-                    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+#warning TODO
+                //var plugInFile = _fileStoreService
+                //    .ExtractPackage(plugIn.Id, packageFileName)
+                //    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
 
-                if (plugInFile == null)
-                {
-                    _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
-                        PlugInNamePostFix,
-                        packageFileName);
+                //if (plugInFile == null)
+                //{
+                //    _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
+                //        PlugInNamePostFix,
+                //        packageFileName);
 
-                    throw new NoValidPlugInAssemblyFoundException(
-                        $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
-                }
+                //    throw new NoValidPlugInAssemblyFoundException(
+                //        $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+                //}
 
-                await CreateOrUpdatePlugInPackageAsync(
-                        plugIn,
-                        packageFileName,
-                        Path.GetFileName(plugInFile),
-                        _plugInTypeValidator.Validate(plugInFile),
-                        cancellationToken);
+                //await CreateOrUpdatePlugInPackageAsync(
+                //        plugIn,
+                //        packageFileName,
+                //        Path.GetFileName(plugInFile),
+                //        _plugInTypeValidator.Validate(plugInFile),
+                //        cancellationToken);
             },
             false,
             cancellationToken);
