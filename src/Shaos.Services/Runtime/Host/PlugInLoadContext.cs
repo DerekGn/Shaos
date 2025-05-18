@@ -23,32 +23,39 @@
 */
 
 using Shaos.Sdk;
+using System.Reflection;
 using System.Text;
 
 namespace Shaos.Services.Runtime
 {
-    public class PlugInContext : IDisposable
+    public class PlugInLoadContext : IDisposable
     {
         private UnloadingWeakReference<IRuntimeAssemblyLoadContext> _unloadingWeakReference;
         private bool disposedValue;
 
-        public PlugInContext(
-            IPlugIn plugIn,
-            IRuntimeAssemblyLoadContext assemblyLoadContext,
-            object? plugInConfiguration = default)
+        public PlugInLoadContext(IRuntimeAssemblyLoadContext assemblyLoadContext, string assemblyPath)
         {
-            ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
+            RuntimeAssemblyLoadContext = assemblyLoadContext;
             _unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(assemblyLoadContext);
-            PlugIn = plugIn;
-            PlugInConfiguration = plugInConfiguration;
+
+            PlugInAssembly = RuntimeAssemblyLoadContext.LoadFromAssemblyPath(assemblyPath);
         }
 
         public IPlugIn? PlugIn { get; private set; }
+
+        /// <summary>
+        /// The PlugIn Assembly
+        /// </summary>
+        public Assembly PlugInAssembly { get; private set; }
+
         public object? PlugInConfiguration { get; private set; }
-        public Task? Task { get; internal set; }
-        public CancellationTokenSource? TokenSource { get; internal set; }
+
+        /// <summary>
+        /// The assembly load context used to load the PlugIn assembly
+        /// </summary>
+        public IRuntimeAssemblyLoadContext RuntimeAssemblyLoadContext { get; private set; }
 
         public override string ToString()
         {
@@ -56,24 +63,14 @@ namespace Shaos.Services.Runtime
 
             stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
             stringBuilder.AppendLine($"{nameof(PlugInConfiguration)}: {(PlugInConfiguration == null ? "Empty" : PlugInConfiguration.GetType().Name)}");
-            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : $"Id: {Task.Id} State: [{Task.Status}]")}");
-            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : $"{nameof(TokenSource.IsCancellationRequested)}: {TokenSource.IsCancellationRequested}")}");
 
             return stringBuilder.ToString();
         }
 
-        internal void StartExecution(
-            Func<CancellationToken, Task> executeTask,
-            Action<Task> completionTask)
+        internal void LoadPlugIn(IPlugIn plugIn, object? configuration)
         {
-            ArgumentNullException.ThrowIfNull(executeTask);
-            ArgumentNullException.ThrowIfNull(completionTask);
-
-            TokenSource = new CancellationTokenSource();
-
-            Task = Task
-                .Run(async () => await executeTask(TokenSource.Token))
-                .ContinueWith(completionTask);
+            PlugIn = plugIn;
+            PlugInConfiguration = configuration;
         }
 
         #region Dispose

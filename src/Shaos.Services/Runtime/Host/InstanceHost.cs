@@ -118,6 +118,8 @@ namespace Shaos.Services.Runtime.Host
                         instance.Id,
                         instance.Name,
                         instance.State);
+
+                    throw new InstanceLoadedException(instance.Id);
                 }
                 else
                 {
@@ -125,7 +127,7 @@ namespace Shaos.Services.Runtime.Host
                         instance.Id,
                         instance.Name);
 
-                    if(!LoadInstanceContext(instance))
+                    if (!LoadInstanceContext(instance))
                     {
                         _logger.LogError(
                             instance.Exception,
@@ -145,12 +147,9 @@ namespace Shaos.Services.Runtime.Host
         {
             ExecuteOperationOnInstance(id, (instance) =>
             {
-#warning TODO
-                if (instance.State == InstanceState.Running)
+                if (instance.State != InstanceState.None)
                 {
-                    _logger.LogError("Instance Id: [{Id}] is already running", id);
-
-                    throw new InstanceRunningException(id);
+                    ThrowInvalidStateException(instance);
                 }
 
                 _executingInstances.Remove(instance);
@@ -162,20 +161,18 @@ namespace Shaos.Services.Runtime.Host
         {
             return ExecuteOperationOnInstance(id, (instance) =>
             {
-#warning TODO
-                if (instance.State != InstanceState.Loaded)
+                if (InvalidStartingState(instance.State))
                 {
-#warning TODO
-                    //LoadInstanceContext(instance, configuration);
-
-                    _ = Task.Run(() => StartExecutingInstance(instance));
+                    ThrowInvalidStateException(instance);
                 }
                 else
                 {
-                    _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] State: [{State}] already Running",
-                        instance.Id,
-                        instance.Name,
-                        instance.State);
+                    _ = Task.Run(() => StartExecutingInstance(instance));
+
+                    instance.SetStarting();
+
+                    InstanceStateChanged?.Invoke(this,
+                        new InstanceStateEventArgs(instance.Id, instance.State));
                 }
             });
         }
@@ -187,9 +184,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State != InstanceState.Running)
                 {
-                    _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
-                        instance.Id,
-                        instance.Name);
+                    ThrowInvalidStateException(instance);
                 }
                 else
                 {
@@ -203,11 +198,9 @@ namespace Shaos.Services.Runtime.Host
         {
             return ExecuteOperationOnInstance(id, (instance) =>
             {
-                if (!InstanceUnloadable(instance))
+                if (!InstanceUnloadable(instance.State))
                 {
-                    _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not In Loaded State",
-                        instance.Id,
-                        instance.Name);
+                    ThrowInvalidStateException(instance);
                 }
                 else
                 {
@@ -216,13 +209,24 @@ namespace Shaos.Services.Runtime.Host
                         instance.Name);
 
                     instance.UnloadContext();
+
+                    InstanceStateChanged?.Invoke(this,
+                            new InstanceStateEventArgs(instance.Id, instance.State));
                 }
             });
         }
 
-        private static bool InstanceUnloadable(Instance instance)
+        private static bool InstanceUnloadable(InstanceState state)
         {
-            return instance.State == InstanceState.Complete || instance.State == InstanceState.Faulted || instance.State == InstanceState.Loaded;
+            return state == InstanceState.Complete 
+                || state == InstanceState.Faulted 
+                || state == InstanceState.Loaded;
+        }
+
+        private static bool InvalidStartingState(InstanceState state)
+        {
+            return state == InstanceState.None 
+                || state == InstanceState.Running;
         }
 
         private Instance ExecuteOperationOnInstance(int id, Action<Instance> operation)
@@ -262,12 +266,11 @@ namespace Shaos.Services.Runtime.Host
         {
             try
             {
-                var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath);
-                var assembly = assemblyLoadContext.LoadFromAssemblyPath(instance.AssemblyPath);
-#warning TODO check null
-                _plugInFactory.CreateInstance(assembly, out var plugIn, out var configuration);
+                instance.LoadContext(_runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath));
 
-                instance.LoadContext(plugIn, assemblyLoadContext, configuration);
+                _plugInFactory.CreateInstance(instance.Context.PlugInAssembly, out var plugIn, out var configuration);
+
+                instance.LoadPlugIn(plugIn, configuration);
             }
             catch (Exception exception)
             {
@@ -286,9 +289,6 @@ namespace Shaos.Services.Runtime.Host
             instance.StartExecution(
                 async (cancellationToken) => await ExecutePlugInMethod(instance, cancellationToken),
                 (antecedent) => UpdateStateOnCompletion(instance, antecedent));
-
-            InstanceStateChanged?.Invoke(this,
-                new InstanceStateEventArgs(instance.Id, instance.State));
         }
 
         private async Task StopExecutingInstanceAsync(Instance instance)
@@ -309,6 +309,13 @@ namespace Shaos.Services.Runtime.Host
                     instance.Id,
                     instance.Name);
             }
+        }
+
+        private void ThrowInvalidStateException(Instance instance)
+        {
+            _logger.LogError("Instance Id: [{Id}] is in invalid state: [{State}]", instance.Id, instance.State);
+
+            throw new InstanceInvalidStateException(instance.Id, instance.State);
         }
 
         private void UpdateStateOnCompletion(

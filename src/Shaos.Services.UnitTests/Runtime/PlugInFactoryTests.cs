@@ -23,14 +23,13 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests.Runtime
+namespace Shaos.Services.UnitTests.Runtime.Factories
 {
     public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInTestFixture>
     {

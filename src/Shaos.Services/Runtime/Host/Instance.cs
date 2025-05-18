@@ -59,7 +59,7 @@ namespace Shaos.Services.Runtime
         /// <summary>
         /// The <see cref="IPlugIn"/> instance execution context
         /// </summary>
-        public PlugInContext? Context { get; private set; }
+        public PlugInLoadContext? Context { get; private set; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
@@ -96,6 +96,10 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public DateTime? StopTime { get; private set; }
 
+        public Task? Task { get; private set; }
+
+        public CancellationTokenSource? TokenSource { get; private set; }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -103,14 +107,16 @@ namespace Shaos.Services.Runtime
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
-            stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
-            stringBuilder.AppendLine($"{nameof(State)}: {State}");
-            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
-            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
-            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
-            stringBuilder.AppendLine($"{nameof(AssemblyPath)}: {(AssemblyPath == null ? "Empty" : AssemblyPath.ToString())}");
-            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(AssemblyPath)}: {(AssemblyPath == null ? "Empty" : AssemblyPath)}");
             stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
+            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
+            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
+            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
+            stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
+            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : $"Id: {Task.Id} State: [{Task.Status}]")}");
+            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : $"{nameof(TokenSource.IsCancellationRequested)}: {TokenSource.IsCancellationRequested}")}");
 
             return stringBuilder.ToString();
         }
@@ -120,16 +126,19 @@ namespace Shaos.Services.Runtime
             await Context!.PlugIn!.ExecuteAsync(cancellationToken);
         }
 
-        internal void LoadContext(
-            IPlugIn plugIn,
-            IRuntimeAssemblyLoadContext assemblyLoadContext,
-            object? plugInConfiguration = default)
+        internal void LoadContext(IRuntimeAssemblyLoadContext assemblyLoadContext)
         {
-            ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
-            Context = new PlugInContext(plugIn, assemblyLoadContext, plugInConfiguration);
+            Context = new PlugInLoadContext(assemblyLoadContext, AssemblyPath);
             State = InstanceState.Loaded;
+        }
+
+        internal void LoadPlugIn(IPlugIn plugIn, object? configuration)
+        {
+            ArgumentNullException.ThrowIfNull(plugIn);
+
+            Context.LoadPlugIn(plugIn, configuration);
         }
 
         internal void SetComplete()
@@ -147,28 +156,47 @@ namespace Shaos.Services.Runtime
         internal void SetRunning()
         {
             State = InstanceState.Running;
+        }
+
+        internal void SetStarting()
+        {
+            State = InstanceState.Starting;
             StartTime = DateTime.UtcNow;
+        }
+
+        internal void SetupTask(Task task, CancellationTokenSource cancellationTokenSource)
+        {
+            Task = task;
+            TokenSource = cancellationTokenSource;
         }
 
         internal void StartExecution(
             Func<CancellationToken, Task> executeTask,
             Action<Task> completionTask)
         {
-            State = InstanceState.Starting;
+            ArgumentNullException.ThrowIfNull(executeTask);
+            ArgumentNullException.ThrowIfNull(completionTask);
 
-            Context!.StartExecution(executeTask, completionTask);
+            State = InstanceState.Starting;
+            TokenSource = new CancellationTokenSource();
+
+            Task = Task
+                .Run(async () => await executeTask(TokenSource.Token))
+                .ContinueWith(completionTask);
         }
 
         internal async Task<bool> StopExecutionAsync(TimeSpan stopTimeout)
         {
-            await Context!.TokenSource!.CancelAsync();
+            await TokenSource!.CancelAsync();
 
-            return await Task.WhenAny(Context!.Task!, Task.Delay(stopTimeout)) == Context.Task;
+            return await Task.WhenAny(Task!, Task.Delay(stopTimeout)) == Task;
         }
 
         internal void UnloadContext()
         {
             Context?.Dispose();
+
+            Context = null;
 
             State = InstanceState.None;
         }
