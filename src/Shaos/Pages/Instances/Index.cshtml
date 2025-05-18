@@ -28,19 +28,19 @@
         <tr>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.IdSort"
-                   asp-route-currentFilter="@Model.CurrentFilter">
+                asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Id)
                 </a>
             </th>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
-                   asp-route-currentFilter="@Model.CurrentFilter">
+                asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].Name)
                 </a>
             </th>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.StateSort"
-                   asp-route-currentFilter="@Model.CurrentFilter">
+                asp-route-currentFilter="@Model.CurrentFilter">
                     @Html.DisplayNameFor(model => model.List[0].State)
                 </a>
             </th>
@@ -87,15 +87,20 @@
                 <td>
                     <form method="post">
                         @{
-                            var startEnable = item.State == Services.Runtime.Host.InstanceState.Running;
-                            var loadEnable = item.State == Services.Runtime.Host.InstanceState.None;
+                            var startEnable = item.State == InstanceState.Loaded;
+                            var stopEnable = item.State == InstanceState.Running;
+                            var loadEnable = item.State == InstanceState.None;
                             var unloadEnable = item.State == InstanceState.Complete || item.State == InstanceState.Faulted || item.State == InstanceState.Loaded;
+                            var configEnabled = item.State == InstanceState.Loaded ? null : "disabled";
                         }
-                        <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Start" disabled="@(item.State == Services.Runtime.Host.InstanceState.Running ? null : "disabled")" />
-                        <input type="submit" asp-page-handler="Stop" class="btn btn-sm btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(item.State == Services.Runtime.Host.InstanceState.Running ? null : "disabled")" />
-                        <input type="submit" asp-page-handler="Load" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Load" disabled="@(loadEnable ? null : "disabled")" />
-                        <input type="submit" asp-page-handler="Unload" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Unload" disabled="@(unloadEnable ? null : "disabled")" />
-                        <input type="submit" asp-page-handler="Configure" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Configure" disabled="@(item.State == Services.Runtime.Host.InstanceState.Running ? null : "disabled")" />
+
+                        <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-primary" asp-route-id="@item.Id" value="Start" disabled="@(startEnable ? null : "disabled")" />
+                        <input type="submit" asp-page-handler="Stop" class="btn btn-sm btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(stopEnable ? null : "disabled")" />
+                        <input type="submit" asp-page-handler="Load" class="btn btn-sm btn-primary" asp-route-id="@item.Id" value="Load" disabled="@(loadEnable ? null : "disabled")" />
+                        <input type="submit" asp-page-handler="Unload" class="btn btn-sm btn-primary" asp-route-id="@item.Id" value="Unload" disabled="@(unloadEnable ? null : "disabled")" />
+                        <a asp-page="./Configuration" asp-route-id="@item.Id" class="btn btn-sm btn-primary @configEnabled">
+                            Configure
+                        </a>
                     </form>
                 </td>
             </tr>

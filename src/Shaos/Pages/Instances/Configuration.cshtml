@@ -1,6 +1,6 @@
 ﻿@page
 @using Shaos.Sdk
-@model Shaos.Pages.PlugInInstances.ConfigurationModel
+@model Shaos.Pages.Instances.ConfigurationModel
 
 <h1>Configuration</h1>
 
@@ -19,9 +19,3 @@
         </form>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

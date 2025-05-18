@@ -119,11 +119,6 @@ namespace Shaos.Pages.Instances
                     _configuration.GetValue("PageSize", 5));
         }
 
-        public IActionResult OnPostConfigure(int id)
-        {
-            return RedirectToPage();
-        }
-
         public IActionResult OnPostLoad(int id)
         {
             _instanceHost.LoadInstance(id);
@@ -131,7 +126,9 @@ namespace Shaos.Pages.Instances
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostStartAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostStartAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
             try
             {

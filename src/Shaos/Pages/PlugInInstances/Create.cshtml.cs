@@ -34,17 +34,13 @@ namespace Shaos.Pages.PlugInInstances
     public class CreateModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IPlugInRepository _repository;
 
         public CreateModel(
-            IPlugInService plugInService,
-            IPlugInRepository repository)
+            IPlugInService plugInService)
         {
             ArgumentNullException.ThrowIfNull(plugInService);
-            ArgumentNullException.ThrowIfNull(repository);
-
+            
             _plugInService = plugInService;
-            _repository = repository;
         }
 
         [BindProperty]
@@ -53,7 +49,7 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
+        public IActionResult OnGetAsync(int id)
         {
             Id = id;
 

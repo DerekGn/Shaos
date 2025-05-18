@@ -38,7 +38,5 @@ namespace Shaos.Test.PlugIn.Invalid
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

@@ -29,10 +29,6 @@ namespace Shaos.Services.Runtime.Exceptions
     [ExcludeFromCodeCoverage]
     public class InstanceNotFoundException : Exception
     {
-        public InstanceNotFoundException()
-        {
-        }
-
         public InstanceNotFoundException(int id)
         {
             Id = id;

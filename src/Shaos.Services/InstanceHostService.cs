@@ -24,9 +24,10 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Repositories;
+using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
 using System.Text.Json;
 
@@ -55,36 +56,70 @@ namespace Shaos.Services
             _plugInInstanceRepository = plugInInstanceRepository;
         }
 
+        public async Task<object?> GetInstanceConfigurationAsync(
+            int id,
+            CancellationToken cancellationToken = default)
+        {
+            object? instanceConfiguration = null;
+
+            Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
+
+            if(instance.State != InstanceState.Loaded)
+            {
+                throw new InstanceInvalidStateException(id, instance.State);
+            }
+
+            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+
+            var package = plugInInstance?.PlugIn?.Package;
+
+            if (package != null && package.HasConfiguration)
+            {
+                if (!string.IsNullOrEmpty(plugInInstance?.Configuration))
+                {
+                    instanceConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
+                }
+                else
+                {
+                    instanceConfiguration = instance.Context.PlugInConfiguration;
+                }
+            }
+            
+            return instanceConfiguration;
+        }
+
         /// <inheritdoc/>
-        public async Task StartInstanceAsync(int id, CancellationToken cancellationToken = default)
+        public async Task StartInstanceAsync(
+            int id,
+            CancellationToken cancellationToken = default)
         {
             if (_instanceHost.InstanceExists(id))
             {
                 var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
 
-                //if(plugInInstance != null)
-                //{
-                //    var package = plugInInstance.PlugIn.Package;
-                //    object? plugInConfiguration = null;
+                if (plugInInstance != null)
+                {
+                    var package = plugInInstance.PlugIn.Package;
+                    object? plugInConfiguration = null;
 
-                //    if (package != null && package.HasConfiguration)
-                //    {
-                //        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
-                //        {
-                //            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
-                //        }
-                //        else
-                //        {
-                //            throw new PlugInInstanceNotConfiguredException(id);
-                //        }
-                //    }
+                    //    if (package != null && package.HasConfiguration)
+                    //    {
+                    //        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
+                    //        {
+                    //            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
+                    //        }
+                    //        else
+                    //        {
+                    //            throw new PlugInInstanceNotConfiguredException(id);
+                    //        }
+                    //    }
 
-                //    _instanceHost.StartInstance(id);
-                //}
-                //else
-                //{
-                //    _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
-                //}
+                    //    _instanceHost.StartInstance(id);
+                }
+                else
+                {
+                    _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
+                }
             }
             else
             {

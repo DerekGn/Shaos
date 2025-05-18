@@ -26,30 +26,31 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Services;
 
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.Pages.Instances
 {
     public class ConfigurationModel : PageModel
     {
-        private readonly IPlugInService _plugInService;
+        private readonly IInstanceHostService _instanceHostService;
 
-        public ConfigurationModel(IPlugInService plugInService)
+        public ConfigurationModel(
+            IInstanceHostService instanceHostService)
         {
-            ArgumentNullException.ThrowIfNull(plugInService);
+            ArgumentNullException.ThrowIfNull(instanceHostService);
 
-            _plugInService = plugInService;
+            _instanceHostService = instanceHostService;
         }
 
         [BindProperty]
-        public object Configuration { get; set; }
+        public object? Configuration { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
         {
-            Configuration = await _plugInService.LoadPlugInInstanceConfigurationAsync(id);
+            Configuration = await _instanceHostService.GetInstanceConfigurationAsync(id, cancellationToken);
 
             return Page();
         }
 
-        public void OnPostAsync()
+        public async Task OnPostAsync()
         {
         }
     }
