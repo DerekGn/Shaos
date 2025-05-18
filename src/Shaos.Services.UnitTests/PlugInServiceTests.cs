@@ -321,12 +321,9 @@ namespace Shaos.Services.UnitTests
 
             _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(
-                    It.IsAny<string>(),
+                    It.IsAny<int>(),
                     It.IsAny<string>()))
-                .Returns(new List<string>()
-                {
-                    "file.dll"
-                });
+                .Returns(["file.dll"]);
 
             var exception = await Assert
                 .ThrowsAsync<NoValidPlugInAssemblyFoundException>(async () => await _plugInService
@@ -402,15 +399,12 @@ namespace Shaos.Services.UnitTests
             MemoryStream stream = new MemoryStream();
 
             SetupPlugInGetByIdAsync();
-            
+
             _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(
-                    It.IsAny<string>(),
+                    It.IsAny<int>(),
                     It.IsAny<string>()))
-                .Returns(new List<string>()
-                {
-                    ".PlugIn.dll"
-                });
+                .Returns([".PlugIn.dll"]);
 
             _mockPlugInTypeValidator
                 .Setup(_ => _.Validate(It.IsAny<string>()))
@@ -448,12 +442,9 @@ namespace Shaos.Services.UnitTests
 
             _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(
-                    It.IsAny<string>(),
+                    It.IsAny<int>(),
                     It.IsAny<string>()))
-                .Returns(new List<string>()
-                {
-                    ".PlugIn.dll"
-                });
+                .Returns([".PlugIn.dll"]);
 
             _mockPlugInTypeValidator
                .Setup(_ => _.Validate(It.IsAny<string>()))
