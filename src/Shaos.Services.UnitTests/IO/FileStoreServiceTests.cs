@@ -27,7 +27,6 @@ using Microsoft.Extensions.Options;
 using Shaos.Services.IO;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
-using Shaos.Testing.Shared.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -46,7 +45,7 @@ namespace Shaos.Services.UnitTests.IO
 
             var optionsInstance = new FileStoreOptions()
             {
-                BinariesPath = _fixture.PackageDirectory,
+                BinariesPath = _fixture.BinariesDirectory,
                 PackagesPath = _fixture.PackageDirectory
             };
 
@@ -60,39 +59,32 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestDeletePackage()
         {
-            var targetPath = Path.Combine(_fixture.PackageDirectory, 1.ToString());
-            var targetFilePath = Path.Combine(targetPath, _fixture.PackageFile);
+            var targetPath = Path.Combine(_fixture.PackageDirectory, _fixture.PlugInIdInvalid.ToString());
+            var targetFilePath = Path.Combine(targetPath, _fixture.PackageFileInvalid);
 
-            targetPath.CreateDirectory();
-
-            File.Copy(_fixture.PackageFilePath, targetFilePath, true);
-
-            _fileStoreService.DeletePackage(1, _fixture.PackageFile);
+            _fileStoreService.DeletePackage(_fixture.PlugInIdInvalid, _fixture.PackageFileInvalid);
 
             Assert.False(File.Exists(targetFilePath));
         }
 
-        //[Fact]
-        //public void TestExtractPackage()
-        //{
-        //    var result = _fileStoreService.ExtractPackage(
-        //        TestFixture.PackageFileName,
-        //        TestFixture.ExtractionFolder);
+        [Fact]
+        public void TestExtractPackage()
+        {
+            var result = _fileStoreService
+                .ExtractPackage(_fixture.PlugInId, _fixture.PackageFile);
 
-        //    Assert.NotNull(result);
-        //    Assert.NotEmpty(result);
-        //}
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
 
-        //[Fact]
-        //public void TestGetAssemblyPath()
-        //{
-        //    var expectedPath = Path.Combine(_fixture.BinariesPath, "1");
+        [Fact]
+        public void TestGetAssemblyPath()
+        {
+            var result = _fileStoreService.GetAssemblyPath(_fixture.PlugInId);
 
-        //    var result = _fileStoreService.GetAssemblyPath(1);
-
-        //    Assert.NotNull(result);
-        //    Assert.Equal(expectedPath, result);
-        //}
+            Assert.NotNull(result);
+            Assert.Equal(_fixture.PlugInDirectory, result);
+        }
 
         [Fact]
         public async Task TestWritePackageFileStreamAsync()
@@ -101,7 +93,7 @@ namespace Shaos.Services.UnitTests.IO
             memoryStream.Write([0xAA, 0x55]);
             memoryStream.Position = 0;
 
-            var result = await _fileStoreService.WritePackageFileStreamAsync(1, "FileName.txt", memoryStream);
+            var result = await _fileStoreService.WritePackageFileStreamAsync(8, "FileName.txt", memoryStream);
 
             Assert.NotNull(result);
         }
