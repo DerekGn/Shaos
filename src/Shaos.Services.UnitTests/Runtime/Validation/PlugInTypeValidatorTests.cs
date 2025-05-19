@@ -104,10 +104,21 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         }
 
         [Fact]
-        public void TestValidatePlugInTypeLogger()
+        public void TestValidatePlugInTypeInvalidLogger()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
                 .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidLogger), out var _, out var _));
+
+            Assert.Equal(
+                "PlugIn [TestPlugInInvalidLogger] [ILogger] parameter invalid generic type parameter [TestPlugIn]",
+                exception.Message);
+        }
+
+        [Fact]
+        public void TestValidatePlugInInvalidGeneric()
+        {
+            var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidGeneric), out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInInvalidLogger] [ILogger] parameter invalid generic type parameter [TestPlugIn]",
