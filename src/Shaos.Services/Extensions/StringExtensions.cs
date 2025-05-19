@@ -20,15 +20,19 @@
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(value);
 
-            DirectoryInfo directoryInfo = new DirectoryInfo(value);
+            if (Directory.Exists(value))
+            {
 
-            foreach (FileInfo file in directoryInfo.EnumerateFiles())
-            {
-                file.Delete();
-            }
-            foreach (DirectoryInfo dir in directoryInfo.EnumerateDirectories())
-            {
-                dir.Delete(true);
+                DirectoryInfo directoryInfo = new DirectoryInfo(value);
+
+                foreach (FileInfo file in directoryInfo.EnumerateFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in directoryInfo.EnumerateDirectories())
+                {
+                    dir.Delete(true);
+                }
             }
         }
     }
