@@ -32,18 +32,18 @@ namespace Shaos.Services.IO
     public interface IFileStoreService
     {
         /// <summary>
-        /// Delete a <see cref="PlugInPackage"/> from the file store
+        /// Delete a PlugIn package from the file store
         /// </summary>
         /// <param name="id"></param>
         /// <param name="fileName"></param>
         void DeletePackage(int id, string fileName);
 
         /// <summary>
-        /// Extract a package to a folder
+        /// Extract a package
         /// </summary>
-        /// <param name="sourcePackage">The source package file</param>
-        /// <param name="targetFolder">The target package folder to write the source package folder</param>
-        IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder);
+        /// <param name="id"></param>
+        /// <param name="packageFileName"></param>
+        IEnumerable<string> ExtractPackage(int id, string packageFileName);
 
         /// <summary>
         /// 

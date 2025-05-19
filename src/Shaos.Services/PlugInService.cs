@@ -322,7 +322,7 @@ namespace Shaos.Services
                     cancellationToken);
 
                 var plugInFile = _fileStoreService
-                    .ExtractPackage(packageFileName, plugIn.Id.ToString())
+                    .ExtractPackage(plugIn.Id, packageFileName)
                     .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
 
                 if (plugInFile == null)

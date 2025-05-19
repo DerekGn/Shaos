@@ -36,44 +36,64 @@ namespace Shaos.Testing.Shared
                 .GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location);
 
+            PlugInId = 1;
+            PlugInIdInvalid = 10;
+
             PackageName = packageName;
             PackageNameInvalid = string.Concat(PackageName, ".Invalid");
 
             PackageFile = string.Concat(PackageName, ".zip");
             PackageFileInvalid = string.Concat(PackageNameInvalid, ".zip");
 
-            PackageDirectory = Path.Combine(Path.Combine(assemblyDirectory, "testing"), Guid.NewGuid().ToString());
+            BaseTestDirectory = Path.Combine(Path.Combine(assemblyDirectory, "testing"), Guid.NewGuid().ToString());
+
+            PackageDirectory = Path.Combine(BaseTestDirectory, "packages");
             PackageDirectory.CreateDirectory();
 
-            PackageFilePath = Path.Combine(PackageDirectory, PackageFile);
-            PackageFileInvalidPath = Path.Combine(PackageDirectory, PackageFileInvalid);
+            BinariesDirectory = Path.Combine(BaseTestDirectory, "binaries");
+            BinariesDirectory.CreateDirectory();
+
+            var packageDirectory = Path.Combine(PackageDirectory, PlugInId.ToString());
+            packageDirectory.CreateDirectory();
+
+            PackageFilePath = Path.Combine(packageDirectory, PackageFile);
+
+            var invalidPackageDirectory = Path.Combine(PackageDirectory, PlugInIdInvalid.ToString());
+            invalidPackageDirectory.CreateDirectory();
+
+            PackageFileInvalidPath = Path.Combine(invalidPackageDirectory, PackageFileInvalid);
 
             CopyPackageFile(
                 PackageName,
                 PackageFile,
                 testProjectName,
                 assemblyDirectory,
-                PackageDirectory);
+                packageDirectory);
 
             CopyPackageFile(
                 PackageNameInvalid,
                 PackageFileInvalid,
                 testProjectName,
                 assemblyDirectory,
-                PackageDirectory);
+                invalidPackageDirectory);
 
-            PlugInDirectory = Path.Combine(PackageDirectory, PackageName);
-            PlugInDirectoryInvalid = Path.Combine(PackageDirectory, PackageNameInvalid);
+            PlugInDirectory = Path.Combine(BinariesDirectory, PlugInId.ToString());
+            PlugInDirectoryInvalid = Path.Combine(BinariesDirectory, PlugInIdInvalid.ToString());
 
             AssemblyFilePath = Path.Combine(PlugInDirectory, String.Concat(PackageName, ".dll"));
             AssemblyFilePathInvalid = Path.Combine(PlugInDirectoryInvalid, String.Concat(PackageNameInvalid, ".dll"));
 
-            ZipFile.ExtractToDirectory(Path.Combine(PackageDirectory, PackageFile), Path.Combine(PackageDirectory, PackageName), true);
-            ZipFile.ExtractToDirectory(Path.Combine(PackageDirectory, PackageFileInvalid), Path.Combine(PackageDirectory, PackageNameInvalid), true);
+            PlugInDirectory.CreateDirectory();
+            PlugInDirectoryInvalid.CreateDirectory();
+
+            ZipFile.ExtractToDirectory(PackageFilePath, PlugInDirectory, true);
+            ZipFile.ExtractToDirectory(PackageFileInvalidPath, PlugInDirectoryInvalid, true);
         }
 
         public string AssemblyFilePath { get; }
         public string AssemblyFilePathInvalid { get; }
+        public string BaseTestDirectory { get; }
+        public string BinariesDirectory { get; }
         public string PackageDirectory { get; }
         public string PackageFile { get; }
         public string PackageFileInvalid { get; }
@@ -83,10 +103,12 @@ namespace Shaos.Testing.Shared
         public string PackageNameInvalid { get; }
         public string PlugInDirectory { get; }
         public string PlugInDirectoryInvalid { get; }
+        public int PlugInId { get; }
+        public int PlugInIdInvalid { get; }
 
         public virtual void Dispose()
         {
-            PackageDirectory.DeleteDirectory();
+            BaseTestDirectory.DeleteDirectory();
         }
 
         private static void CopyPackageFile(

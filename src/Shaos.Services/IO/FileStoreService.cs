@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shaos.Services.Extensions;
 using System.IO.Compression;
 
 namespace Shaos.Services.IO
@@ -55,13 +56,20 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public IEnumerable<string> ExtractPackage(string sourcePackage, string targetFolder)
+        public IEnumerable<string> ExtractPackage(int id, string packageFileName)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(sourcePackage);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(targetFolder);
+            var sourcePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
+            var targetPath = Path.Combine(_options.Value.BinariesPath, id.ToString());
 
-            var sourcePath = Path.Combine(_options.Value.PackagesPath, sourcePackage);
-            var targetPath = Path.Combine(_options.Value.BinariesPath, targetFolder);
+            _logger.LogInformation("Emptying directory [{TargetPath}]", targetPath);
+
+            targetPath.EmptyDirectory();
+
+            sourcePath = Path.Combine(sourcePath, packageFileName);
+
+            _logger.LogInformation("Extracting package: [{SourcePath}] to [{TargetPath}]",
+                sourcePath,
+                targetPath);
 
             ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
 
@@ -83,18 +91,29 @@ namespace Shaos.Services.IO
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
-            if (!Directory.Exists(_options.Value.PackagesPath))
+            if(_options.Value.PackagesPath.CreateDirectory())
             {
-                _logger.LogDebug("Creating folder [{Folder}]", _options.Value.PackagesPath);
-
-                Directory.CreateDirectory(_options.Value.PackagesPath);
+                _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
             }
 
-            _logger.LogInformation("Writing Package File: [{File}] To [{Folder}]", packageFileName, _options.Value.PackagesPath);
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
 
-            var packageFilePath = Path.Combine(_options.Value.PackagesPath, packageFileName);
+            if(Directory.Exists(packageFilePath))
+            {
+                _logger.LogInformation("Emptying package directory [{Folder}]", packageFilePath);
 
-            File.Delete(packageFilePath);
+                packageFilePath.EmptyDirectory();
+            }
+            else
+            {
+                _logger.LogInformation("Creating package directory [{Folder}]", packageFilePath);
+
+                packageFilePath.CreateDirectory();
+            }
+
+            packageFilePath = Path.Combine(packageFilePath, packageFileName);
+
+            _logger.LogInformation("Writing Package File: [{PackageFile}]", packageFilePath);
 
             using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 
