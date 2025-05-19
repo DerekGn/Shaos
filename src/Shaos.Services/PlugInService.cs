@@ -95,12 +95,7 @@ namespace Shaos.Services
                     plugInInstance,
                     cancellationToken);
 
-                    if (!plugIn.Package.HasConfiguration)
-                    {
-                        _logger.LogInformation("Adding PlugInInstance to the runtime. PlugIn: [{Id}]", id);
-
-                        AddInstanceToHost(plugIn, plugInInstance);
-                    }
+                    AddInstanceToHost(plugIn, plugInInstance);
                 }
                 else
                 {
@@ -147,6 +142,8 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
 
             if (instance != null)
@@ -179,6 +176,8 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(
                 id,
                 includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
@@ -234,6 +233,8 @@ namespace Shaos.Services
             bool enable,
             CancellationToken cancellationToken = default)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(id, false, cancellationToken: cancellationToken);
 
             if (plugInInstance != null)
@@ -303,6 +304,7 @@ namespace Shaos.Services
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentNullException.ThrowIfNull(stream);
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
@@ -315,33 +317,32 @@ namespace Shaos.Services
 
                 _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
 
-                var packagePath = await _fileStoreService.WritePackageFileStreamAsync(
+                await _fileStoreService.WritePackageFileStreamAsync(
                     plugIn.Id,
                     packageFileName,
                     stream,
                     cancellationToken);
 
-#warning TODO
-                //var plugInFile = _fileStoreService
-                //    .ExtractPackage(plugIn.Id, packageFileName)
-                //    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+                var plugInFile = _fileStoreService
+                    .ExtractPackage(plugIn.Id, packageFileName)
+                    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
 
-                //if (plugInFile == null)
-                //{
-                //    _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
-                //        PlugInNamePostFix,
-                //        packageFileName);
+                if (plugInFile == null)
+                {
+                    _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
+                        PlugInNamePostFix,
+                        packageFileName);
 
-                //    throw new NoValidPlugInAssemblyFoundException(
-                //        $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
-                //}
+                    throw new NoValidPlugInAssemblyFoundException(
+                        $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+                }
 
-                //await CreateOrUpdatePlugInPackageAsync(
-                //        plugIn,
-                //        packageFileName,
-                //        Path.GetFileName(plugInFile),
-                //        _plugInTypeValidator.Validate(plugInFile),
-                //        cancellationToken);
+                await CreateOrUpdatePlugInPackageAsync(
+                        plugIn,
+                        packageFileName,
+                        Path.GetFileName(plugInFile),
+                        _plugInTypeValidator.Validate(plugInFile),
+                        cancellationToken);
             },
             false,
             cancellationToken);
@@ -437,6 +438,8 @@ namespace Shaos.Services
             bool withNoTracking = true,
             CancellationToken cancellationToken = default)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             var plugIn = await _plugInRepository.GetByIdAsync(
                 id,
                 withNoTracking,

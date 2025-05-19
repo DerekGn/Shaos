@@ -21,8 +21,6 @@
     </div>
 </form>
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
 <table class="table">
     <thead>
         <tr>
@@ -86,6 +84,7 @@
                 </td>
                 <td>
                     <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         @{
                             var startEnable = item.State == InstanceState.Loaded;
                             var stopEnable = item.State == InstanceState.Running;

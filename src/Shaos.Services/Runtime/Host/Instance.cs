@@ -37,6 +37,7 @@ namespace Shaos.Services.Runtime
     {
         public Instance(int id, string name, string assemblyPath)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 

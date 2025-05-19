@@ -145,6 +145,8 @@ namespace Shaos.Services
 
         private void ExecuteInstanceOperation(int id, Action<Instance> operation)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
 
             operation(instance);
@@ -152,6 +154,8 @@ namespace Shaos.Services
 
         private async Task ExecuteInstanceOperationAsync(int id, Func<Instance, Task> operation)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
 
             await operation(instance);
@@ -159,6 +163,8 @@ namespace Shaos.Services
 
         private async Task<T> ExecuteInstanceOperationAsync<T>(int id, Func<Instance, Task<T>> operation)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
 
             return await operation(instance);
