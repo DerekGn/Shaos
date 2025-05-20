@@ -25,38 +25,44 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Services;
-using Shaos.Test.PlugIn;
 
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.Pages.Instances
 {
     public class ConfigurationModel : PageModel
     {
-        private readonly IPlugInService _plugInService;
+        private readonly IInstanceHostService _instanceHostService;
 
-        public ConfigurationModel(IPlugInService plugInService)
+        public ConfigurationModel(
+            IInstanceHostService instanceHostService)
         {
-            ArgumentNullException.ThrowIfNull(plugInService);
+            ArgumentNullException.ThrowIfNull(instanceHostService);
 
-            _plugInService = plugInService;
+            _instanceHostService = instanceHostService;
         }
 
         [BindProperty]
-        public object Configuration { get; set; }
+        public object? Configuration { get; set; }
 
-        [BindProperty]
-        public TestPlugInConfiguration PlugInConfiguration { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
-            Configuration = await _plugInService.LoadPlugInInstanceConfigurationAsync(id);
-
-            PlugInConfiguration = new TestPlugInConfiguration();
+            //Configuration = await _instanceHostService
+            //    .LoadInstanceConfigurationAsync(id, cancellationToken);
 
             return Page();
         }
 
-        public void OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(
+            int id,
+            CancellationToken cancellationToken)
         {
+            //await _instanceHostService.UpdateInstanceConfigurationAsync(
+            //    id,
+            //    Request.Form,
+            //    cancellationToken);
+
+            return RedirectToPage("./Index");
         }
     }
 }

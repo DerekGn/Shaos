@@ -27,28 +27,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Models;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class CreateModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IPlugInRepository _repository;
 
         public CreateModel(
-            IPlugInService plugInService,
-            IPlugInRepository repository)
+            IPlugInService plugInService)
         {
             ArgumentNullException.ThrowIfNull(plugInService);
-            ArgumentNullException.ThrowIfNull(repository);
 
             _plugInService = plugInService;
-            _repository = repository;
         }
-
-        [BindProperty]
-        public bool CreateEnabled { get; set; }
 
         [BindProperty]
         public int Id { get; set; } = default!;
@@ -56,39 +48,11 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
+        public IActionResult OnGetAsync(int id)
         {
             Id = id;
 
-            var plugIn = await _repository.GetByIdAsync(id, true, [nameof(PlugIn.Package)], cancellationToken);
-
-            if (plugIn != null)
-            {
-                CreateEnabled = !plugIn.Package!.HasConfiguration;
-            }
-
             return Page();
-        }
-
-        public async Task<IActionResult> OnPostConfigureAsync(CancellationToken cancellationToken = default)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            try
-            {
-                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
-            }
-            catch (PlugInInstanceNameExistsException)
-            {
-                ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
-
-                return Page();
-            }
-
-            return RedirectToPage("./Configuration", new { id = PlugInInstance.Id });
         }
 
         public async Task<IActionResult> OnPostCreateAsync(CancellationToken cancellationToken = default)
