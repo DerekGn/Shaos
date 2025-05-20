@@ -88,9 +88,9 @@
                         @{
                             var startEnable = item.State == InstanceState.Loaded;
                             var stopEnable = item.State == InstanceState.Running;
-                            var loadEnable = item.State == InstanceState.None;
+                            var loadEnable = item.State == InstanceState.None && (item.HasConfiguration && item.IsConfigured);
                             var unloadEnable = item.State == InstanceState.Complete || item.State == InstanceState.Faulted || item.State == InstanceState.Loaded;
-                            var configEnabled = item.State == InstanceState.Loaded ? null : "disabled";
+                            var configEnabled = (item.State == InstanceState.None && item.HasConfiguration) ? null : "disabled";
                         }
 
                         <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-primary" asp-route-id="@item.Id" value="Start" disabled="@(startEnable ? null : "disabled")" />

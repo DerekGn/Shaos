@@ -48,7 +48,7 @@ namespace Shaos.Pages.Instances
             CancellationToken cancellationToken)
         {
             Configuration = await _instanceHostService
-                .GetInstanceConfigurationAsync(id, cancellationToken);
+                .LoadInstanceConfigurationAsync(id, cancellationToken);
 
             return Page();
         }

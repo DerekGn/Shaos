@@ -85,27 +85,29 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestCreateInstanceExists()
         {
-            _instanceHost._executingInstances.Add(new Instance(1, "Test", "AssemblyPath"));
+            _instanceHost
+                ._executingInstances
+                .Add(new Instance(1, "Test", "AssemblyPath", false));
 
-            Assert.Throws<InstanceExistsException>(() => _instanceHost.CreateInstance(1, "name", "assembly"));
+            Assert.Throws<InstanceExistsException>(() => _instanceHost.CreateInstance(1, "name", "assembly", false));
         }
 
         [Fact]
         public void TestCreateInstanceInvalidAssemblyPath()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, "name", null!));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, "name", null!, false));
         }
 
         [Fact]
         public void TestCreateInstanceInvalidId()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.CreateInstance(0, null!, null!));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.CreateInstance(0, null!, null!, false));
         }
 
         [Fact]
         public void TestCreateInstanceInvalidName()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, null!, null!));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, null!, null!, false));
         }
 
         [Fact]
@@ -115,10 +117,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             {
                 _instanceHost
                     ._executingInstances
-                    .Add(new Instance(i, i.ToString(), "AssemblyPath"));
+                    .Add(new Instance(i, i.ToString(), "AssemblyPath", false));
             }
 
-            Assert.Throws<MaxInstancesRunningException>(() => _instanceHost.CreateInstance(10, "name", "assembly"));
+            Assert.Throws<MaxInstancesRunningException>(() => _instanceHost.CreateInstance(10, "name", "assembly", false));
         }
 
         [Fact]
@@ -128,7 +130,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             SetupStateWait(InstanceState.None);
 
-            var instance = _instanceHost.CreateInstance(1, "name", "assembly");
+            var instance = _instanceHost.CreateInstance(1, "name", "assembly", false);
 
             Assert.True(WaitForStateChange());
 
@@ -145,8 +147,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestInstanceExistsTrue()
         {
-            _instanceHost._executingInstances.Add(
-                new Instance(1, "Test", "AssemblyPath"));
+            _instanceHost
+                ._executingInstances
+                .Add(new Instance(1, "Test", "AssemblyPath", false));
 
             Assert.True(_instanceHost.InstanceExists(1));
         }
@@ -164,7 +167,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockPlugInFactory
                 .Setup(_ => _.CreateInstance(It.IsAny<Assembly>(), out plugIn, out config));
 
-            _instanceHost._executingInstances.Add(new Instance(1, "Test", "AssemblyPath", InstanceState.None));
+            _instanceHost
+                ._executingInstances
+                .Add(new Instance(1, "Test", "AssemblyPath", InstanceState.None));
 
             SetupStateWait(InstanceState.Loaded);
 

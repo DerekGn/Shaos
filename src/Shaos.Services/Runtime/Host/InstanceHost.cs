@@ -64,10 +64,29 @@ namespace Shaos.Services.Runtime.Host
         public IReadOnlyList<Instance> Instances => _executingInstances.AsReadOnly();
 
         // </inheritdoc>
+        public void ConfigureInstance(int id, string configuration)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(configuration);
+
+            ExecuteInstanceOperation(id, (instance) =>
+            {
+                if (instance.State != InstanceState.None)
+                {
+                    ThrowInvalidStateException(instance);
+                }
+                else
+                {
+                }
+            });
+        }
+
+        // </inheritdoc>
         public Instance CreateInstance(
             int id,
             string name,
-            string assemblyPath)
+            string assemblyPath,
+            bool hasConfiguration)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
@@ -84,7 +103,7 @@ namespace Shaos.Services.Runtime.Host
                     name,
                     assemblyPath);
 
-                instance = new Instance(id, name, assemblyPath);
+                instance = new Instance(id, name, assemblyPath, hasConfiguration);
 
                 _executingInstances.Add(instance);
 

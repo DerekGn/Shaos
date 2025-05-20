@@ -56,6 +56,34 @@ namespace Shaos.Services.Runtime.Factories
             plugIn = Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
         }
 
+        public object? LoadConfiguration(Assembly assembly)
+        {
+            ArgumentNullException.ThrowIfNull(assembly);
+
+            var plugInType = ResolvePlugInType(assembly);
+
+            var constructors = plugInType.GetConstructors();
+            var parameterInfos = constructors[0].GetParameters();
+            var parameterTypes = (from parameterInfo in parameterInfos
+                                  let parameterType = parameterInfo.ParameterType
+                                  select parameterType)
+                                  .ToList();
+
+            var configurationType = (from parameterType in parameterTypes
+                                     where parameterType.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any()
+                                     select parameterType)
+                                     .FirstOrDefault();
+
+            object? configuration = null;
+
+            if (configurationType != null)
+            {
+                configuration = Activator.CreateInstance(configurationType);
+            }
+
+            return configuration;
+        }
+
         private List<object> GetConstructorParameters(Type plugInType)
         {
             var result = new List<object>();

@@ -26,36 +26,50 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
-using System.Collections.Specialized;
 using System.Text.Json;
 
 namespace Shaos.Services
 {
     public class InstanceHostService : IInstanceHostService
     {
+        private readonly IFileStoreService _fileStoreService;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
+        private readonly IPlugInFactory _plugInFactory;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
+        private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public InstanceHostService(
             ILogger<InstanceHostService> logger,
             IInstanceHost instanceHost,
-            IPlugInInstanceRepository plugInInstanceRepository)
+            IPlugInFactory plugInFactory,
+            IFileStoreService fileStoreService,
+            IPlugInInstanceRepository plugInInstanceRepository,
+            IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(plugInFactory);
+            ArgumentNullException.ThrowIfNull(fileStoreService);
             ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
+            ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
             _instanceHost = instanceHost;
+            _plugInFactory = plugInFactory;
+            _fileStoreService = fileStoreService;
             _plugInInstanceRepository = plugInInstanceRepository;
+            _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
-        public async Task<object?> GetInstanceConfigurationAsync(
+        /// <inheritdoc/>
+        public async Task<object?> LoadInstanceConfigurationAsync(
             int id,
             CancellationToken cancellationToken = default)
         {
@@ -63,25 +77,27 @@ namespace Shaos.Services
             {
                 object? instanceConfiguration = null;
 
-                if (instance.State != InstanceState.Loaded)
+                if (instance.State != InstanceState.None)
                 {
+                    _logger.LogError("Instance Id: [{Id}] is in invalid state: [{State}]", instance.Id, instance.State);
                     throw new InstanceInvalidStateException(id, instance.State);
                 }
 
                 var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
-                var package = plugInInstance?.PlugIn?.Package;
-
-                if (package != null && package.HasConfiguration)
+                if (!plugInInstance.PlugIn.Package.HasConfiguration)
                 {
-                    if (!string.IsNullOrEmpty(plugInInstance?.Configuration))
-                    {
-                        instanceConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
-                    }
-                    else
-                    {
-                        instanceConfiguration = instance.Context.PlugInConfiguration;
-                    }
+                    _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
+                    throw new PlugInHasNoConfigurationException(id);
+                }
+
+                if (instance.IsConfigured)
+                {
+                    instanceConfiguration = JsonSerializer.Deserialize<object>(instance.Configuration!);
+                }
+                else
+                {
+                    //instanceConfiguration = instance.LoadConfiguration();
                 }
 
                 return instanceConfiguration;
@@ -107,7 +123,7 @@ namespace Shaos.Services
                         if (!string.IsNullOrEmpty(plugInInstance.Configuration))
                         {
                             plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
-}
+                        }
                         else
                         {
                             throw new PlugInInstanceNotConfiguredException(id);
@@ -143,7 +159,9 @@ namespace Shaos.Services
             });
         }
 
-        private void ExecuteInstanceOperation(int id, Action<Instance> operation)
+        private void ExecuteInstanceOperation(
+            int id,
+            Action<Instance> operation)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
@@ -152,7 +170,9 @@ namespace Shaos.Services
             operation(instance);
         }
 
-        private async Task ExecuteInstanceOperationAsync(int id, Func<Instance, Task> operation)
+        private async Task ExecuteInstanceOperationAsync(
+            int id,
+            Func<Instance, Task> operation)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
@@ -161,7 +181,9 @@ namespace Shaos.Services
             await operation(instance);
         }
 
-        private async Task<T> ExecuteInstanceOperationAsync<T>(int id, Func<Instance, Task<T>> operation)
+        private async Task<T> ExecuteInstanceOperationAsync<T>(
+            int id,
+            Func<Instance, Task<T>> operation)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
@@ -170,7 +192,9 @@ namespace Shaos.Services
             return await operation(instance);
         }
 
-        private async Task<PlugInInstance> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
+        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(
+            int id,
+            CancellationToken cancellationToken = default)
         {
             return await _plugInInstanceRepository.GetByIdAsync(
                 id,

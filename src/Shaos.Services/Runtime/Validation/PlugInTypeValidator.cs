@@ -66,7 +66,7 @@ namespace Shaos.Services.Runtime.Validation
             }
             finally
             {
-                unloadingWeakReference.Dispose();
+                unloadingWeakReference?.Dispose();
             }
         }
 

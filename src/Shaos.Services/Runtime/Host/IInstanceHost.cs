@@ -47,6 +47,7 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The identifier of the <see cref="Instance"/></param>
         /// <param name="name">The name of the <see cref="Instance"/></param>
         /// <param name="assemblyPath">The path of the assembly file for the <see cref="Instance"/></param>
+        /// <param name="hasConfiguration"></param>
         /// <returns>The <see cref="Instance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyPath"/> is null of empty</exception>
@@ -55,7 +56,8 @@ namespace Shaos.Services.Runtime.Host
         Instance CreateInstance(
             int id,
             string name,
-            string assemblyPath);
+            string assemblyPath,
+            bool hasConfiguration);
 
         /// <summary>
         /// Indicates if an <see cref="Instance"/> exists in the runtime
@@ -109,5 +111,12 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The identifier of the <see cref="Instance"/> that is to be stopped</param>
         Instance UnloadInstance(int id);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="configuration"></param>
+        void ConfigureInstance(int id, string configuration);
     }
 }

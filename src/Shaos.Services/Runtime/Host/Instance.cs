@@ -24,30 +24,39 @@
 
 using Shaos.Repository.Models;
 using Shaos.Sdk;
-using Shaos.Services.Runtime.Host;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
     /// An executing <see cref="PlugIn"/> instance
     /// </summary>
     public class Instance
     {
-        public Instance(int id, string name, string assemblyPath)
+        public Instance(
+            int id,
+            string name,
+            string assemblyPath,
+            bool hasConfiguration)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             Id = id;
             Name = name;
             AssemblyPath = assemblyPath;
+            HasConfiguration = hasConfiguration;
         }
 
-        internal Instance(int id, string name, string assemblyPath, InstanceState state)
-            : this(id, name, assemblyPath)
+        internal Instance(
+            int id,
+            string name,
+            string assemblyPath,
+            InstanceState state,
+            bool hasConfiguration = false)
+            : this(id, name, assemblyPath, hasConfiguration)
         {
             State = state;
         }
@@ -58,9 +67,12 @@ namespace Shaos.Services.Runtime
         public string AssemblyPath { get; }
 
         /// <summary>
-        /// The <see cref="IPlugIn"/> instance execution context
+        /// The PlugIn instance configuration
         /// </summary>
-        public PlugInLoadContext? Context { get; private set; }
+        /// <remarks>
+        /// The PlugIn configuration JSON string
+        /// </remarks>
+        public string? Configuration { get; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
@@ -68,9 +80,19 @@ namespace Shaos.Services.Runtime
         public Exception? Exception { get; private set; }
 
         /// <summary>
+        /// Indicates if this instance has configuration
+        /// </summary>
+        public bool HasConfiguration { get; }
+
+        /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int Id { get; }
+
+        /// <summary>
+        /// Indicates if configuration required
+        /// </summary>
+        public bool IsConfigured => !string.IsNullOrWhiteSpace(Configuration);
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
@@ -97,9 +119,20 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public DateTime? StopTime { get; private set; }
 
+        /// <summary>
+        /// The executing PlugIn task
+        /// </summary>
         public Task? Task { get; private set; }
 
+        /// <summary>
+        /// The execution PlugIn instance cancellation token source
+        /// </summary>
         public CancellationTokenSource? TokenSource { get; private set; }
+
+        /// <summary>
+        /// The <see cref="IPlugIn"/> instance execution context
+        /// </summary>
+        internal PlugInLoadContext? Context { get; private set; }
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
@@ -107,10 +140,13 @@ namespace Shaos.Services.Runtime
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
             stringBuilder.AppendLine($"{nameof(AssemblyPath)}: {(AssemblyPath == null ? "Empty" : AssemblyPath)}");
+            stringBuilder.AppendLine($"{nameof(Configuration)}: {Configuration ?? "Empty"}");
             stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(HasConfiguration)}: {HasConfiguration}");
+            stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
+            stringBuilder.AppendLine($"{nameof(IsConfigured)}: {IsConfigured}");
             stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
             stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
             stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");

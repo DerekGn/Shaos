@@ -24,7 +24,6 @@
 
 using Shaos.Services;
 using Shaos.Services.Logging;
-using Shaos.Services.Runtime;
 
 namespace Shaos.Startup
 {

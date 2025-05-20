@@ -26,9 +26,9 @@ using Shaos.Sdk;
 using System.Reflection;
 using System.Text;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Host
 {
-    public class PlugInLoadContext : IDisposable
+    internal class PlugInLoadContext : IDisposable
     {
         private UnloadingWeakReference<IRuntimeAssemblyLoadContext> _unloadingWeakReference;
         private bool disposedValue;

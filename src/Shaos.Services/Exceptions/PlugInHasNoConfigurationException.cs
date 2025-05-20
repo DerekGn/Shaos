@@ -27,19 +27,19 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class PlugInPackageNotAssignedException : Exception
+    public class PlugInHasNoConfigurationException : Exception
     {
-        public PlugInPackageNotAssignedException(int id)
+        public PlugInHasNoConfigurationException(int id)
         {
             Id = id;
         }
 
-        public PlugInPackageNotAssignedException(int id, string message) : base(message)
+        public PlugInHasNoConfigurationException(int id, string message) : base(message)
         {
             Id = id;
         }
 
-        public PlugInPackageNotAssignedException(int id, string message, Exception inner) : base(message, inner)
+        public PlugInHasNoConfigurationException(int id, string message, Exception inner) : base(message, inner)
         {
             Id = id;
         }

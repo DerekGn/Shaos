@@ -28,11 +28,13 @@ namespace Shaos.Services
 {
     public interface IInstanceHostService
     {
-        Task<object?> GetInstanceConfigurationAsync(
+        Task<object?> LoadInstanceConfigurationAsync(
             int id,
             CancellationToken cancellationToken = default);
 
-        Task StartInstanceAsync(int id, CancellationToken cancellationToken = default);
+        Task StartInstanceAsync(
+            int id,
+            CancellationToken cancellationToken = default);
 
         void StopInstance(int id);
 

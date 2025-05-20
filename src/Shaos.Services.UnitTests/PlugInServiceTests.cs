@@ -44,7 +44,6 @@ namespace Shaos.Services.UnitTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
-        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IPlugInInstanceRepository> _mockPlugInInstanceRepository;
         private readonly Mock<IPlugInRepository> _mockPlugInRepository;
         private readonly Mock<IPlugInTypeValidator> _mockPlugInTypeValidator;
@@ -55,7 +54,6 @@ namespace Shaos.Services.UnitTests
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockInstanceHost = new Mock<IInstanceHost>();
-            _mockPlugInFactory = new Mock<IPlugInFactory>();
             _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
             _mockPlugInRepository = new Mock<IPlugInRepository>();
             _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
@@ -64,7 +62,6 @@ namespace Shaos.Services.UnitTests
             _plugInService = new PlugInService(
                 LoggerFactory!.CreateLogger<PlugInService>(),
                 _mockInstanceHost.Object,
-                _mockPlugInFactory.Object,
                 _mockFileStoreService.Object,
                 _mockPlugInRepository.Object,
                 _mockPlugInTypeValidator.Object,
@@ -138,7 +135,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceRunningAsync()
         {
-            var instance = new Instance(12, "Test", "assemblyPath");
+            var instance = new Instance(12, "Test", "assemblyPath", false);
 
             instance.SetRunning();
 
@@ -153,7 +150,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceSuccessAsync()
         {
-            var instance = new Instance(12, "Test", "assemblyPath");
+            var instance = new Instance(12, "Test", "assemblyPath", false);
 
             instance.SetComplete();
 
@@ -190,7 +187,7 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(plugInInstance);
 
-            var instance = new Instance(plugInInstance.Id, "Test", "assemblyPath");
+            var instance = new Instance(plugInInstance.Id, "Test", "assemblyPath", false);
 
             instance.SetRunning();
 
@@ -216,7 +213,7 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var instance = new Instance(12, "Test", "assemblyPath");
+            var instance = new Instance(12, "Test", "assemblyPath", false);
 
             instance.SetComplete();
 
@@ -303,7 +300,8 @@ namespace Shaos.Services.UnitTests
             _mockInstanceHost.Verify(_ => _.CreateInstance(
                 It.IsAny<int>(),
                 It.IsAny<string>(),
-                It.IsAny<string>()),
+                It.IsAny<string>(),
+                It.IsAny<bool>()),
                 Times.Once);
 
             //_mockInstanceHost.Verify(_ => _.StartInstance(
@@ -362,7 +360,7 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var instance = new Instance(1, "Test", "assemblyPath");
+            var instance = new Instance(1, "Test", "assemblyPath", false);
 
             instance.SetRunning();
 
