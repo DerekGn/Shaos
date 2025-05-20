@@ -24,11 +24,10 @@
 
 using Shaos.Repository.Models;
 using Shaos.Sdk;
-using Shaos.Services.Runtime.Host;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
     /// An executing <see cref="PlugIn"/> instance
@@ -37,8 +36,8 @@ namespace Shaos.Services.Runtime
     {
         public Instance(int id, string name, string assemblyPath)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             Id = id;
             Name = name;

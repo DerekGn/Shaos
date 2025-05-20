@@ -45,9 +45,11 @@ namespace Shaos.Services.IO
         /// <inheritdoc/>
         public void DeletePackage(int id, string fileName)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), fileName);
 
-            if(File.Exists(filePath))
+            if (File.Exists(filePath))
             {
                 _logger.LogInformation("Deleting file [{Path}]", filePath);
 
@@ -58,6 +60,8 @@ namespace Shaos.Services.IO
         /// <inheritdoc/>
         public IEnumerable<string> ExtractPackage(int id, string packageFileName)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             var sourcePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
             var targetPath = Path.Combine(_options.Value.BinariesPath, id.ToString());
 
@@ -79,6 +83,8 @@ namespace Shaos.Services.IO
         /// <inheritdoc/>
         public string GetAssemblyPath(int id)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             return Path.Combine(_options.Value.BinariesPath, id.ToString());
         }
 
@@ -89,16 +95,17 @@ namespace Shaos.Services.IO
             Stream stream,
             CancellationToken cancellationToken = default)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
-            if(_options.Value.PackagesPath.CreateDirectory())
+            if (_options.Value.PackagesPath.CreateDirectory())
             {
                 _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
             }
 
             var packageFilePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
 
-            if(Directory.Exists(packageFilePath))
+            if (Directory.Exists(packageFilePath))
             {
                 _logger.LogInformation("Emptying package directory [{Folder}]", packageFilePath);
 
