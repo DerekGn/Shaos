@@ -20,8 +20,6 @@
     </div>
 </form>
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
 <table class="table">
     <thead>
         <tr>
@@ -34,7 +32,7 @@
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
                 asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].Name)
+                    @Html.DisplayNameFor(model => model.List[0].InstanceName)
                 </a>
             </th>
             <th>
@@ -65,7 +63,7 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.InstanceName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.State)
@@ -84,11 +82,12 @@
             </td>
             <td>
                 <form method="post">
-                        @{
-                            var running = item.State == Services.Runtime.Host.InstanceState.Running;
-                        }
-                        <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Start" disabled="@(running ? "disabled" : null)" />
-                        <input type="submit" asp-page-handler="Stop" class="btn btn-sm btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(running ? null : "disabled")" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    @{
+                        var running = item.State == Services.Runtime.Host.InstanceState.Running;
+                    }
+                    <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Start" disabled="@(running ? "disabled" : null)" />
+                    <input type="submit" asp-page-handler="Stop" class="btn btn-sm btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(running ? null : "disabled")" />
                 </form>
             </td>
         </tr>
@@ -115,3 +114,9 @@
    class="btn btn-sm btn-primary @nextDisabled">
     Next
 </a>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -39,8 +39,14 @@ namespace Shaos.Services.Runtime.Host
 
             _unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(assemblyLoadContext);
 
+            AssemblyPath = assemblyPath;
             InstanceAssembly = _unloadingWeakReference.Target.LoadFromAssemblyPath(assemblyPath);
         }
+
+        /// <summary>
+        /// The path to the assembly
+        /// </summary>
+        public string AssemblyPath { get; }
 
         /// <summary>
         /// The PlugIn instance assembly

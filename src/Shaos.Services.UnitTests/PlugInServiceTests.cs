@@ -138,7 +138,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceRunningAsync()
         {
-            var instance = new Instance(12, "Test", "assemblyPath");
+            var instance = new Instance(12, 1, "Test", InstanceState.None);
 
             instance.SetRunning();
 
@@ -153,7 +153,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceSuccessAsync()
         {
-            var instance = new Instance(12, "Test", "assemblyPath");
+            var instance = new Instance(12, 1, "Test", InstanceState.None);
 
             instance.SetComplete();
 
@@ -190,7 +190,7 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(plugInInstance);
 
-            var instance = new Instance(plugInInstance.Id, "Test", "assemblyPath");
+            var instance = new Instance(plugInInstance.Id, 1, "Test", InstanceState.None);
 
             instance.SetRunning();
 
@@ -216,7 +216,7 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var instance = new Instance(12, "Test", "assemblyPath");
+            var instance = new Instance(12, 1, "Test", InstanceState.None);
 
             instance.SetComplete();
 
@@ -276,43 +276,6 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
-        public async Task TestStartEnabledInstancesAsync()
-        {
-            var plugIn = SetupPlugInGetAsync();
-            plugIn.Package = new Package()
-            {
-                AssemblyFile = "assemblyfilename",
-                FileName = "filename"
-            };
-
-            plugIn.Instances.Add(new PlugInInstance()
-            {
-                Name = "name",
-                Enabled = true,
-                Description = "description"
-            });
-
-            _mockFileStoreService
-                .Setup(_ => _.GetAssemblyPath(
-                    It.IsAny<int>()
-                ))
-                .Returns("");
-
-            await _plugInService.StartEnabledInstancesAsync();
-
-            _mockInstanceHost.Verify(_ => _.CreateInstance(
-                It.IsAny<int>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()),
-                Times.Once);
-
-            _mockInstanceHost.Verify(_ => _.StartInstance(
-                It.IsAny<int>(),
-                It.IsAny<string?>()),
-                Times.Once);
-        }
-
-        [Fact]
         public async Task TestUploadPlugInPackageNoValidPlugInAsync()
         {
             MemoryStream stream = new MemoryStream();
@@ -362,7 +325,7 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var instance = new Instance(1, "Test", "assemblyPath");
+            var instance = new Instance(1, 1, "Test", InstanceState.None);
 
             instance.SetRunning();
 

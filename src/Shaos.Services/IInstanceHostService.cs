@@ -29,5 +29,10 @@ namespace Shaos.Services
         Task StartInstanceAsync(int id, CancellationToken cancellationToken = default);
 
         void StopInstance(int id);
+
+        /// <summary>
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task StartUpInstancesAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -61,10 +61,10 @@ namespace Shaos.Startup
 
             using (var scope = _services.CreateScope())
             {
-                var plugInService = scope.ServiceProvider
-                    .GetRequiredService<IPlugInService>();
+                var instanceHostService = scope.ServiceProvider
+                    .GetRequiredService<IInstanceHostService>();
 
-                await plugInService.StartEnabledInstancesAsync(cancellationToken);
+                await instanceHostService.StartUpInstancesAsync(cancellationToken);
             }
         }
 

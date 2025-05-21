@@ -34,26 +34,32 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class Instance
     {
-        public Instance(int id, string name, string assemblyPath)
+        public Instance(
+            int id,
+            int parentId,
+            string instanceName,
+            bool hasConfiguration)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
+            ArgumentException.ThrowIfNullOrWhiteSpace(instanceName);
 
             Id = id;
-            Name = name;
-            AssemblyPath = assemblyPath;
+            InstanceName = instanceName;
+
+            Configuration = new InstanceConfiguration(hasConfiguration);
         }
 
-        internal Instance(int id, string name, string assemblyPath, InstanceState state)
-            : this(id, name, assemblyPath)
+        internal Instance(
+            int id,
+            int parentId,
+            string instanceName,
+            InstanceState state,
+            bool hasConfiguration = false)
+            : this(id, parentId, instanceName, hasConfiguration)
         {
             State = state;
         }
 
-        /// <summary>
-        /// The assembly file path
-        /// </summary>
-        public string AssemblyPath { get; }
+        public InstanceConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance execution context
@@ -73,7 +79,7 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public string Name { get; }
+        public string InstanceName { get; }
 
         /// <summary>
         /// The total running time of this instance
@@ -102,14 +108,13 @@ namespace Shaos.Services.Runtime.Host
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
-            stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
-            stringBuilder.AppendLine($"{nameof(State)}: {State}");
-            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
-            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
-            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
-            stringBuilder.AppendLine($"{nameof(AssemblyPath)}: {(AssemblyPath == null ? "Empty" : AssemblyPath.ToString())}");
-            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
             stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
+            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(InstanceName)}: {InstanceName}");
+            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
+            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
+            stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
 
             return stringBuilder.ToString();
         }

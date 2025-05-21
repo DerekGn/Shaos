@@ -24,7 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shaos.Services.Exceptions;
+
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Factories;
@@ -34,6 +34,8 @@ namespace Shaos.Services.Runtime.Host
     public class InstanceHost : IInstanceHost
     {
         internal readonly List<Instance> _executingInstances;
+        internal readonly Dictionary<int, InstanceLoadContext> _instanceLoadContexts;
+
         private readonly ILogger<InstanceHost> _logger;
         private readonly IOptions<InstanceHostOptions> _options;
         private readonly IPlugInFactory _plugInFactory;
@@ -56,6 +58,7 @@ namespace Shaos.Services.Runtime.Host
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
 
             _executingInstances = new List<Instance>();
+            _instanceLoadContexts = new Dictionary<int, InstanceLoadContext>();
         }
 
         // </inheritdoc>
@@ -67,23 +70,26 @@ namespace Shaos.Services.Runtime.Host
         // </inheritdoc>
         public Instance CreateInstance(
             int id,
-            string name,
-            string assemblyPath)
+            int parentId,
+            string instanceName,
+            string assemblyPath,
+            bool hasConfiguration)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(instanceName);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             VerifyInstanceCount();
 
-            var instance = _executingInstances
-                .FirstOrDefault(_ => _.Id == id);
+            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
 
             if (instance == null)
             {
-                _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}] Assembly: [{AssemblyPath}]", id, name, assemblyPath);
+                CreateLoadContext(parentId, assemblyPath);
 
-                instance = new Instance(id, name, assemblyPath);
+                _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);
+
+                instance = new Instance(id, parentId, instanceName, hasConfiguration);
 
                 _executingInstances.Add(instance);
 
@@ -131,26 +137,18 @@ namespace Shaos.Services.Runtime.Host
         }
 
         // </inheritdoc>
-        public Instance StartInstance(int id, object? configuration = default)
+        public Instance StartInstance(
+            int id,
+            object? configuration = default)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
+            var instance = _executingInstances
+                .FirstOrDefault(_ => _.Id == id);
 
             if (instance != null)
             {
-                if (instance.State != InstanceState.Running)
-                {
-                    LoadInstanceContext(instance, configuration);
-
-                    _ = Task.Run(() => StartExecutingInstance(instance));
-                }
-                else
-                {
-                    _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Running",
-                        instance.Id,
-                        instance.Name);
-                }
+                StartInstance(configuration, instance);
             }
             else
             {
@@ -158,6 +156,22 @@ namespace Shaos.Services.Runtime.Host
             }
 
             return instance!;
+        }
+
+        private void StartInstance(object? configuration, Instance instance)
+        {
+            if (instance.State != InstanceState.Running)
+            {
+                LoadInstanceContext(instance, configuration);
+
+                _ = Task.Run(() => StartExecutingInstance(instance));
+            }
+            else
+            {
+                _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Running",
+                    instance.Id,
+                    instance.InstanceName);
+            }
         }
 
         // </inheritdoc>
@@ -177,7 +191,7 @@ namespace Shaos.Services.Runtime.Host
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
                         instance.Id,
-                        instance.Name);
+                        instance.InstanceName);
                 }
                 else
                 {
@@ -188,6 +202,18 @@ namespace Shaos.Services.Runtime.Host
             return instance;
         }
 
+        private void CreateLoadContext(
+                                            int id,
+            string assemblyPath)
+        {
+            _logger.LogDebug("Creating load context for Instance: [{Id}] AssemblyPath: [{AssemblyPath}]", id, assemblyPath);
+
+            if(!_instanceLoadContexts.Any(_ => _.Key == id))
+            {
+                _instanceLoadContexts
+                    .Add(id, new InstanceLoadContext(assemblyPath,_runtimeAssemblyLoadContextFactory.Create(assemblyPath)));
+            }
+        }
         private async Task ExecutePlugInMethod(Instance instance, CancellationToken cancellationToken = default)
         {
             InstanceStateChanged?.Invoke(this,
@@ -205,26 +231,27 @@ namespace Shaos.Services.Runtime.Host
 
         private void LoadInstanceContext(Instance instance, object? configuration)
         {
-            try
-            {
-                var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath);
-                var assembly = assemblyLoadContext.LoadFromAssemblyPath(instance.AssemblyPath);
-#warning TODO check null
-                var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
+#warning TODO
+            //            try
+            //            {
+            //                var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath);
+            //                var assembly = assemblyLoadContext.LoadFromAssemblyPath(instance.AssemblyPath);
+            //#warning TODO check null
+            //                var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
 
-                instance.LoadContext(plugIn, assemblyLoadContext);
-            }
-            catch (Exception exception)
-            {
-                throw new InstanceCreateException("Unable to create PlugIn instance", exception);
-            }
+            //                instance.LoadContext(plugIn, assemblyLoadContext);
+            //            }
+            //            catch (Exception exception)
+            //            {
+            //                throw new InstanceCreateException("Unable to create PlugIn instance", exception);
+            //            }
         }
 
         private void StartExecutingInstance(Instance instance)
         {
             _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
                 instance.Id,
-                instance.Name);
+                instance.InstanceName);
 
             instance.StartExecution(
                 async (cancellationToken) => await ExecutePlugInMethod(instance, cancellationToken),
@@ -238,19 +265,19 @@ namespace Shaos.Services.Runtime.Host
         {
             _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
                 instance.Id,
-                instance.Name);
+                instance.InstanceName);
 
             if(await instance.StopExecutionAsync(_options.Value.TaskStopTimeout))
             {
                 _logger.LogInformation("Stopped execution. Id: [{Id}] Name: [{Name}]",
                     instance.Id,
-                    instance.Name);
+                    instance.InstanceName);
             }
             else
             {
                 _logger.LogWarning("Instance not stopped within timeout. Id: [{Id}] Name: [{Name}]",
                     instance.Id,
-                    instance.Name);
+                    instance.InstanceName);
             }
         }
 
@@ -268,7 +295,7 @@ namespace Shaos.Services.Runtime.Host
 
                 _logger.LogInformation("Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
                     instance.Id,
-                    instance.Name,
+                    instance.InstanceName,
                     antecedent.Status);
             }
             else if (antecedent.Status == TaskStatus.Faulted)
@@ -277,7 +304,7 @@ namespace Shaos.Services.Runtime.Host
 
                 _logger.LogError(antecedent.Exception, "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
                     instance.Id,
-                    instance.Name,
+                    instance.InstanceName,
                     antecedent.Status);
             }
 

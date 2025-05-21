@@ -24,8 +24,8 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services.Exceptions;
+using Shaos.Services.IO;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Host;
 using System.Text.Json;
@@ -37,21 +37,29 @@ namespace Shaos.Services
     /// </summary>
     public class InstanceHostService : IInstanceHostService
     {
+        private readonly IFileStoreService _fileStoreService;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
+        private readonly IPlugInRepository _plugInRepository;
 
         public InstanceHostService(
             ILogger<InstanceHostService> logger,
             IInstanceHost instanceHost,
+            IFileStoreService fileStoreService,
+            IPlugInRepository plugInRepository,
             IPlugInInstanceRepository plugInInstanceRepository)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(fileStoreService);
+            ArgumentNullException.ThrowIfNull(plugInRepository);
             ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
 
             _logger = logger;
             _instanceHost = instanceHost;
+            _fileStoreService = fileStoreService;
+            _plugInRepository = plugInRepository;
             _plugInInstanceRepository = plugInInstanceRepository;
         }
 
@@ -62,7 +70,7 @@ namespace Shaos.Services
             {
                 var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
 
-                if(plugInInstance != null)
+                if (plugInInstance != null)
                 {
                     var package = plugInInstance.PlugIn.Package;
                     object? plugInConfiguration = null;
@@ -93,6 +101,54 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public async Task StartUpInstancesAsync(CancellationToken cancellationToken = default)
+        {
+            var plugIns = _plugInRepository
+                .GetAsync(
+                    _ => _.Package != null,
+                    includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
+                    cancellationToken: cancellationToken
+                );
+
+            await foreach (var plugIn in plugIns)
+            {
+                foreach (var instance in plugIn.Instances)
+                {
+                    var assemblyFile = Path.Combine(_fileStoreService
+                    .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
+
+                    _instanceHost
+                        .CreateInstance(instance.Id, plugIn.Id, instance.Name, assemblyFile, plugIn.Package.HasConfiguration);
+
+                    if (instance.Enabled)
+                    {
+                        object? plugInConfiguration = null;
+
+                        if (plugIn.Package!.HasConfiguration && string.IsNullOrEmpty(instance.Configuration))
+                        {
+                            _logger.LogWarning("Instance [{Id}] Name: [{Name}] cannot be started no configuration stored",
+                                instance.Id,
+                                instance.Name);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Starting Instance [{Id}] Name: [{Name}]",
+                                instance.Id,
+                                instance.Name);
+
+                            if (!string.IsNullOrEmpty(instance.Configuration))
+                            {
+                                plugInConfiguration = JsonSerializer.Deserialize<object>(instance.Configuration);
+                            }
+
+                            _instanceHost.StartInstance(instance.Id, plugInConfiguration);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc/>
         public void StopInstance(int id)
         {
             if (_instanceHost.InstanceExists(id))
@@ -105,7 +161,7 @@ namespace Shaos.Services
             }
         }
 
-        private async Task<PlugInInstance> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
+        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _plugInInstanceRepository.GetByIdAsync(
                 id,

@@ -81,19 +81,19 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestAddInstanceInvalidAssembly()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, "name", null!));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, 2, "name", null!, false));
         }
 
         [Fact]
         public void TestAddInstanceInvalidId()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.CreateInstance(0, null!, null!));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.CreateInstance(0, 1, null!, null!, false));
         }
 
         [Fact]
         public void TestAddInstanceInvalidName()
         {
-            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, null!, null!));
+            Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1, 2, null!, null!, false));
         }
 
         [Fact]
@@ -103,10 +103,10 @@ namespace Shaos.Services.UnitTests.Runtime
             {
                 _instanceHost
                     ._executingInstances
-                    .Add(new Instance(i, i.ToString(), "AssemblyPath"));
+                    .Add(new Instance(i, i, i.ToString(), false));
             }
 
-            Assert.Throws<MaxInstancesRunningException>(() => _instanceHost.CreateInstance(10, "name", "assembly"));
+            Assert.Throws<MaxInstancesRunningException>(() => _instanceHost.CreateInstance(10, 1, "name", "assembly", false));
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace Shaos.Services.UnitTests.Runtime
 
             SetupStateWait(InstanceState.None);
 
-            var instance = _instanceHost.CreateInstance(1, "name", "assembly");
+            var instance = _instanceHost.CreateInstance(1, 1, "name", "assembly", false);
 
             Assert.True(WaitForStateChange());
 
@@ -127,9 +127,9 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestCreateInstanceExists()
         {
-            _instanceHost._executingInstances.Add(new Instance(1, "Test", "AssemblyPath"));
+            _instanceHost._executingInstances.Add(new Instance(1, 1, "Test", false));
 
-            Assert.Throws<InstanceExistsException>(() => _instanceHost.CreateInstance(1, "name", "assembly"));
+            Assert.Throws<InstanceExistsException>(() => _instanceHost.CreateInstance(1, 1, "name", "assembly", false));
         }
 
         [Fact]
@@ -142,7 +142,7 @@ namespace Shaos.Services.UnitTests.Runtime
         public void TestInstanceExistsTrue()
         {
             _instanceHost._executingInstances.Add(
-                new Instance(1, "Test", "AssemblyPath"));
+                new Instance(1, 1, "Test", InstanceState.None));
 
             Assert.True(_instanceHost.InstanceExists(1));
         }
@@ -151,7 +151,7 @@ namespace Shaos.Services.UnitTests.Runtime
         public void TestRemoveInstance()
         {
             _instanceHost._executingInstances.Add(
-                new Instance(1, "Test", "AssemblyPath", InstanceState.Complete));
+                new Instance(1, 1, "Test", InstanceState.Complete));
 
             _instanceHost.RemoveInstance(1);
 
@@ -174,7 +174,7 @@ namespace Shaos.Services.UnitTests.Runtime
         public void TestRemoveInstanceRunning()
         {
             _instanceHost._executingInstances.Add(
-                new Instance(1, "Test", "AssemblyPath", InstanceState.Running));
+                new Instance(1, 1, "Test", InstanceState.Running));
 
             Assert.Throws<InstanceRunningException>(() => _instanceHost.RemoveInstance(1));
         }
@@ -247,7 +247,7 @@ namespace Shaos.Services.UnitTests.Runtime
         public void TestStartInstanceRunning()
         {
             _instanceHost._executingInstances.Add(
-                new Instance(2, "Test", "AssemblyPath", InstanceState.Running));
+                new Instance(2, 1, "Test", InstanceState.Running));
 
             var instance = _instanceHost.StartInstance(2);
 
@@ -279,7 +279,7 @@ namespace Shaos.Services.UnitTests.Runtime
             var tokenSource = new CancellationTokenSource();
 
             _instanceHost._executingInstances.Add(
-                new Instance(1, "Test", "AssemblyPath", InstanceState.Running));
+                new Instance(1, 1, "Test", InstanceState.Running));
 
 #warning TODO
             //instance.Task = Task.Run(async () => await WaitTaskAsync(tokenSource.Token))
