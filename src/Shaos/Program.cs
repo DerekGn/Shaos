@@ -44,7 +44,9 @@ using Shaos.Services.Runtime.Validation;
 using Shaos.Services.SystemInformation;
 using Shaos.Services.Validation;
 using Shaos.Startup;
+using System.Configuration;
 using System.Text.Json.Serialization;
+using Szlem.AspNetCore.Infrastructure;
 
 namespace Shaos
 {
@@ -108,7 +110,14 @@ namespace Shaos
                 _.SubstituteApiVersionInUrl = true;
             });
 
-            builder.Services.AddRazorPages();
+            builder.Services.AddRazorPages(
+                options =>
+                {
+                    options.Conventions.AddFolderApplicationModelConvention(
+                        "/Instances",
+                        model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                });
+
             builder.Services.AddSignalR();
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {
