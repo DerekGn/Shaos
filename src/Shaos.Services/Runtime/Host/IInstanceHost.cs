@@ -44,10 +44,10 @@ namespace Shaos.Services.Runtime.Host
         /// Create an <see cref="Instance"/> in the <see cref="InstanceHost"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="Instance"/></param>
-        /// <param name="parentId"></param>
+        /// <param name="plugInId"></param>
         /// <param name="instanceName">The name of the <see cref="Instance"/></param>
         /// <param name="assemblyPath">The path of the assembly file for the <see cref="Instance"/></param>
-        /// <param name="hasConfiguration"></param>
+        /// <param name="configuration"></param>
         /// <returns>The <see cref="Instance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyPath"/> is null of empty</exception>
@@ -55,10 +55,10 @@ namespace Shaos.Services.Runtime.Host
         /// <exception cref="MaxInstancesRunningException">Thrown if the maximum number of instances are loaded</exception>
         Instance CreateInstance(
             int id,
-            int parentId,
+            int plugInId,
             string instanceName,
             string assemblyPath,
-            bool hasConfiguration);
+            InstanceConfiguration configuration);
 
         /// <summary>
         /// Indicates if an <see cref="Instance"/> exists in the runtime
@@ -80,7 +80,6 @@ namespace Shaos.Services.Runtime.Host
         /// Start the execution of a <see cref="Instance"/>
         /// </summary>
         /// <param name="id">The id of the <see cref="Instance"/> to start</param>
-        /// <param name="configuration">The configuration json</param>
         /// <returns>An <see cref="Instance"/></returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="InstanceCreateException">Thrown if the <see cref="PlugIn"/> instance cannot be created</exception>
@@ -88,7 +87,7 @@ namespace Shaos.Services.Runtime.Host
         /// <remarks>
         /// The <see cref="Instance"/> is not synchronously started
         /// </remarks>
-        Instance StartInstance(int id, object? configuration = default);
+        Instance StartInstance(int id);
 
         /// <summary>
         /// Stop a running <see cref="Instance"/>

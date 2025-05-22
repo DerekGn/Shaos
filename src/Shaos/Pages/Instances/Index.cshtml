@@ -1,4 +1,5 @@
 ﻿@page
+@using Shaos.Services.Runtime.Host
 @model Shaos.Pages.Instances.IndexModel
 @{
 }
@@ -85,9 +86,13 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     @{
                         var running = item.State == Services.Runtime.Host.InstanceState.Running;
+                        var configEnabled = (item.State == InstanceState.None && item.Configuration.HasConfiguration) ? null : "disabled";
                     }
                     <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Start" disabled="@(running ? "disabled" : null)" />
                     <input type="submit" asp-page-handler="Stop" class="btn btn-sm btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(running ? null : "disabled")" />
+                    <a asp-page="./Configuration" asp-route-id="@item.Id" class="btn btn-sm btn-primary @configEnabled">
+                        Configure
+                    </a>
                 </form>
             </td>
         </tr>

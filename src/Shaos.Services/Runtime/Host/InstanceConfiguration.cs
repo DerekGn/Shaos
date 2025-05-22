@@ -5,9 +5,12 @@ namespace Shaos.Services.Runtime.Host
 {
     public class InstanceConfiguration
     {
-        public InstanceConfiguration(bool hasConfiguration)
+        public InstanceConfiguration(
+            bool hasConfiguration,
+            string? configuration = default)
         {
             HasConfiguration = hasConfiguration;
+            Configuration = configuration;
         }
 
         /// <summary>

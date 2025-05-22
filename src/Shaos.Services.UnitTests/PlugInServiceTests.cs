@@ -138,7 +138,8 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceRunningAsync()
         {
-            var instance = new Instance(12, 1, "Test", InstanceState.None);
+            var configuration = new InstanceConfiguration(true, string.Empty);
+            var instance = new Instance(12, 1, "Test", InstanceState.None, configuration);
 
             instance.SetRunning();
 
@@ -153,7 +154,8 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceSuccessAsync()
         {
-            var instance = new Instance(12, 1, "Test", InstanceState.None);
+            var configuration = new InstanceConfiguration(true, string.Empty);
+            var instance = new Instance(12, 1, "Test", InstanceState.None, configuration);
 
             instance.SetComplete();
 
@@ -190,7 +192,8 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(plugInInstance);
 
-            var instance = new Instance(plugInInstance.Id, 1, "Test", InstanceState.None);
+            var configuration = new InstanceConfiguration(true, string.Empty);
+            var instance = new Instance(plugInInstance.Id, 1, "Test", InstanceState.None, configuration);
 
             instance.SetRunning();
 
@@ -216,7 +219,9 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var instance = new Instance(12, 1, "Test", InstanceState.None);
+            var configuration = new InstanceConfiguration(true, string.Empty);
+
+            var instance = new Instance(12, 1, "Test", InstanceState.None, configuration);
 
             instance.SetComplete();
 
@@ -325,7 +330,9 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var instance = new Instance(1, 1, "Test", InstanceState.None);
+            var configuration = new InstanceConfiguration(true, string.Empty);
+
+            var instance = new Instance(1, 1, "Test", InstanceState.None, configuration);
 
             instance.SetRunning();
 

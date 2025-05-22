@@ -95,21 +95,22 @@ namespace Shaos.Services
                     plugInInstance,
                     cancellationToken);
 
-                    if (!plugIn.Package.HasConfiguration)
-                    {
-                        _logger.LogInformation("Adding PlugInInstance to the runtime. PlugIn: [{Id}]", id);
+#warning TODO
+                    //if (!plugIn.Package.HasConfiguration)
+                    //{
+                    //    _logger.LogInformation("Adding PlugInInstance to the runtime. PlugIn: [{Id}]", id);
 
-                        var assemblyFile = Path.Combine(_fileStoreService
-                            .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
+                    //    var assemblyFile = Path.Combine(_fileStoreService
+                    //        .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
 
-                        _instanceHost
-                            .CreateInstance(
-                                plugInInstance.Id,
-                                plugIn.Id,
-                                plugInInstance.Name,
-                                assemblyFile,
-                                plugIn.Package.HasConfiguration);
-                    }
+                    //    _instanceHost
+                    //        .CreateInstance(
+                    //            plugInInstance.Id,
+                    //            plugIn.Id,
+                    //            plugInInstance.Name,
+                    //            assemblyFile,
+                    //            plugIn.Package.HasConfiguration);
+                    //}
                 }
                 else
                 {

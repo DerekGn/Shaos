@@ -64,7 +64,7 @@ namespace Shaos.Startup
                 var instanceHostService = scope.ServiceProvider
                     .GetRequiredService<IInstanceHostService>();
 
-                await instanceHostService.StartUpInstancesAsync(cancellationToken);
+                await instanceHostService.StartInstancesAsync(cancellationToken);
             }
         }
 

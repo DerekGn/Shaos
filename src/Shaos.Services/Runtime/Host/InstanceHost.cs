@@ -70,14 +70,15 @@ namespace Shaos.Services.Runtime.Host
         // </inheritdoc>
         public Instance CreateInstance(
             int id,
-            int parentId,
+            int plugInId,
             string instanceName,
             string assemblyPath,
-            bool hasConfiguration)
+            InstanceConfiguration configuration)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(instanceName);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
+            ArgumentNullException.ThrowIfNull(configuration);
 
             VerifyInstanceCount();
 
@@ -85,16 +86,16 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                CreateLoadContext(parentId, assemblyPath);
+                CreateLoadContext(plugInId, assemblyPath);
 
                 _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);
 
-                instance = new Instance(id, parentId, instanceName, hasConfiguration);
+                instance = new Instance(id, plugInId, instanceName, configuration);
 
-                _executingInstances.Add(instance);
+            //    _executingInstances.Add(instance);
 
-                InstanceStateChanged?.Invoke(this,
-                    new InstanceStateEventArgs(instance.Id, instance.State));
+            //    InstanceStateChanged?.Invoke(this,
+            //        new InstanceStateEventArgs(instance.Id, instance.State));
 
                 return instance;
             }
@@ -137,23 +138,22 @@ namespace Shaos.Services.Runtime.Host
         }
 
         // </inheritdoc>
-        public Instance StartInstance(
-            int id,
-            object? configuration = default)
+        public Instance StartInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
             var instance = _executingInstances
                 .FirstOrDefault(_ => _.Id == id);
 
-            if (instance != null)
-            {
-                StartInstance(configuration, instance);
-            }
-            else
-            {
-                HandleInstanceNotFound(id);
-            }
+#warning TODO
+            //if (instance != null)
+            //{
+            //    StartInstance(configuration, instance);
+            //}
+            //else
+            //{
+            //    HandleInstanceNotFound(id);
+            //}
 
             return instance!;
         }

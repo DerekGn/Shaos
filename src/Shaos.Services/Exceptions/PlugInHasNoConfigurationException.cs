@@ -22,31 +22,28 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Primitives;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services
+namespace Shaos.Services.Exceptions
 {
-    public interface IInstanceHostService
+    [ExcludeFromCodeCoverage]
+    public class PlugInHasNoConfigurationException : Exception
     {
-        Task<object?> LoadInstanceConfigurationAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        public PlugInHasNoConfigurationException(int id)
+        {
+            Id = id;
+        }
 
-        Task StartInstanceAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        public PlugInHasNoConfigurationException(int id, string message) : base(message)
+        {
+            Id = id;
+        }
 
-        void StopInstance(int id);
+        public PlugInHasNoConfigurationException(int id, string message, Exception inner) : base(message, inner)
+        {
+            Id = id;
+        }
 
-        Task UpdateInstanceConfigurationAsync(
-            int id,
-            IEnumerable<KeyValuePair<string, StringValues>> collection,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Start all <see cref="PlugInInstance"/> that are enabled
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task StartInstancesAsync(CancellationToken cancellationToken = default);
+        public int Id { get; }
     }
 }

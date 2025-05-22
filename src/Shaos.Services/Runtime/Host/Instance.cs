@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Configuration;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
@@ -36,16 +37,17 @@ namespace Shaos.Services.Runtime.Host
     {
         public Instance(
             int id,
-            int parentId,
+            int plugInId,
             string instanceName,
-            bool hasConfiguration)
+            InstanceConfiguration configuration)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(instanceName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(instanceName);
+            ArgumentNullException.ThrowIfNull(configuration);
 
             Id = id;
+            PlugInId = plugInId;
             InstanceName = instanceName;
-
-            Configuration = new InstanceConfiguration(hasConfiguration);
+            Configuration = configuration;
         }
 
         internal Instance(
@@ -53,8 +55,8 @@ namespace Shaos.Services.Runtime.Host
             int parentId,
             string instanceName,
             InstanceState state,
-            bool hasConfiguration = false)
-            : this(id, parentId, instanceName, hasConfiguration)
+            InstanceConfiguration configuration)
+            : this(id, parentId, instanceName, configuration)
         {
             State = state;
         }
@@ -75,6 +77,7 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int Id { get; }
+        public int PlugInId { get; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
