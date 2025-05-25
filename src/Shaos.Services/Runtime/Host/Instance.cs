@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Configuration;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
@@ -61,12 +60,15 @@ namespace Shaos.Services.Runtime.Host
             State = state;
         }
 
+        /// <summary>
+        /// The <see cref="InstanceConfiguration"/> for this instances
+        /// </summary>
         public InstanceConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance execution context
         /// </summary>
-        public PlugInContext? Context { get; private set; }
+        public InstanceExecutionContext? Context { get; private set; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
@@ -77,12 +79,16 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int Id { get; }
-        public int PlugInId { get; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
         public string InstanceName { get; }
+
+        /// <summary>
+        /// The PlugIn identifier
+        /// </summary>
+        public int PlugInId { get; }
 
         /// <summary>
         /// The total running time of this instance
@@ -111,9 +117,11 @@ namespace Shaos.Services.Runtime.Host
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
+            stringBuilder.AppendLine($"{nameof(Configuration)}: {Configuration}");
             stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
             stringBuilder.AppendLine($"{nameof(InstanceName)}: {InstanceName}");
+            stringBuilder.AppendLine($"{nameof(PlugInId)}: {PlugInId}");
             stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
             stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
             stringBuilder.AppendLine($"{nameof(State)}: {State}");
@@ -128,13 +136,11 @@ namespace Shaos.Services.Runtime.Host
         }
 
         internal void LoadContext(
-            IPlugIn plugIn,
-            IRuntimeAssemblyLoadContext assemblyLoadContext)
+            IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
-            ArgumentNullException.ThrowIfNull(assemblyLoadContext);
-
-            Context = new PlugInContext(plugIn, assemblyLoadContext);
+            
+            Context = new InstanceExecutionContext(plugIn);
         }
 
         internal void SetComplete()

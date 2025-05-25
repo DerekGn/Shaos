@@ -27,19 +27,14 @@ using System.Text;
 
 namespace Shaos.Services.Runtime
 {
-    public class PlugInContext : IDisposable
+    public class InstanceExecutionContext : IDisposable
     {
-        private UnloadingWeakReference<IRuntimeAssemblyLoadContext> _unloadingWeakReference;
         private bool disposedValue;
 
-        public PlugInContext(
-            IPlugIn plugIn,
-            IRuntimeAssemblyLoadContext assemblyLoadContext)
+        public InstanceExecutionContext(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
-            ArgumentNullException.ThrowIfNull(assemblyLoadContext);
-
-            _unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(assemblyLoadContext);
+            
             PlugIn = plugIn;
         }
 

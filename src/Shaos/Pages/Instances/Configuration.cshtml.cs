@@ -57,10 +57,14 @@ namespace Shaos.Pages.Instances
             int id,
             CancellationToken cancellationToken)
         {
-            //await _instanceHostService.UpdateInstanceConfigurationAsync(
-            //    id,
-            //    Request.Form,
-            //    cancellationToken);
+            var configurationSettings = Request.Form
+                .Where(_ => _.Key.StartsWith(nameof(Configuration)))
+                .Select(_ => new KeyValuePair<string, string>(_.Key.Replace($"{nameof(Configuration)}.", string.Empty), _.Value.First()));
+
+            await _instanceHostService.UpdateInstanceConfigurationAsync(
+                id,
+                configurationSettings,
+                cancellationToken);
 
             return RedirectToPage("./Index");
         }

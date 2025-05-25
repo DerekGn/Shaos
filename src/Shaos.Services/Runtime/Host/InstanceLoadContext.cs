@@ -40,7 +40,7 @@ namespace Shaos.Services.Runtime.Host
             _unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(assemblyLoadContext);
 
             AssemblyPath = assemblyPath;
-            InstanceAssembly = _unloadingWeakReference.Target.LoadFromAssemblyPath(assemblyPath);
+            Assembly = _unloadingWeakReference.Target.LoadFromAssemblyPath(assemblyPath);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// The PlugIn instance assembly
         /// </summary>
-        public Assembly? InstanceAssembly { get; private set; }
+        public Assembly? Assembly { get; private set; }
 
         #region Dispose
 
@@ -68,7 +68,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (disposing)
                 {
-                    InstanceAssembly = null;
+                    Assembly = null;
 
                     _unloadingWeakReference?.Dispose();
                 }

@@ -23,12 +23,11 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Repositories;
-using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
 using System.Text.Json;
 
@@ -70,25 +69,17 @@ namespace Shaos.Services
             int id,
             CancellationToken cancellationToken = default)
         {
-            return await ExecuteInstanceOperationAsync(id, async (instance) =>
+            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+
+            var package = plugInInstance!.PlugIn!.Package;
+
+            if (!package!.HasConfiguration)
             {
-                object? instanceConfiguration = null;
+                _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
+                throw new PlugInHasNoConfigurationException(id);
+            }
 
-                var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
-
-                if (!plugInInstance.PlugIn.Package.HasConfiguration)
-                {
-                    _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
-                    throw new PlugInHasNoConfigurationException(id);
-                }
-
-                if (instance.Configuration.IsConfigured)
-                {
-                    instanceConfiguration = JsonSerializer.Deserialize<object>(instance.Configuration.Configuration!);
-                }
-
-                return instanceConfiguration;
-            });
+            return _instanceHost.LoadConfiguration(id);
         }
 
         /// <inheritdoc/>
@@ -102,7 +93,8 @@ namespace Shaos.Services
 
                 if (plugInInstance != null)
                 {
-                    var package = plugInInstance.PlugIn.Package;
+#warning TODO need to refactor as config should already be assigned to the plugin
+                    var package = plugInInstance!.PlugIn!.Package;
                     object? plugInConfiguration = null;
 
                     if (package != null && package.HasConfiguration)
@@ -169,105 +161,43 @@ namespace Shaos.Services
             }
         }
 
+        /// <inheritdoc/>
         public void StopInstance(int id)
         {
-            throw new NotImplementedException();
+            _instanceHost.StopInstance(id);
         }
 
-        public Task UpdateInstanceConfigurationAsync(int id, IEnumerable<KeyValuePair<string, StringValues>> collection, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        ///// <inheritdoc/>
-        //public async Task StartUpInstancesAsync(CancellationToken cancellationToken = default)
-        //{
-        //    var plugIns = _plugInRepository
-        //        .GetAsync(
-        //            _ => _.Package != null,
-        //            includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
-        //            cancellationToken: cancellationToken
-        //        );
-
-        //    await foreach (var plugIn in plugIns)
-        //    {
-        //        foreach (var instance in plugIn.Instances)
-        //        {
-        //            var assemblyFile = Path.Combine(_fileStoreService
-        //            .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
-
-        //            _instanceHost
-        //                .CreateInstance(instance.Id, plugIn.Id, instance.Name, assemblyFile, plugIn.Package.HasConfiguration);
-
-        //            if (instance.Enabled)
-        //            {
-        //                object? plugInConfiguration = null;
-
-        //                if (plugIn.Package!.HasConfiguration && string.IsNullOrEmpty(instance.Configuration))
-        //                {
-        //                    _logger.LogWarning("Instance [{Id}] Name: [{Name}] cannot be started no configuration stored",
-        //                        instance.Id,
-        //                        instance.Name);
-        //                }
-        //                else
-        //                {
-        //                    _logger.LogInformation("Starting Instance [{Id}] Name: [{Name}]",
-        //                        instance.Id,
-        //                        instance.Name);
-
-        //                    if (!string.IsNullOrEmpty(instance.Configuration))
-        //                    {
-        //                        plugInConfiguration = JsonSerializer.Deserialize<object>(instance.Configuration);
-        //                    }
-
-        //                    _instanceHost.StartInstance(instance.Id, plugInConfiguration);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        ///// <inheritdoc/>
-        //public void StopInstance(int id)
-        //{
-        //    if (_instanceHost.InstanceExists(id))
-        //    {
-        //        _instanceHost.StopInstance(id);
-        //    }
-        //    else
-        //    {
-        //        _logger.LogWarning("Unable to stop a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
-        //    }
-        //}
-
-        //private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
-        //{
-        //    return await _plugInInstanceRepository.GetByIdAsync(
-        //        id,
-        //        includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
-        //        cancellationToken: cancellationToken);
-        //}
-
-        private async Task ExecuteInstanceOperationAsync(
+        /// <inheritdoc/>
+        public async Task UpdateInstanceConfigurationAsync(
             int id,
-            Func<Instance, Task> operation)
+            IEnumerable<KeyValuePair<string, string>> collection,
+            CancellationToken cancellationToken = default)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+            var configuration = _instanceHost.LoadConfiguration(id);
+            var configurationType = configuration.GetType();
 
-            Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
+            if(configuration == null)
+            {
+                throw new ConfigurationNotLoadedException(id);
+            }
 
-            await operation(instance);
-        }
+            foreach (var kvp in collection)
+            {
+                var value = configurationType.Parse(kvp.Key, kvp.Value);
 
-        private async Task<T> ExecuteInstanceOperationAsync<T>(
-            int id,
-            Func<Instance, Task<T>> operation)
-        {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+                configurationType.SetProperty(configuration!, kvp.Key, value);
+            }
 
-            Instance? instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
+            var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(id,
+                                                                              false,
+                                                                              cancellationToken: cancellationToken);
 
-            return await operation(instance);
+            var serializedConfiguration = JsonSerializer.Serialize(configuration);
+
+
+            plugInInstance!.Configuration = serializedConfiguration;
+
+            await _plugInInstanceRepository.SaveChangesAsync(cancellationToken);
         }
 
         private async Task<PlugInInstance?> LoadPlugInInstanceAsync(

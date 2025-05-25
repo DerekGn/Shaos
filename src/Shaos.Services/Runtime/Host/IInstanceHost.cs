@@ -99,5 +99,12 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="Instance"/> is not synchronously stopped
         /// </remarks>
         Instance StopInstance(int id);
+
+        /// <summary>
+        /// Load the <see cref="Instance"/> configuration
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration is to be loaded for</param>
+        /// <returns>The configuration</returns>
+        object? LoadConfiguration(int id);
     }
 }

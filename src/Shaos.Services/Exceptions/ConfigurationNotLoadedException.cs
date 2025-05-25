@@ -22,29 +22,28 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Exceptions
 {
-    public interface IInstanceHostService
+    [ExcludeFromCodeCoverage]
+    public class ConfigurationNotLoadedException : Exception
     {
-        Task<object?> LoadInstanceConfigurationAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        public ConfigurationNotLoadedException(int id)
+        {
+            Id = id;
+        }
 
-        Task StartInstanceAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        public ConfigurationNotLoadedException(int id, string? message) : base(message)
+        {
+            Id = id;
+        }
 
-        void StopInstance(int id);
+        public ConfigurationNotLoadedException(int id, string? message, Exception? innerException) : base(message, innerException)
+        {
+            Id = id;
+        }
 
-        Task UpdateInstanceConfigurationAsync(
-            int id,
-            IEnumerable<KeyValuePair<string, string>> collection,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Start all <see cref="PlugInInstance"/> that are enabled
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task StartInstancesAsync(CancellationToken cancellationToken = default);
+        public int Id { get; }
     }
 }

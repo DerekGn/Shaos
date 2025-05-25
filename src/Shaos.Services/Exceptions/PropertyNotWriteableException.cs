@@ -22,29 +22,28 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Exceptions
 {
-    public interface IInstanceHostService
+    [ExcludeFromCodeCoverage]
+    public class PropertyNotWriteableException : Exception
     {
-        Task<object?> LoadInstanceConfigurationAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        public PropertyNotWriteableException(string name)
+        {
+            Name = name;
+        }
 
-        Task StartInstanceAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        public PropertyNotWriteableException(string name, string? message) : base(message)
+        {
+            Name = name;
+        }
 
-        void StopInstance(int id);
+        public PropertyNotWriteableException(string name, string? message, Exception? innerException) : base(message, innerException)
+        {
+            Name = name;
+        }
 
-        Task UpdateInstanceConfigurationAsync(
-            int id,
-            IEnumerable<KeyValuePair<string, string>> collection,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Start all <see cref="PlugInInstance"/> that are enabled
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task StartInstancesAsync(CancellationToken cancellationToken = default);
+        public string Name { get; }
     }
 }
