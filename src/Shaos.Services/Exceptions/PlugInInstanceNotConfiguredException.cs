@@ -22,9 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Exceptions
 {
-    [Serializable]
+    [ExcludeFromCodeCoverage]
     public class PlugInInstanceNotConfiguredException : Exception
     {
         public PlugInInstanceNotConfiguredException(int id)

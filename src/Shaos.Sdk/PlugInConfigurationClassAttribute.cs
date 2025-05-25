@@ -24,6 +24,12 @@
 
 namespace Shaos.Sdk
 {
+    /// <summary>
+    /// The PlugIn configuration attribute
+    /// </summary>
+    /// <remarks>
+    /// Applied to a class that is a <see cref="IPlugIn"/> instance configuration
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class PlugInConfigurationClassAttribute : Attribute
     {
