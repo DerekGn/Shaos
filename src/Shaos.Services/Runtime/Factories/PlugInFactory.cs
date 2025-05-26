@@ -25,7 +25,6 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Reflection;
-using System.Linq;
 
 namespace Shaos.Services.Runtime.Factories
 {
@@ -42,7 +41,9 @@ namespace Shaos.Services.Runtime.Factories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public IPlugIn? CreateInstance(Assembly assembly, object? configuration = default)
+        /// </<inheritdoc/>
+        public IPlugIn? CreateInstance(Assembly assembly,
+                                       object? configuration = default)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
@@ -60,6 +61,7 @@ namespace Shaos.Services.Runtime.Factories
             return Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
         }
 
+        /// </<inheritdoc/>
         public object? LoadConfiguration(Assembly assembly)
         {
             ArgumentNullException.ThrowIfNull(assembly);

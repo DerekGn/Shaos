@@ -44,12 +44,11 @@ namespace Shaos.Services
         private readonly IPlugInInstanceRepository _plugInInstanceRepository;
         private readonly IPlugInRepository _plugInRepository;
 
-        public InstanceHostService(
-            ILogger<InstanceHostService> logger,
-            IInstanceHost instanceHost,
-            IFileStoreService fileStoreService,
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository)
+        public InstanceHostService(ILogger<InstanceHostService> logger,
+                                   IInstanceHost instanceHost,
+                                   IFileStoreService fileStoreService,
+                                   IPlugInRepository plugInRepository,
+                                   IPlugInInstanceRepository plugInInstanceRepository)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
@@ -65,9 +64,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<object?> LoadInstanceConfigurationAsync(
-            int id,
-            CancellationToken cancellationToken = default)
+        public async Task<object?> LoadInstanceConfigurationAsync(int id,
+                                                                  CancellationToken cancellationToken = default)
         {
             var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
@@ -83,9 +81,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task StartInstanceAsync(
-            int id,
-            CancellationToken cancellationToken = default)
+        public async Task StartInstanceAsync(int id,
+                                             CancellationToken cancellationToken = default)
         {
             if (_instanceHost.InstanceExists(id))
             {
@@ -142,16 +139,14 @@ namespace Shaos.Services
                         .Combine(_fileStoreService
                         .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
 
-                    var configuration = new InstanceConfiguration(
-                        package!.HasConfiguration,
-                        plugInInstance.Configuration);
+                    var configuration = new InstanceConfiguration(package!.HasConfiguration,
+                                                                  plugInInstance.Configuration);
 
-                    Instance instance = _instanceHost.CreateInstance(
-                            plugInInstance.Id,
-                            plugIn.Id,
-                            plugInInstance.Name,
-                            assemblyFile,
-                            configuration);
+                    Instance instance = _instanceHost.CreateInstance(plugInInstance.Id,
+                                                                     plugIn.Id,
+                                                                     plugInInstance.Name,
+                                                                     assemblyFile,
+                                                                     configuration);
 
                     if (plugInInstance.Enabled && instance.Configuration.IsConfigured)
                     {
@@ -168,10 +163,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task UpdateInstanceConfigurationAsync(
-            int id,
-            IEnumerable<KeyValuePair<string, string>> collection,
-            CancellationToken cancellationToken = default)
+        public async Task UpdateInstanceConfigurationAsync(int id,
+                                                           IEnumerable<KeyValuePair<string, string>> collection,
+                                                           CancellationToken cancellationToken = default)
         {
             var configuration = _instanceHost.LoadConfiguration(id);
             var configurationType = configuration.GetType();
@@ -200,9 +194,8 @@ namespace Shaos.Services
             await _plugInInstanceRepository.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(
-           int id,
-           CancellationToken cancellationToken = default)
+        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id,
+                                                                    CancellationToken cancellationToken = default)
         {
             return await _plugInInstanceRepository.GetByIdAsync(
                 id,

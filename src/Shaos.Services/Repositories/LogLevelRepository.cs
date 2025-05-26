@@ -52,9 +52,8 @@ namespace Shaos.Services.Repositories
             }
         }
 
-        public async Task<LogLevelSwitch?> GetByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default)
+        public async Task<LogLevelSwitch?> GetByNameAsync(string name,
+                                                          CancellationToken cancellationToken = default)
         {
             return await _context
                 .LogLevelSwitches
@@ -63,10 +62,9 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<LogLevelSwitch> UpsertAsync(
-            string name,
-            LogEventLevel level,
-            CancellationToken cancellationToken = default)
+        public async Task<LogLevelSwitch> UpsertAsync(string name,
+                                                      LogEventLevel level,
+                                                      CancellationToken cancellationToken = default)
         {
             var logLevelSwitch = await _context
                 .LogLevelSwitches

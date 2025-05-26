@@ -33,11 +33,14 @@ namespace Shaos.Services.Exceptions
         {
             Id = id;
         }
-        public PlugInInstanceRunningException(int id, string message) : base(message)
+        public PlugInInstanceRunningException(int id,
+                                              string message) : base(message)
         {
             Id = id;
         }
-        public PlugInInstanceRunningException(int id, string message, Exception inner) : base(message, inner)
+        public PlugInInstanceRunningException(int id,
+                                              string message,
+                                              Exception inner) : base(message, inner)
         {
             Id = id;
         }

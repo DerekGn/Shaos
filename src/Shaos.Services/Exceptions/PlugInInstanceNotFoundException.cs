@@ -34,12 +34,15 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
-        public PlugInInstanceNotFoundException(int id, string message) : base(message)
+        public PlugInInstanceNotFoundException(int id,
+                                               string message) : base(message)
         {
             Id = id;
         }
 
-        public PlugInInstanceNotFoundException(int id, string message, Exception inner) : base(message, inner)
+        public PlugInInstanceNotFoundException(int id,
+                                               string message,
+                                               Exception inner) : base(message, inner)
         {
             Id = id;
         }

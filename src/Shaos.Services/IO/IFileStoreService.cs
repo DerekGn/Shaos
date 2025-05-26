@@ -36,14 +36,16 @@ namespace Shaos.Services.IO
         /// </summary>
         /// <param name="id"></param>
         /// <param name="fileName"></param>
-        void DeletePackage(int id, string fileName);
+        void DeletePackage(int id,
+                           string fileName);
 
         /// <summary>
         /// Extract a package
         /// </summary>
         /// <param name="id"></param>
         /// <param name="packageFileName"></param>
-        IEnumerable<string> ExtractPackage(int id, string packageFileName);
+        IEnumerable<string> ExtractPackage(int id,
+                                           string packageFileName);
 
         /// <summary>
         /// 
@@ -59,10 +61,9 @@ namespace Shaos.Services.IO
         /// <param name="stream">The stream to be written</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string> WritePackageFileStreamAsync(
-            int id,
-            string packageFileName,
-            Stream stream,
-            CancellationToken cancellationToken = default);
+        Task<string> WritePackageFileStreamAsync(int id,
+                                                 string packageFileName,
+                                                 Stream stream,
+                                                 CancellationToken cancellationToken = default);
     }
 }

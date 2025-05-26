@@ -45,9 +45,8 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreateAsync(
-            PlugIn plugIn,
-            CancellationToken cancellationToken = default)
+        public async Task<int> CreateAsync(PlugIn plugIn,
+                                           CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
 
@@ -64,10 +63,9 @@ namespace Shaos.Services.Repositories
         }
 
         // <inheritdoc/>
-        public async Task<int> CreatePackageAsync(
-            PlugIn plugIn,
-            Package package,
-            CancellationToken cancellationToken = default)
+        public async Task<int> CreatePackageAsync(PlugIn plugIn,
+                                                  Package package,
+                                                  CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(package);
@@ -83,7 +81,7 @@ namespace Shaos.Services.Repositories
 
         /// <inheritdoc/>
         public Task<int> DeleteAsync(int id,
-            CancellationToken cancellationToken = default)
+                                     CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Deleting PlugIn [{Id}]", id);
 
@@ -97,12 +95,11 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<PlugIn> GetAsync(
-            Expression<Func<PlugIn, bool>>? filter = null,
-            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null,
-            CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<PlugIn> GetAsync(Expression<Func<PlugIn, bool>>? filter = null,
+                                                 Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+                                                 bool withNoTracking = true,
+                                                 List<string>? includeProperties = null,
+                                                 CancellationToken cancellationToken = default)
         {
             return Context
                 .Set<PlugIn>()
@@ -110,21 +107,19 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public Task<PlugIn?> GetByIdAsync(
-            int id,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null,
-            CancellationToken cancellationToken = default)
+        public Task<PlugIn?> GetByIdAsync(int id,
+                                          bool withNoTracking = true,
+                                          List<string>? includeProperties = null,
+                                          CancellationToken cancellationToken = default)
         {
             return Context.Set<PlugIn>().GetByIdAsync(id, withNoTracking, includeProperties, cancellationToken);
         }
 
         // <inheritdoc/>
-        public IQueryable<PlugIn> GetQueryable(
-            Expression<Func<PlugIn, bool>>? filter = null,
-            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null)
+        public IQueryable<PlugIn> GetQueryable(Expression<Func<PlugIn, bool>>? filter = null,
+                                               Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+                                               bool withNoTracking = true,
+                                               List<string>? includeProperties = null)
         {
             return Context
                 .Set<PlugIn>()
@@ -132,11 +127,10 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<PlugIn?> UpdateAsync(
-            int id,
-            string name,
-            string description,
-            CancellationToken cancellationToken = default)
+        public async Task<PlugIn?> UpdateAsync(int id,
+                                               string name,
+                                               string description,
+                                               CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(description);
@@ -155,12 +149,11 @@ namespace Shaos.Services.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task UpdatePackageAsync(
-            PlugIn plugIn,
-            string fileName,
-            string assemblyFile,
-            string version,
-            CancellationToken cancellationToken = default)
+        public async Task UpdatePackageAsync(PlugIn plugIn,
+                                             string fileName,
+                                             string assemblyFile,
+                                             string version,
+                                             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(fileName);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyFile);
@@ -176,7 +169,8 @@ namespace Shaos.Services.Repositories
             }
         }
 
-        private async Task<T> HandleDuplicatePlugInNameAsync<T>(string name, Func<Task<T>> operation)
+        private async Task<T> HandleDuplicatePlugInNameAsync<T>(string name,
+                                                                Func<Task<T>> operation)
         {
             try
             {

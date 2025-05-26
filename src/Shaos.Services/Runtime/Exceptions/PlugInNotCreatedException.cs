@@ -27,30 +27,19 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Runtime.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class InstanceRunningException : Exception
+    public class PlugInNotCreatedException : Exception
     {
-        public InstanceRunningException()
+        public PlugInNotCreatedException()
         {
         }
 
-        public InstanceRunningException(int id)
+        public PlugInNotCreatedException(string? message) : base(message)
         {
-            Id = id;
         }
 
-        public InstanceRunningException(int id,
-                                        string? message) : base(message)
+        public PlugInNotCreatedException(string? message,
+                                         Exception? innerException) : base(message, innerException)
         {
-            Id = id;
         }
-
-        public InstanceRunningException(int id,
-                                        string? message,
-                                        Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
     }
 }

@@ -34,12 +34,15 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
-        public PlugInPackageNotAssignedException(int id, string message) : base(message)
+        public PlugInPackageNotAssignedException(int id,
+                                                 string message) : base(message)
         {
             Id = id;
         }
 
-        public PlugInPackageNotAssignedException(int id, string message, Exception inner) : base(message, inner)
+        public PlugInPackageNotAssignedException(int id,
+                                                 string message,
+                                                 Exception inner) : base(message, inner)
         {
             Id = id;
         }

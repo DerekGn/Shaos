@@ -28,13 +28,11 @@ namespace Shaos.Services.Logging
 {
     public interface ILoggingConfigurationService
     {
-        Task InitialiseLoggingConfigurationAsync(
-            ILoggingConfiguration loggingConfiguration,
-            CancellationToken cancellationToken = default);
+        Task InitialiseLoggingConfigurationAsync(ILoggingConfiguration loggingConfiguration,
+                                                 CancellationToken cancellationToken = default);
 
-        Task UpdateLogLevelSwitchAsync(
-            string name,
-            LogEventLevel level,
-            CancellationToken cancellationToken = default);
+        Task UpdateLogLevelSwitchAsync(string name,
+                                       LogEventLevel level,
+                                       CancellationToken cancellationToken = default);
     }
 }

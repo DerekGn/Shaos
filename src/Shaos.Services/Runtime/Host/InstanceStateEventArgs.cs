@@ -29,9 +29,8 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class InstanceStateEventArgs : EventArgs
     {
-        public InstanceStateEventArgs(
-            int id,
-            InstanceState state)
+        public InstanceStateEventArgs(int id,
+                                      InstanceState state)
         {
             Id = id;
             State = state;

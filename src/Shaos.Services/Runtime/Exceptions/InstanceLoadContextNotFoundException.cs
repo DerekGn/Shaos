@@ -27,26 +27,22 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Runtime.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class InstanceRunningException : Exception
+    public class InstanceLoadContextNotFoundException : Exception
     {
-        public InstanceRunningException()
-        {
-        }
-
-        public InstanceRunningException(int id)
+        public InstanceLoadContextNotFoundException(int id)
         {
             Id = id;
         }
 
-        public InstanceRunningException(int id,
-                                        string? message) : base(message)
+        public InstanceLoadContextNotFoundException(int id,
+                                                    string? message) : base(message)
         {
             Id = id;
         }
 
-        public InstanceRunningException(int id,
-                                        string? message,
-                                        Exception? innerException) : base(message, innerException)
+        public InstanceLoadContextNotFoundException(int id,
+                                                    string? message,
+                                                    Exception? innerException) : base(message, innerException)
         {
             Id = id;
         }

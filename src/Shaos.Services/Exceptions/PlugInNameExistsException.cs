@@ -34,12 +34,15 @@ namespace Shaos.Services.Exceptions
             Name = name;
         }
 
-        public PlugInNameExistsException(string name, string message) : base(message)
+        public PlugInNameExistsException(string name,
+                                         string message) : base(message)
         {
             Name = name;
         }
 
-        public PlugInNameExistsException(string name, string message, Exception inner) : base(message, inner)
+        public PlugInNameExistsException(string name,
+                                         string message,
+                                         Exception inner) : base(message, inner)
         {
             Name = name;
         }

@@ -36,7 +36,8 @@ namespace Shaos.Services.Exceptions
         {
         }
 
-        public NoValidPlugInAssemblyFoundException(string message, Exception inner) : base(message, inner)
+        public NoValidPlugInAssemblyFoundException(string message,
+                                                   Exception inner) : base(message, inner)
         {
         }
     }

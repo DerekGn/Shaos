@@ -34,17 +34,15 @@ namespace Shaos.Services.Logging
         private readonly ILoggingConfigurationRepository _repository;
         private readonly ILogger<LoggingConfigurationService> _logger;
 
-        public LoggingConfigurationService(
-            ILoggingConfigurationRepository repository,
-            ILogger<LoggingConfigurationService> logger)
+        public LoggingConfigurationService(ILoggingConfigurationRepository repository,
+                                           ILogger<LoggingConfigurationService> logger)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task InitialiseLoggingConfigurationAsync(
-            ILoggingConfiguration loggingConfiguration,
-            CancellationToken cancellationToken = default)
+        public async Task InitialiseLoggingConfigurationAsync(ILoggingConfiguration loggingConfiguration,
+                                                              CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Initialising logging configuration");
 
@@ -56,10 +54,9 @@ namespace Shaos.Services.Logging
             }
         }
 
-        public async Task UpdateLogLevelSwitchAsync(
-            string name,
-            LogEventLevel level,
-            CancellationToken cancellationToken = default)
+        public async Task UpdateLogLevelSwitchAsync(string name,
+                                                    LogEventLevel level,
+                                                    CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Updating {Type} [{Name}] Level: [{Level}]",
                 nameof(LogLevelSwitch),

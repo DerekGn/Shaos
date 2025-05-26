@@ -38,9 +38,8 @@ namespace Shaos.Services.Runtime.Validation
         private readonly ILogger<PlugInTypeValidator> _logger;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
-        public PlugInTypeValidator(
-            ILogger<PlugInTypeValidator> logger,
-            IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
+        public PlugInTypeValidator(ILogger<PlugInTypeValidator> logger,
+                                   IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
@@ -70,7 +69,9 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        internal void ValidatePlugInType(Type plugInType, out bool hasLogger, out bool hasConfiguration)
+        internal void ValidatePlugInType(Type plugInType,
+                                         out bool hasLogger,
+                                         out bool hasConfiguration)
         {
             hasConfiguration = false;
             hasLogger = false;
@@ -165,7 +166,8 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile, out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
+        private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile,
+                                                             out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
         {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);

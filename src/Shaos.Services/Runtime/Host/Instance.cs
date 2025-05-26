@@ -49,12 +49,11 @@ namespace Shaos.Services.Runtime.Host
             Configuration = configuration;
         }
 
-        internal Instance(
-            int id,
-            int parentId,
-            string instanceName,
-            InstanceState state,
-            InstanceConfiguration configuration)
+        internal Instance(int id,
+                          int parentId,
+                          string instanceName,
+                          InstanceState state,
+                          InstanceConfiguration configuration)
             : this(id, parentId, instanceName, configuration)
         {
             State = state;

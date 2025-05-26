@@ -38,7 +38,8 @@ namespace Shaos.Services.Repositories
         /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
-        Task<int> CreateAsync(PlugIn plugIn, CancellationToken cancellationToken = default);
+        Task<int> CreateAsync(PlugIn plugIn,
+                              CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new <see cref="Package"/> instance
@@ -47,10 +48,9 @@ namespace Shaos.Services.Repositories
         /// <param name="package">The <see cref="Package"/> instance to associate the <see cref="PlugIn"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="Package"/> identifier</returns>
-        Task<int> CreatePackageAsync(
-            PlugIn plugIn,
-            Package package,
-            CancellationToken cancellationToken = default);
+        Task<int> CreatePackageAsync(PlugIn plugIn,
+                                     Package package,
+                                     CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete a <see cref="PlugIn"/>
@@ -58,7 +58,8 @@ namespace Shaos.Services.Repositories
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>
-        Task<int> DeleteAsync(int id, CancellationToken cancellationToken = default);
+        Task<int> DeleteAsync(int id,
+                              CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Determine if a <see cref="PlugIn"/> with <paramref name="id"/> exists in the store
@@ -66,7 +67,8 @@ namespace Shaos.Services.Repositories
         /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>True if the <see cref="PlugIn"/> exists</returns>
-        Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(int id,
+                               CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get an <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/> instances
@@ -77,12 +79,11 @@ namespace Shaos.Services.Repositories
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="PlugIn"/> instances</returns>
-        IAsyncEnumerable<PlugIn> GetAsync(
-            Expression<Func<PlugIn, bool>>? filter = null,
-            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null,
-            CancellationToken cancellationToken = default);
+        IAsyncEnumerable<PlugIn> GetAsync(Expression<Func<PlugIn, bool>>? filter = null,
+                                          Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+                                          bool withNoTracking = true,
+                                          List<string>? includeProperties = null,
+                                          CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a <see cref="PlugIn"/> by identifier
@@ -92,11 +93,10 @@ namespace Shaos.Services.Repositories
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>A <see cref="PlugIn"/> instance if found</returns>
-        Task<PlugIn?> GetByIdAsync(
-            int id,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null,
-            CancellationToken cancellationToken = default);
+        Task<PlugIn?> GetByIdAsync(int id,
+                                   bool withNoTracking = true,
+                                   List<string>? includeProperties = null,
+                                   CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get an <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances
@@ -107,11 +107,10 @@ namespace Shaos.Services.Repositories
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>A <see cref="IQueryable{T}"/> of <see cref="PlugIn"/> instances</returns>
-        IQueryable<PlugIn> GetQueryable(
-            Expression<Func<PlugIn, bool>>? filter = null,
-            Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null);
+        IQueryable<PlugIn> GetQueryable(Expression<Func<PlugIn, bool>>? filter = null,
+                                        Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>? orderBy = null,
+                                        bool withNoTracking = true,
+                                        List<string>? includeProperties = null);
 
         /// <summary>
         /// Update a <see cref="PlugIn"/> instance
@@ -123,11 +122,10 @@ namespace Shaos.Services.Repositories
         /// <returns>The <see cref="PlugIn"/> if found and updates are applied</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
-        Task<PlugIn?> UpdateAsync(
-            int id,
-            string name,
-            string description,
-            CancellationToken cancellationToken = default);
+        Task<PlugIn?> UpdateAsync(int id,
+                                  string name,
+                                  string description,
+                                  CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update a <see cref="Package"/> instance
@@ -137,11 +135,10 @@ namespace Shaos.Services.Repositories
         /// <param name="assemblyFile">The <see cref="PlugIn"/> assembly</param>
         /// <param name="version">The <see cref="Package"/> assembly version</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task UpdatePackageAsync(
-            PlugIn plugIn,
-            string fileName,
-            string assemblyFile,
-            string version,
-            CancellationToken cancellationToken = default);
+        Task UpdatePackageAsync(PlugIn plugIn,
+                                string fileName,
+                                string assemblyFile,
+                                string version,
+                                CancellationToken cancellationToken = default);
     }
 }

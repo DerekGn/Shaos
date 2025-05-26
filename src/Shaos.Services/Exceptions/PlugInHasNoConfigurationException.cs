@@ -39,7 +39,9 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
-        public PlugInHasNoConfigurationException(int id, string message, Exception inner) : base(message, inner)
+        public PlugInHasNoConfigurationException(int id,
+                                                 string message,
+                                                 Exception inner) : base(message, inner)
         {
             Id = id;
         }

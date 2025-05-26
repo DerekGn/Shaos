@@ -1,5 +1,4 @@
-﻿
-namespace Shaos.Services.Runtime
+﻿namespace Shaos.Services.Runtime
 {
     public class UnloadingWeakReference<T> : IDisposable where T : class
     {
@@ -14,6 +13,13 @@ namespace Shaos.Services.Runtime
         }
 
         public T Target => (T)_weakReference.Target!;
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -31,13 +37,6 @@ namespace Shaos.Services.Runtime
 
                 disposedValue = true;
             }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

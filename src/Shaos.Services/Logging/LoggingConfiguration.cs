@@ -56,7 +56,8 @@ namespace Shaos.Services.Logging
         /// </summary>
         /// <param name="configuration">The <see cref="IConfiguration"/> instance</param>
         /// <param name="loggerConfiguration">The <see cref="LoggerConfiguration"/> instance</param>
-        public void Configure(IConfiguration configuration, LoggerConfiguration loggerConfiguration)
+        public void Configure(IConfiguration configuration,
+                              LoggerConfiguration loggerConfiguration)
         {
             var logLevelSwitches = new Dictionary<string, LoggingLevelSwitch>();
             var readerOptions = new ConfigurationReaderOptions(_loggerConfigurationAssemblies)

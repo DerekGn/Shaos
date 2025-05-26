@@ -37,21 +37,19 @@ namespace Shaos.Services.Runtime
         private readonly AssemblyLoadContext _assemblyLoadContext;
         private readonly string _plugInAssemblyPath;
 
-        public RuntimeAssemblyLoadContext(
-           string plugInAssemblyPath) : this(GetAssemblyLoadContext(), plugInAssemblyPath, true)
+        public RuntimeAssemblyLoadContext(string plugInAssemblyPath) 
+            : this(GetAssemblyLoadContext(), plugInAssemblyPath, true)
         {
         }
 
-        public RuntimeAssemblyLoadContext(
-           string plugInAssemblyPath,
-           bool isCollectable) : this(GetAssemblyLoadContext(), plugInAssemblyPath, isCollectable)
+        public RuntimeAssemblyLoadContext(string plugInAssemblyPath,
+                                          bool isCollectable) : this(GetAssemblyLoadContext(), plugInAssemblyPath, isCollectable)
         {
         }
 
-        public RuntimeAssemblyLoadContext(
-            AssemblyLoadContext assemblyLoadContext,
-            string plugInAssemblyPath,
-            bool isCollectable) : base(Path.GetFileNameWithoutExtension(plugInAssemblyPath), isCollectable)
+        public RuntimeAssemblyLoadContext(AssemblyLoadContext assemblyLoadContext,
+                                          string plugInAssemblyPath,
+                                          bool isCollectable) : base(Path.GetFileNameWithoutExtension(plugInAssemblyPath), isCollectable)
         {
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyPath);

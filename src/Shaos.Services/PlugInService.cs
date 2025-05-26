@@ -47,15 +47,14 @@ namespace Shaos.Services
         private readonly IPlugInTypeValidator _plugInTypeValidator;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
-        public PlugInService(
-            ILogger<PlugInService> logger,
-            IInstanceHost instanceHost,
-            IPlugInFactory plugInFactory,
-            IFileStoreService fileStoreService,
-            IPlugInRepository plugInRepository,
-            IPlugInTypeValidator plugInTypeValidator,
-            IPlugInInstanceRepository plugInInstanceRepository,
-            IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
+        public PlugInService(ILogger<PlugInService> logger,
+                             IInstanceHost instanceHost,
+                             IPlugInFactory plugInFactory,
+                             IFileStoreService fileStoreService,
+                             IPlugInRepository plugInRepository,
+                             IPlugInTypeValidator plugInTypeValidator,
+                             IPlugInInstanceRepository plugInInstanceRepository,
+                             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
@@ -77,10 +76,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInInstanceAsync(
-            int id,
-            PlugInInstance plugInInstance,
-            CancellationToken cancellationToken = default)
+        public async Task<int> CreatePlugInInstanceAsync(int id,
+                                                         PlugInInstance plugInInstance,
+                                                         CancellationToken cancellationToken = default)
         {
             int result = 0;
 
@@ -124,9 +122,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task DeletePlugInAsync(
-            int id,
-            CancellationToken cancellationToken = default)
+        public async Task DeletePlugInAsync(int id,
+                                            CancellationToken cancellationToken = default)
         {
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
@@ -153,9 +150,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task DeletePlugInInstanceAsync(
-            int id,
-            CancellationToken cancellationToken = default)
+        public async Task DeletePlugInInstanceAsync(int id,
+                                                    CancellationToken cancellationToken = default)
         {
             var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
 
@@ -185,9 +181,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<object> LoadPlugInInstanceConfigurationAsync(
-            int id,
-            CancellationToken cancellationToken = default)
+        public async Task<object> LoadPlugInInstanceConfigurationAsync(int id,
+                                                                       CancellationToken cancellationToken = default)
         {
             var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(
                 id,
@@ -214,10 +209,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<PlugInInstance?> SetPlugInInstanceEnableAsync(
-            int id,
-            bool enable,
-            CancellationToken cancellationToken = default)
+        public async Task<PlugInInstance?> SetPlugInInstanceEnableAsync(int id,
+                                                                        bool enable,
+                                                                        CancellationToken cancellationToken = default)
         {
             var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(id, false, cancellationToken: cancellationToken);
 
@@ -236,11 +230,10 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task UploadPlugInPackageAsync(
-            int id,
-            string packageFileName,
-            Stream stream,
-            CancellationToken cancellationToken = default)
+        public async Task UploadPlugInPackageAsync(int id,
+                                                   string packageFileName,
+                                                   Stream stream,
+                                                   CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
@@ -286,7 +279,8 @@ namespace Shaos.Services
             cancellationToken);
         }
 
-        private bool CheckPlugInRunning(PlugIn plugIn, out int plugInInstanceId)
+        private bool CheckPlugInRunning(PlugIn plugIn,
+                                        out int plugInInstanceId)
         {
             bool result = false;
 
@@ -311,12 +305,11 @@ namespace Shaos.Services
             return result;
         }
 
-        private async Task CreateOrUpdatePlugInPackageAsync(
-            PlugIn plugIn,
-            string packagFileName,
-            string assemblyFileName,
-            PlugInTypeInformation plugInTypeInformation,
-            CancellationToken cancellationToken)
+        private async Task CreateOrUpdatePlugInPackageAsync(PlugIn plugIn,
+                                                            string packagFileName,
+                                                            string assemblyFileName,
+                                                            PlugInTypeInformation plugInTypeInformation,
+                                                            CancellationToken cancellationToken)
         {
             if (plugIn.Package == null)
             {
@@ -356,11 +349,10 @@ namespace Shaos.Services
             }
         }
 
-        private async Task ExecutePlugInOperationAsync(
-            int id,
-            Func<PlugIn, CancellationToken, Task> operation,
-            bool withNoTracking = true,
-            CancellationToken cancellationToken = default)
+        private async Task ExecutePlugInOperationAsync(int id,
+                                                       Func<PlugIn, CancellationToken, Task> operation,
+                                                       bool withNoTracking = true,
+                                                       CancellationToken cancellationToken = default)
         {
             var plugIn = await _plugInRepository.GetByIdAsync(
                 id,
@@ -411,10 +403,9 @@ namespace Shaos.Services
             }
         }
 
-        private bool VerifyPlugState(
-            PlugIn plugIn,
-            InstanceState state,
-            out int runningInstanceId)
+        private bool VerifyPlugState(PlugIn plugIn,
+                                     InstanceState state,
+                                     out int runningInstanceId)
         {
             bool result = false;
 

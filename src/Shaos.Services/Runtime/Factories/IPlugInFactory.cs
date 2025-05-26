@@ -38,7 +38,8 @@ namespace Shaos.Services.Runtime.Factories
         /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="IPlugIn"/></param>
         /// <param name="configuration"></param>
         /// <returns>A <see cref="IPlugIn"/> instance</returns>
-        IPlugIn? CreateInstance(Assembly assembly, object? configuration = default);
+        IPlugIn? CreateInstance(Assembly assembly,
+                                object? configuration = default);
 
         /// <summary>
         /// 

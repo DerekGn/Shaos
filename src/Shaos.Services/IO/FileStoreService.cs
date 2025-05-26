@@ -43,7 +43,8 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeletePackage(int id, string fileName)
+        public void DeletePackage(int id,
+                                  string fileName)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
@@ -58,7 +59,8 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public IEnumerable<string> ExtractPackage(int id, string packageFileName)
+        public IEnumerable<string> ExtractPackage(int id,
+                                                  string packageFileName)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
@@ -89,11 +91,10 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public async Task<string> WritePackageFileStreamAsync(
-            int id,
-            string packageFileName,
-            Stream stream,
-            CancellationToken cancellationToken = default)
+        public async Task<string> WritePackageFileStreamAsync(int id,
+                                                              string packageFileName,
+                                                              Stream stream,
+                                                              CancellationToken cancellationToken = default)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);

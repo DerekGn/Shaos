@@ -34,12 +34,15 @@ namespace Shaos.Services.Runtime.Exceptions
             Count = count;
         }
 
-        public PlugInTypesFoundException(int count, string message) : base(message)
+        public PlugInTypesFoundException(int count,
+                                         string message) : base(message)
         {
             Count = count;
         }
 
-        public PlugInTypesFoundException(int count, string message, Exception inner) : base(message, inner)
+        public PlugInTypesFoundException(int count,
+                                         string message,
+                                         Exception inner) : base(message, inner)
         {
             Count = count;
         }

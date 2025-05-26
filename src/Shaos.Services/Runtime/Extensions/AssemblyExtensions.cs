@@ -28,7 +28,8 @@ namespace Shaos.Services.Runtime.Extensions
 {
     internal static class AssemblyExtensions
     {
-        public static IEnumerable<Type> ResolveAssemblyDerivedTypes(this Assembly assembly, Type baseType)
+        public static IEnumerable<Type> ResolveAssemblyDerivedTypes(this Assembly assembly,
+                                                                    Type baseType)
         {
             return from Type type in assembly.GetTypes()
                          where baseType.IsAssignableFrom(type)

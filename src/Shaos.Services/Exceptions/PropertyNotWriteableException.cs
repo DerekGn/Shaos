@@ -34,12 +34,15 @@ namespace Shaos.Services.Exceptions
             Name = name;
         }
 
-        public PropertyNotWriteableException(string name, string? message) : base(message)
+        public PropertyNotWriteableException(string name,
+                                             string? message) : base(message)
         {
             Name = name;
         }
 
-        public PropertyNotWriteableException(string name, string? message, Exception? innerException) : base(message, innerException)
+        public PropertyNotWriteableException(string name,
+                                             string? message,
+                                             Exception? innerException) : base(message, innerException)
         {
             Name = name;
         }

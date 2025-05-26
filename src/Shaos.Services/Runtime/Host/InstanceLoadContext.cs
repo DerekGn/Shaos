@@ -31,9 +31,8 @@ namespace Shaos.Services.Runtime.Host
         private readonly UnloadingWeakReference<IRuntimeAssemblyLoadContext> _unloadingWeakReference;
         private bool disposedValue;
 
-        public InstanceLoadContext(
-            string assemblyPath,
-            IRuntimeAssemblyLoadContext assemblyLoadContext)
+        public InstanceLoadContext(string assemblyPath,
+                                   IRuntimeAssemblyLoadContext assemblyLoadContext)
         {
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 

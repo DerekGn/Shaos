@@ -38,12 +38,15 @@ namespace Shaos.Services.Runtime.Exceptions
             Id = id;
         }
 
-        public InstanceExistsException(int id, string? message) : base(message)
+        public InstanceExistsException(int id,
+                                       string? message) : base(message)
         {
             Id = id;
         }
 
-        public InstanceExistsException(int id, string? message, Exception? innerException) : base(message, innerException)
+        public InstanceExistsException(int id,
+                                       string? message,
+                                       Exception? innerException) : base(message, innerException)
         {
             Id = id;
         }

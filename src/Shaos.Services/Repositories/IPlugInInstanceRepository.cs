@@ -39,10 +39,9 @@ namespace Shaos.Services.Repositories
         /// <returns>The <see cref="PlugInInstance"/> identifier</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
         /// <exception cref="PlugInInstanceNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
-        Task<int> CreateAsync(
-            PlugIn plugIn,
-            PlugInInstance plugInInstance,
-            CancellationToken cancellationToken = default);
+        Task<int> CreateAsync(PlugIn plugIn,
+                              PlugInInstance plugInInstance,
+                              CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete a <see cref="PlugInInstance"/>
@@ -50,9 +49,8 @@ namespace Shaos.Services.Repositories
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>
-        Task DeleteAsync(
-            int id,
-            CancellationToken cancellationToken = default);
+        Task DeleteAsync(int id,
+                         CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Determine if a <see cref="PlugIn"/> with <paramref name="id"/> exists in the store
@@ -60,7 +58,8 @@ namespace Shaos.Services.Repositories
         /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>True if the <see cref="PlugIn"/> exists</returns>
-        Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(int id,
+                               CancellationToken cancellationToken = default);
 
         /// <summary>
         /// 
@@ -71,12 +70,11 @@ namespace Shaos.Services.Repositories
         /// <param name="includeProperties"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        IAsyncEnumerable<PlugInInstance> GetAsync(
-            Expression<Func<PlugInInstance, bool>>? filter = null,
-            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null,
-            CancellationToken cancellationToken = default);
+        IAsyncEnumerable<PlugInInstance> GetAsync(Expression<Func<PlugInInstance, bool>>? filter = null,
+                                                  Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null,
+                                                  bool withNoTracking = true,
+                                                  List<string>? includeProperties = null,
+                                                  CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a <see cref="PlugInInstance"/> by identifier
@@ -86,11 +84,10 @@ namespace Shaos.Services.Repositories
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>A <see cref="PlugInInstance"/> instance if found</returns>
-        Task<PlugInInstance?> GetByIdAsync(
-            int id,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null,
-            CancellationToken cancellationToken = default);
+        Task<PlugInInstance?> GetByIdAsync(int id,
+                                           bool withNoTracking = true,
+                                           List<string>? includeProperties = null,
+                                           CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update a <see cref="PlugInInstance"/>

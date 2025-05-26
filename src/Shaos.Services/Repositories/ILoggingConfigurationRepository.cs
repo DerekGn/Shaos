@@ -36,26 +36,23 @@ namespace Shaos.Services.Repositories
         /// <param name="level">The <see cref="LogEventLevel"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The upserted <see cref="LogLevelSwitch"/></returns>
-        Task<LogLevelSwitch> UpsertAsync(
-            string name,
-            LogEventLevel level,
-            CancellationToken cancellationToken = default);
+        Task<LogLevelSwitch> UpsertAsync(string name,
+                                         LogEventLevel level,
+                                         CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get the <see cref="LogLevelSwitch"/>
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An <see cref="IAsyncEnumerable{T}"/> instance</returns>
-        IAsyncEnumerable<LogLevelSwitch> GetAsync(
-            CancellationToken cancellationToken = default);
+        IAsyncEnumerable<LogLevelSwitch> GetAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get the <see cref="LogLevelSwitch"/>
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>A <see cref="LogLevelSwitch?"/></returns>
-        Task<LogLevelSwitch?> GetByNameAsync(
-            string name,
-            CancellationToken cancellationToken = default);
+        Task<LogLevelSwitch?> GetByNameAsync(string name,
+                                             CancellationToken cancellationToken = default);
     }
 }

@@ -29,15 +29,22 @@ namespace Shaos.Services.Runtime.Exceptions
     [ExcludeFromCodeCoverage]
     public class MaxInstancesRunningException : Exception
     {
-        public MaxInstancesRunningException()
-        { }
+        public MaxInstancesRunningException(int instances)
+        {
+            Instances = instances;
+        }
 
-        public MaxInstancesRunningException(string message) : base(message)
+        public MaxInstancesRunningException(int instances,
+                                            string message) : base(message)
         {
         }
 
-        public MaxInstancesRunningException(string message, Exception inner) : base(message, inner)
+        public MaxInstancesRunningException(int instances,
+                                            string message,
+                                            Exception inner) : base(message, inner)
         {
         }
+
+        public int Instances { get; }
     }
 }

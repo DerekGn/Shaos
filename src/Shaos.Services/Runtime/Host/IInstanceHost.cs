@@ -53,12 +53,11 @@ namespace Shaos.Services.Runtime.Host
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyPath"/> is null of empty</exception>
         /// <exception cref="InstanceExistsException">Thrown if the <see cref="InstanceHost"/> already contains an <see cref="Instance"/> with <paramref name="id"/></exception>
         /// <exception cref="MaxInstancesRunningException">Thrown if the maximum number of instances are loaded</exception>
-        Instance CreateInstance(
-            int id,
-            int plugInId,
-            string instanceName,
-            string assemblyPath,
-            InstanceConfiguration configuration);
+        Instance CreateInstance(int id,
+                                int plugInId,
+                                string instanceName,
+                                string assemblyPath,
+                                InstanceConfiguration configuration);
 
         /// <summary>
         /// Indicates if an <see cref="Instance"/> exists in the runtime

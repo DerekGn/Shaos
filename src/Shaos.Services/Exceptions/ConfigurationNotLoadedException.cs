@@ -34,12 +34,15 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
-        public ConfigurationNotLoadedException(int id, string? message) : base(message)
+        public ConfigurationNotLoadedException(int id,
+                                               string? message) : base(message)
         {
             Id = id;
         }
 
-        public ConfigurationNotLoadedException(int id, string? message, Exception? innerException) : base(message, innerException)
+        public ConfigurationNotLoadedException(int id,
+                                               string? message,
+                                               Exception? innerException) : base(message, innerException)
         {
             Id = id;
         }

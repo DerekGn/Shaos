@@ -36,7 +36,8 @@ namespace Shaos.Services.Runtime.Exceptions
         {
         }
 
-        public InstanceCreateException(string message, Exception inner) : base(message, inner)
+        public InstanceCreateException(string message,
+                                       Exception inner) : base(message, inner)
         {
         }
     }
