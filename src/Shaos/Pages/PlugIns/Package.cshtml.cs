@@ -40,10 +40,9 @@ namespace Shaos.Pages.PlugIns
         private readonly IPlugInService _plugInService;
         private readonly IPlugInRepository _repository;
 
-        public PackageModel(
-            IPlugInRepository repository,
-            IPlugInService plugInService,
-            ICodeFileValidationService codeFileValidationService)
+        public PackageModel(IPlugInRepository repository,
+                            IPlugInService plugInService,
+                            ICodeFileValidationService codeFileValidationService)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _plugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
@@ -59,7 +58,8 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn? PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int id,
+                                                    CancellationToken cancellationToken = default)
         {
             var plugin = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
 

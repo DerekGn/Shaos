@@ -24,7 +24,6 @@
 
 using Shaos.Services;
 using Shaos.Services.Logging;
-using Shaos.Services.Runtime;
 
 namespace Shaos.Startup
 {
@@ -33,9 +32,8 @@ namespace Shaos.Startup
         private readonly ILogger<InitialisationHostService> _logger;
         private readonly IServiceProvider _services;
 
-        public InitialisationHostService(
-            ILogger<InitialisationHostService> logger,
-            IServiceProvider services)
+        public InitialisationHostService(ILogger<InitialisationHostService> logger,
+                                         IServiceProvider services)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _services = services ?? throw new ArgumentNullException(nameof(services));

@@ -32,8 +32,7 @@ namespace Shaos.Pages.Instances
     {
         private readonly IInstanceHostService _instanceHostService;
 
-        public ConfigurationModel(
-            IInstanceHostService instanceHostService)
+        public ConfigurationModel(IInstanceHostService instanceHostService)
         {
             ArgumentNullException.ThrowIfNull(instanceHostService);
 
@@ -43,9 +42,8 @@ namespace Shaos.Pages.Instances
         [BindProperty]
         public object? Configuration { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(
-            int id,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> OnGetAsync(int id,
+                                                    CancellationToken cancellationToken)
         {
             Configuration = await _instanceHostService
                 .LoadInstanceConfigurationAsync(id, cancellationToken);
@@ -53,9 +51,8 @@ namespace Shaos.Pages.Instances
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(
-            int id,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync(int id,
+                                                     CancellationToken cancellationToken)
         {
             var configurationSettings = Request.Form
                 .Where(_ => _.Key.StartsWith(nameof(Configuration)))

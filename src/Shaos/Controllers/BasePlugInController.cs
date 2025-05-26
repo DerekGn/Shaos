@@ -32,11 +32,10 @@ namespace Shaos.Controllers
         internal const string IdentifierNotFound = "A PlugIn with identifier was not found";
         internal const string PluginNotFound = "The PlugIn could not be found";
 
-        protected BasePlugInController(
-            ILogger<BasePlugInController> logger,
-            IPlugInService plugInService,
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository) : base(logger)
+        protected BasePlugInController(ILogger<BasePlugInController> logger,
+                                       IPlugInService plugInService,
+                                       IPlugInRepository plugInRepository,
+                                       IPlugInInstanceRepository plugInInstanceRepository) : base(logger)
         {
             PlugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
             PlugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));

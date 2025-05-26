@@ -34,8 +34,7 @@ namespace Shaos.Pages.PlugInInstances
     {
         private readonly IPlugInService _plugInService;
 
-        public CreateModel(
-            IPlugInService plugInService)
+        public CreateModel(IPlugInService plugInService)
         {
             ArgumentNullException.ThrowIfNull(plugInService);
 

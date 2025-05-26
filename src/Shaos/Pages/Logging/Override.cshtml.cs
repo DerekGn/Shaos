@@ -35,9 +35,8 @@ namespace Shaos.Pages.Logging
         private readonly ILoggingConfiguration _loggingConfiguration;
         private readonly ILoggingConfigurationRepository _loggingConfigurationRepository;
 
-        public OverrideModel(
-            ILoggingConfiguration loggingConfiguration,
-            ILoggingConfigurationRepository loggingConfigurationRepository)
+        public OverrideModel(ILoggingConfiguration loggingConfiguration,
+                             ILoggingConfigurationRepository loggingConfigurationRepository)
         {
             _loggingConfiguration = loggingConfiguration;
             _loggingConfigurationRepository = loggingConfigurationRepository ?? throw new ArgumentNullException(nameof(loggingConfigurationRepository));
@@ -46,7 +45,8 @@ namespace Shaos.Pages.Logging
         [BindProperty]
         public LogLevelSwitch LogLevelSwitch { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(string id,
+                                                    CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(id))
             {

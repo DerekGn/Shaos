@@ -47,7 +47,8 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnGetAsync(int id,
+                                                    CancellationToken cancellationToken)
         {
             var plugin = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
 
@@ -63,7 +64,8 @@ namespace Shaos.Pages.PlugIns
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostAsync(int? id,
+                                                     CancellationToken cancellationToken)
         {
             try
             {

@@ -36,10 +36,9 @@ namespace Shaos.Pages.Instances
         private readonly IInstanceHost _instanceHost;
         private readonly IInstanceHostService _instanceHostService;
 
-        public IndexModel(
-            IInstanceHost instanceHost,
-            IConfiguration configuration,
-            IInstanceHostService instanceHostService)
+        public IndexModel(IInstanceHost instanceHost,
+                          IConfiguration configuration,
+                          IInstanceHostService instanceHostService)
         {
             ArgumentNullException.ThrowIfNull(instanceHost);
             ArgumentNullException.ThrowIfNull(configuration);
@@ -53,11 +52,10 @@ namespace Shaos.Pages.Instances
         [BindProperty]
         public string StateSort { get; set; } = string.Empty;
 
-        public void OnGet(
-            string sortOrder,
-            string currentFilter,
-            string searchString,
-            int? pageIndex)
+        public void OnGet(string sortOrder,
+                          string currentFilter,
+                          string searchString,
+                          int? pageIndex)
         {
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -79,7 +77,7 @@ namespace Shaos.Pages.Instances
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                queryable = queryable.Where(_ => _.InstanceName.ToLower().Contains(searchString.ToLower()));
+                queryable = queryable.Where(_ => _.InstanceName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
             }
 
             switch (sortOrder)
@@ -118,7 +116,8 @@ namespace Shaos.Pages.Instances
                     _configuration.GetValue("PageSize", 5));
         }
 
-        public async Task<IActionResult> OnPostStartAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostStartAsync(int id,
+                                                          CancellationToken cancellationToken)
         {
             try
             {

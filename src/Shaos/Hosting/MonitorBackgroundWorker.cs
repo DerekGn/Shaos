@@ -28,9 +28,8 @@ namespace Shaos.Hosting
     {
         private readonly ILogger<MonitorBackgroundWorker> _logger;
         
-        public MonitorBackgroundWorker(
-            ILogger<MonitorBackgroundWorker> logger,
-            IHostApplicationLifetime hostApplicationLifetime)
+        public MonitorBackgroundWorker(ILogger<MonitorBackgroundWorker> logger,
+                                       IHostApplicationLifetime hostApplicationLifetime)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             

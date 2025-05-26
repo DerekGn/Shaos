@@ -31,7 +31,8 @@ namespace Shaos.TagHelpers
     {
         public bool Condition { get; set; }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override void Process(TagHelperContext context,
+                                     TagHelperOutput output)
         {
             if (!Condition)
             {

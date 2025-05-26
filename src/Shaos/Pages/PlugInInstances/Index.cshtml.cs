@@ -35,9 +35,8 @@ namespace Shaos.Pages.PlugInInstances
         private readonly IConfiguration _configuration;
         private readonly IPlugInInstanceRepository _repository;
 
-        public IndexModel(
-            IConfiguration configuration,
-            IPlugInInstanceRepository repository)
+        public IndexModel(IConfiguration configuration,
+                          IPlugInInstanceRepository repository)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -46,13 +45,12 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public int Id { get;set; } = default!;
 
-        public async Task OnGetAsync(
-            int id,
-            string sortOrder,
-            string currentFilter,
-            string searchString,
-            int? pageIndex,
-            CancellationToken cancellationToken = default)
+        public async Task OnGetAsync(int id,
+                                     string sortOrder,
+                                     string currentFilter,
+                                     string searchString,
+                                     int? pageIndex,
+                                     CancellationToken cancellationToken = default)
         {
             Id = id;
 
@@ -76,7 +74,7 @@ namespace Shaos.Pages.PlugInInstances
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.Name!.ToLower().Contains(searchString.ToLower());
+                filter = _ => _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
             }
 
             switch (sortOrder)

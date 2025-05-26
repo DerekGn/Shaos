@@ -41,7 +41,8 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int id,
+                                                    CancellationToken cancellationToken = default)
         {
             var plugininstance = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
 
@@ -64,12 +65,11 @@ namespace Shaos.Pages.PlugInInstances
                 return Page();
             }
 
-            await _repository.UpdateAsync(
-                PlugInInstance.Id,
-                PlugInInstance.Enabled,
-                PlugInInstance.Name,
-                PlugInInstance.Description,
-                cancellationToken);
+            await _repository.UpdateAsync(PlugInInstance.Id,
+                                          PlugInInstance.Enabled,
+                                          PlugInInstance.Name,
+                                          PlugInInstance.Description,
+                                          cancellationToken);
 
             return RedirectToPage("./Index");
         }
