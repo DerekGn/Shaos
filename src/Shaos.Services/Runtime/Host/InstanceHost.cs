@@ -258,6 +258,8 @@ namespace Shaos.Services.Runtime.Host
         private async Task ExecutePlugInMethod(Instance instance,
                                                CancellationToken cancellationToken = default)
         {
+            instance.SetRunning();
+
             InstanceStateChanged?.Invoke(this,
                 new InstanceStateEventArgs(instance.Id, instance.State));
 
