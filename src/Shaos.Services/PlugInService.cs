@@ -239,11 +239,11 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if (VerifyPlugState(plugIn, InstanceState.Running, out var id))
+                if (VerifyPlugState(plugIn, InstanceState.Running, out var ids))
                 {
-                    _logger.LogError("Found running PlugIn Instance Id: [{Id}]", id);
+                    _logger.LogError("Found running PlugIn Instances Id: [{Id}]", string.Join(",", ids));
 
-                    throw new PlugInInstanceRunningException(id, "Instance Running");
+                    throw new PlugInInstancesRunningException(ids, "Instances are Running");
                 }
 
                 _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
@@ -405,25 +405,13 @@ namespace Shaos.Services
 
         private bool VerifyPlugState(PlugIn plugIn,
                                      InstanceState state,
-                                     out int runningInstanceId)
+                                     out List<int> runningInstanceIds)
         {
-            bool result = false;
+            runningInstanceIds = [.. _instanceHost.Instances
+                .Where(_ => _.PlugInId == plugIn.Id && _.State == state).
+                Select(_=> _.Id)];
 
-            runningInstanceId = 0;
-
-            foreach (var instance in plugIn.Instances)
-            {
-                var executingInstance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == instance.Id);
-
-                if (executingInstance != null && executingInstance.State == state)
-                {
-                    result = true;
-                    runningInstanceId = instance.Id;
-                    break;
-                }
-            }
-
-            return result;
+            return runningInstanceIds.Any();
         }
     }
 }

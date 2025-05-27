@@ -30,6 +30,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
 using Shaos.Extensions;
+using Shaos.Filters;
 using Shaos.Hosting;
 using Shaos.Hubs;
 using Shaos.Repository;
@@ -44,9 +45,7 @@ using Shaos.Services.Runtime.Validation;
 using Shaos.Services.SystemInformation;
 using Shaos.Services.Validation;
 using Shaos.Startup;
-using System.Configuration;
 using System.Text.Json.Serialization;
-using Szlem.AspNetCore.Infrastructure;
 
 namespace Shaos
 {
@@ -115,6 +114,12 @@ namespace Shaos
                 {
                     options.Conventions.AddFolderApplicationModelConvention(
                         "/Instances",
+                        model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                    //options.Conventions.AddFolderApplicationModelConvention(
+                    //   "/PlugIns",
+                    //   model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                    options.Conventions.AddPageApplicationModelConvention(
+                        "/PlugIns/Package",
                         model => model.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
