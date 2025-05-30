@@ -37,24 +37,24 @@ namespace Shaos.Services.Runtime.Host
         public Instance(
             int id,
             int plugInId,
-            string instanceName,
+            string name,
             InstanceConfiguration configuration)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(instanceName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNull(configuration);
 
             Id = id;
             PlugInId = plugInId;
-            InstanceName = instanceName;
+            Name = name;
             Configuration = configuration;
         }
 
         internal Instance(int id,
                           int parentId,
-                          string instanceName,
+                          string name,
                           InstanceState state,
                           InstanceConfiguration configuration)
-            : this(id, parentId, instanceName, configuration)
+            : this(id, parentId, name, configuration)
         {
             State = state;
         }
@@ -82,7 +82,7 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
-        public string InstanceName { get; }
+        public string Name { get; }
 
         /// <summary>
         /// The PlugIn identifier
@@ -119,7 +119,7 @@ namespace Shaos.Services.Runtime.Host
             stringBuilder.AppendLine($"{nameof(Configuration)}: {Configuration}");
             stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
-            stringBuilder.AppendLine($"{nameof(InstanceName)}: {InstanceName}");
+            stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
             stringBuilder.AppendLine($"{nameof(PlugInId)}: {PlugInId}");
             stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
             stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
@@ -134,8 +134,7 @@ namespace Shaos.Services.Runtime.Host
             await Context!.PlugIn!.ExecuteAsync(cancellationToken);
         }
 
-        internal void LoadContext(
-            IPlugIn plugIn)
+        internal void LoadContext(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
             

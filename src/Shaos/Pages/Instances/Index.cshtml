@@ -33,7 +33,7 @@
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
                 asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].InstanceName)
+                    @Html.DisplayNameFor(model => model.List[0].Name)
                 </a>
             </th>
             <th>
@@ -64,7 +64,7 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InstanceName)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.State)

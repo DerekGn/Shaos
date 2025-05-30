@@ -35,7 +35,7 @@ namespace Shaos.Extensions
             return new InstanceApi()
             {
                 Id = instance.Id,
-                Name = instance.InstanceName,
+                Name = instance.Name,
                 //Status = Enum.Parse<Api.Model.v1.InstanceState>(instance.State.ToString()),
                 //Exception = instance.Exception == null ? null : instance.Exception.ToString(),
             };

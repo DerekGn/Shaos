@@ -77,17 +77,17 @@ namespace Shaos.Pages.Instances
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                queryable = queryable.Where(_ => _.InstanceName.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
+                queryable = queryable.Where(_ => _.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
             }
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    queryable = queryable.OrderByDescending(_ => _.InstanceName);
+                    queryable = queryable.OrderByDescending(_ => _.Name);
                     break;
 
-                case nameof(Instance.InstanceName):
-                    queryable = queryable.OrderBy(_ => _.InstanceName);
+                case nameof(Instance.Name):
+                    queryable = queryable.OrderBy(_ => _.Name);
                     break;
 
                 case "id_desc":
