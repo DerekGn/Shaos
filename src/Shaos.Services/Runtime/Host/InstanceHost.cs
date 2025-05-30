@@ -150,7 +150,6 @@ namespace Shaos.Services.Runtime.Host
 
             ResolveExecutingInstance(id, (instance) =>
             {
-#warning CLEAN UP LOAD CONTEXT IF LAST PLUGIN
                 if (instance.State == InstanceState.Running)
                 {
                     _logger.LogError("Instance Id: [{Id}] is already running", id);
@@ -173,13 +172,13 @@ namespace Shaos.Services.Runtime.Host
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Already Running",
                                        instance.Id,
-                                       instance.InstanceName);
+                                       instance.Name);
                 }
                 else if (instance.Configuration.HasConfiguration && !instance.Configuration.IsConfigured)
                 {
                     _logger.LogError("Instance: [{Id}] Name: [{Name}] Not Configured",
                                      instance.Id,
-                                     instance.InstanceName);
+                                     instance.Name);
 
                     throw new InstanceNotConfiguredException(id);
                 }
@@ -191,7 +190,7 @@ namespace Shaos.Services.Runtime.Host
                     {
                         _logger.LogError("Instance: [{Id}] Name: [{Name}] PlugInId: [{PlugInId}] load context not found",
                                          instance.Id,
-                                         instance.InstanceName,
+                                         instance.Name,
                                          instance.PlugInId);
 
                         throw new InstanceLoadContextNotFoundException(id);
@@ -202,7 +201,7 @@ namespace Shaos.Services.Runtime.Host
 
                         if (instance.Configuration.HasConfiguration)
                         {
-                            _logger.LogInformation("Loading configuration for Instance: [{Id}] Name: [{Name}]", instance.Id, instance.InstanceName);
+                            _logger.LogInformation("Loading configuration for Instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
 
                             configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
 
@@ -215,7 +214,7 @@ namespace Shaos.Services.Runtime.Host
                         {
                             _logger.LogError("Instance: [{Id}] Name: [{Name}] PlugInId: [{PlugInId}] PlugIn load failure",
                                              instance.Id,
-                                             instance.InstanceName,
+                                             instance.Name,
                                              instance.PlugInId);
 
                             throw new PlugInNotCreatedException();
@@ -244,7 +243,7 @@ namespace Shaos.Services.Runtime.Host
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
                         instance.Id,
-                        instance.InstanceName);
+                        instance.Name);
                 }
                 else
                 {
@@ -308,7 +307,7 @@ namespace Shaos.Services.Runtime.Host
         {
             _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
                 instance.Id,
-                instance.InstanceName);
+                instance.Name);
 
             instance.StartExecution(
                 async (cancellationToken) => await ExecutePlugInMethod(instance, cancellationToken),
@@ -322,20 +321,31 @@ namespace Shaos.Services.Runtime.Host
         {
             _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
                 instance.Id,
-                instance.InstanceName);
+                instance.Name);
 
             if (await instance.StopExecutionAsync(_options.Value.TaskStopTimeout))
             {
                 _logger.LogInformation("Stopped execution. Id: [{Id}] Name: [{Name}]",
                     instance.Id,
-                    instance.InstanceName);
+                    instance.Name);
             }
             else
             {
                 _logger.LogWarning("Instance not stopped within timeout. Id: [{Id}] Name: [{Name}]",
                     instance.Id,
-                    instance.InstanceName);
+                    instance.Name);
             }
+        }
+
+        private void UnloadInstanceLoadContext(Instance instance)
+        {
+            _logger.LogInformation("Unloading instance context for PlugIn: [{PlugInId}]", instance.PlugInId);
+
+            var instanceLoadContext = _instanceLoadContexts.First(_ => _.Key == instance.PlugInId);
+
+            instanceLoadContext.Value.Dispose();
+
+            _instanceLoadContexts.Remove(instance.Id);
         }
 
         private void UpdateStateOnCompletion(Instance instance,
@@ -351,7 +361,7 @@ namespace Shaos.Services.Runtime.Host
 
                 _logger.LogInformation("Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
                     instance.Id,
-                    instance.InstanceName,
+                    instance.Name,
                     antecedent.Status);
             }
             else if (antecedent.Status == TaskStatus.Faulted)
@@ -360,14 +370,22 @@ namespace Shaos.Services.Runtime.Host
 
                 _logger.LogError(antecedent.Exception, "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
                     instance.Id,
-                    instance.InstanceName,
+                    instance.Name,
                     antecedent.Status);
+            }
+
+            _logger.LogInformation("Unloading instance execution context for instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+
+            instance.Context?.Dispose();
+
+            if (!_executingInstances.Any(_ => _.State == InstanceState.Running && _.PlugInId == instance.PlugInId))
+            {
+                UnloadInstanceLoadContext(instance);
             }
 
             InstanceStateChanged?.Invoke(this,
                     new InstanceStateEventArgs(instance.Id, instance.State));
         }
-
         private void VerifyInstanceCount()
         {
             if (_executingInstances.Count == _options.Value.MaxExecutingInstances)

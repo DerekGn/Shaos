@@ -38,9 +38,9 @@ namespace Shaos.Services.Runtime
             PlugIn = plugIn;
         }
 
-        public IPlugIn? PlugIn { get; }
-        public Task? Task { get; internal set; }
-        public CancellationTokenSource? TokenSource { get; internal set; }
+        public IPlugIn? PlugIn { get; private set; }
+        public Task? Task { get; private set; }
+        public CancellationTokenSource? TokenSource { get; private set; }
 
         internal void StartExecution(
             Func<CancellationToken, Task> executeTask,
@@ -82,21 +82,13 @@ namespace Shaos.Services.Runtime
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
+                    PlugIn?.Dispose();
+                    PlugIn = null;
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~PlugInContext()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         #endregion Dispose
     }
