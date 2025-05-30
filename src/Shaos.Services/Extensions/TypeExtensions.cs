@@ -39,56 +39,25 @@ namespace Shaos.Services.Extensions
 
             if (propertyInfo != null)
             {
-                switch (propertyInfo.PropertyType)
+                result = propertyInfo.PropertyType switch
                 {
-                    case Type boolType when boolType == typeof(bool):
-                        result = bool.Parse(value);
-                        break;
-                    case Type byteType when byteType == typeof(byte):
-                        result = byte.Parse(value);
-                        break;
-                    case Type sbyteType when sbyteType == typeof(sbyte):
-                        result = sbyte.Parse(value);
-                        break;
-                    case Type charType when charType == typeof(char):
-                        result = char.Parse(value);
-                        break;
-                    case Type decimalType when decimalType == typeof(decimal):
-                        result = decimal.Parse(value);
-                        break;
-                    case Type doubleType when doubleType == typeof(double):
-                        result = double.Parse(value);
-                        break;
-                    case Type floatType when floatType == typeof(float):
-                        result = float.Parse(value);
-                        break;
-                    case Type intType when intType == typeof(int):
-                        result = int.Parse(value);
-                        break;
-                    case Type uintType when uintType == typeof(uint):
-                        result = uint.Parse(value);
-                        break;
-                    case Type longType when longType == typeof(long):
-                        result = long.Parse(value);
-                        break;
-                    case Type ulongType when ulongType == typeof(ulong):
-                        result = ulong.Parse(value);
-                        break;
-                    case Type shortType when shortType == typeof(short):
-                        result = short.Parse(value);
-                        break;
-                    case Type ushortType when ushortType == typeof(ushort):
-                        result = ushort.Parse(value);
-                        break;
-                    case Type stringType when stringType == typeof(string):
-                        result = value;
-                        break;
-                    case Type timeSpanType when timeSpanType == typeof(TimeSpan):
-                        result = TimeSpan.Parse(value, CultureInfo.InvariantCulture);
-                        break;
-                    default:
-                        throw new ConfigurationPropertyTypeNotMappedException(name, propertyInfo.PropertyType);
-                }
+                    Type boolType when boolType == typeof(bool) => bool.Parse(value),
+                    Type byteType when byteType == typeof(byte) => byte.Parse(value),
+                    Type sbyteType when sbyteType == typeof(sbyte) => sbyte.Parse(value),
+                    Type charType when charType == typeof(char) => char.Parse(value),
+                    Type decimalType when decimalType == typeof(decimal) => decimal.Parse(value),
+                    Type doubleType when doubleType == typeof(double) => double.Parse(value),
+                    Type floatType when floatType == typeof(float) => float.Parse(value),
+                    Type intType when intType == typeof(int) => int.Parse(value),
+                    Type uintType when uintType == typeof(uint) => uint.Parse(value),
+                    Type longType when longType == typeof(long) => long.Parse(value),
+                    Type ulongType when ulongType == typeof(ulong) => ulong.Parse(value),
+                    Type shortType when shortType == typeof(short) => short.Parse(value),
+                    Type ushortType when ushortType == typeof(ushort) => ushort.Parse(value),
+                    Type stringType when stringType == typeof(string) => value,
+                    Type timeSpanType when timeSpanType == typeof(TimeSpan) => TimeSpan.Parse(value, CultureInfo.InvariantCulture),
+                    _ => throw new ConfigurationPropertyTypeNotMappedException(name, propertyInfo.PropertyType),
+                };
             }
             else
             {
