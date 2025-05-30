@@ -67,11 +67,11 @@ namespace Shaos.Services.Json
                         break;
 
                     case JsonTokenType.String:
-                        propertyInfo.SetValue(instance, ReadString(reader, propertyInfo.PropertyType));
+                        propertyInfo.SetValue(instance, ReadString(reader, propertyInfo));
                         break;
 
                     case JsonTokenType.Number:
-                        propertyInfo!.SetValue(instance, ReadNumber(reader, propertyInfo.PropertyType));
+                        propertyInfo!.SetValue(instance, ReadNumber(reader, propertyInfo));
                         break;
 
                     case JsonTokenType.True:
@@ -106,11 +106,11 @@ namespace Shaos.Services.Json
             return Encoding.UTF8.GetString(stream.ToArray());
         }
 
-        private static object? ReadNumber(Utf8JsonReader reader, Type type)
+        private static object? ReadNumber(Utf8JsonReader reader, PropertyInfo propertyInfo)
         {
             object? result = null;
 
-            switch (type)
+            switch (propertyInfo.PropertyType)
             {
                 case Type byteType when byteType == typeof(byte):
                     result = reader.GetByte();
@@ -157,17 +157,18 @@ namespace Shaos.Services.Json
                     break;
 
                 default:
-                    break;
+                    throw new ConfigurationPropertyTypeNotMappedException(propertyInfo.Name, propertyInfo.PropertyType);
             }
 
             return result;
         }
 
-        private static object? ReadString(Utf8JsonReader reader, Type type)
+        private static object? ReadString(Utf8JsonReader reader,
+                                          PropertyInfo propertyInfo)
         {
             object? result = null;
 
-            switch (type)
+            switch (propertyInfo.PropertyType)
             {
                 case Type charType when charType == typeof(char):
                     result = reader.GetString()?.FirstOrDefault();
@@ -188,12 +189,17 @@ namespace Shaos.Services.Json
                 case Type timeSpanType when timeSpanType == typeof(TimeSpan):
                     result = TimeSpan.Parse(reader.GetString()!, CultureInfo.InvariantCulture);
                     break;
+
+                default:
+                    throw new ConfigurationPropertyTypeNotMappedException(propertyInfo.Name, propertyInfo.PropertyType);
             }
 
             return result;
         }
 
-        private static void WriteValue(Utf8JsonWriter writer, PropertyInfo propertyInfo, object value)
+        private static void WriteValue(Utf8JsonWriter writer,
+                                       PropertyInfo propertyInfo,
+                                       object value)
         {
             switch (propertyInfo.PropertyType)
             {
@@ -219,6 +225,10 @@ namespace Shaos.Services.Json
 
                 case Type doubleType when doubleType == typeof(double):
                     writer.WriteNumber(propertyInfo.Name, (double)propertyInfo.GetValue(value)!);
+                    break;
+
+                case Type enumType when enumType.BaseType == typeof(Enum):
+                    writer.WriteNumber(propertyInfo.Name, (int)propertyInfo.GetValue(value)!);
                     break;
 
                 case Type floatType when floatType == typeof(float):

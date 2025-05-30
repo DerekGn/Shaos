@@ -1,6 +1,7 @@
 ﻿
 using Shaos.Services.Json;
 using Shaos.Testing.Shared;
+using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -60,6 +61,7 @@ namespace Shaos.Services.UnitTests.Json
                 DateTime = new DateTime(2020,12,12,12,12,12,DateTimeKind.Utc),
                 Decimal = 2.1m,
                 Double = 3.2,
+                Enum = TestEnum.Value,
                 Float = 4.3f,
                 Guid = new Guid(TestGuid),
                 Int = 5,
@@ -73,13 +75,15 @@ namespace Shaos.Services.UnitTests.Json
                 UShort = 11
             };
 
+            var x = JsonSerializer.Serialize(testConfiguration);
+
             var result = Utf8JsonSerilizer.Serialize(testConfiguration);
 
             Assert.NotEmpty(result);
             Assert.Equal(
                 "{\"Bool\":true,\"Byte\":1,\"Char\":\"Z\"," +
                 "\"DateTime\":\"2020-12-12T12:12:12Z\"," +
-                "\"Decimal\":2.1,\"Double\":3.2,\"Float\":4.3," +
+                "\"Decimal\":2.1,\"Double\":3.2,\"Enum\":1,\"Float\":4.3," +
                 "\"Guid\":\"89b3c108-081d-4a47-95eb-38a4ab648cf6\"," +
                 "\"Int\":5,\"Long\":6,\"SByte\":7,\"Short\":8,\"String\":\"String\"," +
                 "\"TimeSpan\":\"10675199.02:48:05.4775807\",\"UInt\":9,\"ULong\":10,\"UShort\":11}", result);
