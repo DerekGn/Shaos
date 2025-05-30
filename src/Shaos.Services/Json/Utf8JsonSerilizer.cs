@@ -23,6 +23,7 @@
 */
 
 using Shaos.Services.Exceptions;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -168,6 +169,10 @@ namespace Shaos.Services.Json
 
             switch (type)
             {
+                case Type charType when charType == typeof(char):
+                    result = reader.GetString()?.FirstOrDefault();
+                    break;
+
                 case Type dateTimeType when dateTimeType == typeof(DateTime):
                     result = reader.GetDateTime();
                     break;
@@ -181,7 +186,7 @@ namespace Shaos.Services.Json
                     break;
 
                 case Type timeSpanType when timeSpanType == typeof(TimeSpan):
-                    result = TimeSpan.Parse(reader.GetString());
+                    result = TimeSpan.Parse(reader.GetString()!, CultureInfo.InvariantCulture);
                     break;
             }
 

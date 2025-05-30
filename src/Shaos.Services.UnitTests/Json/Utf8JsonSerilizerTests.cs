@@ -18,10 +18,10 @@ namespace Shaos.Services.UnitTests.Json
         public void TestDeserialise()
         {
             var json =
-                "{\"Bool\":true,\"Byte\":1,\"Char\":\"\\u005A\"," +
+                "{\"Bool\":true,\"Byte\":1,\"Char\":\"Z\"," +
                 "\"DateTime\":\"2020-12-20T12:10:59.0000000Z\"," +
                 "\"Decimal\":2.1,\"Double\":3.2,\"Float\":4.3," +
-                "\"Guid\":\"00000000-0000-0000-0000-000000000000\"," +
+                "\"Guid\":\"89b3c108-081d-4a47-95eb-38a4ab648cf6\"," +
                 "\"Int\":5,\"Long\":6,\"SByte\":7,\"Short\":8,\"String\":\"String\"," +
                 "\"TimeSpan\":\"10675199.02:48:05.4775807\",\"UInt\":10,\"ULong\":11,\"UShort\":12}";
 
@@ -32,12 +32,12 @@ namespace Shaos.Services.UnitTests.Json
             TestConfiguration configuration = (TestConfiguration)result;
             Assert.True(configuration.Bool);
             Assert.Equal(1, configuration.Byte);
-            //Assert.Equal('Z', configuration.Char);
+            Assert.Equal('Z', configuration.Char);
             Assert.Equal(new DateTime(2020,12,20,12,10,59, DateTimeKind.Utc), configuration.DateTime);
             Assert.Equal(2.1m, configuration.Decimal);
             Assert.Equal(3.2, configuration.Double, 2);
             Assert.Equal(4.3, configuration.Float, 2);
-            //Assert.Equal(new Guid(TestGuid), configuration.Guid);
+            Assert.Equal(new Guid(TestGuid), configuration.Guid);
             Assert.Equal(5, configuration.Int);
             Assert.Equal(6, configuration.Long);
             Assert.Equal(7, configuration.SByte);
