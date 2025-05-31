@@ -54,6 +54,8 @@ namespace Shaos.Services.IO
         /// <returns></returns>
         string GetAssemblyPath(int id);
 
+        string GetAssemblyPath(int id, string assembly);
+
         /// <summary>
         /// </summary>
         /// <param name="id">The <see cref="PlugIn"/> identifier</param>

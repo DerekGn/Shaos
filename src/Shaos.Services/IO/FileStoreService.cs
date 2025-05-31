@@ -91,6 +91,12 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
+        public string GetAssemblyPath(int id, string assembly)
+        {
+            return Path.Combine(GetAssemblyPath(id), assembly);
+        }
+
+        /// <inheritdoc/>
         public async Task<string> WritePackageFileStreamAsync(int id,
                                                               string packageFileName,
                                                               Stream stream,
