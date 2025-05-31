@@ -36,8 +36,8 @@ namespace Shaos.Services.Runtime.Host
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine($"{nameof(Configuration)}: {(Configuration ?? "Empty")}");
-            stringBuilder.AppendLine($"{nameof(HasConfiguration)}: {HasConfiguration}");
+            stringBuilder.AppendLine($"{nameof(Configuration)}: {(Configuration ?? "Empty")} ");
+            stringBuilder.AppendLine($"{nameof(HasConfiguration)}: {HasConfiguration} ");
             stringBuilder.AppendLine($"{nameof(IsConfigured)}: {IsConfigured}");
 
             return stringBuilder.ToString();
