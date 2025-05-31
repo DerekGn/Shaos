@@ -25,7 +25,9 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
 using Shaos.Services.IO;
+using Shaos.Services.Json;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
@@ -88,24 +90,17 @@ namespace Shaos.Services
 
                 if (plugIn.Package != null)
                 {
+                    var package = plugIn.Package;
+
                     result = await _plugInInstanceRepository.CreateAsync(plugIn,
                                                                          plugInInstance,
                                                                          cancellationToken);
 
-                    var package = plugIn.Package;
-
-                    var assemblyFile = Path
-                        .Combine(_fileStoreService
-                        .GetAssemblyPath(plugIn.Id), package!.AssemblyFile);
-
-                    var configuration = new InstanceConfiguration(package!.HasConfiguration,
-                                                                  plugInInstance.Configuration);
-
                     _instanceHost.CreateInstance(plugInInstance.Id,
                                                  plugIn.Id,
                                                  plugInInstance.Name,
-                                                 assemblyFile,
-                                                 configuration);
+                                                 _fileStoreService.GetAssemblyPath(plugIn.Id, package.AssemblyFile),
+                                                 new InstanceConfiguration(package!.HasConfiguration));
                 }
                 else
                 {
@@ -199,7 +194,7 @@ namespace Shaos.Services
             }
             else
             {
-                //configuration = JsonSerializer.Deserialize(plugInInstance.Configuration);
+                //configuration = Utf8JsonSerilizer.Deserialize(plugInInstance.Configuration);
             }
 
             return configuration!;

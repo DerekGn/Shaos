@@ -81,6 +81,7 @@ namespace Shaos.Services
         public async Task StartInstanceAsync(int id,
                                              CancellationToken cancellationToken = default)
         {
+#warning refactor load of configuration
             if (_instanceHost.InstanceExists(id))
             {
                 var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
@@ -133,9 +134,7 @@ namespace Shaos.Services
                 {
                     var package = plugIn.Package;
 
-                    var assemblyFile = Path
-                        .Combine(_fileStoreService
-                        .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
+                    var assemblyFile = _fileStoreService.GetAssemblyPath(plugIn.Id, package!.AssemblyFile);
 
                     var configuration = new InstanceConfiguration(package!.HasConfiguration,
                                                                   plugInInstance.Configuration);

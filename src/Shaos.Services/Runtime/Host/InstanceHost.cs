@@ -91,7 +91,7 @@ namespace Shaos.Services.Runtime.Host
                 if (!_instanceLoadContexts.Any(_ => _.Key == plugInId))
                 {
                     _instanceLoadContexts
-                        .Add(plugInId, new InstanceLoadContext(assemblyPath, _runtimeAssemblyLoadContextFactory.Create(assemblyPath)));
+                        .Add(plugInId, new InstanceLoadContext(_runtimeAssemblyLoadContextFactory.Create(assemblyPath)));
                 }
 
                 _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);

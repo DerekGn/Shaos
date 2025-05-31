@@ -31,21 +31,14 @@ namespace Shaos.Services.Runtime.Host
         private readonly UnloadingWeakReference<IRuntimeAssemblyLoadContext> _unloadingWeakReference;
         private bool disposedValue;
 
-        public InstanceLoadContext(string assemblyPath,
-                                   IRuntimeAssemblyLoadContext assemblyLoadContext)
+        public InstanceLoadContext(IRuntimeAssemblyLoadContext assemblyLoadContext)
         {
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
             _unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(assemblyLoadContext);
 
-            AssemblyPath = assemblyPath;
-            Assembly = _unloadingWeakReference.Target.LoadFromAssemblyPath(assemblyPath);
+            Assembly = _unloadingWeakReference.Target.LoadFromAssemblyPath(assemblyLoadContext.AssemblyPath);
         }
-
-        /// <summary>
-        /// The path to the assembly
-        /// </summary>
-        public string AssemblyPath { get; }
 
         /// <summary>
         /// The PlugIn instance assembly

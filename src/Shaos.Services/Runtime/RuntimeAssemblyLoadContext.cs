@@ -30,34 +30,35 @@ using System.Runtime.Loader;
 namespace Shaos.Services.Runtime
 {
     [ExcludeFromCodeCoverage]
-    [DebuggerDisplay("'{Name}' ({_plugInAssemblyPath})")]
+    [DebuggerDisplay("'{Name}' ({AssemblyPath})")]
     public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _assemblyDependencyResolver;
         private readonly AssemblyLoadContext _assemblyLoadContext;
-        private readonly string _plugInAssemblyPath;
 
-        public RuntimeAssemblyLoadContext(string plugInAssemblyPath) 
-            : this(GetAssemblyLoadContext(), plugInAssemblyPath, true)
+        public RuntimeAssemblyLoadContext(string assemblyPath)
+            : this(GetAssemblyLoadContext(), assemblyPath, true)
         {
         }
 
-        public RuntimeAssemblyLoadContext(string plugInAssemblyPath,
-                                          bool isCollectable) : this(GetAssemblyLoadContext(), plugInAssemblyPath, isCollectable)
+        public RuntimeAssemblyLoadContext(string assemblyPath,
+                                          bool isCollectable) : this(GetAssemblyLoadContext(), assemblyPath, isCollectable)
         {
         }
 
         public RuntimeAssemblyLoadContext(AssemblyLoadContext assemblyLoadContext,
-                                          string plugInAssemblyPath,
-                                          bool isCollectable) : base(Path.GetFileNameWithoutExtension(plugInAssemblyPath), isCollectable)
+                                          string assemblyPath,
+                                          bool isCollectable) : base(Path.GetFileNameWithoutExtension(assemblyPath), isCollectable)
         {
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyPath);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             _assemblyLoadContext = assemblyLoadContext;
-            _plugInAssemblyPath = plugInAssemblyPath;
-            _assemblyDependencyResolver = new AssemblyDependencyResolver(plugInAssemblyPath);
+            AssemblyPath = assemblyPath;
+            _assemblyDependencyResolver = new AssemblyDependencyResolver(assemblyPath);
         }
+
+        public string AssemblyPath { get; }
 
 #warning TODO load plugin folder local assemblies. Include executing runtime assemblies look up
 
