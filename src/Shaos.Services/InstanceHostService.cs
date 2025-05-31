@@ -33,9 +33,6 @@ using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services
 {
-    /// <summary>
-    ///
-    /// </summary>
     public class InstanceHostService : IInstanceHostService
     {
         private readonly IFileStoreService _fileStoreService;
@@ -86,9 +83,33 @@ namespace Shaos.Services
         {
             if (_instanceHost.InstanceExists(id))
             {
-                _logger.LogInformation("Starting PlugIn instance [{Id}]", id);
+                var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
 
-                _instanceHost.StartInstance(id);
+                if (plugInInstance != null)
+                {
+                    object? configuration = null;
+                    var package = plugInInstance.PlugIn.Package;
+
+                    if (package != null && package.HasConfiguration)
+                    {
+                        configuration = _instanceHost.LoadConfiguration(id);
+
+                        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
+                        {
+                            configuration = Utf8JsonSerilizer.Deserialize(plugInInstance.Configuration, configuration.GetType());
+                        }
+                        else
+                        {
+                            throw new PlugInInstanceNotConfiguredException(id);
+                        }
+                    }
+
+                    _instanceHost.StartInstance(id);
+                }
+                else
+                {
+                    _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
+                }
             }
             else
             {
@@ -127,6 +148,10 @@ namespace Shaos.Services
 
                     if (plugInInstance.Enabled && instance.Configuration.IsConfigured)
                     {
+                        _logger.LogInformation("Starting PlugIn instance. Id: [{Id} Name: [{Name}]]",
+                            instance.Id,
+                            instance.Name);
+
                         _instanceHost.StartInstance(instance.Id);
                     }
                 }
@@ -164,7 +189,6 @@ namespace Shaos.Services
                                                                               cancellationToken: cancellationToken);
 
             var serializedConfiguration = Utf8JsonSerilizer.Serialize(configuration);
-
 
             plugInInstance!.Configuration = serializedConfiguration;
 

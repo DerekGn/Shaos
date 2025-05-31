@@ -88,27 +88,24 @@ namespace Shaos.Services
 
                 if (plugIn.Package != null)
                 {
-                    result = await _plugInInstanceRepository.CreateAsync(
-                    plugIn,
-                    plugInInstance,
-                    cancellationToken);
+                    result = await _plugInInstanceRepository.CreateAsync(plugIn,
+                                                                         plugInInstance,
+                                                                         cancellationToken);
 
-#warning TODO
-                    //if (!plugIn.Package.HasConfiguration)
-                    //{
-                    //    _logger.LogInformation("Adding PlugInInstance to the runtime. PlugIn: [{Id}]", id);
+                    var package = plugIn.Package;
 
-                    //    var assemblyFile = Path.Combine(_fileStoreService
-                    //        .GetAssemblyPath(plugIn.Id), plugIn.Package!.AssemblyFile);
+                    var assemblyFile = Path
+                        .Combine(_fileStoreService
+                        .GetAssemblyPath(plugIn.Id), package!.AssemblyFile);
 
-                    //    _instanceHost
-                    //        .CreateInstance(
-                    //            plugInInstance.Id,
-                    //            plugIn.Id,
-                    //            plugInInstance.Name,
-                    //            assemblyFile,
-                    //            plugIn.Package.HasConfiguration);
-                    //}
+                    var configuration = new InstanceConfiguration(package!.HasConfiguration,
+                                                                  plugInInstance.Configuration);
+
+                    _instanceHost.CreateInstance(plugInInstance.Id,
+                                                 plugIn.Id,
+                                                 plugInInstance.Name,
+                                                 assemblyFile,
+                                                 configuration);
                 }
                 else
                 {
