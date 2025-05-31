@@ -69,6 +69,8 @@ namespace Shaos.Services.Runtime.Host
                 {
                     Assembly = null;
 
+                    _unloadingWeakReference.Target.Unload();
+
                     _unloadingWeakReference?.Dispose();
                 }
 
