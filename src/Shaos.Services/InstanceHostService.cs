@@ -27,9 +27,9 @@ using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
+using Shaos.Services.Json;
 using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Host;
-using System.Text.Json;
 
 namespace Shaos.Services
 {
@@ -86,32 +86,9 @@ namespace Shaos.Services
         {
             if (_instanceHost.InstanceExists(id))
             {
-                var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
+                _logger.LogInformation("Starting PlugIn instance [{Id}]", id);
 
-                if (plugInInstance != null)
-                {
-#warning TODO need to refactor as config should already be assigned to the plugin
-                    var package = plugInInstance!.PlugIn!.Package;
-                    object? plugInConfiguration = null;
-
-                    if (package != null && package.HasConfiguration)
-                    {
-                        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
-                        {
-                            plugInConfiguration = JsonSerializer.Deserialize<object>(plugInInstance.Configuration);
-                        }
-                        else
-                        {
-                            throw new PlugInInstanceNotConfiguredException(id);
-                        }
-                    }
-
-                    _instanceHost.StartInstance(id);
-                }
-                else
-                {
-                    _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
-                }
+                _instanceHost.StartInstance(id);
             }
             else
             {
@@ -186,7 +163,7 @@ namespace Shaos.Services
                                                                               false,
                                                                               cancellationToken: cancellationToken);
 
-            var serializedConfiguration = JsonSerializer.Serialize(configuration);
+            var serializedConfiguration = Utf8JsonSerilizer.Serialize(configuration);
 
 
             plugInInstance!.Configuration = serializedConfiguration;

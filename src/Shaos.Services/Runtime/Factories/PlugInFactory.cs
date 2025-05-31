@@ -80,8 +80,6 @@ namespace Shaos.Services.Runtime.Factories
                                      select parameterType)
                                           .FirstOrDefault();
 
-            //var configurationType = parameterTypes.FirstOrDefault(_ => _.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any());
-
             object? configuration = null;
 
             if (configurationType != null)

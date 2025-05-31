@@ -25,10 +25,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Extensions;
+using Shaos.Services.Json;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Factories;
 using System.Diagnostics;
-using System.Text.Json;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -123,20 +123,22 @@ namespace Shaos.Services.Runtime.Host
         {
             return ResolveExecutingInstance(id, (instance) =>
             {
-                object? configuration = null;
+                var loadContext = _instanceLoadContexts[instance.PlugInId];
+                object? configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
 
-                if (instance.Configuration.IsConfigured)
+                if(configuration != null)
                 {
-                    configuration = JsonSerializer.Deserialize<object>(instance.Configuration.Configuration!);
+                    if (instance.Configuration.IsConfigured)
+                    {
+                        _logger.LogInformation("Updating the instance configuration. Id: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+
+                        configuration = Utf8JsonSerilizer.Deserialize(instance.Configuration.Configuration!, configuration.GetType());
+                    }
                 }
                 else
                 {
-                    var loadContext = _instanceLoadContexts[instance.PlugInId];
-
-                    if (loadContext != null)
-                    {
-                        configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
-                    }
+#warning TODO
+                    //throw new 
                 }
 
                 return configuration;
@@ -205,7 +207,7 @@ namespace Shaos.Services.Runtime.Host
 
                             configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
 
-                            configuration = JsonSerializer.Deserialize(instance.Configuration.Configuration!, configuration!.GetType());
+                            configuration = Utf8JsonSerilizer.Deserialize(instance.Configuration.Configuration!, configuration!.GetType());
                         }
 
                         var plugIn = _plugInFactory.CreateInstance(loadContext.Assembly!, configuration);
@@ -239,6 +241,8 @@ namespace Shaos.Services.Runtime.Host
 
             return ResolveExecutingInstance(id, (instance) =>
             {
+                _logger.LogInformation("Stopping PlugIn instance Id: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+
                 if (instance.State != InstanceState.Running)
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
