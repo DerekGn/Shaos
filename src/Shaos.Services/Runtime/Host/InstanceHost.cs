@@ -266,7 +266,20 @@ namespace Shaos.Services.Runtime.Host
             InstanceStateChanged?.Invoke(this,
                 new InstanceStateEventArgs(instance.Id, instance.State));
 
-            await instance.ExecuteAsync(cancellationToken);
+            try
+            {
+                await instance.ExecuteAsync(cancellationToken);
+            }
+            catch (OperationCanceledException exception)
+            {
+                _logger.LogWarning(exception, "PlugIn Task cancelled");
+            }
+            catch(Exception exception)
+            {
+                _logger.LogCritical(exception, "An un-handled exception occurred in PlugIn");
+
+                instance.SetFaulted(exception);
+            }
         }
 
         [DebuggerStepThrough]
