@@ -109,6 +109,36 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         public DateTime? StopTime { get; private set; }
 
+        /// <summary>
+        /// Indicates if this instance can be configured
+        /// </summary>
+        /// <returns>true if this instance can be configured</returns>
+        public bool CanConfigure()
+        {
+            return State != InstanceState.Running && Configuration.RequiresConfiguration;
+        }
+
+        /// <summary>
+        /// Indicates if this instance can be started
+        /// </summary>
+        /// <returns>true if this instance can be started</returns>
+        public bool CanStart()
+        {
+            if (Configuration.RequiresConfiguration && Configuration.IsConfigured)
+                return false;
+            else
+                return State != InstanceState.Running;
+        }
+
+        /// <summary>
+        /// Indicates if this instance can be stopped
+        /// </summary>
+        /// <returns>true if this instance can be stopped</returns>
+        public bool CanStop()
+        {
+            return State == InstanceState.Running;
+        }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -137,7 +167,7 @@ namespace Shaos.Services.Runtime.Host
         internal void LoadContext(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
-            
+
             Context = new InstanceExecutionContext(plugIn);
         }
 

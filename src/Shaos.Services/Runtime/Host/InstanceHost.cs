@@ -176,7 +176,7 @@ namespace Shaos.Services.Runtime.Host
                                        instance.Id,
                                        instance.Name);
                 }
-                else if (instance.Configuration.HasConfiguration && !instance.Configuration.IsConfigured)
+                else if (instance.Configuration.RequiresConfiguration && !instance.Configuration.IsConfigured)
                 {
                     _logger.LogError("Instance: [{Id}] Name: [{Name}] Not Configured",
                                      instance.Id,
@@ -201,14 +201,14 @@ namespace Shaos.Services.Runtime.Host
                     {
                         object? configuration = null;
 
-                        if (instance.Configuration.HasConfiguration)
-                        {
-                            _logger.LogInformation("Loading configuration for Instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+                        //if (instance.Configuration.RequiresConfiguration)
+                        //{
+                        //    _logger.LogInformation("Loading configuration for Instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
 
-                            configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
+                        //    configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
 
-                            configuration = Utf8JsonSerilizer.Deserialize(instance.Configuration.Configuration!, configuration!.GetType());
-                        }
+                        //    configuration = Utf8JsonSerilizer.Deserialize(instance.Configuration.Configuration!, configuration!.GetType());
+                        //}
 
                         var plugIn = _plugInFactory.CreateInstance(loadContext.Assembly!, configuration);
 

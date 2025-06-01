@@ -5,10 +5,10 @@ namespace Shaos.Services.Runtime.Host
 {
     public class InstanceConfiguration
     {
-        public InstanceConfiguration(bool hasConfiguration,
+        public InstanceConfiguration(bool requiresConfiguration,
                                      string? configuration = default)
         {
-            HasConfiguration = hasConfiguration;
+            RequiresConfiguration = requiresConfiguration;
             Configuration = configuration;
         }
 
@@ -21,12 +21,12 @@ namespace Shaos.Services.Runtime.Host
         public string? Configuration { get; }
 
         /// <summary>
-        /// Indicates if this instance has configuration
+        /// Indicates if this instance has configuration settings
         /// </summary>
-        public bool HasConfiguration { get; }
+        public bool RequiresConfiguration { get; }
 
         /// <summary>
-        /// Indicates if configuration required
+        /// Indicates if this instance is configured
         /// </summary>
         public bool IsConfigured => !string.IsNullOrWhiteSpace(Configuration);
 
@@ -37,8 +37,8 @@ namespace Shaos.Services.Runtime.Host
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.AppendLine($"{nameof(Configuration)}: {(Configuration ?? "Empty")} ");
-            stringBuilder.AppendLine($"{nameof(HasConfiguration)}: {HasConfiguration} ");
             stringBuilder.AppendLine($"{nameof(IsConfigured)}: {IsConfigured}");
+            stringBuilder.AppendLine($"{nameof(RequiresConfiguration)}: {RequiresConfiguration} ");
 
             return stringBuilder.ToString();
         }
