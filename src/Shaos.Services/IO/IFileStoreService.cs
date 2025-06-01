@@ -32,29 +32,28 @@ namespace Shaos.Services.IO
     public interface IFileStoreService
     {
         /// <summary>
-        /// Delete a PlugIn package from the file store
+        /// Delete a <see cref="PlugIn"/> package from the file store
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="fileName"></param>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="packageFileName">The package file name</param>
         void DeletePackage(int id,
-                           string fileName);
+                           string packageFileName);
 
         /// <summary>
-        /// Extract a package
+        /// Extract a <see cref="PlugIn"/> package
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="packageFileName"></param>
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="packageFileName">The package file name</param>
         IEnumerable<string> ExtractPackage(int id,
                                            string packageFileName);
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="PlugIn"/> assembly file
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        string GetAssemblyPath(int id);
-
-        string GetAssemblyPath(int id, string assembly);
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="assemblyFileName">The assembly file name</param>
+        /// <returns>The path to the <see cref="PlugIn"/> assembly file</returns>
+        string GetAssemblyPath(int id, string assemblyFileName);
 
         /// <summary>
         /// </summary>

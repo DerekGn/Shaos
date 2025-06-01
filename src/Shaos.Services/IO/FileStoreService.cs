@@ -44,11 +44,11 @@ namespace Shaos.Services.IO
 
         /// <inheritdoc/>
         public void DeletePackage(int id,
-                                  string fileName)
+                                  string packageFileName)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), fileName);
+            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), packageFileName);
 
             if (File.Exists(filePath))
             {
@@ -83,17 +83,9 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public string GetAssemblyPath(int id)
+        public string GetAssemblyPath(int id, string assemblyFileName)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-
-            return Path.Combine(_options.Value.BinariesPath, id.ToString());
-        }
-
-        /// <inheritdoc/>
-        public string GetAssemblyPath(int id, string assembly)
-        {
-            return Path.Combine(GetAssemblyPath(id), assembly);
+            return Path.Combine(Path.Combine(_options.Value.BinariesPath, id.ToString()), assemblyFileName);
         }
 
         /// <inheritdoc/>
