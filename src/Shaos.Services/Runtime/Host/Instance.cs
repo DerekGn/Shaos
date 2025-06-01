@@ -153,6 +153,12 @@ namespace Shaos.Services.Runtime.Host
             Exception = exception;
         }
 
+        internal void SetFaulted(Exception? exception)
+        {
+            State = InstanceState.Faulted;
+            Exception = exception;
+        }
+
         internal void SetRunning()
         {
             State = InstanceState.Running;
