@@ -364,9 +364,8 @@ namespace Shaos.Services
 
         private object? LoadConfiguration(PlugIn plugIn)
         {
-            var assemblyPath = Path
-                .Combine(_fileStoreService.GetAssemblyPath(plugIn.Id),
-                plugIn.Package!.AssemblyFile);
+            var assemblyPath = _fileStoreService.GetAssemblyPath(plugIn.Id,
+                                                                 plugIn.Package!.AssemblyFile);
 
             IRuntimeAssemblyLoadContext? context = null;
             object? configuration = null;

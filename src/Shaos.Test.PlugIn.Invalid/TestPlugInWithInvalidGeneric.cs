@@ -22,19 +22,20 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Options;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugIn : PlugInBase, IPlugIn
+    public class TestPlugInWithInvalidGeneric : PlugInBase, IPlugIn
     {
-        public TestPlugIn()
+        public TestPlugInWithInvalidGeneric(IOptions<TestOption> options)
         {
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public Task ExecuteAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

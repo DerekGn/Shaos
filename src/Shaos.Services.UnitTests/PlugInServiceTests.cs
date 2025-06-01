@@ -122,7 +122,8 @@ namespace Shaos.Services.UnitTests
 
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(
-                    It.IsAny<int>()
+                    It.IsAny<int>(),
+                    It.IsAny<string>()
                 ))
                 .Returns("");
 

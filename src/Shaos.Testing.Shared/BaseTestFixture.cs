@@ -77,10 +77,12 @@ namespace Shaos.Testing.Shared
                 assemblyDirectory,
                 invalidPackageDirectory);
 
+            AssemblyFileName = String.Concat(PackageName, ".dll");
+
             PlugInDirectory = Path.Combine(BinariesDirectory, PlugInId.ToString());
             PlugInDirectoryInvalid = Path.Combine(BinariesDirectory, PlugInIdInvalid.ToString());
 
-            AssemblyFilePath = Path.Combine(PlugInDirectory, String.Concat(PackageName, ".dll"));
+            AssemblyFilePath = Path.Combine(PlugInDirectory, AssemblyFileName);
             AssemblyFilePathInvalid = Path.Combine(PlugInDirectoryInvalid, String.Concat(PackageNameInvalid, ".dll"));
 
             PlugInDirectory.CreateDirectory();
@@ -90,6 +92,7 @@ namespace Shaos.Testing.Shared
             ZipFile.ExtractToDirectory(PackageFileInvalidPath, PlugInDirectoryInvalid, true);
         }
 
+        public string AssemblyFileName { get; }
         public string AssemblyFilePath { get; }
         public string AssemblyFilePathInvalid { get; }
         public string BaseTestDirectory { get; }
