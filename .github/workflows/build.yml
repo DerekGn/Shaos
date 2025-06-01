@@ -35,7 +35,7 @@ jobs:
       with:
         name: test-results
         path: ${{ github.workspace }}/coverage/test-results.trx
-    - name: Build
+    - name: Copy
       shell: bash
       run: |
         cp ${{ github.workspace }}/coverage/**/coverage.cobertura.xml ${{ github.workspace }}/coverage/coverage.cobertura.xml
