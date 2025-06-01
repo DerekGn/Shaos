@@ -35,10 +35,10 @@ jobs:
       with:
         name: test-results
         path: ${{ github.workspace }}/coverage/test-results.trx
-    - name: Copy
-      shell: bash
-      run: |
-        cp ${{ github.workspace }}/coverage/**/coverage.cobertura.xml ${{ github.workspace }}/coverage/coverage.cobertura.xml
+    # - name: Copy
+    #   shell: bash
+    #   run: |
+    #     cp ${{ github.workspace }}/coverage/**/coverage.cobertura.xml ${{ github.workspace }}/coverage/coverage.cobertura.xml
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
