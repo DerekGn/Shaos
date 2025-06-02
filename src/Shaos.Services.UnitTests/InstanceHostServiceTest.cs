@@ -25,9 +25,11 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Host;
 using Shaos.Testing.Shared;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests
@@ -49,6 +51,18 @@ namespace Shaos.Services.UnitTests
                                                            _mockInstanceHost.Object,
                                                            _mockRepository.Object,
                                                            _mockFileStoreService.Object);
+        }
+
+        [Fact]
+        public async Task TestLoadInstanceConfigurationAsync()
+        {
+            var result = await _instanceHostService.LoadInstanceConfigurationAsync(1);
+        }
+
+        [Fact]
+        public async Task TestLoadInstanceConfigurationNotFoundAsync()
+        {
+            await Assert.ThrowsAsync<ShaosNotFoundException>(async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
         }
     }
 }

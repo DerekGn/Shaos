@@ -129,7 +129,8 @@ namespace Shaos.Services
                 {
                     var package = plugIn.Package;
 
-                    var assemblyFile = _fileStoreService.GetAssemblyPath(plugIn.Id, package!.AssemblyFile);
+                    var assemblyFile = _fileStoreService.GetAssemblyPath(plugIn.Id,
+                                                                         package!.AssemblyFile);
 
                     var configuration = new InstanceConfiguration(package!.HasConfiguration,
                                                                   plugInInstance.Configuration);
