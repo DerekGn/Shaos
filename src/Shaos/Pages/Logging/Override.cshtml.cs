@@ -86,9 +86,9 @@ namespace Shaos.Pages.Logging
 
             _loggingConfiguration.LoggingLevelSwitches[LogLevelSwitch.Name].MinimumLevel = LogLevelSwitch.Level;
 
-            await _repository.UpsertAsync(LogLevelSwitch.Name,
-                                          LogLevelSwitch.Level,
-                                          cancellationToken);
+            await _repository.UpsertLogLevelSwitchAsync(LogLevelSwitch.Name,
+                                                        LogLevelSwitch.Level,
+                                                        cancellationToken);
 
             return RedirectToPage("./Index");
         }

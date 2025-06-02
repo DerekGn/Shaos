@@ -29,11 +29,20 @@ using System.IO.Compression;
 
 namespace Shaos.Services.IO
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class FileStoreService : IFileStoreService
     {
         private readonly ILogger<FileStoreService> _logger;
         private readonly IOptions<FileStoreOptions> _options;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="options"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public FileStoreService(
             ILogger<FileStoreService> logger,
             IOptions<FileStoreOptions> options)

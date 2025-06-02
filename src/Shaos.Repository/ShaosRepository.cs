@@ -252,36 +252,6 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public async Task<LogLevelSwitch> UpsertAsync(string name,
-                                                      LogEventLevel level,
-                                                      CancellationToken cancellationToken = default)
-        {
-            var logLevelSwitch = await _context
-                .LogLevelSwitches
-                .FirstOrDefaultAsync(_ => _.Name == name, cancellationToken);
-
-            if (logLevelSwitch != null)
-            {
-                logLevelSwitch.Level = level;
-            }
-            else
-            {
-                await _context
-                    .LogLevelSwitches
-                    .AddAsync(new LogLevelSwitch()
-                    {
-                        Name = name,
-                        Level = level
-                    },
-                cancellationToken);
-            }
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return logLevelSwitch!;
-        }
-
-        /// <inheritdoc/>
         public async Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(string name,
                                                                     LogEventLevel level,
                                                                     CancellationToken cancellationToken = default)

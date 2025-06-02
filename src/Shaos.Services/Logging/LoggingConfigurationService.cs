@@ -29,20 +29,29 @@ using Shaos.Repository.Models;
 
 namespace Shaos.Services.Logging
 {
+    /// <summary>
+    /// A logging configuration service. Used to store and configure logging configuration settings
+    /// </summary>
     public class LoggingConfigurationService : ILoggingConfigurationService
     {
         private readonly ILogger<LoggingConfigurationService> _logger;
         private readonly IShaosRepository _repository;
 
-        public LoggingConfigurationService(
-            ILogger<LoggingConfigurationService> logger,
-            IShaosRepository repository)
+        /// <summary>
+        /// Create an instance of a <see cref="LoggingConfigurationService"/>
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="repository">The <see cref="IShaosRepository"/> instance used for storing logging changes</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public LoggingConfigurationService(ILogger<LoggingConfigurationService> logger,
+                                           IShaosRepository repository)
         {
 
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <inheritdoc/>
         public async Task InitialiseLoggingConfigurationAsync(ILoggingConfiguration loggingConfiguration,
                                                               CancellationToken cancellationToken = default)
         {
@@ -56,18 +65,19 @@ namespace Shaos.Services.Logging
             }
         }
 
+        /// <inheritdoc/>
         public async Task UpdateLogLevelSwitchAsync(string name,
                                                     LogEventLevel level,
                                                     CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Updating {Type} [{Name}] Level: [{Level}]",
-                nameof(LogLevelSwitch),
-                name,
-                level);
+                                   nameof(LogLevelSwitch),
+                                   name,
+                                   level);
 
             await _repository.UpsertLogLevelSwitchAsync(name,
-                                          level,
-                                          cancellationToken);
+                                                        level,
+                                                        cancellationToken);
         }
     }
 }

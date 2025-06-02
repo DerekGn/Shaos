@@ -41,7 +41,7 @@ namespace Shaos.Services.Runtime.Factories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// </<inheritdoc/>
+        /// <inheritdoc/>
         public IPlugIn? CreateInstance(Assembly assembly,
                                        object? configuration = default)
         {
@@ -61,7 +61,7 @@ namespace Shaos.Services.Runtime.Factories
             return Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
         }
 
-        /// </<inheritdoc/>
+        /// <inheritdoc/>
         public object? LoadConfiguration(Assembly assembly)
         {
             ArgumentNullException.ThrowIfNull(assembly);

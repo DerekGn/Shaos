@@ -32,10 +32,6 @@ namespace Shaos.Services
         Task StartInstanceAsync(int id,
                                 CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// Start all <see cref="PlugInInstance"/> that are enabled
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task StartInstancesAsync(CancellationToken cancellationToken = default);
 
         void StopInstance(int id);

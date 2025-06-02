@@ -29,6 +29,9 @@ using System.Linq.Expressions;
 
 namespace Shaos.Repository
 {
+    /// <summary>
+    /// Defines a <see cref="IShaosRepository"/> interface
+    /// </summary>
     public interface IShaosRepository
     {
         /// <summary>
@@ -49,7 +52,7 @@ namespace Shaos.Repository
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
+        /// <exception cref="ShaosNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<int> CreatePlugInAsync(PlugIn plugIn,
                                     CancellationToken cancellationToken = default);
 
@@ -142,7 +145,7 @@ namespace Shaos.Repository
                                       List<string>? includeProperties = null) where T : BaseEntity;
 
         /// <summary>
-        /// Saves changes to the context 
+        /// Saves changes to the context
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of changes mad to the database</returns>
@@ -157,7 +160,7 @@ namespace Shaos.Repository
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="PlugIn"/> if found and updates are applied</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="PlugInNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
+        /// <exception cref="ShaosNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<PlugIn?> UpdatePlugInAsync(int id,
                                         string name,
                                         string description,
@@ -178,17 +181,6 @@ namespace Shaos.Repository
                                        string? name = default,
                                        string? description = default,
                                        CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Upsert a <see cref="LogLevelSwitch"/>
-        /// </summary>
-        /// <param name="name">The name of the <see cref="LogLevelSwitch"/> to upsert</param>
-        /// <param name="level">The <see cref="LogEventLevel"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The upserted <see cref="LogLevelSwitch"/></returns>
-        Task<LogLevelSwitch> UpsertAsync(string name,
-                                         LogEventLevel level,
-                                         CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Upsert a <see cref="LogLevelSwitch"/>

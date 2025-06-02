@@ -80,10 +80,8 @@ namespace Shaos.Startup
                     .ServiceProvider
                     .GetRequiredService<ILoggingConfigurationService>();
 
-                await loggingConfigurationService
-                    .InitialiseLoggingConfigurationAsync(
-                    loggingConfiguration,
-                    cancellationToken);
+                await loggingConfigurationService.InitialiseLoggingConfigurationAsync(loggingConfiguration,
+                                                                                      cancellationToken);
             }
         }
     }

@@ -22,18 +22,10 @@
 * SOFTWARE.
 */
 
-using Serilog.Core;
-
-namespace Shaos.Services.Logging
+namespace Shaos.Services.UnitTests.Logging
 {
-    /// <summary>
-    /// Represents logging configuration settings
-    /// </summary>
-    public interface ILoggingConfiguration
+    public class LoggingConfigurationTests
     {
-        /// <summary>
-        /// A <see cref="IReadOnlyDictionary{TKey, TValue}"/> of <see cref="LoggingLevelSwitch"/>
-        /// </summary>
-        IReadOnlyDictionary<string, LoggingLevelSwitch> LoggingLevelSwitches { get; }
+
     }
 }

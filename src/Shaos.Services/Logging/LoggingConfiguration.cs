@@ -32,13 +32,16 @@ using System.Reflection;
 namespace Shaos.Services.Logging
 {
     /// <summary>
-    /// The logger configuration settings
+    /// The logging configuration
     /// </summary>
     public class LoggingConfiguration : ILoggingConfiguration
     {
         private FrozenDictionary<string, LoggingLevelSwitch> _loggingLevelSwitches;
         private readonly Assembly[] _loggerConfigurationAssemblies;
 
+        /// <summary>
+        /// Create an instance of the logging configuration
+        /// </summary>
         public LoggingConfiguration()
         {
             _loggerConfigurationAssemblies = new[]
