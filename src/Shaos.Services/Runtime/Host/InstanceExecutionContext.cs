@@ -25,26 +25,63 @@
 using Shaos.Sdk;
 using System.Text;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Host
 {
+    /// <summary>
+    /// An instance execution context type
+    /// </summary>
+    /// <remarks>
+    /// This is a container for <see cref="IPlugIn"/> instances. It manages the start and dispose of an <see cref="IPlugIn"/> instance
+    /// </remarks>
     public class InstanceExecutionContext : IDisposable
     {
         private bool disposedValue;
 
+        /// <summary>
+        /// Create an instance of an <see cref="InstanceExecutionContext"/>
+        /// </summary>
+        /// <param name="plugIn">The <see cref="IPlugIn"/> to manage</param>
         public InstanceExecutionContext(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
-            
+
             PlugIn = plugIn;
         }
 
+        /// <summary>
+        /// The <see cref="IPlugIn"/> instance contained by this <see cref="InstanceExecutionContext"/>
+        /// </summary>
         public IPlugIn? PlugIn { get; private set; }
+
+        /// <summary>
+        /// The execution <see cref="Task"/> for the <see cref="IPlugIn"/> instance
+        /// </summary>
         public Task? Task { get; private set; }
+
+        /// <summary>
+        /// The <see cref="CancellationTokenSource"/> used to cancel the executing <see cref="Task"/>
+        /// </summary>
         public CancellationTokenSource? TokenSource { get; private set; }
 
-        internal void StartExecution(
-            Func<CancellationToken, Task> executeTask,
-            Action<Task> completionTask)
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
+            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : $"Id: {Task.Id} State: [{Task.Status}]")}");
+            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : $"{nameof(TokenSource.IsCancellationRequested)}: {TokenSource.IsCancellationRequested}")}");
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Start executing of the <see cref="PlugIn"/> task
+        /// </summary>
+        /// <param name="executeTask">The <see cref="Task"/> that executes the <see cref="IPlugIn"/> execution method</param>
+        /// <param name="completionTask">The <see cref="Task"/> to execute on completion of the <paramref name="executeTask"/></param>
+        internal void StartExecution(Func<CancellationToken, Task> executeTask,
+                                     Action<Task> completionTask)
         {
             ArgumentNullException.ThrowIfNull(executeTask);
             ArgumentNullException.ThrowIfNull(completionTask);
@@ -56,19 +93,9 @@ namespace Shaos.Services.Runtime
                 .ContinueWith(completionTask);
         }
 
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.AppendLine($"{nameof(PlugIn)}: {(PlugIn == null ? "Empty" : PlugIn.GetType().Name)}");
-            stringBuilder.AppendLine($"{nameof(Task)}: {(Task == null ? "Empty" : $"Id: {Task.Id} State: [{Task.Status}]" )}");
-            stringBuilder.AppendLine($"{nameof(TokenSource)}: {(TokenSource == null ? "Empty" : $"{nameof(TokenSource.IsCancellationRequested)}: {TokenSource.IsCancellationRequested}" )}");
-
-            return stringBuilder.ToString();
-        }
-
         #region Dispose
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -76,6 +103,7 @@ namespace Shaos.Services.Runtime
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc/>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
