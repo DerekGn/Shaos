@@ -48,10 +48,9 @@ namespace Shaos.Services.Runtime
         {
         }
 
-        public RuntimeAssemblyLoadContext(
-            AssemblyLoadContext assemblyLoadContext,
-            string plugInAssemblyPath,
-            bool isCollectable) : base(Path.GetFileNameWithoutExtension(plugInAssemblyPath), isCollectable)
+        public RuntimeAssemblyLoadContext(AssemblyLoadContext assemblyLoadContext,
+                                          string plugInAssemblyPath,
+                                          bool isCollectable) : base(Path.GetFileNameWithoutExtension(plugInAssemblyPath), isCollectable)
         {
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyPath);

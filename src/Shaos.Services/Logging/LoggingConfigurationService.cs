@@ -24,31 +24,31 @@
 
 using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Services.Logging
 {
     public class LoggingConfigurationService : ILoggingConfigurationService
     {
-        private readonly ILoggingConfigurationRepository _repository;
         private readonly ILogger<LoggingConfigurationService> _logger;
+        private readonly IShaosRepository _repository;
 
         public LoggingConfigurationService(
-            ILoggingConfigurationRepository repository,
-            ILogger<LoggingConfigurationService> logger)
+            ILogger<LoggingConfigurationService> logger,
+            IShaosRepository repository)
         {
+
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task InitialiseLoggingConfigurationAsync(
-            ILoggingConfiguration loggingConfiguration,
-            CancellationToken cancellationToken = default)
+        public async Task InitialiseLoggingConfigurationAsync(ILoggingConfiguration loggingConfiguration,
+                                                              CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Initialising logging configuration");
 
-            await foreach (var logSwitch in _repository.GetAsync(cancellationToken))
+            await foreach (var logSwitch in _repository.GetAsync<LogLevelSwitch>(cancellationToken))
             {
                 _logger.LogDebug("Updating LogLevelSwitch [{Name}] Level: [{Level}]", logSwitch.Name, logSwitch.Level);
 
@@ -56,17 +56,18 @@ namespace Shaos.Services.Logging
             }
         }
 
-        public async Task UpdateLogLevelSwitchAsync(
-            string name,
-            LogEventLevel level,
-            CancellationToken cancellationToken = default)
+        public async Task UpdateLogLevelSwitchAsync(string name,
+                                                    LogEventLevel level,
+                                                    CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Updating {Type} [{Name}] Level: [{Level}]",
                 nameof(LogLevelSwitch),
                 name,
                 level);
 
-            await _repository.UpsertAsync(name, level, cancellationToken);
+            await _repository.UpsertLogLevelSwitchAsync(name,
+                                          level,
+                                          cancellationToken);
         }
     }
 }

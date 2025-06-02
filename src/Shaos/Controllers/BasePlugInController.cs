@@ -22,8 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository;
 using Shaos.Services;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Controllers
 {
@@ -34,19 +34,19 @@ namespace Shaos.Controllers
 
         protected BasePlugInController(
             ILogger<BasePlugInController> logger,
-            IPlugInService plugInService,
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository) : base(logger)
+            IShaosRepository repository,
+            IPlugInService plugInService) : base(logger)
         {
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(repository);
+            ArgumentNullException.ThrowIfNull(plugInService);
+
+            Repository = repository ?? throw new ArgumentNullException(nameof(repository));
             PlugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
-            PlugInRepository = plugInRepository ?? throw new ArgumentNullException(nameof(plugInRepository));
-            PlugInInstanceRepository = plugInInstanceRepository ?? throw new ArgumentNullException(nameof(plugInInstanceRepository));
         }
 
         public IPlugInService PlugInService { get; }
 
-        public IPlugInRepository PlugInRepository { get; }
-
-        public IPlugInInstanceRepository PlugInInstanceRepository { get; }
+        public IShaosRepository Repository { get; }
     }
 }

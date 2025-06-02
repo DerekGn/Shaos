@@ -25,20 +25,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
-using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugIns
 {
     public class EditModel : PageModel
     {
-        private readonly IPlugInRepository _repository;
+        private readonly IShaosRepository _repository;
 
-        public EditModel(
-            IPlugInRepository repository)
+        public EditModel(IShaosRepository repository)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            ArgumentNullException.ThrowIfNull(repository);
+
+            _repository = repository;
         }
 
         [BindProperty]
@@ -46,7 +47,8 @@ namespace Shaos.Pages.PlugIns
 
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
         {
-            var plugin = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
+            var plugin = await _repository.GetByIdAsync<PlugIn>(id,
+                                                                cancellationToken: cancellationToken);
             if (plugin == null)
             {
                 ModelState.AddModelError("NotFound", $"PlugIn: [{id}] was not found");
@@ -68,9 +70,12 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _repository.UpdateAsync(PlugIn.Id, PlugIn.Name, PlugIn.Description, cancellationToken);
+                await _repository.UpdatePlugInAsync(PlugIn.Id,
+                                                    PlugIn.Name,
+                                                    PlugIn.Description,
+                                                    cancellationToken);
             }
-            catch (PlugInNameExistsException ex)
+            catch (ShaosNameExistsException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
 
@@ -78,7 +83,8 @@ namespace Shaos.Pages.PlugIns
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _repository.ExistsAsync(PlugIn.Id, cancellationToken))
+                if (!await _repository.ExistsAsync<PlugIn>(PlugIn.Id,
+                                                           cancellationToken))
                 {
                     ModelState.AddModelError("NotFound", $"PlugIn: [{PlugIn.Id}] was not found");
                 }

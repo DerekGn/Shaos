@@ -24,18 +24,20 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class EditModel : PageModel
     {
-        private readonly IPlugInInstanceRepository _repository;
+        private readonly IShaosRepository _repository;
 
-        public EditModel(IPlugInInstanceRepository repository)
+        public EditModel(IShaosRepository repository)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            ArgumentNullException.ThrowIfNull(repository);
+
+            _repository = repository;
         }
 
         [BindProperty]
@@ -43,7 +45,8 @@ namespace Shaos.Pages.PlugInInstances
 
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
         {
-            var plugininstance = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
+            var plugininstance = await _repository.GetByIdAsync<PlugInInstance>(id,
+                                                                                cancellationToken: cancellationToken);
 
             if (plugininstance == null)
             {
@@ -64,12 +67,11 @@ namespace Shaos.Pages.PlugInInstances
                 return Page();
             }
 
-            await _repository.UpdateAsync(
-                PlugInInstance.Id,
-                PlugInInstance.Enabled,
-                PlugInInstance.Name,
-                PlugInInstance.Description,
-                cancellationToken);
+            await _repository.UpdatePlugInInstanceAsync(PlugInInstance.Id,
+                                                        PlugInInstance.Enabled,
+                                                        PlugInInstance.Name,
+                                                        PlugInInstance.Description,
+                                                        cancellationToken);
 
             return RedirectToPage("./Index");
         }

@@ -24,21 +24,21 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services;
-using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class CreateModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IPlugInRepository _repository;
+        private readonly IShaosRepository _repository;
 
         public CreateModel(
             IPlugInService plugInService,
-            IPlugInRepository repository)
+            IShaosRepository repository)
         {
             ArgumentNullException.ThrowIfNull(plugInService);
             ArgumentNullException.ThrowIfNull(repository);
@@ -56,11 +56,15 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int id,
+                                                    CancellationToken cancellationToken = default)
         {
             Id = id;
 
-            var plugIn = await _repository.GetByIdAsync(id, true, [nameof(PlugIn.Package)], cancellationToken);
+            var plugIn = await _repository.GetByIdAsync<PlugIn>(id,
+                                                                true,
+                                                                [nameof(PlugIn.Package)],
+                                                                cancellationToken);
 
             if (plugIn != null)
             {
@@ -79,9 +83,11 @@ namespace Shaos.Pages.PlugInInstances
 
             try
             {
-                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
+                await _plugInService.CreatePlugInInstanceAsync(Id,
+                                                               PlugInInstance,
+                                                               cancellationToken);
             }
-            catch (PlugInInstanceNameExistsException)
+            catch (ShaosNameExistsException)
             {
                 ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
 
@@ -100,9 +106,11 @@ namespace Shaos.Pages.PlugInInstances
 
             try
             {
-                await _plugInService.CreatePlugInInstanceAsync(Id, PlugInInstance, cancellationToken);
+                await _plugInService.CreatePlugInInstanceAsync(Id,
+                                                               PlugInInstance,
+                                                               cancellationToken);
             }
-            catch (PlugInInstanceNameExistsException)
+            catch (ShaosNameExistsException)
             {
                 ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
 

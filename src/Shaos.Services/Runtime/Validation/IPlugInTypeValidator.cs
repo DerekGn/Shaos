@@ -24,6 +24,7 @@
 
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
+using System.Reflection;
 
 namespace Shaos.Services.Runtime.Validation
 {
@@ -33,7 +34,6 @@ namespace Shaos.Services.Runtime.Validation
         /// Validate that an assembly contains valid <see cref="IPlugIn"/>
         /// </summary>
         /// <param name="assemblyFile">The fully qualified path to the <see cref="Assembly"/></param>
-        /// <param name="version">The assembly version</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="assemblyFile"/> is empty or white space</exception>
         /// <exception cref="FileNotFoundException">Thrown if <paramref name="assemblyFile"/> does not exist</exception>
         /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the <paramref name="assemblyFile"/></exception>
