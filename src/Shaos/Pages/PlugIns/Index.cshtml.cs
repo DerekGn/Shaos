@@ -23,8 +23,8 @@
 */
 
 using Shaos.Paging;
+using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Services.Repositories;
 using System.Linq.Expressions;
 
 namespace Shaos.Pages.PlugIns
@@ -32,13 +32,17 @@ namespace Shaos.Pages.PlugIns
     public class IndexModel : PaginatedModel<PlugIn>
     {
         private readonly IConfiguration _configuration;
-        private readonly IPlugInRepository _repository;
+        private readonly IShaosRepository _repository;
 
-        public IndexModel(IConfiguration configuration,
-                          IPlugInRepository repository)
+        public IndexModel(
+            IConfiguration configuration,
+            IShaosRepository repository)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            ArgumentNullException.ThrowIfNull(repository);
+            ArgumentNullException.ThrowIfNull(configuration);
+
+            _repository = repository;
+            _configuration = configuration;
         }
 
         public async Task OnGetAsync(string sortOrder,

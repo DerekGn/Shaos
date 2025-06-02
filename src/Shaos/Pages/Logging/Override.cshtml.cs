@@ -24,22 +24,26 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Logging;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.Logging
 {
     public class OverrideModel : PageModel
     {
         private readonly ILoggingConfiguration _loggingConfiguration;
-        private readonly ILoggingConfigurationRepository _loggingConfigurationRepository;
+        private readonly IShaosRepository _repository;
 
-        public OverrideModel(ILoggingConfiguration loggingConfiguration,
-                             ILoggingConfigurationRepository loggingConfigurationRepository)
+        public OverrideModel(
+            ILoggingConfiguration loggingConfiguration,
+            IShaosRepository repository)
         {
+            ArgumentNullException.ThrowIfNull(loggingConfiguration);
+            ArgumentNullException.ThrowIfNull(repository);
+
             _loggingConfiguration = loggingConfiguration;
-            _loggingConfigurationRepository = loggingConfigurationRepository ?? throw new ArgumentNullException(nameof(loggingConfigurationRepository));
+            _repository = repository;
         }
 
         [BindProperty]
@@ -55,7 +59,8 @@ namespace Shaos.Pages.Logging
                 return Page();
             }
 
-            var logLevelSwitch = await _loggingConfigurationRepository.GetByNameAsync(id, cancellationToken);
+            var logLevelSwitch = await _repository.GetByNameAsync(id,
+                                                                  cancellationToken);
 
             if (logLevelSwitch == null)
             {
@@ -81,7 +86,9 @@ namespace Shaos.Pages.Logging
 
             _loggingConfiguration.LoggingLevelSwitches[LogLevelSwitch.Name].MinimumLevel = LogLevelSwitch.Level;
 
-            await _loggingConfigurationRepository.UpsertAsync(LogLevelSwitch.Name, LogLevelSwitch.Level, cancellationToken);
+            await _repository.UpsertAsync(LogLevelSwitch.Name,
+                                          LogLevelSwitch.Level,
+                                          cancellationToken);
 
             return RedirectToPage("./Index");
         }

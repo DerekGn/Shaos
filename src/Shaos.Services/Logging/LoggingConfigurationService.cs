@@ -24,19 +24,21 @@
 
 using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Services.Logging
 {
     public class LoggingConfigurationService : ILoggingConfigurationService
     {
-        private readonly ILoggingConfigurationRepository _repository;
         private readonly ILogger<LoggingConfigurationService> _logger;
+        private readonly IShaosRepository _repository;
 
-        public LoggingConfigurationService(ILoggingConfigurationRepository repository,
-                                           ILogger<LoggingConfigurationService> logger)
+        public LoggingConfigurationService(
+            ILogger<LoggingConfigurationService> logger,
+            IShaosRepository repository)
         {
+
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -46,7 +48,7 @@ namespace Shaos.Services.Logging
         {
             _logger.LogInformation("Initialising logging configuration");
 
-            await foreach (var logSwitch in _repository.GetAsync(cancellationToken))
+            await foreach (var logSwitch in _repository.GetAsync<LogLevelSwitch>(cancellationToken))
             {
                 _logger.LogDebug("Updating LogLevelSwitch [{Name}] Level: [{Level}]", logSwitch.Name, logSwitch.Level);
 
@@ -63,7 +65,9 @@ namespace Shaos.Services.Logging
                 name,
                 level);
 
-            await _repository.UpsertAsync(name, level, cancellationToken);
+            await _repository.UpsertLogLevelSwitchAsync(name,
+                                          level,
+                                          cancellationToken);
         }
     }
 }

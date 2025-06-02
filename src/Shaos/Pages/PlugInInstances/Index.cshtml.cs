@@ -24,8 +24,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
+using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Services.Repositories;
 using System.Linq.Expressions;
 
 namespace Shaos.Pages.PlugInInstances
@@ -33,13 +33,16 @@ namespace Shaos.Pages.PlugInInstances
     public class IndexModel : PaginatedModel<PlugInInstance>
     {
         private readonly IConfiguration _configuration;
-        private readonly IPlugInInstanceRepository _repository;
+        private readonly IShaosRepository _repository;
 
         public IndexModel(IConfiguration configuration,
-                          IPlugInInstanceRepository repository)
+                          IShaosRepository repository)
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            ArgumentNullException.ThrowIfNull(configuration);
+            ArgumentNullException.ThrowIfNull(repository);
+            
+            _configuration = configuration;
+            _repository = repository;
         }
 
         [BindProperty]
@@ -103,11 +106,10 @@ namespace Shaos.Pages.PlugInInstances
                 filter,
                 orderBy);
 
-            List = await PaginatedList<PlugInInstance>
-                .CreateAsync(
-                    queryable, pageIndex ?? 1,
-                    _configuration.GetValue("PageSize", 5),
-                    cancellationToken);
+            List = await PaginatedList<PlugInInstance>.CreateAsync(queryable,
+                                                                   pageIndex ?? 1,
+                                                                   _configuration.GetValue("PageSize", 5),
+                                                                   cancellationToken);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Shaos.Services.Logging
             _loggingLevelSwitches = logLevelSwitches.ToFrozenDictionary();
         }
 
-        /// </<inheritdoc/>
+        /// <inheritdoc/>
         public IReadOnlyDictionary<string, LoggingLevelSwitch> LoggingLevelSwitches => _loggingLevelSwitches;
     }
 }

@@ -24,8 +24,8 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Repository;
 using Shaos.Services.IO;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Testing.Shared;
 using Xunit.Abstractions;
@@ -37,22 +37,18 @@ namespace Shaos.Services.UnitTests
         private readonly InstanceHostService _instanceHostService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
-        private readonly Mock<IPlugInInstanceRepository> _mockPlugInInstanceRepository;
-        private readonly Mock<IPlugInRepository> _mockPlugInRepository;
+        private readonly Mock<IShaosRepository> _mockRepository;
 
         public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockInstanceHost = new Mock<IInstanceHost>();
-            _mockPlugInInstanceRepository = new Mock<IPlugInInstanceRepository>();
-            _mockPlugInRepository = new Mock<IPlugInRepository>();
+            _mockRepository = new Mock<IShaosRepository>();
 
-            _instanceHostService = new InstanceHostService(
-                LoggerFactory!.CreateLogger<InstanceHostService>(),
-                _mockInstanceHost.Object,
-                _mockFileStoreService.Object,
-                _mockPlugInRepository.Object,
-                _mockPlugInInstanceRepository.Object);
+            _instanceHostService = new InstanceHostService(LoggerFactory!.CreateLogger<InstanceHostService>(),
+                                                           _mockInstanceHost.Object,
+                                                           _mockRepository.Object,
+                                                           _mockFileStoreService.Object);
         }
     }
 }

@@ -26,15 +26,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Shaos.Api.Model.v1;
 using Shaos.Extensions;
+using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Sdk;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Validation;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Runtime.CompilerServices;
+
+using ModelPlugIn = Shaos.Repository.Models.PlugIn;
+
 
 namespace Shaos.Controllers
 {
@@ -52,12 +56,10 @@ namespace Shaos.Controllers
 
         private readonly ICodeFileValidationService _codeFileValidationService;
 
-        public PlugInController(
-            ILogger<PlugInController> logger,
-            IPlugInService plugInService,
-            IPlugInRepository plugInRepository,
-            IPlugInInstanceRepository plugInInstanceRepository,
-            ICodeFileValidationService codeFileValidationService) : base(logger, plugInService, plugInRepository, plugInInstanceRepository)
+        public PlugInController(ILogger<PlugInController> logger,
+                                IShaosRepository repository,
+                                IPlugInService plugInService,
+                                ICodeFileValidationService codeFileValidationService) : base(logger, repository, plugInService)
         {
             _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
         }
@@ -72,23 +74,20 @@ namespace Shaos.Controllers
             Summary = "Create a new PlugIn",
             Description = CreateDescription,
             OperationId = "CreatePlugIn")]
-        public async Task<ActionResult<int>> CreatePlugInAsync(
-            [FromBody, SwaggerParameter("A PlugIn create", Required = true)] CreatePlugIn create,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult<int>> CreatePlugInAsync([FromBody, SwaggerParameter("A PlugIn create", Required = true)] CreatePlugIn create,
+                                                               CancellationToken cancellationToken)
         {
             try
             {
-                var plugInId = await PlugInRepository.CreateAsync(
-                    create.ToModel(),
-                    cancellationToken);
+                var plugInId = await Repository.CreatePlugInAsync(create.ToModel(),
+                                                                  cancellationToken);
 
                 return Ok(plugInId);
             }
-            catch (PlugInNameExistsException)
+            catch (ShaosNameExistsException)
             {
-                return base.Conflict(CreateProblemDetails(
-                    HttpStatusCode.Conflict,
-                    $"A PlugIn with name [{create.Name}] already exists"));
+                return base.Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
+                                                          $"A PlugIn with name [{create.Name}] already exists"));
             }
         }
 
@@ -101,27 +100,25 @@ namespace Shaos.Controllers
             Summary = "Create a new PlugIn instance",
             Description = "A PlugIn instance is created in the default mode of disabled",
             OperationId = "CreatePlugInInstance")]
-        public async Task<ActionResult<int>> CreatePlugInInstanceAsync(
-            [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            [FromBody, SwaggerParameter("The PlugIn Instance Create", Required = true)] CreatePlugInInstance create,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult<int>> CreatePlugInInstanceAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+                                                                       [FromBody, SwaggerParameter("The PlugIn Instance Create", Required = true)] CreatePlugInInstance create,
+                                                                       CancellationToken cancellationToken)
         {
             try
             {
-                var plugInId = await PlugInService.CreatePlugInInstanceAsync(
-                    id,
-                    create.ToModel(),
-                    cancellationToken);
+                var plugInId = await PlugInService.CreatePlugInInstanceAsync(id,
+                                                                             create.ToModel(),
+                                                                             cancellationToken);
 
                 return Ok(plugInId);
             }
-            catch (PlugInNotFoundException ex)
+            catch (ShaosNotFoundException ex)
             {
                 return NotFound(
                     CreateProblemDetails(
                         HttpStatusCode.NotFound, ex.Message));
             }
-            catch (PlugInInstanceNameExistsException)
+            catch (ShaosNameExistsException)
             {
                 return Conflict(
                     CreateProblemDetails(
@@ -139,9 +136,8 @@ namespace Shaos.Controllers
             Summary = "Delete an existing PlugIn",
             Description = DeleteDescription,
             OperationId = "DeletePlugIn")]
-        public async Task<ActionResult> DeletePlugInAsync(
-            [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult> DeletePlugInAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+                                                          CancellationToken cancellationToken)
         {
             try
             {
@@ -166,9 +162,8 @@ namespace Shaos.Controllers
             Summary = "Deletes a PlugIn Instance",
             Description = "Deletes a PlugIn Instance for the PlugIn",
             OperationId = "DeletePlugInInstance")]
-        public async Task<ActionResult> DeletePlugInInstanceAsync(
-            [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult> DeletePlugInInstanceAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+                                                                  CancellationToken cancellationToken)
         {
             try
             {
@@ -193,11 +188,12 @@ namespace Shaos.Controllers
             Summary = "Get an existing PlugIn by Identifier",
             Description = GetDescription,
             OperationId = "GetPlugIn")]
-        public async Task<ActionResult<PlugIn>> GetPlugInAsync(
-            [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult<PlugIn>> GetPlugInAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+                                                               CancellationToken cancellationToken)
         {
-            var plugIn = await PlugInInstanceRepository.GetByIdAsync(id, includeProperties: [], cancellationToken: cancellationToken);
+            var plugIn = await Repository.GetByIdAsync<ModelPlugIn>(id,
+                                                                    includeProperties: [],
+                                                                    cancellationToken: cancellationToken);
 
             if (plugIn != null)
             {
@@ -217,13 +213,10 @@ namespace Shaos.Controllers
             Summary = "Get a list of PlugIns",
             Description = GetListDescription,
             OperationId = "GetPlugIns")]
-        public async IAsyncEnumerable<PlugIn> GetPlugInsAsync(
-            [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<PlugIn> GetPlugInsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var plugIns = PlugInRepository
-                .GetAsync(
-                    includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)],
-                    cancellationToken: cancellationToken);
+            var plugIns = Repository.GetAsync<ModelPlugIn>(includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)],
+                                                           cancellationToken: cancellationToken);
 
             await foreach (var item in plugIns)
             {
@@ -240,21 +233,19 @@ namespace Shaos.Controllers
             Summary = "Set a PlugIn Instance enabled state",
             Description = EnableDescription,
             OperationId = "SetPlugInInstanceEnableState")]
-        public async Task<ActionResult> SetPlugInInstanceEnableStateAsync(
-            [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
-            [FromRoute, SwaggerParameter("The PlugIn Instance state", Required = true)] bool state,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult> SetPlugInInstanceEnableStateAsync([FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
+                                                                          [FromRoute, SwaggerParameter("The PlugIn Instance state", Required = true)] bool state,
+                                                                          CancellationToken cancellationToken)
         {
             try
             {
-                await PlugInService.SetPlugInInstanceEnableAsync(
-                    id,
-                    state,
-                    cancellationToken);
+                await PlugInService.SetPlugInInstanceEnableAsync(id,
+                                                                 state,
+                                                                 cancellationToken);
 
                 return Ok();
             }
-            catch (PlugInInstanceNotFoundException)
+            catch (ShaosNotFoundException)
             {
                 return NotFound();
             }
@@ -271,28 +262,26 @@ namespace Shaos.Controllers
             Summary = "Update a PlugIn",
             Description = "Update the properties of a PlugIn",
             OperationId = "UpdatePlugIn")]
-        public async Task<ActionResult<PlugIn>> UpdatePlugInAsync(
-            [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugIn update,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult<PlugIn>> UpdatePlugInAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+                                                                  [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugIn update,
+                                                                  CancellationToken cancellationToken)
         {
             try
             {
-                await PlugInRepository.UpdateAsync(
-                    id,
-                    update.Name,
-                    update.Description,
-                    cancellationToken);
+                await Repository.UpdatePlugInAsync(id,
+                                                   update.Name,
+                                                   update.Description,
+                                                   cancellationToken);
 
 #warning how to map the content location to correct version url
                 Response.Headers.ContentLocation = new StringValues($"/api/v1/plugins/{id}");
                 return NoContent();
             }
-            catch (PlugInNameExistsException)
+            catch (ShaosNameExistsException)
             {
                 return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugIn with name [{update.Name}] already exists"));
             }
-            catch (PlugInNotFoundException)
+            catch (ShaosNotFoundException)
             {
                 return NotFound();
             }
@@ -306,29 +295,27 @@ namespace Shaos.Controllers
             Summary = "Updates a PlugIn Instance",
             Description = "Update a PlugIn Instance",
             OperationId = "UpdatePlugInInstance")]
-        public async Task<ActionResult> UpdatePlugInInstanceAsync(
-            [FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
-            [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInInstance update,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult> UpdatePlugInInstanceAsync([FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
+                                                                  [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInInstance update,
+                                                                  CancellationToken cancellationToken)
         {
             try
             {
-                await PlugInInstanceRepository.UpdateAsync(
-                    id,
-                    update.Enabled,
-                    update.Name,
-                    update.Description,
-                    cancellationToken);
+                await Repository.UpdatePlugInInstanceAsync(id,
+                                                           update.Enabled,
+                                                           update.Name,
+                                                           update.Description,
+                                                           cancellationToken);
 
                 return Accepted();
             }
-            catch (PlugInInstanceNameExistsException)
+            catch (ShaosNameExistsException)
             {
                 return Conflict(
                     CreateProblemDetails(
                         HttpStatusCode.Conflict, $"A PlugInInstance with name [{update.Name}] already exists"));
             }
-            catch (PlugInInstanceNotFoundException)
+            catch (ShaosNotFoundException)
             {
                 return NotFound();
             }
@@ -365,7 +352,7 @@ namespace Shaos.Controllers
 
                     return Accepted();
                 }
-                catch (PlugInNotFoundException ex)
+                catch (ShaosNotFoundException ex)
                 {
                     return NotFound(
                         CreateProblemDetails(

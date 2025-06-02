@@ -26,8 +26,16 @@ using System.Text;
 
 namespace Shaos.Services.Extensions
 {
+    /// <summary>
+    /// A set of <see cref="Task"/> extensions
+    /// </summary>
     public static class TaskExtensions
     {
+        /// <summary>
+        /// Converts a <see cref="Task"/> to a string
+        /// </summary>
+        /// <param name="task">The task to convert to a string</param>
+        /// <returns>A string representation of a <see cref="Task"/></returns>
         public static string ToLoggingString(this Task task)
         {
             StringBuilder stringBuilder = new StringBuilder();

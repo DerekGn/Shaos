@@ -24,11 +24,11 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Validation;
 
@@ -38,15 +38,20 @@ namespace Shaos.Pages.PlugIns
     {
         private readonly ICodeFileValidationService _codeFileValidationService;
         private readonly IPlugInService _plugInService;
-        private readonly IPlugInRepository _repository;
+        private readonly IShaosRepository _repository;
 
-        public PackageModel(IPlugInRepository repository,
-                            IPlugInService plugInService,
-                            ICodeFileValidationService codeFileValidationService)
+        public PackageModel(
+            IShaosRepository repository,
+            IPlugInService plugInService,
+            ICodeFileValidationService codeFileValidationService)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _plugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
-            _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
+            ArgumentNullException.ThrowIfNull(repository);
+            ArgumentNullException.ThrowIfNull(plugInService);
+            ArgumentNullException.ThrowIfNull(codeFileValidationService);
+
+            _repository = repository;
+            _plugInService = plugInService;
+            _codeFileValidationService = codeFileValidationService;
         }
 
         [BindProperty]
@@ -61,7 +66,8 @@ namespace Shaos.Pages.PlugIns
         public async Task<IActionResult> OnGetAsync(int id,
                                                     CancellationToken cancellationToken = default)
         {
-            var plugin = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
+            var plugin = await _repository.GetByIdAsync<PlugIn>(id,
+                                                                cancellationToken: cancellationToken);
 
             if (plugin == null)
             {
@@ -116,11 +122,10 @@ namespace Shaos.Pages.PlugIns
 
             try
             {
-                await _plugInService.UploadPlugInPackageAsync(
-                    PlugIn!.Id,
-                    PackageFile.FileName,
-                    PackageFile.OpenReadStream(),
-                    cancellationToken);
+                await _plugInService.UploadPlugInPackageAsync(PlugIn!.Id,
+                                                              PackageFile.FileName,
+                                                              PackageFile.OpenReadStream(),
+                                                              cancellationToken);
             }
             catch (PlugInInstancesRunningException ex)
             {

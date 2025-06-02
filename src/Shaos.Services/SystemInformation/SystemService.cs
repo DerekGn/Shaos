@@ -37,12 +37,20 @@ namespace Shaos.Services.SystemInformation
         private readonly ILogger<SystemService> _logger;
         private readonly Lazy<RuntimeInformation> _osInformation;
 
-        public SystemService(
-            ILogger<SystemService> logger,
-            IHostApplicationLifetime hostApplicationLifetime)
+        /// <summary>
+        /// Create an instance of a <see cref="SystemService"/>
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{T}"/> instance type</param>
+        /// <param name="hostApplicationLifetime">The <see cref="IHostApplicationLifetime"/> instance</param>
+        /// <exception cref="ArgumentNullException">Thrown if an argument is null</exception>
+        public SystemService(ILogger<SystemService> logger,
+                             IHostApplicationLifetime hostApplicationLifetime)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(hostApplicationLifetime);
+
+            _logger = logger;
+            _hostApplicationLifetime = hostApplicationLifetime;
 
             _osInformation = new Lazy<RuntimeInformation>(LoadRuntimeInformation);
         }

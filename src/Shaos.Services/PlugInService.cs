@@ -23,12 +23,11 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Extensions;
 using Shaos.Services.IO;
-using Shaos.Services.Json;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
@@ -44,36 +43,32 @@ namespace Shaos.Services
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
         private readonly IPlugInFactory _plugInFactory;
-        private readonly IPlugInInstanceRepository _plugInInstanceRepository;
-        private readonly IPlugInRepository _plugInRepository;
+        private readonly IShaosRepository _repository;
         private readonly IPlugInTypeValidator _plugInTypeValidator;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         public PlugInService(ILogger<PlugInService> logger,
                              IInstanceHost instanceHost,
+                             IShaosRepository repository,
                              IPlugInFactory plugInFactory,
                              IFileStoreService fileStoreService,
-                             IPlugInRepository plugInRepository,
                              IPlugInTypeValidator plugInTypeValidator,
-                             IPlugInInstanceRepository plugInInstanceRepository,
                              IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(plugInFactory);
             ArgumentNullException.ThrowIfNull(fileStoreService);
-            ArgumentNullException.ThrowIfNull(plugInRepository);
             ArgumentNullException.ThrowIfNull(plugInTypeValidator);
-            ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
             ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
             _instanceHost = instanceHost;
+            _repository = repository;
             _plugInFactory = plugInFactory;
             _fileStoreService = fileStoreService;
-            _plugInRepository = plugInRepository;
             _plugInTypeValidator = plugInTypeValidator;
-            _plugInInstanceRepository = plugInInstanceRepository;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
@@ -92,7 +87,7 @@ namespace Shaos.Services
                 {
                     var package = plugIn.Package;
 
-                    result = await _plugInInstanceRepository.CreateAsync(plugIn,
+                    result = await _repository.CreatePlugInInstanceAsync(plugIn,
                                                                          plugInInstance,
                                                                          cancellationToken);
 
@@ -129,7 +124,8 @@ namespace Shaos.Services
                         _fileStoreService.DeletePackage(id, plugIn.Package.FileName);
                     }
 
-                    await _plugInRepository.DeleteAsync(id, cancellationToken);
+                    await _repository.DeleteAsync<PlugInInstance>(id,
+                                                                  cancellationToken);
                 }
                 else
                 {
@@ -159,7 +155,7 @@ namespace Shaos.Services
                 {
                     _logger.LogInformation("Deleting PlugInInstance [{Id}]", id);
 
-                    await _plugInInstanceRepository.DeleteAsync(id, cancellationToken);
+                    await _repository.DeleteAsync<PlugInInstance>(id, cancellationToken);
 
                     _logger.LogInformation("Deleting Instance [{Id}] from InstanceHost", id);
 
@@ -176,14 +172,13 @@ namespace Shaos.Services
         public async Task<object> LoadPlugInInstanceConfigurationAsync(int id,
                                                                        CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(
-                id,
-                includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
-                cancellationToken: cancellationToken);
+            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
+                                                                                includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
+                                                                                cancellationToken: cancellationToken);
 
             if (plugInInstance == null)
             {
-                throw new PlugInInstanceNotFoundException(id);
+                throw new ShaosNotFoundException(id);
             }
 
             object? configuration = null;
@@ -205,19 +200,21 @@ namespace Shaos.Services
                                                                         bool enable,
                                                                         CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(id, false, cancellationToken: cancellationToken);
+            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
+                                                                                false,
+                                                                                cancellationToken: cancellationToken);
 
             if (plugInInstance != null)
             {
                 plugInInstance.Enabled = enable;
 
-                await _plugInInstanceRepository.SaveChangesAsync(cancellationToken);
+                await _repository.SaveChangesAsync(cancellationToken);
 
                 return plugInInstance;
             }
             else
             {
-                throw new PlugInInstanceNotFoundException(id);
+                throw new ShaosNotFoundException(id);
             }
         }
 
@@ -319,10 +316,9 @@ namespace Shaos.Services
                     HasLogger = plugInTypeInformation.HasLogger
                 };
 
-                await _plugInRepository.CreatePackageAsync(
-                    plugIn,
-                    package,
-                    cancellationToken);
+                await _repository.CreatePackageAsync(plugIn,
+                                                     package,
+                                                     cancellationToken);
             }
             else
             {
@@ -337,7 +333,7 @@ namespace Shaos.Services
                 plugIn.Package.HasConfiguration = plugInTypeInformation.HasConfiguration;
                 plugIn.Package.HasLogger = plugInTypeInformation.HasLogger;
 
-                await _plugInRepository.SaveChangesAsync(cancellationToken);
+                await _repository.SaveChangesAsync(cancellationToken);
             }
         }
 
@@ -346,10 +342,9 @@ namespace Shaos.Services
                                                        bool withNoTracking = true,
                                                        CancellationToken cancellationToken = default)
         {
-            var plugIn = await _plugInRepository.GetByIdAsync(
-                id,
-                withNoTracking,
-                cancellationToken: cancellationToken);
+            var plugIn = await _repository.GetByIdAsync<PlugIn>(id,
+                                                                withNoTracking,
+                                                                cancellationToken: cancellationToken);
 
             if (plugIn != null)
             {
@@ -358,7 +353,7 @@ namespace Shaos.Services
             else
             {
                 _logger.LogWarning("PlugIn: [{Id}] not found", id);
-                throw new PlugInNotFoundException(id, $"PlugIn: [{id}] not found");
+                throw new ShaosNotFoundException(id, $"PlugIn: [{id}] not found");
             }
         }
 

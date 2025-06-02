@@ -23,12 +23,13 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Json;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services
@@ -38,33 +39,29 @@ namespace Shaos.Services
         private readonly IFileStoreService _fileStoreService;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
-        private readonly IPlugInInstanceRepository _plugInInstanceRepository;
-        private readonly IPlugInRepository _plugInRepository;
+        private readonly IShaosRepository _repository;
 
         public InstanceHostService(ILogger<InstanceHostService> logger,
                                    IInstanceHost instanceHost,
-                                   IFileStoreService fileStoreService,
-                                   IPlugInRepository plugInRepository,
-                                   IPlugInInstanceRepository plugInInstanceRepository)
+                                   IShaosRepository repository,
+                                   IFileStoreService fileStoreService)
         {
-            ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(fileStoreService);
-            ArgumentNullException.ThrowIfNull(plugInRepository);
-            ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
 
             _logger = logger;
+            _repository = repository;
             _instanceHost = instanceHost;
             _fileStoreService = fileStoreService;
-            _plugInRepository = plugInRepository;
-            _plugInInstanceRepository = plugInInstanceRepository;
         }
 
         /// <inheritdoc/>
         public async Task<object?> LoadInstanceConfigurationAsync(int id,
                                                                   CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
+            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new ShaosNotFoundException(id);
 
             var package = plugInInstance!.PlugIn!.Package;
 
@@ -97,7 +94,8 @@ namespace Shaos.Services
 
                         if (!string.IsNullOrEmpty(plugInInstance.Configuration))
                         {
-                            configuration = Utf8JsonSerilizer.Deserialize(plugInInstance.Configuration, configuration.GetType());
+                            configuration = Utf8JsonSerilizer.Deserialize(plugInInstance.Configuration,
+                                                                          configuration.GetType());
                         }
                         else
                         {
@@ -121,12 +119,9 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task StartInstancesAsync(CancellationToken cancellationToken = default)
         {
-            var plugIns = _plugInRepository
-                .GetAsync(
-                    _ => _.Package != null,
-                    includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
-                    cancellationToken: cancellationToken
-                );
+            var plugIns = _repository.GetAsync<PlugIn>(_ => _.Package != null,
+                                                       includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
+                                                       cancellationToken: cancellationToken);
 
             await foreach (var plugIn in plugIns)
             {
@@ -171,7 +166,7 @@ namespace Shaos.Services
             var configuration = _instanceHost.LoadConfiguration(id);
             var configurationType = configuration.GetType();
 
-            if(configuration == null)
+            if (configuration == null)
             {
                 throw new ConfigurationNotLoadedException(id);
             }
@@ -183,24 +178,22 @@ namespace Shaos.Services
                 configurationType.SetProperty(configuration!, kvp.Key, value);
             }
 
-            var plugInInstance = await _plugInInstanceRepository.GetByIdAsync(id,
-                                                                              false,
-                                                                              cancellationToken: cancellationToken);
+            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
+                                                                                false,
+                                                                                cancellationToken: cancellationToken);
 
             var serializedConfiguration = Utf8JsonSerilizer.Serialize(configuration);
 
             plugInInstance!.Configuration = serializedConfiguration;
 
-            await _plugInInstanceRepository.SaveChangesAsync(cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id,
-                                                                    CancellationToken cancellationToken = default)
+        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _plugInInstanceRepository.GetByIdAsync(
-                id,
-                includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
-                cancellationToken: cancellationToken);
+            return await _repository.GetByIdAsync<PlugInInstance>(id,
+                                                                  includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
+                                                                  cancellationToken: cancellationToken);
         }
     }
 }

@@ -24,24 +24,27 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 
 namespace Shaos.Pages.PlugIns
 {
     public class DeleteModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IPlugInRepository _repository;
+        private readonly IShaosRepository _repository;
 
         public DeleteModel(
-            IPlugInRepository repository,
+            IShaosRepository repository,
             IPlugInService plugInService)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _plugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
+            ArgumentNullException.ThrowIfNull(repository);
+            ArgumentNullException.ThrowIfNull(plugInService);
+
+            _repository = repository;
+            _plugInService = plugInService;
         }
 
         [BindProperty]
@@ -50,7 +53,8 @@ namespace Shaos.Pages.PlugIns
         public async Task<IActionResult> OnGetAsync(int id,
                                                     CancellationToken cancellationToken)
         {
-            var plugin = await _repository.GetByIdAsync(id, cancellationToken: cancellationToken);
+            var plugin = await _repository.GetByIdAsync<PlugIn>(id,
+                                                                cancellationToken: cancellationToken);
 
             if (plugin == null)
             {
@@ -69,7 +73,8 @@ namespace Shaos.Pages.PlugIns
         {
             try
             {
-                await _plugInService.DeletePlugInAsync(id.Value, cancellationToken);
+                await _plugInService.DeletePlugInAsync(id.Value,
+                                                       cancellationToken);
 
                 return RedirectToPage("./Index");
             }
