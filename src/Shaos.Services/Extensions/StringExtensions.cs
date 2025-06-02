@@ -46,7 +46,6 @@ namespace Shaos.Services.Extensions
 
             if (Directory.Exists(value))
             {
-
                 DirectoryInfo directoryInfo = new DirectoryInfo(value);
 
                 foreach (FileInfo file in directoryInfo.EnumerateFiles())
@@ -58,6 +57,16 @@ namespace Shaos.Services.Extensions
                     dir.Delete(true);
                 }
             }
+        }
+
+        public static bool IsEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
+        public static bool IsEmptyOrWhiteSpace(this string value)
+        {
+            return string.IsNullOrWhiteSpace(value);
         }
     }
 }
