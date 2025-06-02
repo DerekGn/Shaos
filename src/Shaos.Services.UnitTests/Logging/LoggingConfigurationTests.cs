@@ -22,10 +22,46 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Configuration;
+using Serilog;
+using Shaos.Services.Logging;
+using Xunit;
+
 namespace Shaos.Services.UnitTests.Logging
 {
     public class LoggingConfigurationTests
     {
+        private readonly LoggingConfiguration _loggingConfiguration;
 
+        public LoggingConfigurationTests()
+        {
+            _loggingConfiguration = new LoggingConfiguration();
+        }
+
+        [Fact]
+        public void TestConfigure()
+        {
+            var settings = new Dictionary<string, string?> 
+            {
+                { "Serilog:Using", "Serilog.Sinks.Console"},
+                { "Serilog:MinimumLevel:Default", "Information"},
+                { "Serilog:MinimumLevel:Override:System", "Warning"},
+                { "Serilog:MinimumLevel:Override:Microsoft.AspNetCore.Mvc", "Warning"},
+                { "Serilog:MinimumLevel:Override:Microsoft.AspNetCore.Routing", "Warning"},
+                { "Serilog:MinimumLevel:Override:Microsoft.AspNetCore.Hosting", "Warning"},
+                { "Serilog:WriteTo:Name", "Console"}
+            };
+
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(settings)
+                .Build();
+
+            var loggerConfiguration = new LoggerConfiguration();
+
+            _loggingConfiguration.Configure(configuration, loggerConfiguration);
+
+            Assert.NotNull(_loggingConfiguration.LoggingLevelSwitches);
+            Assert.Equal(4, _loggingConfiguration.LoggingLevelSwitches.Count);
+        }
     }
 }

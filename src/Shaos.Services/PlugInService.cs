@@ -370,7 +370,7 @@ namespace Shaos.Services
                 context = _runtimeAssemblyLoadContextFactory.Create(assemblyPath);
                 var assembly = context.LoadFromAssemblyPath(assemblyPath);
 
-                configuration = _plugInFactory.LoadConfiguration(assembly);
+                configuration = _plugInFactory.CreateConfiguration(assembly);
             }
             finally
             {

@@ -25,6 +25,7 @@
         /// </summary>
         public T Target => (T)_weakReference.Target!;
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method

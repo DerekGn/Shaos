@@ -22,10 +22,11 @@
 * SOFTWARE.
 */
 
-using System.Xml.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Json
 {
+    [ExcludeFromCodeCoverage]
     public class Utf8JsonPropertyTypeNotMappedException : Exception
     {
         public Utf8JsonPropertyTypeNotMappedException(string name,

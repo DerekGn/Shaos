@@ -42,10 +42,10 @@ namespace Shaos.Services.Runtime.Factories
                                 object? configuration = default);
 
         /// <summary>
-        /// 
+        /// Create an instance of a PlugIn configuration
         /// </summary>
-        /// <param name="assembly"></param>
-        /// <returns></returns>
-        object? LoadConfiguration(Assembly assembly);
+        /// <param name="assembly">The <see cref="Assembly"/> </param>
+        /// <returns>The PlugIn configuration instance</returns>
+        object? CreateConfiguration(Assembly assembly);
     }
 }

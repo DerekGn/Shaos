@@ -62,7 +62,7 @@ namespace Shaos.Services.Runtime.Factories
         }
 
         /// <inheritdoc/>
-        public object? LoadConfiguration(Assembly assembly)
+        public object? CreateConfiguration(Assembly assembly)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 

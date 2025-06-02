@@ -34,11 +34,8 @@ namespace Shaos.Pages.PlugInInstances
     public class CreateModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IShaosRepository _repository;
 
-        public CreateModel(
-            IPlugInService plugInService,
-            IShaosRepository repository)
+        public CreateModel(IPlugInService plugInService)
         {
             ArgumentNullException.ThrowIfNull(plugInService);
 

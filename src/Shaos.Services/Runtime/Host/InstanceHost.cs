@@ -124,7 +124,7 @@ namespace Shaos.Services.Runtime.Host
             return ResolveExecutingInstance(id, (instance) =>
             {
                 var loadContext = _instanceLoadContexts[instance.PlugInId];
-                object? configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
+                object? configuration = _plugInFactory.CreateConfiguration(loadContext.Assembly!);
 
                 if(configuration != null)
                 {
