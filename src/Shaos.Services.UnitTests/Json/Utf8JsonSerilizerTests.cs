@@ -1,17 +1,39 @@
-﻿
+﻿/*
+* MIT License
+*
+* Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
 using Shaos.Services.Json;
 using Shaos.Testing.Shared;
-using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Json
 {
-    public class Utf8JsonSerilizerTests : BaseTests
+    public class Utf8JsonSerializerTests : BaseTests
     {
         private const string TestGuid = "89b3c108-081d-4a47-95eb-38a4ab648cf6";
 
-        public Utf8JsonSerilizerTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        public Utf8JsonSerializerTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
         }
 
@@ -26,7 +48,7 @@ namespace Shaos.Services.UnitTests.Json
                 "\"Int\":5,\"Long\":6,\"SByte\":7,\"Short\":8,\"String\":\"String\"," +
                 "\"TimeSpan\":\"10675199.02:48:05.4775807\",\"UInt\":10,\"ULong\":11,\"UShort\":12}";
 
-            var result = Utf8JsonSerilizer.Deserialize(json, typeof(TestConfiguration));
+            var result = Utf8JsonSerializer.Deserialize(json, typeof(TestConfiguration));
 
             Assert.NotNull(result);
 
@@ -75,7 +97,7 @@ namespace Shaos.Services.UnitTests.Json
                 UShort = 11
             };
 
-            var result = Utf8JsonSerilizer.Serialize(testConfiguration);
+            var result = Utf8JsonSerializer.Serialize(testConfiguration);
 
             Assert.NotEmpty(result);
             Assert.Equal(

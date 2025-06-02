@@ -167,13 +167,8 @@ namespace Shaos.Services
                                                            IEnumerable<KeyValuePair<string, string>> collection,
                                                            CancellationToken cancellationToken = default)
         {
-            var configuration = _instanceHost.LoadConfiguration(id);
+            var configuration = _instanceHost.LoadConfiguration(id) ?? throw new ConfigurationNotLoadedException(id);
             var configurationType = configuration.GetType();
-
-            if (configuration == null)
-            {
-                throw new ConfigurationNotLoadedException(id);
-            }
 
             foreach (var kvp in collection)
             {
@@ -186,7 +181,7 @@ namespace Shaos.Services
                                                                                 false,
                                                                                 cancellationToken: cancellationToken);
 
-            var serializedConfiguration = Utf8JsonSerilizer.Serialize(configuration);
+            var serializedConfiguration = Utf8JsonSerializer.Serialize(configuration);
 
             plugInInstance!.Configuration = serializedConfiguration;
 

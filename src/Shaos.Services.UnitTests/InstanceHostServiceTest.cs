@@ -34,6 +34,7 @@ using Shaos.Services.Runtime.Host;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
 using System.Linq.Expressions;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -302,6 +303,54 @@ namespace Shaos.Services.UnitTests
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
+        }
+
+        [Fact]
+        public async Task TestUpdateInstanceConfigurationAsync()
+        {
+            List<KeyValuePair<string, string>> collection =
+            [
+                new("TestSetting","10")
+            ];
+
+            _mockInstanceHost
+                .Setup(_ => _.LoadConfiguration(It.IsAny<int>()))
+                .Returns(new TestConfig());
+
+            _mockRepository.Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                                      It.IsAny<bool>(),
+                                                                      It.IsAny<List<string>?>(),
+                                                                      It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugInInstance()
+                {
+
+                });
+
+
+            await _instanceHostService.UpdateInstanceConfigurationAsync(1, collection);
+
+            _mockRepository
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task TestUpdateInstanceConfigurationNotFoundAsync()
+        {
+            List<KeyValuePair<string, string>> collection =
+            [
+                new("TestSetting","10")
+            ];
+
+            var exception = await Assert.ThrowsAsync<ConfigurationNotLoadedException>(
+                async () => await _instanceHostService.UpdateInstanceConfigurationAsync(1, collection));
+
+            Assert.NotNull(exception);
+            Assert.Equal(1, exception.Id);
+        }
+
+        public class TestConfig
+        {
+            public int TestSetting { get; set; }
         }
     }
 }

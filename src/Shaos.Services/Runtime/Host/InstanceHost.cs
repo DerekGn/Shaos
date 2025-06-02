@@ -132,7 +132,7 @@ namespace Shaos.Services.Runtime.Host
                     {
                         _logger.LogInformation("Updating the instance configuration. Id: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
 
-                        configuration = Utf8JsonSerilizer.Deserialize(instance.Configuration.Configuration!, configuration.GetType());
+                        configuration = Utf8JsonSerializer.Deserialize(instance.Configuration.Configuration!, configuration.GetType());
                     }
                 }
                 else
