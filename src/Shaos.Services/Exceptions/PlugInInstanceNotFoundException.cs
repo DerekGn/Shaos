@@ -22,32 +22,28 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Validation
+namespace Shaos.Services.Exceptions
 {
-    /// <summary>
-    /// The file validation result
-    /// </summary>
-    public enum FileValidationResult
+    public class PlugInInstanceNotFoundException : Exception
     {
-        /// <summary>
-        /// Indicates that the validation is successful
-        /// </summary>
-        Success,
-        /// <summary>
-        /// Indicates that the filename is empty
-        /// </summary>
-        FileNameEmpty,
-        /// <summary>
-        /// Indicates that the file content is invalid
-        /// </summary>
-        InvalidContentType,
-        /// <summary>
-        /// Indicates that the file name is invalid
-        /// </summary>
-        InvalidFileName,
-        /// <summary>
-        /// Indicates that the file content length is invalid
-        /// </summary>
-        InvalidFileLength,
+        public PlugInInstanceNotFoundException(int id)
+        {
+            Id = id;
+        }
+
+        public PlugInInstanceNotFoundException(int id,
+                                               string? message) : base(message)
+        {
+            Id = id;
+        }
+
+        public PlugInInstanceNotFoundException(int id,
+                                               string? message,
+                                               Exception? innerException) : base(message, innerException)
+        {
+            Id = id;
+        }
+
+        public int Id { get; }
     }
 }

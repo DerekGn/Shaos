@@ -106,5 +106,7 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The identifier of the <see cref="Instance"/> the configuration is to be loaded for</param>
         /// <returns>The configuration</returns>
         object? LoadConfiguration(int id);
+
+        void SetConfiguration(int id, string? configuration);
     }
 }

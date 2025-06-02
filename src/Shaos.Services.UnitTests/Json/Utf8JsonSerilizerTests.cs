@@ -75,8 +75,6 @@ namespace Shaos.Services.UnitTests.Json
                 UShort = 11
             };
 
-            var x = JsonSerializer.Serialize(testConfiguration);
-
             var result = Utf8JsonSerilizer.Serialize(testConfiguration);
 
             Assert.NotEmpty(result);

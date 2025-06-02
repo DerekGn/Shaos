@@ -126,7 +126,7 @@ namespace Shaos.Services.Runtime.Host
                 var loadContext = _instanceLoadContexts[instance.PlugInId];
                 object? configuration = _plugInFactory.CreateConfiguration(loadContext.Assembly!);
 
-                if(configuration != null)
+                if (configuration != null)
                 {
                     if (instance.Configuration.IsConfigured)
                     {
@@ -138,7 +138,7 @@ namespace Shaos.Services.Runtime.Host
                 else
                 {
 #warning TODO
-                    //throw new 
+                    //throw new
                 }
 
                 return configuration;
@@ -274,7 +274,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 _logger.LogWarning(exception, "PlugIn Task cancelled");
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 _logger.LogCritical(exception, "An un-handled exception occurred in PlugIn");
 
@@ -403,6 +403,7 @@ namespace Shaos.Services.Runtime.Host
             InstanceStateChanged?.Invoke(this,
                     new InstanceStateEventArgs(instance.Id, instance.State));
         }
+
         private void VerifyInstanceCount()
         {
             if (_executingInstances.Count == _options.Value.MaxExecutingInstances)
@@ -419,6 +420,11 @@ namespace Shaos.Services.Runtime.Host
                     _executingInstances.Count,
                     _options.Value.MaxExecutingInstances);
             }
+        }
+
+        public void SetConfiguration(int id, string? configuration)
+        {
+            throw new NotImplementedException();
         }
     }
 }

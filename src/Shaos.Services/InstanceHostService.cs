@@ -30,10 +30,14 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Json;
+using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// An instance hosting service
+    /// </summary>
     public class InstanceHostService : IInstanceHostService
     {
         private readonly IFileStoreService _fileStoreService;
@@ -41,6 +45,13 @@ namespace Shaos.Services
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IShaosRepository _repository;
 
+        /// <summary>
+        /// Create an instance of a instance host service
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="instanceHost">The <see cref="IInstanceHost"/> instance</param>
+        /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
+        /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         public InstanceHostService(ILogger<InstanceHostService> logger,
                                    IInstanceHost instanceHost,
                                    IShaosRepository repository,
@@ -78,42 +89,34 @@ namespace Shaos.Services
         public async Task StartInstanceAsync(int id,
                                              CancellationToken cancellationToken = default)
         {
-#warning refactor load of configuration
-            if (_instanceHost.InstanceExists(id))
+            if (!_instanceHost.InstanceExists(id))
             {
-                var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
+                _logger.LogWarning("Unable to start a PlugIn instance. Instance host does not contain instance Id: [{Id}]", id);
 
-                if (plugInInstance != null)
-                {
-                    object? configuration = null;
-                    var package = plugInInstance.PlugIn.Package;
+                throw new InstanceNotFoundException(id);
+            }
 
-                    if (package != null && package.HasConfiguration)
-                    {
-                        configuration = _instanceHost.LoadConfiguration(id);
+            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken);
 
-                        if (!string.IsNullOrEmpty(plugInInstance.Configuration))
-                        {
-                            configuration = Utf8JsonSerilizer.Deserialize(plugInInstance.Configuration,
-                                                                          configuration.GetType());
-                        }
-                        else
-                        {
-                            throw new PlugInInstanceNotConfiguredException(id);
-                        }
-                    }
+            if (plugInInstance == null)
+            {
+                _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
+                throw new PlugInInstanceNotFoundException(id);
+            }
 
-                    _instanceHost.StartInstance(id);
-                }
-                else
-                {
-                    _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
-                }
+            var package = plugInInstance.PlugIn!.Package!;
+
+            if (package.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))
+            {
+                _logger.LogWarning("PlugIn instance Id: [{Id}] was not found.", id);
+                throw new PlugInInstanceNotConfiguredException(id);
             }
             else
             {
-                _logger.LogWarning("Unable to start a PlugIn instance. Instance host does not contain instance Id: [{Id}]", id);
+                _instanceHost.SetConfiguration(id, plugInInstance.Configuration);
             }
+
+            _instanceHost.StartInstance(id);
         }
 
         /// <inheritdoc/>

@@ -174,13 +174,7 @@ namespace Shaos.Services
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                                 includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
-                                                                                cancellationToken: cancellationToken);
-
-            if (plugInInstance == null)
-            {
-                throw new ShaosNotFoundException(id);
-            }
-
+                                                                                cancellationToken: cancellationToken) ?? throw new ShaosNotFoundException(id);
             object? configuration = null;
 
             if (string.IsNullOrEmpty(plugInInstance.Configuration))

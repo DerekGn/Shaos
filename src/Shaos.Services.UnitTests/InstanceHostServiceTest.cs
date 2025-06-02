@@ -29,8 +29,11 @@ using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
+using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
 using Shaos.Testing.Shared;
+using Shaos.Testing.Shared.Extensions;
+using System.Linq.Expressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -58,8 +61,9 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestLoadInstanceConfigurationNotFoundAsync()
         {
-            var exception = await Assert.ThrowsAsync<ShaosNotFoundException>(async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
-            
+            var exception = await Assert.ThrowsAsync<ShaosNotFoundException>(
+                async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
+
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
         }
@@ -72,12 +76,16 @@ namespace Shaos.Services.UnitTests
                 Description = "Test",
                 Name = "Test",
                 Package = new Package()
+                {
+                    HasConfiguration = true
+                }
             };
 
-            _mockRepository.Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
-                                                                      It.IsAny<bool>(),
-                                                                      It.IsAny<List<string>?>(),
-                                                                      It.IsAny<CancellationToken>()))
+            _mockRepository
+                .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                           It.IsAny<bool>(),
+                                                           It.IsAny<List<string>?>(),
+                                                           It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PlugInInstance()
                 {
                     Configuration = "configuration",
@@ -101,16 +109,196 @@ namespace Shaos.Services.UnitTests
                 Package = new Package()
             };
 
-            _mockRepository.Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
-                                                                      It.IsAny<bool>(),
-                                                                      It.IsAny<List<string>?>(),
-                                                                      It.IsAny<CancellationToken>()))
+            _mockRepository.
+                Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                          It.IsAny<bool>(),
+                                                          It.IsAny<List<string>?>(),
+                                                          It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PlugInInstance()
                 {
                     PlugIn = plugIn
                 });
 
-            var exception = await Assert.ThrowsAsync<PlugInHasNoConfigurationException>(async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
+            var exception = await Assert.ThrowsAsync<PlugInHasNoConfigurationException>(
+                async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
+
+            Assert.NotNull(exception);
+            Assert.Equal(1, exception.Id);
+        }
+
+        [Fact]
+        public async Task TestStartInstanceAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Description = "Test",
+                Name = "Test",
+                Package = new Package()
+            };
+
+            _mockInstanceHost
+                .Setup(_ => _.InstanceExists(It.IsAny<int>()))
+                .Returns(true);
+
+            _mockRepository.
+                Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                          It.IsAny<bool>(),
+                                                          It.IsAny<List<string>?>(),
+                                                          It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugInInstance()
+                {
+                    PlugIn = plugIn
+                });
+
+            await _instanceHostService.StartInstanceAsync(1);
+
+            _mockInstanceHost
+                .Verify(_ => _.InstanceExists(1), Times.Once);
+
+            _mockRepository
+                .Verify(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                          It.IsAny<bool>(),
+                                                          It.IsAny<List<string>?>(),
+                                                          It.IsAny<CancellationToken>()),
+                                                          Times.Once);
+        }
+
+        [Fact]
+        public async Task TestStartInstanceNotFoundAsync()
+        {
+            _mockInstanceHost
+                .Setup(_ => _.InstanceExists(It.IsAny<int>()))
+                .Returns(false);
+
+            var exception = await Assert.ThrowsAsync<InstanceNotFoundException>(
+                async () => await _instanceHostService.StartInstanceAsync(1));
+
+            Assert.NotNull(exception);
+            Assert.Equal(1, exception.Id);
+        }
+
+        [Fact]
+        public async Task TestStartInstancesAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Id = 1,
+                Description = "description",
+                Name = "name",
+                Package = new Package()
+                {
+                    AssemblyFile = "AssemblyFile"
+                }
+            };
+
+            plugIn.Instances.Add(new PlugInInstance()
+            {
+                Id = 1,
+                Enabled = true,
+            });
+
+            List<PlugIn> plugIns =
+            [
+                plugIn
+            ];
+
+            var instance = new Instance(1, 2, "name", new InstanceConfiguration(true, "configuration"));
+
+            _mockRepository.Setup(_ => _.GetAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
+                                                          It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                                                          It.IsAny<bool>(),
+                                                          It.IsAny<List<string>?>(),
+                                                          It.IsAny<CancellationToken>()))
+                .Returns(plugIns.ToAsyncEnumerable());
+
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<int>(),
+                                              It.IsAny<string>()))
+                .Returns("AssemblyFile");
+
+            _mockInstanceHost.Setup(_ => _.CreateInstance(It.IsAny<int>(),
+                                                          It.IsAny<int>(),
+                                                          It.IsAny<string>(),
+                                                          It.IsAny<string>(),
+                                                          It.IsAny<InstanceConfiguration>()))
+                .Returns(instance);
+
+            await _instanceHostService.StartInstancesAsync();
+
+            _mockRepository.Verify(_ => _.GetAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
+                                                           It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                                                           It.IsAny<bool>(),
+                                                           It.IsAny<List<string>?>(),
+                                                           It.IsAny<CancellationToken>()),
+                    Times.Once);
+
+            _mockFileStoreService
+                .Verify(_ => _.GetAssemblyPath(It.IsAny<int>(),
+                                               It.IsAny<string>()),
+                                               Times.Once);
+
+            _mockInstanceHost
+                .Verify(_ => _.CreateInstance(It.IsAny<int>(),
+                                              It.IsAny<int>(),
+                                              It.IsAny<string>(),
+                                              It.IsAny<string>(),
+                                              It.IsAny<InstanceConfiguration>()),
+                                              Times.Once);
+
+            _mockInstanceHost
+                .Verify(_ => _.StartInstance(It.IsAny<int>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task TestStartPlugInInstanceNotConfiguredAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Description = "Test",
+                Name = "Test",
+                Package = new Package()
+                {
+                    HasConfiguration = true
+                }
+            };
+
+            _mockInstanceHost
+                .Setup(_ => _.InstanceExists(It.IsAny<int>()))
+                .Returns(true);
+
+            _mockRepository.
+                Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                          It.IsAny<bool>(),
+                                                          It.IsAny<List<string>?>(),
+                                                          It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugInInstance()
+                {
+                    PlugIn = plugIn
+                });
+
+            var exception = await Assert.ThrowsAsync<PlugInInstanceNotConfiguredException>(
+                async () => await _instanceHostService.StartInstanceAsync(1));
+
+            Assert.NotNull(exception);
+            Assert.Equal(1, exception.Id);
+        }
+
+        [Fact]
+        public async Task TestStartPlugInInstanceNotFoundAsync()
+        {
+            _mockInstanceHost
+                .Setup(_ => _.InstanceExists(It.IsAny<int>()))
+                .Returns(true);
+
+            _mockRepository.
+                Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                          It.IsAny<bool>(),
+                                                          It.IsAny<List<string>?>(),
+                                                          It.IsAny<CancellationToken>()))
+                .ReturnsAsync((PlugInInstance)null!);
+
+            var exception = await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(
+                async () => await _instanceHostService.StartInstanceAsync(1));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
