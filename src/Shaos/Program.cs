@@ -30,13 +30,13 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Shaos.Data;
 using Shaos.Extensions;
+using Shaos.Filters;
 using Shaos.Hosting;
 using Shaos.Hubs;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
@@ -44,9 +44,7 @@ using Shaos.Services.Runtime.Validation;
 using Shaos.Services.SystemInformation;
 using Shaos.Services.Validation;
 using Shaos.Startup;
-using System.Configuration;
 using System.Text.Json.Serialization;
-using Szlem.AspNetCore.Infrastructure;
 
 namespace Shaos
 {
@@ -153,10 +151,8 @@ namespace Shaos
             // Application defined services
             builder.Services.AddScoped<IInstanceHostService, InstanceHostService>();
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
-            builder.Services.AddScoped<ILoggingConfigurationRepository, LoggingConfigurationRepository>();
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
-            builder.Services.AddScoped<IPlugInInstanceRepository, PlugInInstanceRepository>();
-            builder.Services.AddScoped<IPlugInRepository, PlugInRepository>();
+            builder.Services.AddScoped<IShaosRepository, ShaosRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();

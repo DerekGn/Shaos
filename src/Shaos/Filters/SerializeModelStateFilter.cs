@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Szlem.AspNetCore.Infrastructure
+namespace Shaos.Filters
 {
     public class SerializeModelStatePageFilter : IPageFilter
     {

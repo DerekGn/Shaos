@@ -49,6 +49,7 @@ namespace Shaos.Services.Runtime.Validation
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
+        /// <inheritdoc/>
         public PlugInTypeInformation Validate(string assemblyFile)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFile);

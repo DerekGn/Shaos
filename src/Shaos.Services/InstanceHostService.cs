@@ -23,10 +23,10 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Repositories;
 using Shaos.Services.Runtime.Host;
 using System.Text.Json;
 
@@ -39,20 +39,20 @@ namespace Shaos.Services
     {
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
-        private readonly IPlugInInstanceRepository _plugInInstanceRepository;
+        private readonly IShaosRepository _repository;
 
         public InstanceHostService(
             ILogger<InstanceHostService> logger,
-            IInstanceHost instanceHost,
-            IPlugInInstanceRepository plugInInstanceRepository)
+            IShaosRepository repository,
+            IInstanceHost instanceHost)
         {
             ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(instanceHost);
-            ArgumentNullException.ThrowIfNull(plugInInstanceRepository);
 
             _logger = logger;
+            _repository = repository;
             _instanceHost = instanceHost;
-            _plugInInstanceRepository = plugInInstanceRepository;
         }
 
         /// <inheritdoc/>
@@ -105,12 +105,11 @@ namespace Shaos.Services
             }
         }
 
-        private async Task<PlugInInstance> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
+        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _plugInInstanceRepository.GetByIdAsync(
-                id,
-                includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
-                cancellationToken: cancellationToken);
+            return await _repository.GetByIdAsync<PlugInInstance>(id,
+                                                                  includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
+                                                                  cancellationToken: cancellationToken);
         }
     }
 }

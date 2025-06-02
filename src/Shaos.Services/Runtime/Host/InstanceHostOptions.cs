@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
+
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
