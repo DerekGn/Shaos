@@ -29,7 +29,6 @@ using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
-using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
@@ -43,12 +42,12 @@ namespace Shaos.Services.UnitTests
 {
     public class PlugInServiceTests : BaseTests
     {
+        private readonly Mock<IConfigurationLoaderService> _mockConfigurationLoaderService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IPlugInTypeValidator> _mockPlugInTypeValidator;
         private readonly Mock<IShaosRepository> _mockRepository;
-        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly PlugInService _plugInService;
 
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
@@ -58,7 +57,7 @@ namespace Shaos.Services.UnitTests
             _mockPlugInFactory = new Mock<IPlugInFactory>();
             _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
             _mockRepository = new Mock<IShaosRepository>();
-            _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
+            _mockConfigurationLoaderService = new Mock<IConfigurationLoaderService>();
 
             _plugInService = new PlugInService(LoggerFactory!.CreateLogger<PlugInService>(),
                                                _mockInstanceHost.Object,
@@ -66,7 +65,7 @@ namespace Shaos.Services.UnitTests
                                                _mockPlugInFactory.Object,
                                                _mockFileStoreService.Object,
                                                _mockPlugInTypeValidator.Object,
-                                               _mockRuntimeAssemblyLoadContextFactory.Object);
+                                               _mockConfigurationLoaderService.Object);
         }
 
         [Fact]
@@ -249,9 +248,13 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
-        public async Task TestLoadPlugInInstanceConfigurationPackageNotAssignedAsync()
+        public async Task TestLoadPlugInInstanceConfigurationOkAsync()
         {
             var plugIn = SetupPlugInGetByIdAsync();
+            plugIn.Package = new Package()
+            {
+                HasConfiguration = true
+            };
 
             _mockRepository.
                Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
@@ -263,11 +266,16 @@ namespace Shaos.Services.UnitTests
                    PlugIn = plugIn
                });
 
-            var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(async () =>
-                await _plugInService.LoadPlugInInstanceConfigurationAsync(1));
+            _mockConfigurationLoaderService.Setup(_ => _.LoadConfiguration(
+                It.IsAny<int>(),
+                It.IsAny<string>(),
+                It.IsAny<string?>()))
+                .Returns(new object());
 
-            Assert.NotNull(exception);
-            Assert.Equal(1, exception.Id);
+            var result = await _plugInService.LoadPlugInInstanceConfigurationAsync(1);
+
+            Assert.NotNull(result);
+            Assert.IsType<object>(result);
         }
 
         [Fact]
@@ -296,6 +304,27 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(1, exception.Id);
         }
 
+        [Fact]
+        public async Task TestLoadPlugInInstanceConfigurationPackageNotAssignedAsync()
+        {
+            var plugIn = SetupPlugInGetByIdAsync();
+
+            _mockRepository.
+               Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                         It.IsAny<bool>(),
+                                                         It.IsAny<List<string>?>(),
+                                                         It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new PlugInInstance()
+               {
+                   PlugIn = plugIn
+               });
+
+            var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(async () =>
+                await _plugInService.LoadPlugInInstanceConfigurationAsync(1));
+
+            Assert.NotNull(exception);
+            Assert.Equal(1, exception.Id);
+        }
         [Fact]
         public async Task TestSetPlugInInstanceEnableNotFoundAsync()
         {
