@@ -27,7 +27,9 @@ using Shaos.Repository;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
 using Shaos.Services.IO;
+using Shaos.Services.Json;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
@@ -35,6 +37,9 @@ using Shaos.Services.Runtime.Validation;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// The PlugIn service
+    /// </summary>
     public class PlugInService : IPlugInService
     {
         private const string PlugInNamePostFix = ".PlugIn.dll";
@@ -47,6 +52,16 @@ namespace Shaos.Services
         private readonly IPlugInTypeValidator _plugInTypeValidator;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInService"/>
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/></param>
+        /// <param name="instanceHost">The <see cref="IInstanceHost"/> instance</param>
+        /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
+        /// <param name="plugInFactory">The <see cref="IPlugInFactory"/> instance</param>
+        /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
+        /// <param name="plugInTypeValidator">The <see cref="IPlugInTypeValidator"/> instance</param>
+        /// <param name="runtimeAssemblyLoadContextFactory">The <see cref="IRuntimeAssemblyLoadContextFactory"/> instance</param>
         public PlugInService(ILogger<PlugInService> logger,
                              IInstanceHost instanceHost,
                              IShaosRepository repository,
@@ -175,15 +190,19 @@ namespace Shaos.Services
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                                 includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
                                                                                 cancellationToken: cancellationToken) ?? throw new ShaosNotFoundException(id);
-            object? configuration = null;
 
-            if (string.IsNullOrEmpty(plugInInstance.Configuration))
+            var package = (plugInInstance.PlugIn?.Package) ?? throw new PlugInPackageNotAssignedException(id);
+
+            if (!package.HasConfiguration)
             {
-                configuration = LoadConfiguration(plugInInstance.PlugIn!);
+                throw new PackageHasNoConfigurationException(id);
             }
-            else
+
+            object? configuration = LoadConfiguration(plugInInstance.PlugIn!);
+
+            if (!string.IsNullOrEmpty(plugInInstance.Configuration))
             {
-                //configuration = Utf8JsonSerilizer.Deserialize(plugInInstance.Configuration);
+                configuration = Utf8JsonSerializer.Deserialize(plugInInstance.Configuration, configuration!.GetType());
             }
 
             return configuration!;
@@ -196,20 +215,13 @@ namespace Shaos.Services
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                                 false,
-                                                                                cancellationToken: cancellationToken);
+                                                                                cancellationToken: cancellationToken) ?? throw new ShaosNotFoundException(id);
 
-            if (plugInInstance != null)
-            {
-                plugInInstance.Enabled = enable;
+            plugInInstance.Enabled = enable;
 
-                await _repository.SaveChangesAsync(cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
 
-                return plugInInstance;
-            }
-            else
-            {
-                throw new ShaosNotFoundException(id);
-            }
+            return plugInInstance;
         }
 
         /// <inheritdoc/>

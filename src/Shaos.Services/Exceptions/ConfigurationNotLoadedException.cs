@@ -26,20 +26,38 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// Thrown when a PlugIn instance configuration can not be loaded
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class ConfigurationNotLoadedException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
+        /// </summary>
+        /// <param name="id">The identifier of the PlugIn instance</param>
         public ConfigurationNotLoadedException(int id)
         {
             Id = id;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
+        /// </summary>
+        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="message">The exception message</param>
         public ConfigurationNotLoadedException(int id,
                                                string? message) : base(message)
         {
             Id = id;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
+        /// </summary>
+        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="message">The exception message</param>
+        /// <param name="innerException">The inner exception</param>
         public ConfigurationNotLoadedException(int id,
                                                string? message,
                                                Exception? innerException) : base(message, innerException)
@@ -47,6 +65,9 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
+        /// <summary>
+        /// The identifier of the PlugIn instance
+        /// </summary>
         public int Id { get; }
     }
 }

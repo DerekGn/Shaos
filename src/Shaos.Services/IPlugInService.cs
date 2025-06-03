@@ -31,7 +31,7 @@ using Shaos.Services.Runtime.Exceptions;
 namespace Shaos.Services
 {
     /// <summary>
-    /// Defines the PlugIn service
+    /// Defines the PlugIn service interface
     /// </summary>
     public interface IPlugInService
     {
