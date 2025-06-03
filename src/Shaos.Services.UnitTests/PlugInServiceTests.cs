@@ -325,6 +325,7 @@ namespace Shaos.Services.UnitTests
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
         }
+
         [Fact]
         public async Task TestSetPlugInInstanceEnableNotFoundAsync()
         {
@@ -358,12 +359,22 @@ namespace Shaos.Services.UnitTests
                 .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Fact(Skip = "Refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackageNoValidPlugInAsync()
         {
             MemoryStream stream = new MemoryStream();
 
-            SetupPlugInGetByIdAsync();
+            var plugIn = SetupPlugInGetByIdAsync();
+
+            plugIn.Instances.Add(new PlugInInstance()
+            {
+                Id = 1,
+                Description = "description",
+                Name = "name",
+                PlugInId = plugIn.Id
+            });
+
+            SetupRunningInstances();
 
             _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(
@@ -392,7 +403,7 @@ namespace Shaos.Services.UnitTests
                 Times.Never);
         }
 
-        [Fact(Skip = "Refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackagePlugInRunningAsync()
         {
             MemoryStream stream = new MemoryStream();
@@ -402,26 +413,21 @@ namespace Shaos.Services.UnitTests
             plugIn.Instances.Add(new PlugInInstance()
             {
                 Id = 1,
+                Description = "description",
                 Name = "name",
-                Description = "description"
+                PlugInId = plugIn.Id
             });
 
-            var configuration = new InstanceConfiguration(true, string.Empty);
-
-            var instance = new Instance(1, 1, "Test", InstanceState.None, configuration);
+            var instance = SetupRunningInstances();
 
             instance.SetRunning();
 
-            _mockInstanceHost
-                .Setup(_ => _.Instances)
-                .Returns([instance]);
-
             var exception = await Assert
-                .ThrowsAsync<PlugInInstanceRunningException>(async () => await _plugInService
+                .ThrowsAsync<PlugInInstancesRunningException>(async () => await _plugInService
                     .UploadPlugInPackageAsync(1, "filename", stream));
 
             Assert.Equal(
-                "Instance Running",
+                "Instances are Running",
                 exception.Message);
 
             _mockFileStoreService
@@ -437,12 +443,22 @@ namespace Shaos.Services.UnitTests
                     Times.Never);
         }
 
-        [Fact(Skip = "Refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackageSuccessAsync()
         {
             MemoryStream stream = new MemoryStream();
 
-            SetupPlugInGetByIdAsync();
+            var plugIn = SetupPlugInGetByIdAsync();
+
+            plugIn.Instances.Add(new PlugInInstance()
+            {
+                Id = 1,
+                Description = "description",
+                Name = "name",
+                PlugInId = plugIn.Id
+            });
+
+            SetupRunningInstances();
 
             _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(It.IsAny<int>(),
@@ -469,7 +485,7 @@ namespace Shaos.Services.UnitTests
                 Times.Once);
         }
 
-        [Fact(Skip = "Refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackageUpdateSuccessAsync()
         {
             MemoryStream stream = new MemoryStream();
@@ -480,6 +496,16 @@ namespace Shaos.Services.UnitTests
             {
                 AssemblyFile = "assemblyfile"
             };
+
+            plugIn.Instances.Add(new PlugInInstance()
+            {
+                Id = 1,
+                Description = "description",
+                Name = "name",
+                PlugInId = plugIn.Id
+            });
+
+            SetupRunningInstances();
 
             _mockFileStoreService
                 .Setup(_ => _.ExtractPackage(It.IsAny<int>(),
@@ -528,6 +554,7 @@ namespace Shaos.Services.UnitTests
         {
             var plugIn = new PlugIn()
             {
+                Id = 1,
                 Name = "plugin",
                 Description = "description"
             };
@@ -540,6 +567,19 @@ namespace Shaos.Services.UnitTests
                 .ReturnsAsync(plugIn);
 
             return plugIn;
+        }
+
+        private Instance SetupRunningInstances()
+        {
+            var configuration = new InstanceConfiguration(true, string.Empty);
+
+            var instance = new Instance(1, 1, "Test", InstanceState.None, configuration);
+            
+            _mockInstanceHost
+               .Setup(_ => _.Instances)
+               .Returns([instance]);
+
+            return instance;
         }
     }
 }

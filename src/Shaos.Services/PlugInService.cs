@@ -28,10 +28,10 @@ using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
-using Shaos.Services.Json;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
+using System.Diagnostics;
 
 namespace Shaos.Services
 {
@@ -330,6 +330,7 @@ namespace Shaos.Services
             }
         }
 
+        [DebuggerStepThrough]
         private async Task ExecutePlugInOperationAsync(int id,
                                                        Func<PlugIn, CancellationToken, Task> operation,
                                                        bool withNoTracking = true,
