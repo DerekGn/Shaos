@@ -24,8 +24,18 @@
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// Defines the interface for a configuration loader service
+    /// </summary>
     public interface IConfigurationLoaderService
     {
+        /// <summary>
+        /// Load the configuration type from a PlugIn assembly
+        /// </summary>
+        /// <param name="id">The PlugIn identifier</param>
+        /// <param name="assemblyFile">The assembly file</param>
+        /// <param name="configuration">The optional json configuration to apply to the configuration instance</param>
+        /// <returns>An instance of a configuration type</returns>
         object? LoadConfiguration(int id, string assemblyFile, string? configuration = default);
     }
 }

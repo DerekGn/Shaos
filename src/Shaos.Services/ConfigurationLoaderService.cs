@@ -29,12 +29,21 @@ using Shaos.Services.Runtime.Factories;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// The configuration loader service
+    /// </summary>
     public class ConfigurationLoaderService : IConfigurationLoaderService
     {
         private readonly IPlugInFactory _plugInFactory;
         private readonly IFileStoreService _fileStoreService;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
+        /// <summary>
+        /// Create an instance of a configuration loader service
+        /// </summary>
+        /// <param name="plugInFactory">The <see cref="IPlugInFactory"/> instance</param>
+        /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
+        /// <param name="runtimeAssemblyLoadContextFactory">The <see cref="IRuntimeAssemblyLoadContextFactory"/> instance</param>
         public ConfigurationLoaderService(IPlugInFactory plugInFactory,
                                           IFileStoreService fileStoreService,
                                           IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
@@ -45,6 +54,7 @@ namespace Shaos.Services
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
+        /// <inheritdoc/>
         public object? LoadConfiguration(int id,
                                          string assemblyFile,
                                          string? configuration = default)

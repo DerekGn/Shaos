@@ -38,6 +38,8 @@ namespace Shaos.Services.Json
 
             var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json));
 
+            var properties = type.GetProperties();
+
             PropertyInfo? propertyInfo = null;
 
             while (reader.Read())
@@ -60,7 +62,8 @@ namespace Shaos.Services.Json
                         break;
 
                     case JsonTokenType.PropertyName:
-                        propertyInfo = type.GetProperty(reader.GetString()!);
+                        var name = reader.GetString();
+                        propertyInfo = properties.First(_ => _.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
                         break;
 
                     case JsonTokenType.Comment:

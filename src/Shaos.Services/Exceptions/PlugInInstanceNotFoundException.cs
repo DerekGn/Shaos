@@ -22,8 +22,12 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public class PlugInInstanceNotFoundException : Exception
     {
         public PlugInInstanceNotFoundException(int id)
@@ -44,6 +48,9 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
+        /// <summary>
+        /// The identifier of the <see cref="PlugInInstance"/> that was not found
+        /// </summary>
         public int Id { get; }
     }
 }
