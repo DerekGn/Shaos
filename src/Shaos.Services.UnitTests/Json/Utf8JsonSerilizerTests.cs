@@ -83,7 +83,7 @@ namespace Shaos.Services.UnitTests.Json
                 DateTime = new DateTime(2020,12,12,12,12,12,DateTimeKind.Utc),
                 Decimal = 2.1m,
                 Double = 3.2,
-                Enum = TestEnum.Value,
+                Enum = TestValues.Value,
                 Float = 4.3f,
                 Guid = new Guid(TestGuid),
                 Int = 5,

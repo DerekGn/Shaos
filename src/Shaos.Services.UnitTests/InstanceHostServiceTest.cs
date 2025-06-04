@@ -34,7 +34,6 @@ using Shaos.Services.Runtime.Host;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
 using System.Linq.Expressions;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 

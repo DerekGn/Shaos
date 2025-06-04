@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,18 +22,37 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using Moq;
+using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
+using Xunit;
 
-namespace Shaos.Repository
+namespace Shaos.Services.UnitTests.Runtime.Host
 {
-    public class DatabaseDesignTimeDbContextFactory : IDesignTimeDbContextFactory<ShaosDbContext>
+    public class InstanceLoadContextTests
     {
-        public ShaosDbContext CreateDbContext(string[] args)
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
+        private InstanceLoadContext _instanceLoadContext;
+
+        public InstanceLoadContextTests()
         {
-            var builder = new DbContextOptionsBuilder<ShaosDbContext>();
-            builder.UseSqlite("Data Source=..\\Shaos\\shaos.db;");
-            return new ShaosDbContext(builder.Options);
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+        }
+
+        [Fact]
+        public void TestDispose()
+        {
+            _mockRuntimeAssemblyLoadContext
+                .Setup(_ => _.LoadFromAssemblyPath(It.IsAny<string>()))
+                .Returns(new Object().GetType().Assembly);
+
+            _instanceLoadContext = new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
+
+            Assert.NotNull(_instanceLoadContext.Assembly);
+
+            _instanceLoadContext.Dispose();
+
+            Assert.Null(_instanceLoadContext.Assembly);
         }
     }
 }

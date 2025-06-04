@@ -33,11 +33,11 @@ namespace Shaos.Services.UnitTests
 {
     public class ConfigurationLoaderServiceTest
     {
-        public ConfigurationLoaderService _configurationLoaderService;
-        public Mock<IFileStoreService> _mockFileStoreService;
-        public Mock<IPlugInFactory> _mockPlugInFactory;
-        public Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
-        public Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
+        private readonly ConfigurationLoaderService _configurationLoaderService;
+        private readonly Mock<IFileStoreService> _mockFileStoreService;
+        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
+        private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
+        private Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
 
         public ConfigurationLoaderServiceTest()
         {
