@@ -22,23 +22,23 @@
 * SOFTWARE.
 */
 
+
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class InstanceCreateException : Exception
+    public class InstanceConfigurationNullException : Exception
     {
-        public InstanceCreateException()
-        { }
-
-        public InstanceCreateException(string message) : base(message)
+        public InstanceConfigurationNullException(int id)
         {
         }
 
-        public InstanceCreateException(string message,
-                                       Exception inner) : base(message, inner)
+        public InstanceConfigurationNullException(int id, string? message) : base(message)
+        {
+        }
+
+        public InstanceConfigurationNullException(int id, string? message, Exception? innerException) : base(message, innerException)
         {
         }
     }

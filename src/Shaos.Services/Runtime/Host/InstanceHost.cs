@@ -32,6 +32,9 @@ using System.Diagnostics;
 
 namespace Shaos.Services.Runtime.Host
 {
+    /// <summary>
+    /// An instance hosting service
+    /// </summary>
     public class InstanceHost : IInstanceHost
     {
         internal readonly List<Instance> _executingInstances;
@@ -62,13 +65,13 @@ namespace Shaos.Services.Runtime.Host
             _instanceLoadContexts = new Dictionary<int, InstanceLoadContext>();
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public IReadOnlyList<Instance> Instances => _executingInstances.AsReadOnly();
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public Instance CreateInstance(int id,
                                        int plugInId,
                                        string instanceName,
@@ -113,12 +116,13 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public bool InstanceExists(int id)
         {
             return _executingInstances.Any(_ => _.Id == id);
         }
 
+        /// <inheritdoc/>
         public object? LoadConfiguration(int id)
         {
             return ResolveExecutingInstance(id, (instance) =>
@@ -137,15 +141,14 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-#warning TODO
-                    //throw new
+                    throw new InstanceConfigurationNullException(id);
                 }
 
                 return configuration;
             });
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public void RemoveInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
@@ -163,7 +166,7 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public Instance StartInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
@@ -234,7 +237,7 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public Instance StopInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
