@@ -30,7 +30,7 @@ using System.Text.Json;
 
 namespace Shaos.Services.Json
 {
-    internal class Utf8JsonSerializer
+    internal static class Utf8JsonSerializer
     {
         public static object Deserialize(string json, Type type)
         {
