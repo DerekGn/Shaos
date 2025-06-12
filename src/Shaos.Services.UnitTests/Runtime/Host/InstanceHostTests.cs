@@ -31,7 +31,6 @@ using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Loader;
 using Shaos.Services.UnitTests.Fixtures;
-using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using System.Reflection;
 using Xunit;
@@ -285,36 +284,41 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             Assert.Throws<InstanceRunningException>(() => _instanceHost.StartInstance(1));
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
+        public void TestStopInstanceInvalidId()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.StopInstance(0));
+        }
+
+        [Fact]
         public void TestStopInstanceNotFound()
         {
             Assert.Throws<InstanceNotFoundException>(() => _instanceHost.StopInstance(1));
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         public async Task TestStopInstanceRunning()
         {
-            var tokenSource = new CancellationTokenSource();
+            var configuration = new InstanceConfiguration(true, "config");
 
-            SetupExecutingInstance();
+            var instance = new Instance(1, 1, "Test", InstanceState.Running, configuration);
 
-#warning TODO
-            //instance.Task = Task.Run(async () => await WaitTaskAsync(tokenSource.Token))
-            //    .ContinueWith((antecedent) => UpdateState(antecedent, instance));
+            instance.LoadContext(_mockPlugIn.Object);
 
-            //_instanceHost._executingInstances.Add(instance);
+            instance.StartExecution(
+                (cancellationToken) => WaitTaskAsync(cancellationToken), 
+                (task) => _instanceHost.UpdateStateOnCompletion(instance, task));
 
-            //_instanceHost.StopInstance(1);
+            _instanceHost._executingInstances.Add(instance);
 
-            //var executingInstance = await WaitForState(InstanceState.Complete);
+            _instanceHost.StopInstance(1);
 
-            //Assert.NotNull(executingInstance);
-            //Assert.Equal(InstanceState.Complete, executingInstance.State);
+            var executingInstance = await WaitForState(InstanceState.Complete);
+
+            Assert.NotNull(executingInstance);
+            Assert.Equal(InstanceState.Complete, executingInstance.State);
         }
 
-        //    Assert.NotNull(instance);
-        //    Assert.Equal(InstanceState.PlugInLoadFailure, instance.State);
-        //}
         private void InstanceHostInstanceStateChanged(object? sender, InstanceStateEventArgs e)
         {
             if (e.State == _waitingState)
@@ -323,7 +327,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             }
         }
 
-        //    var instance = _instanceHost.StopInstance(1);
         private void SetupAssemblyLoadContext()
         {
             _mockRuntimeAssemblyLoadContextFactory
@@ -345,76 +348,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 new Instance(1, 1, "Test", state, configuration));
         }
 
-        //        [Fact(Skip = "refactor")]
-        //        public void TestStartInstanceAwaitingIn()
-        //        {
-        //            var mockPlugIn = new Mock<IPlugIn>();
-
-        //            _instanceHost._executingInstances.Add(
-        //                new Instance(1, "Test", "AssemblyPath", InstanceState.PlugInLoaded));
-
-        //            mockPlugIn
-        //                .Setup(_ => _.ExecuteAsync(It.IsAny<CancellationToken>()))
-        //                .Throws<Exception>();
-
-        //            SetupStateWait(InstanceState.Faulted);
-
-        //            var instance = _instanceHost.StartInstance(1);
-
-        //            Assert.True(WaitForStateChange());
-
-        //#warning TODO
-        //            //Assert.NotNull(instance);
-        //            //Assert.NotNull(instance.Exception);
-        //            //Assert.NotNull(instance.PlugIn);
-        //            //Assert.Equal(InstanceState.Faulted, instance.State);
-
-        //            mockPlugIn
-        //                .Verify(_ => _.ExecuteAsync(
-        //                    It.IsAny<CancellationToken>()),
-        //                    Times.Once);
-
-        //            OutputHelper.WriteLine(instance.ToString());
-        //        }
-
-        //        [Fact(Skip = "refactor")]
-        //        public void TestStartInstanceComplete()
-        //        {
-        //            var mockPlugIn = new Mock<IPlugIn>();
-
-        //            _instanceHost._executingInstances.Add(
-        //                new Instance(1, "Test", "AssemblyPath", InstanceState.PlugInLoaded));
-
-        //#warning TODO
-        //            //_instanceHost._executingInstances.Add(new Instance()
-        //            //{
-        //            //    Id = 1,
-        //            //    PlugIn = mockPlugIn.Object,
-        //            //    State = InstanceState.PlugInLoaded
-        //            //});
-
-        //            SetupStateWait(InstanceState.Complete);
-
-        //            var instance = _instanceHost.StartInstance(1);
-        //[Fact(Skip = "refactor")]
-        //public void TestStopInstanceNotRunning()
-        //{
-        //    _instanceHost._executingInstances.Add(
-        //        new Instance(1, "Test", "AssemblyPath", InstanceState.PlugInLoadFailure));
         private void SetupStateWait(InstanceState state)
         {
             _autoResetEvent.Reset();
 
             _waitingState = state;
-        }
-
-        private void UpdateState(
-            Task antecedent,
-            Instance executingInstance)
-        {
-#warning TODO
-            OutputHelper.WriteLine("Waiting Task complete");
-            //executingInstance.State = InstanceState.Complete;
         }
 
         private async Task<Instance?> WaitForState(InstanceState state)

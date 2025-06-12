@@ -247,8 +247,47 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
+        internal void UpdateStateOnCompletion(Instance instance,
+                                              Task antecedent)
+        {
+            _logger.LogDebug("Completed PlugIn Task: {NewLine}{Task}",
+                Environment.NewLine,
+                antecedent.ToLoggingString());
+
+            if (antecedent.Status == TaskStatus.RanToCompletion || antecedent.Status == TaskStatus.Canceled)
+            {
+                instance.SetComplete();
+
+                _logger.LogInformation("Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
+                    instance.Id,
+                    instance.Name,
+                    antecedent.Status);
+            }
+            else if (antecedent.Status == TaskStatus.Faulted)
+            {
+                instance.SetFaulted(antecedent.Exception);
+
+                _logger.LogError(antecedent.Exception, "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
+                    instance.Id,
+                    instance.Name,
+                    antecedent.Status);
+            }
+
+            _logger.LogInformation("Unloading instance execution context for instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+
+            instance.Context?.Dispose();
+
+            if (!_executingInstances.Any(_ => _.State == InstanceState.Running && _.PlugInId == instance.PlugInId))
+            {
+                UnloadInstanceLoadContext(instance);
+            }
+
+            InstanceStateChanged?.Invoke(this,
+                    new InstanceStateEventArgs(instance.Id, instance.State));
+        }
+
         private async Task ExecutePlugInMethod(Instance instance,
-                                               CancellationToken cancellationToken = default)
+                                                       CancellationToken cancellationToken = default)
         {
             instance.SetRunning();
 
@@ -352,45 +391,6 @@ namespace Shaos.Services.Runtime.Host
             instanceLoadContext.Value.Dispose();
 
             _instanceLoadContexts.Remove(instance.Id);
-        }
-
-        private void UpdateStateOnCompletion(Instance instance,
-                                             Task antecedent)
-        {
-            _logger.LogDebug("Completed PlugIn Task: {NewLine}{Task}",
-                Environment.NewLine,
-                antecedent.ToLoggingString());
-
-            if (antecedent.Status == TaskStatus.RanToCompletion || antecedent.Status == TaskStatus.Canceled)
-            {
-                instance.SetComplete();
-
-                _logger.LogInformation("Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
-                    instance.Id,
-                    instance.Name,
-                    antecedent.Status);
-            }
-            else if (antecedent.Status == TaskStatus.Faulted)
-            {
-                instance.SetFaulted(antecedent.Exception);
-
-                _logger.LogError(antecedent.Exception, "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
-                    instance.Id,
-                    instance.Name,
-                    antecedent.Status);
-            }
-
-            _logger.LogInformation("Unloading instance execution context for instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
-
-            instance.Context?.Dispose();
-
-            if (!_executingInstances.Any(_ => _.State == InstanceState.Running && _.PlugInId == instance.PlugInId))
-            {
-                UnloadInstanceLoadContext(instance);
-            }
-
-            InstanceStateChanged?.Invoke(this,
-                    new InstanceStateEventArgs(instance.Id, instance.State));
         }
 
         private void VerifyInstanceCount()
