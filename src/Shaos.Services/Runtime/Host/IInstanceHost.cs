@@ -21,6 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+
 using Shaos.Repository.Models;
 using Shaos.Services.Runtime.Exceptions;
 
@@ -68,13 +69,27 @@ namespace Shaos.Services.Runtime.Host
         bool InstanceExists(int id);
 
         /// <summary>
+        /// Load the <see cref="Instance"/> configuration
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration is to be loaded for</param>
+        /// <returns>The configuration</returns>
+        object? LoadConfiguration(int id);
+
+        /// <summary>
         /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The identifier of the <see cref="Instance"/> to remove</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is still running</exception>
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
         void RemoveInstance(int id);
+
+        /// <summary>
+        /// Set an <see cref="Instance"/> configuration
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration to set</param>
+        /// <param name="configuration">The JSON configuration setting</param>
+        void SetConfiguration(int id, string? configuration);
 
         /// <summary>
         /// Start the execution of a <see cref="Instance"/>
@@ -100,14 +115,5 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="Instance"/> is not synchronously stopped
         /// </remarks>
         Instance StopInstance(int id);
-
-        /// <summary>
-        /// Load the <see cref="Instance"/> configuration
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration is to be loaded for</param>
-        /// <returns>The configuration</returns>
-        object? LoadConfiguration(int id);
-
-        void SetConfiguration(int id, string? configuration);
     }
 }

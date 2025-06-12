@@ -30,6 +30,7 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime.Loader;
 using Shaos.Services.Runtime.Validation;
 using System.Diagnostics;
 

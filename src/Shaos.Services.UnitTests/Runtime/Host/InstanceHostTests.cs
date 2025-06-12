@@ -25,11 +25,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Shaos.Sdk;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Exceptions;
-using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime.Loader;
 using Shaos.Services.UnitTests.Fixtures;
+using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using System.Reflection;
 using Xunit;
@@ -44,6 +46,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         private readonly AutoResetEvent _autoResetEvent;
         private readonly InstanceHost _instanceHost;
+        private readonly Mock<IPlugIn> _mockPlugIn;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly Mock<ITypeLoaderService> _mockTypeLoaderService;
@@ -57,6 +60,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockTypeLoaderService = new Mock<ITypeLoaderService>();
+            _mockPlugIn = new Mock<IPlugIn>();
 
             var optionsInstance = new InstanceHostOptions()
             {
@@ -229,6 +233,48 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestStartInstanceNotFound()
         {
             Assert.Throws<InstanceNotFoundException>(() => _instanceHost.StartInstance(1));
+        }
+
+        [Fact]
+        public void TestStartInstancePlugInLoaded()
+        {
+            var configuration = new InstanceConfiguration(true, "config");
+
+            _instanceHost._executingInstances.Add(
+                new Instance(1, 1, "Test", InstanceState.None, configuration));
+
+            var instanceLoadContext = new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
+
+            _instanceHost._instanceLoadContexts.Add(1, instanceLoadContext);
+
+            _mockTypeLoaderService
+                .Setup(_ => _.CreateInstance(It.IsAny<Assembly>(), It.IsAny<InstanceConfiguration>()))
+                .Returns(_mockPlugIn.Object);
+
+            SetupStateWait(InstanceState.Running);
+
+            var instance = _instanceHost.StartInstance(1);
+
+            Assert.True(WaitForStateChange());
+
+            Assert.NotNull(instance);
+            Assert.NotNull(instance.Context);
+            Assert.Equal(InstanceState.Running, instance.State);
+        }
+
+        [Fact]
+        public void TestStartInstancePlugInNotLoaded()
+        {
+            var configuration = new InstanceConfiguration(true, "config");
+
+            _instanceHost._executingInstances.Add(
+                new Instance(1, 1, "Test", InstanceState.None, configuration));
+
+            var instanceLoadContext = new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
+
+            _instanceHost._instanceLoadContexts.Add(1, instanceLoadContext);
+
+            Assert.Throws<PlugInNotCreatedException>(() => _instanceHost.StartInstance(1));
         }
 
         [Fact]

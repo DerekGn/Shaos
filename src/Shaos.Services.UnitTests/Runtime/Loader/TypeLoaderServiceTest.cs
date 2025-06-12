@@ -26,10 +26,11 @@ using Moq;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
+using Shaos.Services.Runtime.Loader;
 using System.Reflection;
 using Xunit;
 
-namespace Shaos.Services.UnitTests
+namespace Shaos.Services.UnitTests.Runtime.Loader
 {
     public class TypeLoaderServiceTest
     {

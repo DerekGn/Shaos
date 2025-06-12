@@ -26,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Loader;
 using System.Diagnostics;
 
 namespace Shaos.Services.Runtime.Host
@@ -156,6 +157,7 @@ namespace Shaos.Services.Runtime.Host
 
             ResolveExecutingInstance(id, (instance) =>
             {
+#warning TODO
             });
         }
 
@@ -197,7 +199,7 @@ namespace Shaos.Services.Runtime.Host
                     }
                     else
                     {
-                        var plugIn = _typeLoaderService.CreateInstance(loadContext.Assembly, instance.Configuration);
+                        var plugIn = _typeLoaderService.CreateInstance(loadContext.Assembly!, instance.Configuration);
 
                         if (plugIn == null)
                         {

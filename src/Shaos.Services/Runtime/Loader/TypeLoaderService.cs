@@ -26,12 +26,11 @@ using Serilog.Context;
 using Shaos.Sdk;
 using Shaos.Services.IO;
 using Shaos.Services.Json;
-using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
 using System.Reflection;
 
-namespace Shaos.Services
+namespace Shaos.Services.Runtime.Loader
 {
     /// <summary>
     /// The configuration loader service

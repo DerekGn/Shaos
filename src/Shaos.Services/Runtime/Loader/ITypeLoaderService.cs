@@ -26,7 +26,7 @@ using Shaos.Sdk;
 using Shaos.Services.Runtime.Host;
 using System.Reflection;
 
-namespace Shaos.Services
+namespace Shaos.Services.Runtime.Loader
 {
     /// <summary>
     /// Defines the interface for a type loader service
