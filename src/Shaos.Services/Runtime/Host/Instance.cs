@@ -124,7 +124,7 @@ namespace Shaos.Services.Runtime.Host
         /// <returns>true if this instance can be started</returns>
         public bool CanStart()
         {
-            if (Configuration.RequiresConfiguration && Configuration.IsConfigured)
+            if (Configuration.RequiresConfiguration && !Configuration.IsConfigured)
                 return false;
             else
                 return State != InstanceState.Running;

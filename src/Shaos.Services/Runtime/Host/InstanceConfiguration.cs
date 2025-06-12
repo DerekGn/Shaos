@@ -42,7 +42,7 @@ namespace Shaos.Services.Runtime.Host
         /// <remarks>
         /// The PlugIn configuration JSON string
         /// </remarks>
-        public string? Configuration { get; }
+        public string? Configuration { get; private set; }
 
         /// <summary>
         /// Indicates if this instance has configuration settings
@@ -65,6 +65,11 @@ namespace Shaos.Services.Runtime.Host
             stringBuilder.AppendLine($"{nameof(RequiresConfiguration)}: {RequiresConfiguration} ");
 
             return stringBuilder.ToString();
+        }
+
+        internal void SetConfiguration(string? configuration)
+        {
+            Configuration = configuration;
         }
     }
 }
