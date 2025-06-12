@@ -44,9 +44,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         private readonly AutoResetEvent _autoResetEvent;
         private readonly InstanceHost _instanceHost;
-        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
+        private readonly Mock<ITypeLoaderService> _mockTypeLoaderService;
         private InstanceState _waitingState;
 
         public InstanceHostTests(ITestOutputHelper output, TestFixture fixture) : base(output)
@@ -56,7 +56,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
-            _mockPlugInFactory = new Mock<IPlugInFactory>();
+            _mockTypeLoaderService = new Mock<ITypeLoaderService>();
 
             var optionsInstance = new InstanceHostOptions()
             {
@@ -65,7 +65,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _instanceHost = new InstanceHost(
                 LoggerFactory!.CreateLogger<InstanceHost>(),
-                _mockPlugInFactory.Object,
+                _mockTypeLoaderService.Object,
                 Options.Create(optionsInstance),
                 _mockRuntimeAssemblyLoadContextFactory.Object);
 
@@ -162,8 +162,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 ._instanceLoadContexts
                 .Add(1, new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object));
 
-            _mockPlugInFactory
-                .Setup(_ => _.CreateConfiguration(It.IsAny<Assembly>()))
+            _mockTypeLoaderService
+                .Setup(_ => _.LoadConfiguration(It.IsAny<Assembly>(), It.IsAny<string?>()))
                 .Returns(new Test());
 
             var result = _instanceHost.LoadConfiguration(1);
@@ -171,7 +171,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             Assert.NotNull(result);
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         public void TestRemoveInstance()
         {
             SetupExecutingInstance();
@@ -181,47 +181,64 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             Assert.Empty(_instanceHost._executingInstances);
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         public void TestRemoveInstanceInvalidId()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => _instanceHost.RemoveInstance(0));
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         public void TestRemoveInstanceNotFound()
         {
             Assert.Throws<InstanceNotFoundException>(() => _instanceHost.RemoveInstance(1));
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         public void TestRemoveInstanceRunning()
         {
-            SetupExecutingInstance();
+            SetupExecutingInstance(InstanceState.Running);
 
             Assert.Throws<InstanceRunningException>(() => _instanceHost.RemoveInstance(1));
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
+        public void TestStartInstanceNoLoadContextNotFound()
+        {
+            var configuration = new InstanceConfiguration(true, "config");
+
+            _instanceHost
+                ._executingInstances
+                .Add(new Instance(1, 1, "Test", InstanceState.None, configuration));
+
+            Assert.Throws<InstanceLoadContextNotFoundException>(() => _instanceHost.StartInstance(1));
+        }
+
+        [Fact]
+        public void TestStartInstanceNotConfiguredRunning()
+        {
+            var configuration = new InstanceConfiguration(true, string.Empty);
+
+            _instanceHost
+                ._executingInstances
+                .Add(new Instance(1, 1, "Test", InstanceState.None, configuration));
+
+            Assert.Throws<InstanceNotConfiguredException>(() => _instanceHost.StartInstance(1));
+        }
+
+        [Fact]
         public void TestStartInstanceNotFound()
         {
             Assert.Throws<InstanceNotFoundException>(() => _instanceHost.StartInstance(1));
         }
 
-        //            Assert.NotNull(instance);
-        //            Assert.Equal(InstanceState.Complete, instance.State);
-        //        }
-        [Fact(Skip = "refactor")]
+        [Fact]
         public void TestStartInstanceRunning()
         {
-            SetupExecutingInstance();
+            SetupExecutingInstance(InstanceState.Running);
 
-            var instance = _instanceHost.StartInstance(2);
-
-            Assert.NotNull(instance);
-            Assert.Equal(InstanceState.Running, instance.State);
+            Assert.Throws<InstanceRunningException>(() => _instanceHost.StartInstance(1));
         }
 
-        //            Assert.True(WaitForStateChange());
         [Fact(Skip = "refactor")]
         public void TestStopInstanceNotFound()
         {
@@ -274,12 +291,12 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Returns(typeof(object).Assembly);
         }
 
-        private void SetupExecutingInstance()
+        private void SetupExecutingInstance(InstanceState state = InstanceState.None)
         {
             var configuration = new InstanceConfiguration(true, string.Empty);
 
             _instanceHost._executingInstances.Add(
-                new Instance(1, 1, "Test", InstanceState.None, configuration));
+                new Instance(1, 1, "Test", state, configuration));
         }
 
         //        [Fact(Skip = "refactor")]

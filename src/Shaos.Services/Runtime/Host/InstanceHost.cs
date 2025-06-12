@@ -25,9 +25,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Extensions;
-using Shaos.Services.Json;
 using Shaos.Services.Runtime.Exceptions;
-using Shaos.Services.Runtime.Factories;
 using System.Diagnostics;
 
 namespace Shaos.Services.Runtime.Host
@@ -42,22 +40,21 @@ namespace Shaos.Services.Runtime.Host
 
         private readonly ILogger<InstanceHost> _logger;
         private readonly IOptions<InstanceHostOptions> _options;
-        private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
+        private readonly ITypeLoaderService _typeLoaderService;
 
         public InstanceHost(
             ILogger<InstanceHost> logger,
-            IPlugInFactory plugInFactory,
+            ITypeLoaderService typeLoaderService,
             IOptions<InstanceHostOptions> options,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(plugInFactory);
             ArgumentNullException.ThrowIfNull(options);
             ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
-            _plugInFactory = plugInFactory;
+            _typeLoaderService = typeLoaderService;
             _options = options;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
 
@@ -128,23 +125,9 @@ namespace Shaos.Services.Runtime.Host
             return ResolveExecutingInstance(id, (instance) =>
             {
                 var loadContext = _instanceLoadContexts[instance.PlugInId];
-                object? configuration = _plugInFactory.CreateConfiguration(loadContext.Assembly!);
 
-                if (configuration != null)
-                {
-                    if (instance.Configuration.IsConfigured)
-                    {
-                        _logger.LogInformation("Updating the instance configuration. Id: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
-
-                        configuration = Utf8JsonSerializer.Deserialize(instance.Configuration.Configuration!, configuration.GetType());
-                    }
-                }
-                else
-                {
-                    throw new InstanceConfigurationNullException(id);
-                }
-
-                return configuration;
+                return _typeLoaderService.LoadConfiguration(loadContext.Assembly!,
+                                                            instance.Configuration.Configuration);
             });
         }
 
@@ -167,6 +150,16 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
+        public void SetConfiguration(int id, string? configuration)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
+            ResolveExecutingInstance(id, (instance) =>
+            {
+            });
+        }
+
+        /// <inheritdoc/>
         public Instance StartInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
@@ -178,6 +171,8 @@ namespace Shaos.Services.Runtime.Host
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Already Running",
                                        instance.Id,
                                        instance.Name);
+
+                    throw new InstanceRunningException(id);
                 }
                 else if (instance.Configuration.RequiresConfiguration && !instance.Configuration.IsConfigured)
                 {
@@ -189,7 +184,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    var loadContext = _instanceLoadContexts[instance.PlugInId];
+                    var loadContext = _instanceLoadContexts.GetValueOrDefault(instance.PlugInId);
 
                     if (loadContext == null)
                     {
@@ -202,18 +197,7 @@ namespace Shaos.Services.Runtime.Host
                     }
                     else
                     {
-                        object? configuration = null;
-
-                        //if (instance.Configuration.RequiresConfiguration)
-                        //{
-                        //    _logger.LogInformation("Loading configuration for Instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
-
-                        //    configuration = _plugInFactory.LoadConfiguration(loadContext.Assembly!);
-
-                        //    configuration = Utf8JsonSerilizer.Deserialize(instance.Configuration.Configuration!, configuration!.GetType());
-                        //}
-
-                        var plugIn = _plugInFactory.CreateInstance(loadContext.Assembly!, configuration);
+                        var plugIn = _typeLoaderService.CreateInstance(loadContext.Assembly, instance.Configuration);
 
                         if (plugIn == null)
                         {
@@ -423,11 +407,6 @@ namespace Shaos.Services.Runtime.Host
                     _executingInstances.Count,
                     _options.Value.MaxExecutingInstances);
             }
-        }
-
-        public void SetConfiguration(int id, string? configuration)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Shaos.Services
     {
         private const string PlugInNamePostFix = ".PlugIn.dll";
 
-        private readonly IConfigurationLoaderService _configurationLoaderService;
+        private readonly ITypeLoaderService _configurationLoaderService;
         private readonly IFileStoreService _fileStoreService;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
@@ -65,7 +65,7 @@ namespace Shaos.Services
                              IPlugInFactory plugInFactory,
                              IFileStoreService fileStoreService,
                              IPlugInTypeValidator plugInTypeValidator,
-                             IConfigurationLoaderService configurationLoaderService)
+                             ITypeLoaderService configurationLoaderService)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);

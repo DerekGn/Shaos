@@ -42,7 +42,7 @@ namespace Shaos.Services.UnitTests
 {
     public class PlugInServiceTests : BaseTests
     {
-        private readonly Mock<IConfigurationLoaderService> _mockConfigurationLoaderService;
+        private readonly Mock<ITypeLoaderService> _mockTypeLoaderService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
@@ -57,7 +57,7 @@ namespace Shaos.Services.UnitTests
             _mockPlugInFactory = new Mock<IPlugInFactory>();
             _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
             _mockRepository = new Mock<IShaosRepository>();
-            _mockConfigurationLoaderService = new Mock<IConfigurationLoaderService>();
+            _mockTypeLoaderService = new Mock<ITypeLoaderService>();
 
             _plugInService = new PlugInService(LoggerFactory!.CreateLogger<PlugInService>(),
                                                _mockInstanceHost.Object,
@@ -65,7 +65,7 @@ namespace Shaos.Services.UnitTests
                                                _mockPlugInFactory.Object,
                                                _mockFileStoreService.Object,
                                                _mockPlugInTypeValidator.Object,
-                                               _mockConfigurationLoaderService.Object);
+                                               _mockTypeLoaderService.Object);
         }
 
         [Fact]
@@ -266,7 +266,7 @@ namespace Shaos.Services.UnitTests
                    PlugIn = plugIn
                });
 
-            _mockConfigurationLoaderService.Setup(_ => _.LoadConfiguration(
+            _mockTypeLoaderService.Setup(_ => _.LoadConfiguration(
                 It.IsAny<int>(),
                 It.IsAny<string>(),
                 It.IsAny<string?>()))
@@ -574,7 +574,7 @@ namespace Shaos.Services.UnitTests
             var configuration = new InstanceConfiguration(true, string.Empty);
 
             var instance = new Instance(1, 1, "Test", InstanceState.None, configuration);
-            
+
             _mockInstanceHost
                .Setup(_ => _.Instances)
                .Returns([instance]);

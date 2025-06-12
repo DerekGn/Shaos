@@ -31,23 +31,23 @@ using Xunit;
 
 namespace Shaos.Services.UnitTests
 {
-    public class ConfigurationLoaderServiceTest
+    public class TypeLoaderServiceTest
     {
-        private readonly ConfigurationLoaderService _configurationLoaderService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
+        private readonly TypeLoaderService _typeLoaderService;
         private Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
 
-        public ConfigurationLoaderServiceTest()
+        public TypeLoaderServiceTest()
         {
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockPlugInFactory = new Mock<IPlugInFactory>();
 
-            _configurationLoaderService = new ConfigurationLoaderService(_mockPlugInFactory.Object,
-                                                                         _mockFileStoreService.Object,
-                                                                         _mockRuntimeAssemblyLoadContextFactory.Object);
+            _typeLoaderService = new TypeLoaderService(_mockPlugInFactory.Object,
+                                                       _mockFileStoreService.Object,
+                                                       _mockRuntimeAssemblyLoadContextFactory.Object);
         }
 
         [Fact]
@@ -72,7 +72,9 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.CreateConfiguration(It.IsAny<Assembly>()))
                 .Returns(new Test());
 
-            var result = _configurationLoaderService.LoadConfiguration(1, "AssemblyFile", "{\"id\":5}");
+            var result = _typeLoaderService.LoadConfiguration(1,
+                                                              "AssemblyFile",
+                                                              "{\"id\":5}");
 
             Assert.NotNull(result);
             Assert.IsType<Test>(result);

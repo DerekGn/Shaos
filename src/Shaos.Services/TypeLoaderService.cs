@@ -22,20 +22,24 @@
 * SOFTWARE.
 */
 
+using Serilog.Context;
+using Shaos.Sdk;
 using Shaos.Services.IO;
 using Shaos.Services.Json;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
+using Shaos.Services.Runtime.Host;
+using System.Reflection;
 
 namespace Shaos.Services
 {
     /// <summary>
     /// The configuration loader service
     /// </summary>
-    public class ConfigurationLoaderService : IConfigurationLoaderService
+    public class TypeLoaderService : ITypeLoaderService
     {
-        private readonly IPlugInFactory _plugInFactory;
         private readonly IFileStoreService _fileStoreService;
+        private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         /// <summary>
@@ -44,14 +48,33 @@ namespace Shaos.Services
         /// <param name="plugInFactory">The <see cref="IPlugInFactory"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="runtimeAssemblyLoadContextFactory">The <see cref="IRuntimeAssemblyLoadContextFactory"/> instance</param>
-        public ConfigurationLoaderService(IPlugInFactory plugInFactory,
-                                          IFileStoreService fileStoreService,
-                                          IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
+        public TypeLoaderService(IPlugInFactory plugInFactory,
+                                 IFileStoreService fileStoreService,
+                                 IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
-
             _plugInFactory = plugInFactory;
             _fileStoreService = fileStoreService;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
+        }
+
+        /// <inheritdoc/>
+        public IPlugIn? CreateInstance(Assembly assembly,
+                                      InstanceConfiguration instanceConfiguration)
+        {
+            object? configuration = null;
+            
+            if (instanceConfiguration.RequiresConfiguration)
+            {
+                configuration = _plugInFactory.CreateConfiguration(assembly);
+
+                if (instanceConfiguration.IsConfigured)
+                {
+                    configuration = Utf8JsonSerializer.Deserialize(instanceConfiguration.Configuration!,
+                                                                   configuration!.GetType());
+                }
+            }
+
+            return _plugInFactory.CreateInstance(assembly, configuration);
         }
 
         /// <inheritdoc/>
@@ -68,14 +91,10 @@ namespace Shaos.Services
             try
             {
                 context = _runtimeAssemblyLoadContextFactory.Create(assemblyPath);
+
                 var assembly = context.LoadFromAssemblyPath(assemblyPath);
 
-                configurationInstance = _plugInFactory.CreateConfiguration(assembly);
-
-                if (!string.IsNullOrEmpty(configuration))
-                {
-                    configurationInstance = Utf8JsonSerializer.Deserialize(configuration, configurationInstance!.GetType());
-                }
+                configurationInstance = LoadConfiguration(assembly, configuration);
             }
             finally
             {
@@ -83,6 +102,22 @@ namespace Shaos.Services
             }
 
             return configurationInstance!;
+        }
+
+        /// <inheritdoc/>
+        public object? LoadConfiguration(Assembly assembly,
+                                          string? configuration)
+        {
+            object? configurationInstance;
+
+            configurationInstance = _plugInFactory.CreateConfiguration(assembly);
+
+            if (!string.IsNullOrEmpty(configuration))
+            {
+                configurationInstance = Utf8JsonSerializer.Deserialize(configuration, configurationInstance!.GetType());
+            }
+
+            return configurationInstance;
         }
     }
 }
