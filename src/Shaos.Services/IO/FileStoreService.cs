@@ -29,11 +29,20 @@ using System.IO.Compression;
 
 namespace Shaos.Services.IO
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class FileStoreService : IFileStoreService
     {
         private readonly ILogger<FileStoreService> _logger;
         private readonly IOptions<FileStoreOptions> _options;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="options"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public FileStoreService(
             ILogger<FileStoreService> logger,
             IOptions<FileStoreOptions> options)
@@ -43,11 +52,14 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeletePackage(int id, string fileName)
+        public void DeletePackage(int id,
+                                  string packageFileName)
         {
-            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), fileName);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-            if(File.Exists(filePath))
+            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), packageFileName);
+
+            if (File.Exists(filePath))
             {
                 _logger.LogInformation("Deleting file [{Path}]", filePath);
 
@@ -56,8 +68,11 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public IEnumerable<string> ExtractPackage(int id, string packageFileName)
+        public IEnumerable<string> ExtractPackage(int id,
+                                                  string packageFileName)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
             var sourcePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
             var targetPath = Path.Combine(_options.Value.BinariesPath, id.ToString());
 
@@ -77,28 +92,28 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public string GetAssemblyPath(int id)
+        public string GetAssemblyPath(int id, string assemblyFileName)
         {
-            return Path.Combine(_options.Value.BinariesPath, id.ToString());
+            return Path.Combine(Path.Combine(_options.Value.BinariesPath, id.ToString()), assemblyFileName);
         }
 
         /// <inheritdoc/>
-        public async Task<string> WritePackageFileStreamAsync(
-            int id,
-            string packageFileName,
-            Stream stream,
-            CancellationToken cancellationToken = default)
+        public async Task<string> WritePackageFileStreamAsync(int id,
+                                                              string packageFileName,
+                                                              Stream stream,
+                                                              CancellationToken cancellationToken = default)
         {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
-            if(_options.Value.PackagesPath.CreateDirectory())
+            if (_options.Value.PackagesPath.CreateDirectory())
             {
                 _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
             }
 
             var packageFilePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
 
-            if(Directory.Exists(packageFilePath))
+            if (Directory.Exists(packageFilePath))
             {
                 _logger.LogInformation("Emptying package directory [{Folder}]", packageFilePath);
 

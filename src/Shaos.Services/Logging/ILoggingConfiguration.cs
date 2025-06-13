@@ -27,7 +27,7 @@ using Serilog.Core;
 namespace Shaos.Services.Logging
 {
     /// <summary>
-    /// Represents a logger configuration settings
+    /// Represents logging configuration settings
     /// </summary>
     public interface ILoggingConfiguration
     {

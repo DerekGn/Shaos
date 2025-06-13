@@ -23,7 +23,6 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
@@ -54,7 +53,7 @@ namespace Shaos.Services.UnitTests.Runtime
             var context = _fixture.AssemblyLoadContextReference.Target;
             var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
 
-            var configuration = _plugInFactory.LoadConfiguration(assembly);
+            var configuration = _plugInFactory.CreateConfiguration(assembly);
             var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
 
             Assert.NotNull(plugIn);

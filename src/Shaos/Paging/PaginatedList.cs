@@ -36,7 +36,10 @@ namespace Shaos.Paging
         {
         }
 
-        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
+        public PaginatedList(List<T> items,
+                             int count,
+                             int pageIndex,
+                             int pageSize)
         {
             PageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
@@ -48,11 +51,10 @@ namespace Shaos.Paging
 
         public bool HasNextPage => PageIndex < TotalPages;
 
-        public static async Task<PaginatedList<T>> CreateAsync(
-            IQueryable<T> source,
-            int pageIndex,
-            int pageSize,
-            CancellationToken cancellationToken)
+        public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source,
+                                                               int pageIndex,
+                                                               int pageSize,
+                                                               CancellationToken cancellationToken)
         {
             var count = await source.CountAsync(cancellationToken);
             var items = await source.Skip(
@@ -62,10 +64,9 @@ namespace Shaos.Paging
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
 
-        public static PaginatedList<T> Create(
-            IQueryable<T> source,
-            int pageIndex,
-            int pageSize)
+        public static PaginatedList<T> Create(IQueryable<T> source,
+                                              int pageIndex,
+                                              int pageSize)
         {
             var count = source.Count();
             var items = source.Skip(

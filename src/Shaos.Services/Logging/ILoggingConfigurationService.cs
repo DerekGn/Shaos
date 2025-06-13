@@ -26,15 +26,27 @@ using Serilog.Events;
 
 namespace Shaos.Services.Logging
 {
+    /// <summary>
+    /// Defines a <see cref="ILoggingConfigurationService"/> interface
+    /// </summary>
     public interface ILoggingConfigurationService
     {
-        Task InitialiseLoggingConfigurationAsync(
-            ILoggingConfiguration loggingConfiguration,
-            CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Initialise the logging configuration
+        /// </summary>
+        /// <param name="loggingConfiguration">The <see cref="ILoggingConfiguration"/> instance</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task InitialiseLoggingConfigurationAsync(ILoggingConfiguration loggingConfiguration,
+                                                 CancellationToken cancellationToken = default);
 
-        Task UpdateLogLevelSwitchAsync(
-            string name,
-            LogEventLevel level,
-            CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Updates a log level switch to a <see cref="LogEventLevel"/>
+        /// </summary>
+        /// <param name="name">The name of the logger</param>
+        /// <param name="level">The <see cref="LogEventLevel"/> to set the logger too</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task UpdateLogLevelSwitchAsync(string name,
+                                       LogEventLevel level,
+                                       CancellationToken cancellationToken = default);
     }
 }

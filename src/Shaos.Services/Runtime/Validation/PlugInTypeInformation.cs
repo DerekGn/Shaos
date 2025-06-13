@@ -26,11 +26,10 @@ namespace Shaos.Services.Runtime.Validation
 {
     public class PlugInTypeInformation
     {
-        public PlugInTypeInformation(
-            string name,
-            bool hasLogger,
-            bool hasConfiguration,
-            string assemblyVersion)
+        public PlugInTypeInformation(string name,
+                                     bool hasLogger,
+                                     bool hasConfiguration,
+                                     string assemblyVersion)
         {
             Name = name;
             HasLogger = hasLogger;

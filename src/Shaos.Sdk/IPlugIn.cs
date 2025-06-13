@@ -27,7 +27,7 @@ namespace Shaos.Sdk
     /// <summary>
     /// Defines the interface for a PlugIn
     /// </summary>
-    public interface IPlugIn
+    public interface IPlugIn : IDisposable
     {
         /// <summary>
         /// The entry point of the<see cref="IPlugIn"/> instance

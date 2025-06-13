@@ -45,12 +45,11 @@ namespace Shaos.Pages.PlugIns
             _configuration = configuration;
         }
 
-        public async Task OnGetAsync(
-            string sortOrder,
-            string currentFilter,
-            string searchString,
-            int? pageIndex,
-            CancellationToken cancellationToken = default)
+        public async Task OnGetAsync(string sortOrder,
+                                     string currentFilter,
+                                     string searchString,
+                                     int? pageIndex,
+                                     CancellationToken cancellationToken = default)
         {
             CurrentSort = sortOrder;
             NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -72,7 +71,7 @@ namespace Shaos.Pages.PlugIns
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.Name!.ToLower().Contains(searchString.ToLower());
+                filter = _ => _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
             }
 
             switch (sortOrder)
@@ -97,10 +96,9 @@ namespace Shaos.Pages.PlugIns
                     break;
             }
 
-            var queryable = _repository.GetQueryable(
-                filter,
-                orderBy,
-                includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)]);
+            var queryable = _repository.GetQueryable(filter,
+                                                     orderBy,
+                                                     includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)]);
 
             List = await PaginatedList<PlugIn>
                 .CreateAsync(

@@ -22,9 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Exceptions
 {
-    [Serializable]
+    [ExcludeFromCodeCoverage]
     public class PlugInInstanceNotConfiguredException : Exception
     {
         public PlugInInstanceNotConfiguredException(int id)
@@ -32,12 +34,15 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
-        public PlugInInstanceNotConfiguredException(int id, string? message) : base(message)
+        public PlugInInstanceNotConfiguredException(int id,
+                                                    string? message) : base(message)
         {
             Id = id;
         }
 
-        public PlugInInstanceNotConfiguredException(int id, string? message, Exception? innerException) : base(message, innerException)
+        public PlugInInstanceNotConfiguredException(int id,
+                                                    string? message,
+                                                    Exception? innerException) : base(message, innerException)
         {
             Id = id;
         }

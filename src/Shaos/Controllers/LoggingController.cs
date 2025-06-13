@@ -37,10 +37,9 @@ namespace Shaos.Controllers
         private readonly ILoggingConfiguration _loggingConfiguration;
         private readonly ILoggingConfigurationService _loggingConfigurationService;
 
-        public LoggingController(
-            ILogger<LoggingController> logger,
-            ILoggingConfiguration loggingConfiguration,
-            ILoggingConfigurationService loggingConfigurationService) : base(logger)
+        public LoggingController(ILogger<LoggingController> logger,
+                                 ILoggingConfiguration loggingConfiguration,
+                                 ILoggingConfigurationService loggingConfigurationService) : base(logger)
         {
             _loggingConfiguration = loggingConfiguration ?? throw new ArgumentNullException(nameof(loggingConfiguration));
             _loggingConfigurationService = loggingConfigurationService ?? throw new ArgumentNullException(nameof(loggingConfigurationService));
@@ -65,10 +64,9 @@ namespace Shaos.Controllers
             Summary = "Set a log level switch level",
             Description = "Set the current log level switch level",
             OperationId = "SetLogLevelSwitch")]
-        public async Task<IActionResult> SetLogLevelSwitches(
-            [LogLevelSwitchName] string name,
-            [Required] LogEventLevel level,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> SetLogLevelSwitches([LogLevelSwitchName] string name,
+                                                             [Required] LogEventLevel level,
+                                                             CancellationToken cancellationToken)
         {
             _loggingConfiguration.LoggingLevelSwitches[name].MinimumLevel = level;
 

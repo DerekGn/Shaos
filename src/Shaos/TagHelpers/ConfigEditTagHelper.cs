@@ -47,7 +47,8 @@ namespace Shaos.TagHelpers
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override void Process(TagHelperContext context,
+                                     TagHelperOutput output)
         {
             output.Attributes.Add("class", "form-group");
             output.TagName = "div";
@@ -94,7 +95,8 @@ namespace Shaos.TagHelpers
             return tagHelperOutput;
         }
 
-        private TagHelperOutput GenerateInputTagHelperWithClass(ModelExpression modelExpression, string? cssClass = default)
+        private TagHelperOutput GenerateInputTagHelperWithClass(ModelExpression modelExpression,
+                                                                string? cssClass = default)
         {
             var tagHelper = new InputTagHelper(_generator)
             {

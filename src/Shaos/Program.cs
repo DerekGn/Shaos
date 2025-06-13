@@ -40,6 +40,7 @@ using Shaos.Services.Logging;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime.Loader;
 using Shaos.Services.Runtime.Validation;
 using Shaos.Services.SystemInformation;
 using Shaos.Services.Validation;
@@ -114,6 +115,12 @@ namespace Shaos
                     options.Conventions.AddFolderApplicationModelConvention(
                         "/Instances",
                         model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                    //options.Conventions.AddFolderApplicationModelConvention(
+                    //   "/PlugIns",
+                    //   model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                    options.Conventions.AddPageApplicationModelConvention(
+                        "/PlugIns/Package",
+                        model => model.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
             builder.Services.AddSignalR();
@@ -152,8 +159,8 @@ namespace Shaos
             builder.Services.AddScoped<IInstanceHostService, InstanceHostService>();
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
-            builder.Services.AddScoped<IShaosRepository, ShaosRepository>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
+            builder.Services.AddScoped<IShaosRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
@@ -163,6 +170,7 @@ namespace Shaos
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
+            builder.Services.AddSingleton<ITypeLoaderService, TypeLoaderService>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorBackgroundWorker>();

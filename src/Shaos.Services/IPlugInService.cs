@@ -26,9 +26,13 @@ using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Runtime.Exceptions;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// Defines the PlugIn service interface
+    /// </summary>
     public interface IPlugInService
     {
         /// <summary>
@@ -77,17 +81,11 @@ namespace Shaos.Services
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="enable">The enable state to set</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <exception cref="PlugInInstanceNotFoundException">Thrown if a <see cref="PlugInInstance"/> is not found</exception>
+        /// <exception cref="ShaosNotFoundException">Thrown if a <see cref="PlugInInstance"/> is not found</exception>
         /// <returns>The updated <see cref="PlugInInstance"/></returns>
         Task<PlugInInstance?> SetPlugInInstanceEnableAsync(int id,
                                                            bool enable,
                                                            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Start all <see cref="PlugInInstance"/> that are enabled
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task StartEnabledInstancesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Upload the package binaries for a <see cref="PlugIn"/>

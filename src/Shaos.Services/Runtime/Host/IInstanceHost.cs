@@ -21,6 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+
 using Shaos.Repository.Models;
 using Shaos.Services.Runtime.Exceptions;
 
@@ -45,17 +46,20 @@ namespace Shaos.Services.Runtime.Host
         /// Create an <see cref="Instance"/> in the <see cref="InstanceHost"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="Instance"/></param>
-        /// <param name="name">The name of the <see cref="Instance"/></param>
+        /// <param name="plugInId"></param>
+        /// <param name="instanceName">The name of the <see cref="Instance"/></param>
         /// <param name="assemblyPath">The path of the assembly file for the <see cref="Instance"/></param>
+        /// <param name="configuration"></param>
         /// <returns>The <see cref="Instance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> or <paramref name="assemblyPath"/> is null of empty</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="instanceName"/> or <paramref name="assemblyPath"/> is null of empty</exception>
         /// <exception cref="InstanceExistsException">Thrown if the <see cref="InstanceHost"/> already contains an <see cref="Instance"/> with <paramref name="id"/></exception>
         /// <exception cref="MaxInstancesRunningException">Thrown if the maximum number of instances are loaded</exception>
-        Instance CreateInstance(
-            int id,
-            string name,
-            string assemblyPath);
+        Instance CreateInstance(int id,
+                                int plugInId,
+                                string instanceName,
+                                string assemblyPath,
+                                InstanceConfiguration configuration);
 
         /// <summary>
         /// Indicates if an <see cref="Instance"/> exists in the runtime
@@ -65,27 +69,41 @@ namespace Shaos.Services.Runtime.Host
         bool InstanceExists(int id);
 
         /// <summary>
+        /// Load the <see cref="Instance"/> configuration
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration is to be loaded for</param>
+        /// <returns>The configuration</returns>
+        object? LoadConfiguration(int id);
+
+        /// <summary>
         /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The identifier of the <see cref="Instance"/> to remove</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is still running</exception>
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
         void RemoveInstance(int id);
 
         /// <summary>
+        /// Set an <see cref="Instance"/> configuration
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration to set</param>
+        /// <param name="configuration">The JSON configuration setting</param>
+        void SetConfiguration(int id, string? configuration);
+
+        /// <summary>
         /// Start the execution of a <see cref="Instance"/>
         /// </summary>
         /// <param name="id">The id of the <see cref="Instance"/> to start</param>
-        /// <param name="configuration">The configuration json</param>
         /// <returns>An <see cref="Instance"/></returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="InstanceCreateException">Thrown if the <see cref="PlugIn"/> instance cannot be created</exception>
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
+        /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is already running</exception>
         /// <remarks>
         /// The <see cref="Instance"/> is not synchronously started
         /// </remarks>
-        Instance StartInstance(int id, object? configuration = default);
+        Instance StartInstance(int id);
 
         /// <summary>
         /// Stop a running <see cref="Instance"/>

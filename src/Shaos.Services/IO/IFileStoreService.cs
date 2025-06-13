@@ -32,25 +32,28 @@ namespace Shaos.Services.IO
     public interface IFileStoreService
     {
         /// <summary>
-        /// Delete a PlugIn package from the file store
+        /// Delete a <see cref="PlugIn"/> package from the file store
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="fileName"></param>
-        void DeletePackage(int id, string fileName);
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="packageFileName">The package file name</param>
+        void DeletePackage(int id,
+                           string packageFileName);
 
         /// <summary>
-        /// Extract a package
+        /// Extract a <see cref="PlugIn"/> package
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="packageFileName"></param>
-        IEnumerable<string> ExtractPackage(int id, string packageFileName);
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="packageFileName">The package file name</param>
+        IEnumerable<string> ExtractPackage(int id,
+                                           string packageFileName);
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="PlugIn"/> assembly file
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        string GetAssemblyPath(int id);
+        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="assemblyFileName">The assembly file name</param>
+        /// <returns>The path to the <see cref="PlugIn"/> assembly file</returns>
+        string GetAssemblyPath(int id, string assemblyFileName);
 
         /// <summary>
         /// </summary>
@@ -59,10 +62,9 @@ namespace Shaos.Services.IO
         /// <param name="stream">The stream to be written</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string> WritePackageFileStreamAsync(
-            int id,
-            string packageFileName,
-            Stream stream,
-            CancellationToken cancellationToken = default);
+        Task<string> WritePackageFileStreamAsync(int id,
+                                                 string packageFileName,
+                                                 Stream stream,
+                                                 CancellationToken cancellationToken = default);
     }
 }

@@ -34,12 +34,15 @@ namespace Shaos.Repository.Exceptions
             Name = name;
         }
 
-        public ShaosNameExistsException(string name, string message) : base(message)
+        public ShaosNameExistsException(string name,
+                                         string message) : base(message)
         {
             Name = name;
         }
 
-        public ShaosNameExistsException(string name, string message, Exception inner) : base(message, inner)
+        public ShaosNameExistsException(string name,
+                                         string message,
+                                         Exception inner) : base(message, inner)
         {
             Name = name;
         }

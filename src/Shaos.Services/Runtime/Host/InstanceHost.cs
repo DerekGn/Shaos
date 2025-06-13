@@ -24,66 +24,72 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
-using Shaos.Services.Runtime.Factories;
+using Shaos.Services.Runtime.Loader;
+using System.Diagnostics;
 
 namespace Shaos.Services.Runtime.Host
 {
+    /// <summary>
+    /// An instance hosting service
+    /// </summary>
     public class InstanceHost : IInstanceHost
     {
         internal readonly List<Instance> _executingInstances;
+        internal readonly Dictionary<int, InstanceLoadContext> _instanceLoadContexts;
+
         private readonly ILogger<InstanceHost> _logger;
         private readonly IOptions<InstanceHostOptions> _options;
-        private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
+        private readonly ITypeLoaderService _typeLoaderService;
 
         public InstanceHost(
             ILogger<InstanceHost> logger,
-            IPlugInFactory plugInFactory,
+            ITypeLoaderService typeLoaderService,
             IOptions<InstanceHostOptions> options,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(plugInFactory);
             ArgumentNullException.ThrowIfNull(options);
             ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
 
             _logger = logger;
-            _plugInFactory = plugInFactory;
+            _typeLoaderService = typeLoaderService;
             _options = options;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
 
             _executingInstances = new List<Instance>();
+            _instanceLoadContexts = new Dictionary<int, InstanceLoadContext>();
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public IReadOnlyList<Instance> Instances => _executingInstances.AsReadOnly();
 
-        // </inheritdoc>
-        public Instance CreateInstance(
-            int id,
-            string name,
-            string assemblyPath)
+        /// <inheritdoc/>
+        public Instance CreateInstance(int id,
+                                       int plugInId,
+                                       string instanceName,
+                                       string assemblyPath,
+                                       InstanceConfiguration configuration)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(instanceName);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
+            ArgumentNullException.ThrowIfNull(configuration);
 
             VerifyInstanceCount();
 
-            var instance = _executingInstances
-                .FirstOrDefault(_ => _.Id == id);
+            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
 
             if (instance == null)
             {
-                _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}] Assembly: [{AssemblyPath}]", id, name, assemblyPath);
+                _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);
 
-                instance = new Instance(id, name, assemblyPath);
+                instance = new Instance(id, plugInId, instanceName, assemblyPath, configuration);
 
                 _executingInstances.Add(instance);
 
@@ -100,20 +106,30 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public bool InstanceExists(int id)
         {
             return _executingInstances.Any(_ => _.Id == id);
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
+        public object? LoadConfiguration(int id)
+        {
+            return ResolveExecutingInstance(id, (instance) =>
+            {
+                var instanceloadContext = GetInstanceLoadContext(instance);
+
+                return _typeLoaderService.LoadConfiguration(instanceloadContext.Assembly!,
+                                                            instance.Configuration.Configuration);
+            });
+        }
+
+        /// <inheritdoc/>
         public void RemoveInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
-
-            if (instance != null)
+            ResolveExecutingInstance(id, (instance) =>
             {
                 if (instance.State == InstanceState.Running)
                 {
@@ -123,56 +139,85 @@ namespace Shaos.Services.Runtime.Host
                 }
 
                 _executingInstances.Remove(instance);
-            }
-            else
-            {
-                HandleInstanceNotFound(id);
-            }
+            });
         }
 
-        // </inheritdoc>
-        public Instance StartInstance(int id, object? configuration = default)
+        /// <inheritdoc/>
+        public void SetConfiguration(int id, string? configuration)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
-
-            if (instance != null)
+            ResolveExecutingInstance(id, (instance) =>
             {
-                if (instance.State != InstanceState.Running)
+                if (instance.Configuration.RequiresConfiguration)
                 {
-                    LoadInstanceContext(instance, configuration);
+                    _logger.LogInformation("Setting Instance Id: [{Id}] Name: [{Name}] Configuration", instance.Id, instance.Name);
 
-                    _ = Task.Run(() => StartExecutingInstance(instance));
+                    instance.Configuration.SetConfiguration(configuration);
+                }
+            });
+        }
+
+        /// <inheritdoc/>
+        public Instance StartInstance(int id)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+
+            return ResolveExecutingInstance(id, (instance) =>
+            {
+                if (instance.State == InstanceState.Running)
+                {
+                    _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Already Running",
+                                       instance.Id,
+                                       instance.Name);
+
+                    throw new InstanceRunningException(id);
+                }
+                else if (instance.Configuration.RequiresConfiguration && !instance.Configuration.IsConfigured)
+                {
+                    _logger.LogError("Instance: [{Id}] Name: [{Name}] Not Configured",
+                                     instance.Id,
+                                     instance.Name);
+
+                    throw new InstanceNotConfiguredException(id);
                 }
                 else
                 {
-                    _logger.LogWarning("PlugIn: [{Id}] Name: [{Name}] Already Running",
-                        instance.Id,
-                        instance.Name);
-                }
-            }
-            else
-            {
-                HandleInstanceNotFound(id);
-            }
+                    var instanceloadContext = GetInstanceLoadContext(instance);
 
-            return instance!;
+                    var plugIn = _typeLoaderService.CreateInstance(instanceloadContext.Assembly!,
+                                                                   instance.Configuration);
+
+                    if (plugIn == null)
+                    {
+                        _logger.LogError("Instance: [{Id}] Name: [{Name}] PlugInId: [{PlugInId}] PlugIn load failure",
+                                            instance.Id,
+                                            instance.Name,
+                                            instance.PlugInId);
+
+                        throw new PlugInNotCreatedException();
+                    }
+                    else
+                    {
+                        instance.LoadContext(plugIn!);
+
+                        _ = Task.Run(() => StartExecutingInstance(instance));
+                    }
+                }
+
+                return instance;
+            });
         }
 
-        // </inheritdoc>
+        /// <inheritdoc/>
         public Instance StopInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
+            return ResolveExecutingInstance(id, (instance) =>
+            {
+                _logger.LogInformation("Stopping PlugIn instance Id: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
 
-            if (instance == null)
-            {
-                HandleInstanceNotFound(id);
-            }
-            else
-            {
                 if (instance.State != InstanceState.Running)
                 {
                     _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Not Running",
@@ -183,80 +228,13 @@ namespace Shaos.Services.Runtime.Host
                 {
                     _ = Task.Run(async () => await StopExecutingInstanceAsync(instance));
                 }
-            }
 
-            return instance;
+                return instance;
+            });
         }
 
-        private async Task ExecutePlugInMethod(Instance instance, CancellationToken cancellationToken = default)
-        {
-            InstanceStateChanged?.Invoke(this,
-                new InstanceStateEventArgs(instance.Id, instance.State));
-
-            await instance.ExecuteAsync(cancellationToken);
-        }
-
-        private void HandleInstanceNotFound(int id)
-        {
-            _logger.LogError("Unable to find instance Id: [{Id}]", id);
-
-            throw new InstanceNotFoundException(id);
-        }
-
-        private void LoadInstanceContext(Instance instance, object? configuration)
-        {
-            try
-            {
-                var assemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath);
-                var assembly = assemblyLoadContext.LoadFromAssemblyPath(instance.AssemblyPath);
-#warning TODO check null
-                var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
-
-                instance.LoadContext(plugIn, assemblyLoadContext);
-            }
-            catch (Exception exception)
-            {
-                throw new InstanceCreateException("Unable to create PlugIn instance", exception);
-            }
-        }
-
-        private void StartExecutingInstance(Instance instance)
-        {
-            _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
-                instance.Id,
-                instance.Name);
-
-            instance.StartExecution(
-                async (cancellationToken) => await ExecutePlugInMethod(instance, cancellationToken),
-                (antecedent) => UpdateStateOnCompletion(instance, antecedent));
-
-            InstanceStateChanged?.Invoke(this,
-                new InstanceStateEventArgs(instance.Id, instance.State));
-        }
-
-        private async Task StopExecutingInstanceAsync(Instance instance)
-        {
-            _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
-                instance.Id,
-                instance.Name);
-
-            if(await instance.StopExecutionAsync(_options.Value.TaskStopTimeout))
-            {
-                _logger.LogInformation("Stopped execution. Id: [{Id}] Name: [{Name}]",
-                    instance.Id,
-                    instance.Name);
-            }
-            else
-            {
-                _logger.LogWarning("Instance not stopped within timeout. Id: [{Id}] Name: [{Name}]",
-                    instance.Id,
-                    instance.Name);
-            }
-        }
-
-        private void UpdateStateOnCompletion(
-            Instance instance,
-            Task antecedent)
+        internal void UpdateStateOnCompletion(Instance instance,
+                                              Task antecedent)
         {
             _logger.LogDebug("Completed PlugIn Task: {NewLine}{Task}",
                 Environment.NewLine,
@@ -281,8 +259,140 @@ namespace Shaos.Services.Runtime.Host
                     antecedent.Status);
             }
 
+            _logger.LogInformation("Unloading instance execution context for instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
+
+            instance.Context?.Dispose();
+
+            if (!_executingInstances.Any(_ => _.State == InstanceState.Running && _.PlugInId == instance.PlugInId))
+            {
+                UnloadInstanceLoadContext(instance);
+            }
+
             InstanceStateChanged?.Invoke(this,
                     new InstanceStateEventArgs(instance.Id, instance.State));
+        }
+
+        private async Task ExecutePlugInMethod(Instance instance,
+                                                       CancellationToken cancellationToken = default)
+        {
+            instance.SetRunning();
+
+            InstanceStateChanged?.Invoke(this,
+                new InstanceStateEventArgs(instance.Id, instance.State));
+
+            try
+            {
+                await instance.ExecuteAsync(cancellationToken);
+            }
+            catch (OperationCanceledException exception)
+            {
+                _logger.LogWarning(exception, "PlugIn Task cancelled");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogCritical(exception, "An unhandled exception occurred in PlugIn");
+
+                instance.SetFaulted(exception);
+            }
+        }
+
+        private InstanceLoadContext GetInstanceLoadContext(Instance instance)
+        {
+            var instanceLoadContext = _instanceLoadContexts.GetValueOrDefault(instance.PlugInId);
+
+            if (instanceLoadContext == null)
+            {
+                instanceLoadContext = new InstanceLoadContext(_runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath));
+                _instanceLoadContexts.Add(instance.PlugInId, instanceLoadContext);
+            }
+
+            return instanceLoadContext;
+        }
+
+        [DebuggerStepThrough]
+        private T ResolveExecutingInstance<T>(int id,
+                                              Func<Instance, T> operation)
+        {
+            var instance = _executingInstances
+                .FirstOrDefault(_ => _.Id == id);
+
+            if (instance == null)
+            {
+                _logger.LogError("Unable to find instance Id: [{Id}]", id);
+
+                throw new InstanceNotFoundException(id);
+            }
+            else
+            {
+                return operation(instance);
+            }
+        }
+
+        [DebuggerStepThrough]
+        private void ResolveExecutingInstance(int id,
+                                              Action<Instance> operation)
+        {
+            var instance = _executingInstances
+                .FirstOrDefault(_ => _.Id == id);
+
+            if (instance == null)
+            {
+                _logger.LogError("Unable to find instance Id: [{Id}]", id);
+
+                throw new InstanceNotFoundException(id);
+            }
+            else
+            {
+                operation(instance);
+            }
+        }
+
+        private void StartExecutingInstance(Instance instance)
+        {
+            _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
+                instance.Id,
+                instance.Name);
+
+            instance.StartExecution(
+                async (cancellationToken) => await ExecutePlugInMethod(instance, cancellationToken),
+                (antecedent) => UpdateStateOnCompletion(instance, antecedent));
+
+            InstanceStateChanged?.Invoke(this,
+                new InstanceStateEventArgs(instance.Id, instance.State));
+        }
+
+        private async Task StopExecutingInstanceAsync(Instance instance)
+        {
+            _logger.LogInformation("Stopping Executing PlugInInstance: [{Id}] Name: [{Name}]",
+                instance.Id,
+                instance.Name);
+
+            if (await instance.StopExecutionAsync(_options.Value.TaskStopTimeout))
+            {
+                _logger.LogInformation("Stopped execution. Id: [{Id}] Name: [{Name}]",
+                    instance.Id,
+                    instance.Name);
+            }
+            else
+            {
+                _logger.LogWarning("Instance not stopped within timeout. Id: [{Id}] Name: [{Name}]",
+                    instance.Id,
+                    instance.Name);
+            }
+        }
+
+        private void UnloadInstanceLoadContext(Instance instance)
+        {
+            _logger.LogInformation("Unloading instance context for PlugIn: [{PlugInId}]", instance.PlugInId);
+
+            var instanceLoadContext = _instanceLoadContexts.GetValueOrDefault(instance.PlugInId);
+
+            if (instanceLoadContext != null)
+            {
+                instanceLoadContext.Dispose();
+
+                _instanceLoadContexts.Remove(instance.Id);
+            }
         }
 
         private void VerifyInstanceCount()
@@ -293,7 +403,7 @@ namespace Shaos.Services.Runtime.Host
                     _executingInstances.Count,
                     _options.Value.MaxExecutingInstances);
 
-                throw new MaxInstancesRunningException();
+                throw new MaxInstancesRunningException(_executingInstances.Count);
             }
             else
             {

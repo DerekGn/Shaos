@@ -63,7 +63,8 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn? PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int id,
+                                                    CancellationToken cancellationToken = default)
         {
             var plugin = await _repository.GetByIdAsync<PlugIn>(id,
                                                                 cancellationToken: cancellationToken);
@@ -89,14 +90,15 @@ namespace Shaos.Pages.PlugIns
             }
 
             string? validation = ValidatePackageFile(PackageFile);
-
+            
             if (validation != null)
             {
                 ModelState.AddModelError(string.Empty, validation);
 
-                PlugIn = await _repository.GetByIdAsync<PlugIn>(PlugIn!.Id,
-                                                                cancellationToken: cancellationToken);
-                return Page();
+                return RedirectToPage(new
+                {
+                    id = PlugIn!.Id
+                });
             }
 
             string? packageValidation = await ValidatePackageAsync(cancellationToken);
@@ -105,9 +107,10 @@ namespace Shaos.Pages.PlugIns
             {
                 ModelState.AddModelError(string.Empty, packageValidation);
 
-                PlugIn = await _repository.GetByIdAsync<PlugIn>(PlugIn!.Id,
-                                                                cancellationToken: cancellationToken);
-                return Page();
+                return RedirectToPage(new
+                {
+                    id = PlugIn!.Id
+                });
             }
 
             return RedirectToPage("./Index");
@@ -124,9 +127,9 @@ namespace Shaos.Pages.PlugIns
                                                               PackageFile.OpenReadStream(),
                                                               cancellationToken);
             }
-            catch (PlugInInstanceRunningException ex)
+            catch (PlugInInstancesRunningException ex)
             {
-                result = $"The PlugIn: [{PlugIn!.Name}] currently has running instances Id: [{ex.Id}]";
+                result = $"The PlugIn currently has running instances Id: [{string.Join(",", ex.Ids)}]";
             }
             catch (NoValidPlugInAssemblyFoundException)
             {

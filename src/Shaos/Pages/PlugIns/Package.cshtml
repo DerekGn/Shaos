@@ -12,6 +12,7 @@
 <div class="row">
     <div class="col-md-4">
         <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="PlugIn.Id" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <dl class="row">
                 <dt class="col-sm-6">

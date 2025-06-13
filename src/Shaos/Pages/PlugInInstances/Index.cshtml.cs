@@ -77,7 +77,7 @@ namespace Shaos.Pages.PlugInInstances
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.Name!.ToLower().Contains(searchString.ToLower());
+                filter = _ => _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
             }
 
             switch (sortOrder)

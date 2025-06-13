@@ -39,9 +39,8 @@ namespace Shaos.Controllers
 
         private readonly IInstanceHost _instanceHost;
 
-        public InstanceHostController(
-            ILogger<InstanceHostController> logger,
-            IInstanceHost instanceHost) : base(logger)
+        public InstanceHostController(ILogger<InstanceHostController> logger,
+                                      IInstanceHost instanceHost) : base(logger)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(instanceHost);

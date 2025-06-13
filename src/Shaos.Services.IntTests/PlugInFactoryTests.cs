@@ -51,7 +51,7 @@ namespace Shaos.Services.IntTests
             var context = _fixture.AssemblyLoadContextReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var configuration = _plugInFactory.LoadConfiguration(assembly);
+            var configuration = _plugInFactory.CreateConfiguration(assembly);
             var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
 
             Assert.NotNull(plugIn);

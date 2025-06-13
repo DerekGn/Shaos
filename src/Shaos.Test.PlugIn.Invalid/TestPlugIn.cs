@@ -25,6 +25,8 @@
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: ExcludeFromCodeCoverage]
+
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
@@ -38,7 +40,5 @@ namespace Shaos.Test.PlugIn.Invalid
         {
             throw new NotImplementedException();
         }
-
-
     }
 }

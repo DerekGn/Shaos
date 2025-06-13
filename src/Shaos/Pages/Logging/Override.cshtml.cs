@@ -49,7 +49,8 @@ namespace Shaos.Pages.Logging
         [BindProperty]
         public LogLevelSwitch LogLevelSwitch { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(string id,
+                                                    CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -85,9 +86,9 @@ namespace Shaos.Pages.Logging
 
             _loggingConfiguration.LoggingLevelSwitches[LogLevelSwitch.Name].MinimumLevel = LogLevelSwitch.Level;
 
-            await _repository.UpsertAsync(LogLevelSwitch.Name,
-                                          LogLevelSwitch.Level,
-                                          cancellationToken);
+            await _repository.UpsertLogLevelSwitchAsync(LogLevelSwitch.Name,
+                                                        LogLevelSwitch.Level,
+                                                        cancellationToken);
 
             return RedirectToPage("./Index");
         }

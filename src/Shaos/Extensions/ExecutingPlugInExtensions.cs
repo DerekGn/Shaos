@@ -23,7 +23,7 @@
 */
 
 using InstanceApi = Shaos.Api.Model.v1.Instance;
-using InstanceModel = Shaos.Services.Runtime.Instance;
+using InstanceModel = Shaos.Services.Runtime.Host.Instance;
 
 namespace Shaos.Extensions
 {

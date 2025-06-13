@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,41 +22,9 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Services;
-using Shaos.Test.PlugIn;
-
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.Test.PlugIn.Invalid
 {
-    public class ConfigurationModel : PageModel
+    public class TestOption
     {
-        private readonly IPlugInService _plugInService;
-
-        public ConfigurationModel(IPlugInService plugInService)
-        {
-            ArgumentNullException.ThrowIfNull(plugInService);
-
-            _plugInService = plugInService;
-        }
-
-        [BindProperty]
-        public object Configuration { get; set; }
-
-        [BindProperty]
-        public TestPlugInConfiguration PlugInConfiguration { get; set; }
-
-        public async Task<IActionResult> OnGetAsync(int id)
-        {
-            Configuration = await _plugInService.LoadPlugInInstanceConfigurationAsync(id);
-
-            PlugInConfiguration = new TestPlugInConfiguration();
-
-            return Page();
-        }
-
-        public void OnPostAsync()
-        {
-        }
     }
 }

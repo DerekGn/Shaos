@@ -23,6 +23,7 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
@@ -36,7 +37,8 @@ namespace Shaos.Services.Runtime.Exceptions
         {
         }
 
-        public InstanceCreateException(string message, Exception inner) : base(message, inner)
+        public InstanceCreateException(string message,
+                                       Exception inner) : base(message, inner)
         {
         }
     }

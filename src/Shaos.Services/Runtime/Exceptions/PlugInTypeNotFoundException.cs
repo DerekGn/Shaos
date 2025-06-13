@@ -36,7 +36,8 @@ namespace Shaos.Services.Runtime.Exceptions
         {
         }
 
-        public PlugInTypeNotFoundException(string message, Exception inner) : base(message, inner)
+        public PlugInTypeNotFoundException(string message,
+                                           Exception inner) : base(message, inner)
         {
         }
     }

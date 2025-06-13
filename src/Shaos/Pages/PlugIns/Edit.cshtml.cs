@@ -45,7 +45,8 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugIn PlugIn { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnGetAsync(int id,
+                                                    CancellationToken cancellationToken)
         {
             var plugin = await _repository.GetByIdAsync<PlugIn>(id,
                                                                 cancellationToken: cancellationToken);

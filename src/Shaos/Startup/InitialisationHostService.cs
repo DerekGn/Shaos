@@ -24,7 +24,6 @@
 
 using Shaos.Services;
 using Shaos.Services.Logging;
-using Shaos.Services.Runtime;
 
 namespace Shaos.Startup
 {
@@ -33,9 +32,8 @@ namespace Shaos.Startup
         private readonly ILogger<InitialisationHostService> _logger;
         private readonly IServiceProvider _services;
 
-        public InitialisationHostService(
-            ILogger<InitialisationHostService> logger,
-            IServiceProvider services)
+        public InitialisationHostService(ILogger<InitialisationHostService> logger,
+                                         IServiceProvider services)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _services = services ?? throw new ArgumentNullException(nameof(services));
@@ -61,10 +59,10 @@ namespace Shaos.Startup
 
             using (var scope = _services.CreateScope())
             {
-                var plugInService = scope.ServiceProvider
-                    .GetRequiredService<IPlugInService>();
+                var instanceHostService = scope.ServiceProvider
+                    .GetRequiredService<IInstanceHostService>();
 
-                await plugInService.StartEnabledInstancesAsync(cancellationToken);
+                await instanceHostService.StartInstancesAsync(cancellationToken);
             }
         }
 
@@ -82,10 +80,8 @@ namespace Shaos.Startup
                     .ServiceProvider
                     .GetRequiredService<ILoggingConfigurationService>();
 
-                await loggingConfigurationService
-                    .InitialiseLoggingConfigurationAsync(
-                    loggingConfiguration,
-                    cancellationToken);
+                await loggingConfigurationService.InitialiseLoggingConfigurationAsync(loggingConfiguration,
+                                                                                      cancellationToken);
             }
         }
     }

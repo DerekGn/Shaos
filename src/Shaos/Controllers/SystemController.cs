@@ -36,10 +36,9 @@ namespace Shaos.Controllers
         private readonly ISystemService _systemService;
         private readonly IAppVersionService _appVersionService;
 
-        public SystemController(
-            ILogger<SystemController> logger,
-            ISystemService systemService,
-            IAppVersionService appVersionService) : base(logger)
+        public SystemController(ILogger<SystemController> logger,
+                                ISystemService systemService,
+                                IAppVersionService appVersionService) : base(logger)
         {
             _systemService = systemService?? throw new ArgumentNullException(nameof(systemService));
             _appVersionService = appVersionService ?? throw new ArgumentNullException(nameof(appVersionService));

@@ -24,12 +24,30 @@
 
 namespace Shaos.Services.Validation
 {
+    /// <summary>
+    /// The file validation result
+    /// </summary>
     public enum FileValidationResult
     {
+        /// <summary>
+        /// Indicates that the validation is successful
+        /// </summary>
         Success,
+        /// <summary>
+        /// Indicates that the filename is empty
+        /// </summary>
         FileNameEmpty,
+        /// <summary>
+        /// Indicates that the file content is invalid
+        /// </summary>
         InvalidContentType,
+        /// <summary>
+        /// Indicates that the file name is invalid
+        /// </summary>
         InvalidFileName,
+        /// <summary>
+        /// Indicates that the file content length is invalid
+        /// </summary>
         InvalidFileLength,
     }
 }

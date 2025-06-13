@@ -36,7 +36,7 @@ namespace Shaos.Services.UnitTests.Version
         }
         
         [Fact]
-        public void TestVesrsion()
+        public void TestVersion()
         {
             Assert.NotEmpty(_appVersionService.Version);
         }

@@ -41,9 +41,10 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public PlugInInstance PlugInInstance { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int? id,
+                                                    CancellationToken cancellationToken = default)
         {
-            var plugininstance = await _context.PlugInInstances.FirstOrDefaultAsync(m => m.Id == id);
+            var plugininstance = await _context.PlugInInstances.FirstOrDefaultAsync(m => m.Id == id, cancellationToken: cancellationToken);
 
             if (plugininstance == null)
             {

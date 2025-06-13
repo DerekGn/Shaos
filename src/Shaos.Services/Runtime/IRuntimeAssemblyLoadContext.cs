@@ -28,6 +28,8 @@ namespace Shaos.Services.Runtime
 {
     public interface IRuntimeAssemblyLoadContext
     {
+        string AssemblyPath { get; }
+
         string? Name { get; }
 
         Assembly LoadFromAssemblyPath(string assemblyPath);

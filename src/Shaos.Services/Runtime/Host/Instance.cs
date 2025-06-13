@@ -24,42 +24,62 @@
 
 using Shaos.Repository.Models;
 using Shaos.Sdk;
-using Shaos.Services.Runtime.Host;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Shaos.Services.Runtime
+namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
     /// An executing <see cref="PlugIn"/> instance
     /// </summary>
     public class Instance
     {
-        public Instance(int id, string name, string assemblyPath)
+        /// <summary>
+        /// Create a <see cref="PlugIn"/> instance
+        /// </summary>
+        /// <param name="id">The <see cref="Instance"/> identifier</param>
+        /// <param name="plugInId">The parent <see cref="PlugIn"/> identifier</param>
+        /// <param name="name"><see cref="Instance"/> name </param>
+        /// <param name="assemblyPath">The path to the <see cref="PlugIn"/> assembly</param>
+        /// <param name="configuration">The <see cref="Configuration"/> for this <see cref="Instance"/></param>
+        public Instance(
+            int id,
+            int plugInId,
+            string name,
+            string assemblyPath,
+            InstanceConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
+            ArgumentNullException.ThrowIfNull(configuration);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             Id = id;
+            PlugInId = plugInId;
             Name = name;
             AssemblyPath = assemblyPath;
+            Configuration = configuration;
         }
 
-        internal Instance(int id, string name, string assemblyPath, InstanceState state)
-            : this(id, name, assemblyPath)
+        internal Instance(int id,
+                          int parentId,
+                          string name,
+                          string assemblyPath,
+                          InstanceState state,
+                          InstanceConfiguration configuration)
+            : this(id, parentId, name, assemblyPath, configuration)
         {
             State = state;
         }
 
         /// <summary>
-        /// The assembly file path
+        /// The <see cref="InstanceConfiguration"/> for this instances
         /// </summary>
-        public string AssemblyPath { get; }
+        public InstanceConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance execution context
         /// </summary>
-        public PlugInContext? Context { get; private set; }
+        public InstanceExecutionContext? Context { get; private set; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
@@ -75,6 +95,16 @@ namespace Shaos.Services.Runtime
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// The assembly path for this <see cref="PlugIn"/> instance.
+        /// </summary>
+        public string AssemblyPath { get; }
+
+        /// <summary>
+        /// The PlugIn identifier
+        /// </summary>
+        public int PlugInId { get; }
 
         /// <summary>
         /// The total running time of this instance
@@ -96,6 +126,36 @@ namespace Shaos.Services.Runtime
         /// </summary>
         public DateTime? StopTime { get; private set; }
 
+        /// <summary>
+        /// Indicates if this instance can be configured
+        /// </summary>
+        /// <returns>true if this instance can be configured</returns>
+        public bool CanConfigure()
+        {
+            return State != InstanceState.Running && Configuration.RequiresConfiguration;
+        }
+
+        /// <summary>
+        /// Indicates if this instance can be started
+        /// </summary>
+        /// <returns>true if this instance can be started</returns>
+        public bool CanStart()
+        {
+            if (Configuration.RequiresConfiguration && !Configuration.IsConfigured)
+                return false;
+            else
+                return State != InstanceState.Running;
+        }
+
+        /// <summary>
+        /// Indicates if this instance can be stopped
+        /// </summary>
+        /// <returns>true if this instance can be stopped</returns>
+        public bool CanStop()
+        {
+            return State == InstanceState.Running;
+        }
+
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
         public override string ToString()
@@ -103,14 +163,15 @@ namespace Shaos.Services.Runtime
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
-            stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
-            stringBuilder.AppendLine($"{nameof(State)}: {State}");
-            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
-            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
-            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
-            stringBuilder.AppendLine($"{nameof(AssemblyPath)}: {(AssemblyPath == null ? "Empty" : AssemblyPath.ToString())}");
-            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(Configuration)}: {Configuration}");
             stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
+            stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
+            stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
+            stringBuilder.AppendLine($"{nameof(PlugInId)}: {PlugInId}");
+            stringBuilder.AppendLine($"{nameof(RunningTime)}: {RunningTime}");
+            stringBuilder.AppendLine($"{nameof(StartTime)}: {(StartTime == null ? "Empty" : StartTime)}");
+            stringBuilder.AppendLine($"{nameof(State)}: {State}");
+            stringBuilder.AppendLine($"{nameof(StopTime)}: {(StopTime == null ? "Empty" : StopTime)}");
 
             return stringBuilder.ToString();
         }
@@ -120,14 +181,11 @@ namespace Shaos.Services.Runtime
             await Context!.PlugIn!.ExecuteAsync(cancellationToken);
         }
 
-        internal void LoadContext(
-            IPlugIn plugIn,
-            IRuntimeAssemblyLoadContext assemblyLoadContext)
+        internal void LoadContext(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
-            ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 
-            Context = new PlugInContext(plugIn, assemblyLoadContext);
+            Context = new InstanceExecutionContext(plugIn);
         }
 
         internal void SetComplete()
@@ -137,6 +195,12 @@ namespace Shaos.Services.Runtime
         }
 
         internal void SetFaulted(AggregateException? exception)
+        {
+            State = InstanceState.Faulted;
+            Exception = exception;
+        }
+
+        internal void SetFaulted(Exception? exception)
         {
             State = InstanceState.Faulted;
             Exception = exception;

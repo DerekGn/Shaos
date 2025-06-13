@@ -80,10 +80,11 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestGetAssemblyPath()
         {
-            var result = _fileStoreService.GetAssemblyPath(_fixture.PlugInId);
+            var result = _fileStoreService.GetAssemblyPath(_fixture.PlugInId,
+                                                           _fixture.AssemblyFileName);
 
             Assert.NotNull(result);
-            Assert.Equal(_fixture.PlugInDirectory, result);
+            Assert.Equal(_fixture.AssemblyFilePath, result);
         }
 
         [Fact]

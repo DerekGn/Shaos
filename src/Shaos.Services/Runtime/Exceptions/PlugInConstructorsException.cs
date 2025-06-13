@@ -36,7 +36,8 @@ namespace Shaos.Services.Runtime.Exceptions
         {
         }
 
-        public PlugInConstructorsException(string message, Exception inner) : base(message, inner)
+        public PlugInConstructorsException(string message,
+                                           Exception inner) : base(message, inner)
         {
         }
     }

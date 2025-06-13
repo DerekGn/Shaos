@@ -33,7 +33,8 @@ namespace Shaos.DataAnnotations
 
         protected abstract IEnumerable<string> GetAvailableNames(ILoggingConfiguration loggingConfiguration);
 
-        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value,
+                                                     ValidationContext validationContext)
         {
             if (value is string name)
             {

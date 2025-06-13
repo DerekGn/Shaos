@@ -26,7 +26,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Pages.Instances
@@ -37,10 +36,9 @@ namespace Shaos.Pages.Instances
         private readonly IInstanceHost _instanceHost;
         private readonly IInstanceHostService _instanceHostService;
 
-        public IndexModel(
-            IInstanceHost instanceHost,
-            IConfiguration configuration,
-            IInstanceHostService instanceHostService)
+        public IndexModel(IInstanceHost instanceHost,
+                          IConfiguration configuration,
+                          IInstanceHostService instanceHostService)
         {
             ArgumentNullException.ThrowIfNull(instanceHost);
             ArgumentNullException.ThrowIfNull(configuration);
@@ -54,11 +52,10 @@ namespace Shaos.Pages.Instances
         [BindProperty]
         public string StateSort { get; set; } = string.Empty;
 
-        public void OnGet(
-            string sortOrder,
-            string currentFilter,
-            string searchString,
-            int? pageIndex)
+        public void OnGet(string sortOrder,
+                          string currentFilter,
+                          string searchString,
+                          int? pageIndex)
         {
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -80,7 +77,7 @@ namespace Shaos.Pages.Instances
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                queryable = queryable.Where(_ => _.Name.ToLower().Contains(searchString.ToLower()));
+                queryable = queryable.Where(_ => _.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase));
             }
 
             switch (sortOrder)
@@ -119,7 +116,8 @@ namespace Shaos.Pages.Instances
                     _configuration.GetValue("PageSize", 5));
         }
 
-        public async Task<IActionResult> OnPostStartAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnPostStartAsync(int id,
+                                                          CancellationToken cancellationToken)
         {
             try
             {
@@ -127,7 +125,7 @@ namespace Shaos.Pages.Instances
             }
             catch (PlugInInstanceNotConfiguredException)
             {
-                ModelState.AddModelError(string.Empty, "Instance not configured");
+                ModelState.AddModelError(string.Empty, $"Instance [{id}] not configured.");
             }
             
             return RedirectToPage();
