@@ -68,7 +68,7 @@ namespace Shaos.Pages.PlugInInstances
                                                                PlugInInstance,
                                                                cancellationToken);
             }
-            catch (ShaosNameExistsException)
+            catch (NameExistsException)
             {
                 ModelState.AddModelError(string.Empty, $"PlugInInstance Name: [{PlugInInstance.Name}] already exists");
 

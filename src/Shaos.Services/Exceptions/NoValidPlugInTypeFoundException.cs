@@ -23,21 +23,37 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when no valid plugin assembly was found in an <see cref="Assembly"/>
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class NoValidPlugInAssemblyFoundException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
+        /// </summary>
         public NoValidPlugInAssemblyFoundException()
         { }
 
+        /// <summary>
+        /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
         public NoValidPlugInAssemblyFoundException(string message) : base(message)
         {
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public NoValidPlugInAssemblyFoundException(string message,
-                                                   Exception inner) : base(message, inner)
+                                                   Exception innerException) : base(message, innerException)
         {
         }
     }

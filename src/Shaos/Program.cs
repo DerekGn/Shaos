@@ -163,7 +163,6 @@ namespace Shaos
             builder.Services.AddScoped<IShaosRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
-            builder.Services.AddSingleton<ICodeFileValidationService, CodeFileValidationService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IInstanceHost, InstanceHost>();
             builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
@@ -171,6 +170,7 @@ namespace Shaos
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
             builder.Services.AddSingleton<ITypeLoaderService, TypeLoaderService>();
+            builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorBackgroundWorker>();

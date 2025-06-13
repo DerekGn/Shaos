@@ -29,16 +29,16 @@ using Xunit;
 
 namespace Shaos.Services.UnitTests.Validation
 {
-    public class CodeFileValidationTests
+    public class ZipFileValidationTests
     {
         private const string FileName = "filename.zip";
 
-        private readonly CodeFileValidationService _codeFileValidationService;
+        private readonly ZipFileValidationService _zipFileValidationService;
         private readonly Mock<IFormFile> _mockFile;
 
-        public CodeFileValidationTests()
+        public ZipFileValidationTests()
         {
-            _codeFileValidationService = new CodeFileValidationService();
+            _zipFileValidationService = new ZipFileValidationService();
             _mockFile = new Mock<IFormFile>();
         }
 
@@ -48,7 +48,7 @@ namespace Shaos.Services.UnitTests.Validation
             _mockFile.Setup(_ => _.FileName).Returns("filename");
             _mockFile.Setup(_ => _.ContentType).Returns(string.Empty);
 
-            var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
+            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
 
             Assert.Equal(FileValidationResult.InvalidContentType, result);
         }
@@ -58,7 +58,7 @@ namespace Shaos.Services.UnitTests.Validation
         {
             _mockFile.Setup(_ => _.FileName).Returns(string.Empty);
 
-            var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
+            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
 
             Assert.Equal(FileValidationResult.FileNameEmpty, result);
         }
@@ -66,9 +66,9 @@ namespace Shaos.Services.UnitTests.Validation
         public void TestValidateFileInvalidFileType()
         {
             _mockFile.Setup(_ => _.FileName).Returns("filename.exe");
-            _mockFile.Setup(_ => _.ContentType).Returns(CodeFileValidationService.ContentType);
+            _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
 
-            var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
+            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
 
             Assert.Equal(FileValidationResult.InvalidFileName, result);
         }
@@ -77,10 +77,10 @@ namespace Shaos.Services.UnitTests.Validation
         public void TestValidateFileInvalidLength()
         {
             _mockFile.Setup(_ => _.FileName).Returns(FileName);
-            _mockFile.Setup(_ => _.ContentType).Returns(CodeFileValidationService.ContentType);
+            _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(0);
 
-            var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
+            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
 
             Assert.Equal(FileValidationResult.InvalidFileLength, result);
         }
@@ -89,10 +89,10 @@ namespace Shaos.Services.UnitTests.Validation
         public void TestValidateFileValid()
         {
             _mockFile.Setup(_ => _.FileName).Returns(FileName);
-            _mockFile.Setup(_ => _.ContentType).Returns(CodeFileValidationService.ContentType);
+            _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(10);
 
-            var result = _codeFileValidationService.ValidateFile(_mockFile.Object);
+            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
 
             Assert.Equal(FileValidationResult.Success, result);
         }

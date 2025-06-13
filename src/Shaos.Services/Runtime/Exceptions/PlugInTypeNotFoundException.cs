@@ -22,23 +22,38 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when no <see cref="IPlugIn"/> was found in an <see cref="Assembly"/>
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class PlugInTypeNotFoundException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypeNotFoundException"/>
+        /// </summary>
         public PlugInTypeNotFoundException()
         { }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypeNotFoundException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
         public PlugInTypeNotFoundException(string message) : base(message)
-        {
-        }
+        { }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypeNotFoundException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public PlugInTypeNotFoundException(string message,
-                                           Exception inner) : base(message, inner)
-        {
-        }
+                                           Exception innerException) : base(message, innerException)
+        { }
     }
 }

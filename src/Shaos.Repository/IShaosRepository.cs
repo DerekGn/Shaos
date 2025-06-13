@@ -52,7 +52,7 @@ namespace Shaos.Repository
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the new <see cref="PlugIn"/></returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="ShaosNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
+        /// <exception cref="NameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<int> CreatePlugInAsync(PlugIn plugIn,
                                     CancellationToken cancellationToken = default);
 
@@ -64,7 +64,7 @@ namespace Shaos.Repository
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="PlugInInstance"/> identifier</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="ShaosNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
+        /// <exception cref="NameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
         Task<int> CreatePlugInInstanceAsync(PlugIn plugIn,
                                             PlugInInstance plugInInstance,
                                             CancellationToken cancellationToken = default);
@@ -160,7 +160,7 @@ namespace Shaos.Repository
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="PlugIn"/> if found and updates are applied</returns>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="ShaosNameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
+        /// <exception cref="NameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<PlugIn?> UpdatePlugInAsync(int id,
                                         string name,
                                         string description,
@@ -175,7 +175,7 @@ namespace Shaos.Repository
         /// <param name="description">The updated description of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <exception cref="ArgumentNullException">Thrown if a non null-able argument is null</exception>
-        /// <exception cref="ShaosNameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
+        /// <exception cref="NameExistsException">Thrown if an existing <see cref="PlugInInstance"/> has the same name</exception>
         Task UpdatePlugInInstanceAsync(int id,
                                        bool? enabled = default,
                                        string? name = default,

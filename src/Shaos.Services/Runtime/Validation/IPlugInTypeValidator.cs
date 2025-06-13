@@ -28,6 +28,12 @@ using System.Reflection;
 
 namespace Shaos.Services.Runtime.Validation
 {
+    /// <summary>
+    /// A <see cref="IPlugIn"/> type validator
+    /// </summary>
+    /// <remarks>
+    /// Verifies an <see cref="Assembly"/> contains valid <see cref="IPlugIn"/> types
+    /// </remarks>
     public interface IPlugInTypeValidator
     {
         /// <summary>

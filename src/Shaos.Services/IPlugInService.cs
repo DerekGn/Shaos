@@ -42,8 +42,8 @@ namespace Shaos.Services
         /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to create</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The identifier of the created <see cref="PlugInInstance"/></returns>
-        /// <exception cref="ShaosNotFoundException">Thrown if the <see cref="PlugIn"/> is not found</exception>
-        /// <exception cref="ShaosNameExistsException">Thrown if a <see cref="PlugInInstance"/> with the same name already exists</exception>
+        /// <exception cref="NotFoundException">Thrown if the <see cref="PlugIn"/> is not found</exception>
+        /// <exception cref="NameExistsException">Thrown if a <see cref="PlugInInstance"/> with the same name already exists</exception>
         Task<int> CreatePlugInInstanceAsync(int id,
                                             PlugInInstance plugInInstance,
                                             CancellationToken cancellationToken = default);
@@ -81,7 +81,7 @@ namespace Shaos.Services
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="enable">The enable state to set</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <exception cref="ShaosNotFoundException">Thrown if a <see cref="PlugInInstance"/> is not found</exception>
+        /// <exception cref="NotFoundException">Thrown if a <see cref="PlugInInstance"/> is not found</exception>
         /// <returns>The updated <see cref="PlugInInstance"/></returns>
         Task<PlugInInstance?> SetPlugInInstanceEnableAsync(int id,
                                                            bool enable,
@@ -97,7 +97,7 @@ namespace Shaos.Services
         /// <exception cref="ArgumentNullException">Thrown if package file name is null or empty</exception>
         /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         /// <exception cref="NoValidPlugInAssemblyFoundException">Throw if no valid PlugIn assembly file was found</exception>
-        /// <exception cref="ShaosNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
+        /// <exception cref="NotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
         /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
         Task UploadPlugInPackageAsync(int id,
                                       string packageFileName,

@@ -22,23 +22,37 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="IPlugIn"/> derived type has multiple constructors
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class PlugInConstructorsException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInConstructorsException"/>
+        /// </summary>
         public PlugInConstructorsException()
         { }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInConstructorsException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
         public PlugInConstructorsException(string message) : base(message)
-        {
-        }
+        { }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInConstructorsException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public PlugInConstructorsException(string message,
-                                           Exception inner) : base(message, inner)
-        {
-        }
+                                           Exception innerException) : base(message, innerException)
+        { }
     }
 }

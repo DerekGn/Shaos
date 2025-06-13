@@ -22,52 +22,53 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services.Runtime.Exceptions
+namespace Shaos.Repository.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when the maximum number of instances are already running
+    /// An exception that is thrown when an <see cref="BaseEntity"/> type cannot be found in the repository
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class MaxInstancesRunningException : Exception
+    public class NotFoundException : Exception
     {
         /// <summary>
-        /// Create an instance of a <see cref="MaxInstancesRunningException"/>
+        /// Create and instance of <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="count">The number of running instances</param>
-        public MaxInstancesRunningException(int count)
+        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
+        public NotFoundException(int id)
         {
-            Count = count;
+            Id = id;
         }
 
         /// <summary>
-        /// Create an instance of a <see cref="MaxInstancesRunningException"/>
+        /// Create and instance of <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="count">The number of running instances</param>
+        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
         /// <param name="message">An associated message</param>
-        public MaxInstancesRunningException(int count,
-                                            string message) : base(message)
+        public NotFoundException(int id,
+                                 string message) : base(message)
         {
-            Count = count;
+            Id = id;
         }
 
         /// <summary>
-        /// Create an instance of a <see cref="MaxInstancesRunningException"/>
+        /// Create and instance of <see cref="NotFoundException"/>
         /// </summary>
-        /// <param name="count">The number of running instances</param>
+        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
         /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public MaxInstancesRunningException(int count,
-                                            string message,
-                                            Exception innerException) : base(message, innerException)
+        /// <param name="innerException"></param>
+        public NotFoundException(int id,
+                                 string message,
+                                 Exception innerException) : base(message, innerException)
         {
-            Count = count;
+            Id = id;
         }
 
         /// <summary>
-        /// The number of running instances
+        /// The identifier of the <see cref="BaseEntity"/> that was not found
         /// </summary>
-        public int Count { get; }
+        public int Id { get; }
     }
 }

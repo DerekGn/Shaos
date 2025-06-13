@@ -76,7 +76,7 @@ namespace Shaos.Pages.PlugIns
                                                     PlugIn.Description,
                                                     cancellationToken);
             }
-            catch (ShaosNameExistsException ex)
+            catch (NameExistsException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
 

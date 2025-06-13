@@ -26,8 +26,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Shaos.Services.Validation
 {
-    public interface ICodeFileValidationService
+    /// <summary>
+    /// A zip file validation service interface
+    /// </summary>
+    public interface IZipFileValidationService
     {
+        /// <summary>
+        /// Validate a <see cref="IFormFile"/> instance
+        /// </summary>
+        /// <param name="formFile">The <see cref="IFormFile"/> to validate</param>
+        /// <returns>A <see cref="FileValidationResult"/></returns>
         FileValidationResult ValidateFile(IFormFile formFile);
     }
 }

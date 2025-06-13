@@ -22,10 +22,22 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
+
 namespace Shaos.Services.Runtime.Validation
 {
+    /// <summary>
+    /// Represents <see cref="IPlugIn"/> type information
+    /// </summary>
     public class PlugInTypeInformation
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypeInformation"/>
+        /// </summary>
+        /// <param name="name">The <see cref="IPlugIn"/> derived type name</param>
+        /// <param name="hasLogger">Indicates if the <see cref="IPlugIn"/> derived type has a logger</param>
+        /// <param name="hasConfiguration">Indicates if the <see cref="IPlugIn"/> derived type has configuration</param>
+        /// <param name="assemblyVersion">The assembly version</param>
         public PlugInTypeInformation(string name,
                                      bool hasLogger,
                                      bool hasConfiguration,
@@ -37,9 +49,24 @@ namespace Shaos.Services.Runtime.Validation
             AssemblyVersion = assemblyVersion;
         }
 
-        public string Name { get; }
-        public bool HasLogger { get; }
-        public bool HasConfiguration { get; }
+        /// <summary>
+        /// The <see cref="IPlugIn"/> derived type assembly version
+        /// </summary>
         public string AssemblyVersion { get; }
+
+        /// <summary>
+        /// Indicates if the <see cref="IPlugIn"/> derived type has a configuration type
+        /// </summary>
+        public bool HasConfiguration { get; }
+
+        /// <summary>
+        /// Indicates if the <see cref="IPlugIn"/> derived type has a logger
+        /// </summary>
+        public bool HasLogger { get; }
+
+        /// <summary>
+        /// The <see cref="IPlugIn"/> derived type name
+        /// </summary>
+        public string Name { get; }
     }
 }

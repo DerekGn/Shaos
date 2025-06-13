@@ -36,14 +36,14 @@ namespace Shaos.Pages.PlugIns
 {
     public class PackageModel : PageModel
     {
-        private readonly ICodeFileValidationService _codeFileValidationService;
+        private readonly IZipFileValidationService _codeFileValidationService;
         private readonly IPlugInService _plugInService;
         private readonly IShaosRepository _repository;
 
         public PackageModel(
             IShaosRepository repository,
             IPlugInService plugInService,
-            ICodeFileValidationService codeFileValidationService)
+            IZipFileValidationService codeFileValidationService)
         {
             ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(plugInService);

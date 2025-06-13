@@ -22,31 +22,54 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when multiple <see cref="IPlugIn"/> derived instances are found
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class PlugInTypesFoundException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypesFoundException"/>
+        /// </summary>
+        /// <param name="count">The count of <see cref="IPlugIn"/> derived types in the <see cref="Assembly"/></param>
         public PlugInTypesFoundException(int count)
         {
             Count = count;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypesFoundException"/>
+        /// </summary>
+        /// <param name="count">The count of <see cref="IPlugIn"/> derived types in the <see cref="Assembly"/></param>
+        /// <param name="message">An associated message</param>
         public PlugInTypesFoundException(int count,
                                          string message) : base(message)
         {
             Count = count;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypesFoundException"/>
+        /// </summary>
+        /// <param name="count">The count of <see cref="IPlugIn"/> derived types in the <see cref="Assembly"/></param>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public PlugInTypesFoundException(int count,
                                          string message,
-                                         Exception inner) : base(message, inner)
+                                         Exception innerException) : base(message, innerException)
         {
             Count = count;
         }
 
+        /// <summary>
+        /// The number of <see cref="IPlugIn"/> types found in the <see cref="Assembly"/>
+        /// </summary>
         public int Count { get; }
     }
 }

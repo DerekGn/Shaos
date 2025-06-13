@@ -34,11 +34,14 @@ namespace Shaos.Services.Runtime.Exceptions
         {
         }
 
-        public InstanceConfigurationNullException(int id, string? message) : base(message)
+        public InstanceConfigurationNullException(int id,
+                                                  string? message) : base(message)
         {
         }
 
-        public InstanceConfigurationNullException(int id, string? message, Exception? innerException) : base(message, innerException)
+        public InstanceConfigurationNullException(int id,
+                                                  string? message,
+                                                  Exception? innerException) : base(message, innerException)
         {
         }
     }

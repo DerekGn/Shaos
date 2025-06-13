@@ -70,15 +70,15 @@ namespace Shaos.Services.Json
                         break;
 
                     case JsonTokenType.String:
-                        propertyInfo.SetValue(instance, ReadString(reader, propertyInfo));
+                        propertyInfo?.SetValue(instance, ReadString(reader, propertyInfo));
                         break;
 
                     case JsonTokenType.Number:
-                        propertyInfo!.SetValue(instance, ReadNumber(reader, propertyInfo));
+                        propertyInfo?.SetValue(instance, ReadNumber(reader, propertyInfo));
                         break;
 
                     case JsonTokenType.True:
-                        propertyInfo!.SetValue(instance, reader.GetBoolean());
+                        propertyInfo?.SetValue(instance, reader.GetBoolean());
                         break;
 
                     case JsonTokenType.Null:

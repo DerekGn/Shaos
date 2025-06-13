@@ -72,7 +72,7 @@ namespace Shaos.Services
         public async Task<object?> LoadInstanceConfigurationAsync(int id,
                                                                   CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new ShaosNotFoundException(id);
+            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new NotFoundException(id);
 
             var package = plugInInstance!.PlugIn!.Package;
 

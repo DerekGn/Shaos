@@ -26,11 +26,15 @@ using Microsoft.AspNetCore.Http;
 
 namespace Shaos.Services.Validation
 {
-    public class CodeFileValidationService : ICodeFileValidationService
+    /// <summary>
+    /// A zip file validation service
+    /// </summary>
+    public class ZipFileValidationService : IZipFileValidationService
     {
         internal const string ContentType = "application/x-zip-compressed";
         private readonly string[] permittedExtensions = { ".zip" };
 
+        /// <inheritdoc/>
         public FileValidationResult ValidateFile(IFormFile formFile)
         {
             FileValidationResult result = FileValidationResult.Success;

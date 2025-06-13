@@ -23,30 +23,52 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Repository.Models;
 
 namespace Shaos.Repository.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when an <see cref="BaseEntity"/> derived type 
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class ShaosNameExistsException : Exception
+    public class NameExistsException : Exception
     {
-        public ShaosNameExistsException(string name)
+        /// <summary>
+        /// Create an instance of a <see cref="NameExistsException"/>
+        /// </summary>
+        /// <param name="name">The existing name</param>
+        public NameExistsException(string name)
         {
             Name = name;
         }
 
-        public ShaosNameExistsException(string name,
+        /// <summary>
+        /// Create an instance of a <see cref="NameExistsException"/>
+        /// </summary>
+        /// <param name="name">The existing name</param>
+        /// <param name="message">An associated message</param>
+        public NameExistsException(string name,
                                          string message) : base(message)
         {
             Name = name;
         }
 
-        public ShaosNameExistsException(string name,
+        /// <summary>
+        /// Create an instance of a <see cref="NameExistsException"/>
+        /// </summary>
+        /// <param name="name">The existing name</param>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
+        public NameExistsException(string name,
                                          string message,
-                                         Exception inner) : base(message, inner)
+                                         Exception innerException) : base(message, innerException)
         {
             Name = name;
         }
 
+        /// <summary>
+        /// The value of the existing name
+        /// </summary>
         public string? Name { get; }
     }
 }
