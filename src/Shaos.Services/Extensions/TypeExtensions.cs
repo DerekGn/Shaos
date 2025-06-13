@@ -28,7 +28,7 @@ using System.Reflection;
 
 namespace Shaos.Services.Extensions
 {
-    public static class TypeExtensions
+    internal static class TypeExtensions
     {
         public static object? Parse(this Type type,
                                     string name,

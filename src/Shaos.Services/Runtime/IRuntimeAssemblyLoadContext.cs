@@ -26,14 +26,26 @@ using System.Reflection;
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// Represents an un-loadable assembly load context
+    /// </summary>
     public interface IRuntimeAssemblyLoadContext
     {
+        /// <summary>
+        /// The path to the loaded assembly
+        /// </summary>
         string AssemblyPath { get; }
 
-        string? Name { get; }
-
+        /// <summary>
+        /// Load an <see cref="Assembly"/> from the <paramref name="assemblyPath"/>
+        /// </summary>
+        /// <param name="assemblyPath">The path to the <see cref="Assembly"/> to load</param>
+        /// <returns>The loaded <see cref="Assembly"/> if found</returns>
         Assembly LoadFromAssemblyPath(string assemblyPath);
 
+        /// <summary>
+        /// Unload the <see cref="IRuntimeAssemblyLoadContext"/> instance
+        /// </summary>
         void Unload();
     }
 }

@@ -195,7 +195,9 @@ namespace Shaos.Services
                 throw new PackageHasNoConfigurationException(id);
             }
 
-            return _configurationLoaderService.LoadConfiguration(plugInInstance.PlugIn.Id, package.AssemblyFile, plugInInstance.Configuration);
+            return _configurationLoaderService.LoadConfiguration(plugInInstance.PlugIn.Id,
+                                                                 package.AssemblyFile,
+                                                                 plugInInstance.Configuration);
         }
 
         /// <inheritdoc/>

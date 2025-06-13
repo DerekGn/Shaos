@@ -34,14 +34,22 @@ namespace Shaos.Services.Exceptions
             Id = id;
         }
 
-        public PackageHasNoConfigurationException(int id, string? message) : base(message)
+        public PackageHasNoConfigurationException(int id,
+                                                  string? message) : base(message)
         {
+            Id = id;
         }
 
-        public PackageHasNoConfigurationException(int id, string? message, Exception? innerException) : base(message, innerException)
+        public PackageHasNoConfigurationException(int id,
+                                                  string? message,
+                                                  Exception? innerException) : base(message, innerException)
         {
+            Id = id;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Id { get; }
     }
 }

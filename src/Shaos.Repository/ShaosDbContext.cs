@@ -32,6 +32,7 @@ namespace Shaos.Repository
     /// </summary>
     public class ShaosDbContext : DbContext
     {
+        /// <inheritdoc/>
         public ShaosDbContext(DbContextOptions<ShaosDbContext> options)
             : base(options)
         {

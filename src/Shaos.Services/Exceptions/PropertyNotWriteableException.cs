@@ -26,20 +26,38 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a type property is not writeable
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class PropertyNotWriteableException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PropertyNotWriteableException"/>
+        /// </summary>
+        /// <param name="name">The name of the property that is not writeable</param>
         public PropertyNotWriteableException(string name)
         {
             Name = name;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PropertyNotWriteableException"/>
+        /// </summary>
+        /// <param name="name">The name of the property that is not writeable</param>
+        /// <param name="message">An associated message</param>
         public PropertyNotWriteableException(string name,
                                              string? message) : base(message)
         {
             Name = name;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PropertyNotWriteableException"/>
+        /// </summary>
+        /// <param name="name">The name of the property that is not writeable</param>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public PropertyNotWriteableException(string name,
                                              string? message,
                                              Exception? innerException) : base(message, innerException)
@@ -47,6 +65,9 @@ namespace Shaos.Services.Exceptions
             Name = name;
         }
 
+        /// <summary>
+        /// The property name that is not writeable
+        /// </summary>
         public string Name { get; }
     }
 }

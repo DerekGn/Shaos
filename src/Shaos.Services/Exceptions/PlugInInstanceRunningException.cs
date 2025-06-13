@@ -22,29 +22,53 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="PlugInInstance"/> is still running
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class PlugInInstanceRunningException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstanceRunningException"/>
+        /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
         public PlugInInstanceRunningException(int id)
         {
             Id = id;
         }
+
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstanceRunningException"/>
+        /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
+        /// <param name="message">An associated message</param>
         public PlugInInstanceRunningException(int id,
                                               string message) : base(message)
         {
             Id = id;
         }
+
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstanceRunningException"/>
+        /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public PlugInInstanceRunningException(int id,
                                               string message,
-                                              Exception inner) : base(message, inner)
+                                              Exception innerException) : base(message, innerException)
         {
             Id = id;
         }
 
+        /// <summary>
+        /// The running <see cref="PlugInInstance"/> identifier
+        /// </summary>
         public int Id { get; }
     }
 }

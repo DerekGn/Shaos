@@ -122,7 +122,7 @@ namespace Shaos.Services.UnitTests
                     PlugIn = plugIn
                 });
 
-            var exception = await Assert.ThrowsAsync<PlugInHasNoConfigurationException>(
+            var exception = await Assert.ThrowsAsync<PlugInInstanceNotConfiguredException>(
                 async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
 
             Assert.NotNull(exception);

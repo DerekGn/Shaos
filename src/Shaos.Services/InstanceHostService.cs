@@ -79,7 +79,7 @@ namespace Shaos.Services
             if (!package!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
             {
                 _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
-                throw new PlugInHasNoConfigurationException(id);
+                throw new PlugInInstanceNotConfiguredException(id);
             }
 
             return _instanceHost.LoadConfiguration(id);

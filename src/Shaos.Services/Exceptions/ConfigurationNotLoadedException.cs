@@ -22,12 +22,13 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// Thrown when a PlugIn instance configuration can not be loaded
+    /// Thrown when a <see cref="PlugInInstance"/> configuration can not be loaded
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class ConfigurationNotLoadedException : Exception
@@ -35,7 +36,7 @@ namespace Shaos.Services.Exceptions
         /// <summary>
         /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         public ConfigurationNotLoadedException(int id)
         {
             Id = id;
@@ -44,7 +45,7 @@ namespace Shaos.Services.Exceptions
         /// <summary>
         /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="message">The exception message</param>
         public ConfigurationNotLoadedException(int id,
                                                string? message) : base(message)
@@ -55,7 +56,7 @@ namespace Shaos.Services.Exceptions
         /// <summary>
         /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="message">The exception message</param>
         /// <param name="innerException">The inner exception</param>
         public ConfigurationNotLoadedException(int id,
@@ -66,7 +67,7 @@ namespace Shaos.Services.Exceptions
         }
 
         /// <summary>
-        /// The identifier of the PlugIn instance
+        /// The identifier of the <see cref="PlugIn"/> instance
         /// </summary>
         public int Id { get; }
     }

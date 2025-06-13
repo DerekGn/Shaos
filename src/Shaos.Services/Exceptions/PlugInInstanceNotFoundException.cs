@@ -27,20 +27,38 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="PlugInInstance"/> is not found
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class PlugInInstanceNotFoundException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstanceNotFoundException"/>
+        /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
         public PlugInInstanceNotFoundException(int id)
         {
             Id = id;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstanceNotFoundException"/>
+        /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
+        /// <param name="message">An associated message</param>
         public PlugInInstanceNotFoundException(int id,
                                                string? message) : base(message)
         {
             Id = id;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstanceNotFoundException"/>
+        /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public PlugInInstanceNotFoundException(int id,
                                                string? message,
                                                Exception? innerException) : base(message, innerException)

@@ -22,31 +22,53 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when one or more <see cref="PlugInInstance"/> have a running instance
+    /// </summary>
     [ExcludeFromCodeCoverage]
     public class PlugInInstancesRunningException : Exception
     {
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstancesRunningException"/>
+        /// </summary>
+        /// <param name="ids">The set of <see cref="PlugInInstance"/> identifiers</param>
         public PlugInInstancesRunningException(IList<int> ids)
         {
             Ids = ids;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstancesRunningException"/>
+        /// </summary>
+        /// <param name="ids">The set of <see cref="PlugInInstance"/> identifiers</param>
+        /// <param name="message">An associated message</param>
         public PlugInInstancesRunningException(IList<int> ids,
                                               string message) : base(message)
         {
             Ids = ids;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInstancesRunningException"/>
+        /// </summary>
+        /// <param name="ids">The set of <see cref="PlugInInstance"/> identifiers</param>
+        /// <param name="message">An associated message</param>
+        /// <param name="innerException">An inner exception</param>
         public PlugInInstancesRunningException(IList<int> ids,
                                               string message,
-                                              Exception inner) : base(message, inner)
+                                              Exception innerException) : base(message, innerException)
         {
             Ids = ids;
         }
 
+        /// <summary>
+        /// The running <see cref="PlugInInstance"/> identifiers
+        /// </summary>
         public IList<int> Ids { get; }
     }
 }
