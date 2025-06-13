@@ -34,27 +34,39 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class Instance
     {
+        /// <summary>
+        /// Create a <see cref="PlugIn"/> instance
+        /// </summary>
+        /// <param name="id">The <see cref="Instance"/> identifier</param>
+        /// <param name="plugInId">The parent <see cref="PlugIn"/> identifier</param>
+        /// <param name="name"><see cref="Instance"/> name </param>
+        /// <param name="assemblyPath">The path to the <see cref="PlugIn"/> assembly</param>
+        /// <param name="configuration">The <see cref="Configuration"/> for this <see cref="Instance"/></param>
         public Instance(
             int id,
             int plugInId,
             string name,
+            string assemblyPath,
             InstanceConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNull(configuration);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             Id = id;
             PlugInId = plugInId;
             Name = name;
+            AssemblyPath = assemblyPath;
             Configuration = configuration;
         }
 
         internal Instance(int id,
                           int parentId,
                           string name,
+                          string assemblyPath,
                           InstanceState state,
                           InstanceConfiguration configuration)
-            : this(id, parentId, name, configuration)
+            : this(id, parentId, name, assemblyPath, configuration)
         {
             State = state;
         }
@@ -83,6 +95,11 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// The assembly path for this <see cref="PlugIn"/> instance.
+        /// </summary>
+        public string AssemblyPath { get; }
 
         /// <summary>
         /// The PlugIn identifier

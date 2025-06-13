@@ -41,6 +41,9 @@ namespace Shaos.Services.UnitTests
 {
     public class InstanceHostServiceTest : BaseTests
     {
+        private const string InstanceName = "Test";
+        private const string AssemblyPath = "AssemblyPath";
+
         private readonly InstanceHostService _instanceHostService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
@@ -184,7 +187,7 @@ namespace Shaos.Services.UnitTests
             {
                 Id = 1,
                 Description = "description",
-                Name = "name",
+                Name = InstanceName,
                 Package = new Package()
                 {
                     AssemblyFile = "AssemblyFile"
@@ -202,7 +205,11 @@ namespace Shaos.Services.UnitTests
                 plugIn
             ];
 
-            var instance = new Instance(1, 2, "name", new InstanceConfiguration(true, "configuration"));
+            var instance = new Instance(1,
+                                        2,
+                                        InstanceName,
+                                        AssemblyPath,
+                                        new InstanceConfiguration(true, "configuration"));
 
             _mockRepository.Setup(_ => _.GetAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
                                                           It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),

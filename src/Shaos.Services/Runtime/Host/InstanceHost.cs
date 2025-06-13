@@ -87,17 +87,9 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                _logger.LogDebug("Creating load context for Instance PlugInId: [{Id}] AssemblyPath: [{AssemblyPath}]", id, assemblyPath);
-
-                if (!_instanceLoadContexts.Any(_ => _.Key == plugInId))
-                {
-                    _instanceLoadContexts
-                        .Add(plugInId, new InstanceLoadContext(_runtimeAssemblyLoadContextFactory.Create(assemblyPath)));
-                }
-
                 _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);
 
-                instance = new Instance(id, plugInId, instanceName, configuration);
+                instance = new Instance(id, plugInId, instanceName, assemblyPath, configuration);
 
                 _executingInstances.Add(instance);
 
@@ -125,7 +117,7 @@ namespace Shaos.Services.Runtime.Host
         {
             return ResolveExecutingInstance(id, (instance) =>
             {
-                var instanceloadContext = GetInstanceLoadContext(instance.PlugInId);
+                var instanceloadContext = GetInstanceLoadContext(instance);
 
                 return _typeLoaderService.LoadConfiguration(instanceloadContext.Assembly!,
                                                             instance.Configuration.Configuration);
@@ -191,37 +183,25 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    var instanceloadContext = GetInstanceLoadContext(instance.PlugInId);
+                    var instanceloadContext = GetInstanceLoadContext(instance);
 
-                    if (instanceloadContext == null)
+                    var plugIn = _typeLoaderService.CreateInstance(instanceloadContext.Assembly!,
+                                                                   instance.Configuration);
+
+                    if (plugIn == null)
                     {
-                        _logger.LogError("Instance: [{Id}] Name: [{Name}] PlugInId: [{PlugInId}] load context not found",
-                                         instance.Id,
-                                         instance.Name,
-                                         instance.PlugInId);
+                        _logger.LogError("Instance: [{Id}] Name: [{Name}] PlugInId: [{PlugInId}] PlugIn load failure",
+                                            instance.Id,
+                                            instance.Name,
+                                            instance.PlugInId);
 
-                        throw new InstanceLoadContextNotFoundException(id);
+                        throw new PlugInNotCreatedException();
                     }
                     else
                     {
-                        var plugIn = _typeLoaderService.CreateInstance(instanceloadContext.Assembly!,
-                                                                       instance.Configuration);
+                        instance.LoadContext(plugIn!);
 
-                        if (plugIn == null)
-                        {
-                            _logger.LogError("Instance: [{Id}] Name: [{Name}] PlugInId: [{PlugInId}] PlugIn load failure",
-                                             instance.Id,
-                                             instance.Name,
-                                             instance.PlugInId);
-
-                            throw new PlugInNotCreatedException();
-                        }
-                        else
-                        {
-                            instance.LoadContext(plugIn!);
-
-                            _ = Task.Run(() => StartExecutingInstance(instance));
-                        }
+                        _ = Task.Run(() => StartExecutingInstance(instance));
                     }
                 }
 
@@ -316,9 +296,17 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private InstanceLoadContext GetInstanceLoadContext(int plugInId)
+        private InstanceLoadContext GetInstanceLoadContext(Instance instance)
         {
-            return _instanceLoadContexts.GetValueOrDefault(plugInId) ?? throw new InstanceLoadContextNotFoundException(plugInId);
+            var instanceLoadContext = _instanceLoadContexts.GetValueOrDefault(instance.PlugInId);
+
+            if (instanceLoadContext == null)
+            {
+                instanceLoadContext = new InstanceLoadContext(_runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath));
+                _instanceLoadContexts.Add(instance.PlugInId, instanceLoadContext);
+            }
+
+            return instanceLoadContext;
         }
 
         [DebuggerStepThrough]
@@ -399,7 +387,7 @@ namespace Shaos.Services.Runtime.Host
 
             var instanceLoadContext = _instanceLoadContexts.GetValueOrDefault(instance.PlugInId);
 
-            if(instanceLoadContext != null)
+            if (instanceLoadContext != null)
             {
                 instanceLoadContext.Dispose();
 
