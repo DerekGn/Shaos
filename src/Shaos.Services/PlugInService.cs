@@ -369,7 +369,7 @@ namespace Shaos.Services
                 .Where(_ => _.PlugInId == plugIn.Id && _.State == state).
                 Select(_=> _.Id)];
 
-            return runningInstanceIds.Any();
+            return runningInstanceIds.Count != 0;
         }
     }
 }
