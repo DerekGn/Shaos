@@ -32,7 +32,7 @@ namespace Shaos.Services.Json
 {
     internal static class Utf8JsonSerializer
     {
-        public static object Deserialize(string json, Type type)
+        public static object? Deserialize(string json, Type type)
         {
             var instance = Activator.CreateInstance(type);
 

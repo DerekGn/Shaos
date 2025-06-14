@@ -30,45 +30,16 @@ namespace Shaos.Services.Exceptions
     /// <summary>
     /// An exception that is thrown when a <see cref="PlugIn"/> has no <see cref="Package"/> assigned
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInPackageNotAssignedException"/>
+    /// </remarks>
+    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
     [ExcludeFromCodeCoverage]
-    public class PlugInPackageNotAssignedException : Exception
+    public class PlugInPackageNotAssignedException(int id) : Exception
     {
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInPackageNotAssignedException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        public PlugInPackageNotAssignedException(int id)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInPackageNotAssignedException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="message">An associated message</param>
-        public PlugInPackageNotAssignedException(int id,
-                                                 string message) : base(message)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInPackageNotAssignedException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public PlugInPackageNotAssignedException(int id,
-                                                 string message,
-                                                 Exception innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
         /// <summary>
         /// The <see cref="PlugIn"/> instance identifier
         /// </summary>
-        public int Id { get; }
+        public int Id { get; } = id;
     }
 }

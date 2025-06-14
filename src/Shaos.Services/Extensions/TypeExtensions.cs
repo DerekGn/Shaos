@@ -70,7 +70,7 @@ namespace Shaos.Services.Extensions
         public static void SetProperty(this Type type,
                                        object target,
                                        string name,
-                                       object value)
+                                       object? value)
         {
             PropertyInfo? propertyInfo = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
 

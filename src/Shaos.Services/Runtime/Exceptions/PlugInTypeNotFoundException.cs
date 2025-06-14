@@ -39,21 +39,5 @@ namespace Shaos.Services.Runtime.Exceptions
         /// </summary>
         public PlugInTypeNotFoundException()
         { }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInTypeNotFoundException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        public PlugInTypeNotFoundException(string message) : base(message)
-        { }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInTypeNotFoundException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public PlugInTypeNotFoundException(string message,
-                                           Exception innerException) : base(message, innerException)
-        { }
     }
 }

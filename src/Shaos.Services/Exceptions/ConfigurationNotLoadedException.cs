@@ -30,45 +30,16 @@ namespace Shaos.Services.Exceptions
     /// <summary>
     /// Thrown when a <see cref="PlugInInstance"/> configuration can not be loaded
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
+    /// </remarks>
+    /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
     [ExcludeFromCodeCoverage]
-    public class ConfigurationNotLoadedException : Exception
+    public class ConfigurationNotLoadedException(int id) : Exception
     {
-        /// <summary>
-        /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
-        public ConfigurationNotLoadedException(int id)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
-        /// <param name="message">The exception message</param>
-        public ConfigurationNotLoadedException(int id,
-                                               string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
-        /// <param name="message">The exception message</param>
-        /// <param name="innerException">The inner exception</param>
-        public ConfigurationNotLoadedException(int id,
-                                               string? message,
-                                               Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
         /// <summary>
         /// The identifier of the <see cref="PlugIn"/> instance
         /// </summary>
-        public int Id { get; }
+        public int Id { get; } = id;
     }
 }

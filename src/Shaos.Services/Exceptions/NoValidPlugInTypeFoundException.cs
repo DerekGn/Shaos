@@ -30,31 +30,12 @@ namespace Shaos.Services.Exceptions
     /// <summary>
     /// An exception that is thrown when no valid plugin assembly was found in an <see cref="Assembly"/>
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
+    /// </remarks>
+    /// <param name="message">An associated message</param>
     [ExcludeFromCodeCoverage]
-    public class NoValidPlugInAssemblyFoundException : Exception
+    public class NoValidPlugInAssemblyFoundException(string message) : Exception(message)
     {
-        /// <summary>
-        /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
-        /// </summary>
-        public NoValidPlugInAssemblyFoundException()
-        { }
-
-        /// <summary>
-        /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        public NoValidPlugInAssemblyFoundException(string message) : base(message)
-        {
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public NoValidPlugInAssemblyFoundException(string message,
-                                                   Exception innerException) : base(message, innerException)
-        {
-        }
     }
 }

@@ -197,7 +197,7 @@ namespace Shaos.Services
 
             return _configurationLoaderService.LoadConfiguration(plugInInstance.PlugIn.Id,
                                                                  package.AssemblyFile,
-                                                                 plugInInstance.Configuration);
+                                                                 plugInInstance.Configuration)!;
         }
 
         /// <inheritdoc/>

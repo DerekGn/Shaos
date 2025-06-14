@@ -30,29 +30,12 @@ namespace Shaos.Services.Runtime.Exceptions
     /// <summary>
     /// An exception that is thrown when a <see cref="IPlugIn"/> derived type has multiple constructors
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInConstructorsException"/>
+    /// </remarks>
+    /// <param name="message">An associated message</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInConstructorsException : Exception
+    public class PlugInConstructorsException(string message) : Exception(message)
     {
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInConstructorsException"/>
-        /// </summary>
-        public PlugInConstructorsException()
-        { }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInConstructorsException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        public PlugInConstructorsException(string message) : base(message)
-        { }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInConstructorsException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public PlugInConstructorsException(string message,
-                                           Exception innerException) : base(message, innerException)
-        { }
     }
 }

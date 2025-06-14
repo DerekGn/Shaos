@@ -27,30 +27,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Runtime.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class InstanceExistsException : Exception
+    public class InstanceExistsException(int id) : Exception
     {
-        public InstanceExistsException()
-        {
-        }
-
-        public InstanceExistsException(int id)
-        {
-            Id = id;
-        }
-
-        public InstanceExistsException(int id,
-                                       string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        public InstanceExistsException(int id,
-                                       string? message,
-                                       Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        public int Id { get; } = id;
     }
 }

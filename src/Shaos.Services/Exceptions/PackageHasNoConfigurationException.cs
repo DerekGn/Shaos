@@ -27,29 +27,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class PackageHasNoConfigurationException : Exception
+    public class PackageHasNoConfigurationException(int id) : Exception
     {
-        public PackageHasNoConfigurationException(int id)
-        {
-            Id = id;
-        }
-
-        public PackageHasNoConfigurationException(int id,
-                                                  string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        public PackageHasNoConfigurationException(int id,
-                                                  string? message,
-                                                  Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Id { get; }
+        public int Id { get; } = id;
     }
 }

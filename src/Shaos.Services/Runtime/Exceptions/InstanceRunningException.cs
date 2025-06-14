@@ -22,35 +22,25 @@
 * SOFTWARE.
 */
 
+using Shaos.Services.Runtime.Host;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="Instance"/> is in the <see cref="InstanceState.Running"/>
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="InstanceRunningException"/>
+    /// </remarks>
+    /// <param name="id">The identifier of the running instance</param>
     [ExcludeFromCodeCoverage]
-    public class InstanceRunningException : Exception
+    public class InstanceRunningException(int id) : Exception
     {
-        public InstanceRunningException()
-        {
-        }
 
-        public InstanceRunningException(int id)
-        {
-            Id = id;
-        }
-
-        public InstanceRunningException(int id,
-                                        string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        public InstanceRunningException(int id,
-                                        string? message,
-                                        Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        /// <summary>
+        /// The identifier of the running instance
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

@@ -30,45 +30,16 @@ namespace Shaos.Repository.Exceptions
     /// <summary>
     /// An exception that is thrown when an <see cref="BaseEntity"/> derived type 
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="NameExistsException"/>
+    /// </remarks>
+    /// <param name="name">The existing name</param>
     [ExcludeFromCodeCoverage]
-    public class NameExistsException : Exception
+    public class NameExistsException(string name) : Exception
     {
-        /// <summary>
-        /// Create an instance of a <see cref="NameExistsException"/>
-        /// </summary>
-        /// <param name="name">The existing name</param>
-        public NameExistsException(string name)
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="NameExistsException"/>
-        /// </summary>
-        /// <param name="name">The existing name</param>
-        /// <param name="message">An associated message</param>
-        public NameExistsException(string name,
-                                         string message) : base(message)
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="NameExistsException"/>
-        /// </summary>
-        /// <param name="name">The existing name</param>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public NameExistsException(string name,
-                                         string message,
-                                         Exception innerException) : base(message, innerException)
-        {
-            Name = name;
-        }
-
         /// <summary>
         /// The value of the existing name
         /// </summary>
-        public string? Name { get; }
+        public string? Name { get; } = name;
     }
 }

@@ -30,45 +30,16 @@ namespace Shaos.Services.Exceptions
     /// <summary>
     /// An exception that is thrown when a <see cref="PlugInInstance"/> is not configured
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInInstanceNotConfiguredException"/>
+    /// </remarks>
+    /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotConfiguredException : Exception
+    public class PlugInInstanceNotConfiguredException(int id) : Exception
     {
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInInstanceNotConfiguredException"/>
-        /// </summary>
-        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
-        public PlugInInstanceNotConfiguredException(int id)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInInstanceNotConfiguredException"/>
-        /// </summary>
-        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
-        /// <param name="message">An associated message</param>
-        public PlugInInstanceNotConfiguredException(int id,
-                                                    string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInInstanceNotConfiguredException"/>
-        /// </summary>
-        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public PlugInInstanceNotConfiguredException(int id,
-                                                    string? message,
-                                                    Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
         /// <summary>
         /// The identifier of the <see cref="PlugInInstance"/> that was not configured
         /// </summary>
-        public int Id { get; }
+        public int Id { get; } = id;
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 namespace Shaos.Filters
 {
@@ -23,10 +24,12 @@ namespace Shaos.Filters
                 return;
 
             var serializedModelState = page.TempData[nameof(SerializeModelStatePageFilter)] as string;
-            if (serializedModelState.IsNullOrEmpty())
+            
+            if (string.IsNullOrWhiteSpace(serializedModelState))
                 return;
 
             var modelState = DeserializeModelState(serializedModelState);
+
             page.ModelState.Merge(modelState);
         }
 
@@ -57,12 +60,12 @@ namespace Shaos.Filters
                     ErrorMessages = kvp.Value.Errors.Select(err => err.ErrorMessage).ToList(),
                 });
 
-            return System.Text.Json.JsonSerializer.Serialize(errorList);
+            return JsonSerializer.Serialize(errorList);
         }
 
         private static ModelStateDictionary DeserializeModelState(string serialisedErrorList)
         {
-            var errorList = System.Text.Json.JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
+            var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
             var modelState = new ModelStateDictionary();
 
             foreach (var item in errorList)

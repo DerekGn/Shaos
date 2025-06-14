@@ -26,34 +26,22 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown if a configuration property type was not mapped
+    /// </summary>
+    /// <param name="name">The property name</param>
+    /// <param name="propertyType">The property <see cref="Type"/></param>
     [ExcludeFromCodeCoverage]
-    public class ConfigurationPropertyTypeNotMappedException : Exception
+    public class ConfigurationPropertyTypeNotMappedException(string name, Type propertyType) : Exception
     {
-        public ConfigurationPropertyTypeNotMappedException(string name, Type propertyType)
-        {
-            Name = name;
-            PropertyType = propertyType;
-        }
+        /// <summary>
+        /// The property name
+        /// </summary>
+        public string Name { get; } = name;
 
-        public ConfigurationPropertyTypeNotMappedException(string name,
-                                                           Type propertyType,
-                                                           string? message) : base(message)
-        {
-            Name = name;
-            PropertyType = propertyType;
-        }
-
-        public ConfigurationPropertyTypeNotMappedException(string name,
-                                                           Type propertyType,
-                                                           string? message,
-                                                           Exception? innerException) : base(message, innerException)
-        {
-            Name = name;
-            PropertyType = propertyType;
-        }
-
-        public string Name { get; }
-
-        public Type PropertyType { get; }
+        /// <summary>
+        /// The property type
+        /// </summary>
+        public Type PropertyType { get; } = propertyType;
     }
 }

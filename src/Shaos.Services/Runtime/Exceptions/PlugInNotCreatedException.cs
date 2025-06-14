@@ -32,14 +32,5 @@ namespace Shaos.Services.Runtime.Exceptions
         public PlugInNotCreatedException()
         {
         }
-
-        public PlugInNotCreatedException(string? message) : base(message)
-        {
-        }
-
-        public PlugInNotCreatedException(string? message,
-                                         Exception? innerException) : base(message, innerException)
-        {
-        }
     }
 }

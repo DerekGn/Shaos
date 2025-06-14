@@ -30,29 +30,12 @@ namespace Shaos.Services.Runtime.Exceptions
     /// <summary>
     /// An exception that is thrown when a <see cref="IPlugIn"/> has an invalid constructor
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInConstructorException"/>
+    /// </remarks>
+    /// <param name="message">An associated message</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInConstructorException : Exception
+    public class PlugInConstructorException(string message) : Exception(message)
     {
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInConstructorException"/>
-        /// </summary>
-        public PlugInConstructorException()
-        { }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInConstructorException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        public PlugInConstructorException(string message) : base(message)
-        { }
-
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInConstructorException"/>
-        /// </summary>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public PlugInConstructorException(string message,
-                                          Exception innerException) : base(message, innerException)
-        { }
     }
 }

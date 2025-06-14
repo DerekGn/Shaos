@@ -54,19 +54,6 @@ namespace Shaos.Repository.Exceptions
         }
 
         /// <summary>
-        /// Create and instance of <see cref="NotFoundException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException"></param>
-        public NotFoundException(int id,
-                                 string message,
-                                 Exception innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        /// <summary>
         /// The identifier of the <see cref="BaseEntity"/> that was not found
         /// </summary>
         public int Id { get; }

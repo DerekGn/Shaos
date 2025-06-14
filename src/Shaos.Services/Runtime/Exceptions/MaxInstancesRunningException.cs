@@ -29,45 +29,16 @@ namespace Shaos.Services.Runtime.Exceptions
     /// <summary>
     /// An exception that is thrown when the maximum number of instances are already running
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="MaxInstancesRunningException"/>
+    /// </remarks>
+    /// <param name="count">The number of running instances</param>
     [ExcludeFromCodeCoverage]
-    public class MaxInstancesRunningException : Exception
+    public class MaxInstancesRunningException(int count) : Exception
     {
-        /// <summary>
-        /// Create an instance of a <see cref="MaxInstancesRunningException"/>
-        /// </summary>
-        /// <param name="count">The number of running instances</param>
-        public MaxInstancesRunningException(int count)
-        {
-            Count = count;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="MaxInstancesRunningException"/>
-        /// </summary>
-        /// <param name="count">The number of running instances</param>
-        /// <param name="message">An associated message</param>
-        public MaxInstancesRunningException(int count,
-                                            string message) : base(message)
-        {
-            Count = count;
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="MaxInstancesRunningException"/>
-        /// </summary>
-        /// <param name="count">The number of running instances</param>
-        /// <param name="message">An associated message</param>
-        /// <param name="innerException">An inner exception</param>
-        public MaxInstancesRunningException(int count,
-                                            string message,
-                                            Exception innerException) : base(message, innerException)
-        {
-            Count = count;
-        }
-
         /// <summary>
         /// The number of running instances
         /// </summary>
-        public int Count { get; }
+        public int Count { get; } = count;
     }
 }

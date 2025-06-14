@@ -27,30 +27,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Runtime.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class InstanceNotFoundException : Exception
+    public class InstanceNotFoundException(int id) : Exception
     {
-        public InstanceNotFoundException()
-        {
-        }
-
-        public InstanceNotFoundException(int id)
-        {
-            Id = id;
-        }
-
-        public InstanceNotFoundException(int id,
-                                         string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        public InstanceNotFoundException(int id,
-                                         string? message,
-                                         Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        public int Id { get; } = id;
     }
 }
