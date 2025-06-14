@@ -27,9 +27,9 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Runtime.Exceptions
 {
     [ExcludeFromCodeCoverage]
-    public class PlugInNotCreatedException : Exception
+    public class PlugInInstanceNotCreatedException : Exception
     {
-        public PlugInNotCreatedException()
+        public PlugInInstanceNotCreatedException()
         {
         }
     }

@@ -58,7 +58,7 @@ namespace Shaos.Services.Runtime.Loader
 
         /// <inheritdoc/>
         public IPlugIn? CreateInstance(Assembly assembly,
-                                      InstanceConfiguration instanceConfiguration)
+                                       InstanceConfiguration instanceConfiguration)
         {
             object? configuration = null;
             

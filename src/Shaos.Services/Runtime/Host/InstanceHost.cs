@@ -195,7 +195,7 @@ namespace Shaos.Services.Runtime.Host
                                             instance.Name,
                                             instance.PlugInId);
 
-                        throw new PlugInNotCreatedException();
+                        throw new PlugInInstanceNotCreatedException();
                     }
                     else
                     {
