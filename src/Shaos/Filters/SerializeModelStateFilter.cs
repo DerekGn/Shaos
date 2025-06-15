@@ -8,13 +8,21 @@ namespace Shaos.Filters
 {
     public class SerializeModelStatePageFilter : IPageFilter
     {
-        public class ModelStateTransferValue
+        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
         {
-            public string Key { get; set; }
-            public string AttemptedValue { get; set; }
-            public object RawValue { get; set; }
-            public ICollection<string> ErrorMessages { get; set; } = new List<string>();
+            if (context.HandlerInstance is not PageModel page)
+                return;
+            if (page.ModelState.IsValid)
+                return;
+            if (context.Result is IKeepTempDataResult)
+            {
+                var modelState = SerializeModelState(page.ModelState);
+                page.TempData[nameof(SerializeModelStatePageFilter)] = modelState;
+            }
         }
+
+        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
+        { }
 
         public void OnPageHandlerSelected(PageHandlerSelectedContext context)
         {
@@ -31,42 +39,12 @@ namespace Shaos.Filters
             page.ModelState.Merge(modelState);
         }
 
-        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-        { }
-
-        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
-        {
-            if (context.HandlerInstance is not PageModel page)
-                return;
-            if (page.ModelState.IsValid)
-                return;
-            if (context.Result is IKeepTempDataResult)
-            {
-                var modelState = SerializeModelState(page.ModelState);
-                page.TempData[nameof(SerializeModelStatePageFilter)] = modelState;
-            }
-        }
-
-        private static string SerializeModelState(ModelStateDictionary modelState)
-        {
-            var errorList = modelState
-                .Select(kvp => new ModelStateTransferValue
-                {
-                    Key = kvp.Key,
-                    AttemptedValue = kvp.Value.AttemptedValue,
-                    RawValue = kvp.Value.RawValue,
-                    ErrorMessages = kvp.Value.Errors.Select(err => err.ErrorMessage).ToList(),
-                });
-
-            return JsonSerializer.Serialize(errorList);
-        }
-
         private static ModelStateDictionary DeserializeModelState(string serialisedErrorList)
         {
             var modelState = new ModelStateDictionary();
             var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
-            
-            if(errorList != null)
+
+            if (errorList != null)
             {
                 foreach (var item in errorList)
                 {
@@ -79,6 +57,35 @@ namespace Shaos.Filters
             }
 
             return modelState;
+        }
+
+        private static string SerializeModelState(ModelStateDictionary modelState)
+        {
+            List<ModelStateTransferValue> values = [];
+
+            foreach (var kvp in modelState)
+            {
+                var attemptedValue = kvp.Value?.AttemptedValue;
+                var rawValue = kvp.Value?.RawValue;
+
+                values.Add(new ModelStateTransferValue()
+                {
+                    Key = kvp.Key,
+                    AttemptedValue = attemptedValue,
+                    RawValue = rawValue,
+                    ErrorMessages = kvp.Value == null ? [] : kvp.Value.Errors.Select(_ => _.ErrorMessage).ToList()
+                });
+            }
+
+            return JsonSerializer.Serialize(values);
+        }
+
+        internal class ModelStateTransferValue
+        {
+            public string? AttemptedValue { get; set; }
+            public ICollection<string> ErrorMessages { get; set; } = [];
+            public required string Key { get; set; }
+            public object? RawValue { get; set; }
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Shaos.Services.UnitTests.Json
         public long Long { get; set; }
         public sbyte SByte { get; set; }
         public short Short { get; set; }
-        public string String { get; set; }
+        public string? String { get; set; }
         public TimeSpan TimeSpan { get; set; }
         public uint UInt { get; set; }
         public ulong ULong { get; set; }
