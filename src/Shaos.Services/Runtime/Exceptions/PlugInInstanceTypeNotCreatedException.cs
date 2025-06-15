@@ -23,12 +23,20 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Services.Runtime.Host;
+using Shaos.Sdk;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="IPlugIn"/> derived type cannot be created
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class PackageHasNoConfigurationException(int id) : Exception
+    public class PlugInInstanceTypeNotCreatedException(int id) : Exception
     {
+        /// <summary>
+        /// The identifier of the <see cref="Instance"/>
+        /// </summary>
         public int Id { get; } = id;
     }
 }

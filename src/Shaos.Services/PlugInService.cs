@@ -192,7 +192,7 @@ namespace Shaos.Services
 
             if (!package.HasConfiguration)
             {
-                throw new PackageHasNoConfigurationException(id);
+                throw new PlugInPackageHasNoConfigurationException(plugInInstance.PlugIn.Id);
             }
 
             return _configurationLoaderService.LoadConfiguration(plugInInstance.PlugIn.Id,

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 
 namespace Shaos.Filters
@@ -17,14 +16,13 @@ namespace Shaos.Filters
             public ICollection<string> ErrorMessages { get; set; } = new List<string>();
         }
 
-
         public void OnPageHandlerSelected(PageHandlerSelectedContext context)
         {
-            if (!(context.HandlerInstance is PageModel page))
+            if (context.HandlerInstance is not PageModel page)
                 return;
 
             var serializedModelState = page.TempData[nameof(SerializeModelStatePageFilter)] as string;
-            
+
             if (string.IsNullOrWhiteSpace(serializedModelState))
                 return;
 
@@ -33,11 +31,12 @@ namespace Shaos.Filters
             page.ModelState.Merge(modelState);
         }
 
-        public void OnPageHandlerExecuting(PageHandlerExecutingContext context) { }
+        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
+        { }
 
         public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
         {
-            if (!(context.HandlerInstance is PageModel page))
+            if (context.HandlerInstance is not PageModel page)
                 return;
             if (page.ModelState.IsValid)
                 return;
@@ -47,7 +46,6 @@ namespace Shaos.Filters
                 page.TempData[nameof(SerializeModelStatePageFilter)] = modelState;
             }
         }
-
 
         private static string SerializeModelState(ModelStateDictionary modelState)
         {
@@ -65,15 +63,21 @@ namespace Shaos.Filters
 
         private static ModelStateDictionary DeserializeModelState(string serialisedErrorList)
         {
-            var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
             var modelState = new ModelStateDictionary();
-
-            foreach (var item in errorList)
+            var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
+            
+            if(errorList != null)
             {
-                modelState.SetModelValue(item.Key, item.RawValue, item.AttemptedValue);
-                foreach (var error in item.ErrorMessages)
-                    modelState.AddModelError(item.Key, error);
+                foreach (var item in errorList)
+                {
+                    modelState.SetModelValue(item.Key, item.RawValue, item.AttemptedValue);
+                    foreach (var error in item.ErrorMessages)
+                    {
+                        modelState.AddModelError(item.Key, error);
+                    }
+                }
             }
+
             return modelState;
         }
     }

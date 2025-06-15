@@ -30,7 +30,7 @@ namespace Shaos.Services.Runtime.Exceptions
     /// <summary>
     /// An exception that is thrown when a <see cref="Instance"/> already exists in the <see cref="InstanceHost"/>
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">The identifier of the <see cref="Instance"/></param>
     [ExcludeFromCodeCoverage]
     public class InstanceExistsException(int id) : Exception
     {

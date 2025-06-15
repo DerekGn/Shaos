@@ -29,6 +29,11 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class InstanceStateEventArgs : EventArgs
     {
+        /// <summary>
+        /// Create an instance of a <see cref="InstanceStateEventArgs"/>
+        /// </summary>
+        /// <param name="id">The <see cref="Instance"/> who's state changed</param>
+        /// <param name="state">The new state of the <see cref="Instance"/></param>
         public InstanceStateEventArgs(int id,
                                       InstanceState state)
         {

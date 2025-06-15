@@ -23,14 +23,20 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Repository.Models;
 
-namespace Shaos.Services.Runtime.Exceptions
+namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="PlugIn"/> contains a <see cref="Package"/> that has no configuration
+    /// </summary>
+    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotCreatedException : Exception
+    public class PlugInPackageHasNoConfigurationException(int id) : Exception
     {
-        public PlugInInstanceNotCreatedException()
-        {
-        }
+        /// <summary>
+        /// The identifier of the <see cref="PlugIn"/>
+        /// </summary>
+        public int Id { get; } = id;
     }
 }
