@@ -56,7 +56,7 @@ namespace Shaos.Pages.Instances
         {
             var configurationSettings = Request.Form
                 .Where(_ => _.Key.StartsWith(nameof(Configuration)))
-                .Select(_ => new KeyValuePair<string, string>(_.Key.Replace($"{nameof(Configuration)}.", string.Empty), _.Value.First()));
+                .Select(_ => new KeyValuePair<string, string>(_.Key.Replace($"{nameof(Configuration)}.", string.Empty), _.Value.FirstOrDefault() ?? string.Empty));
 
             await _instanceHostService.UpdateInstanceConfigurationAsync(
                 id,

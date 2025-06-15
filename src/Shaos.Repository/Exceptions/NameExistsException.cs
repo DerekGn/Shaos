@@ -23,38 +23,23 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Repository.Models;
 
-namespace Shaos.Services.Json
+namespace Shaos.Repository.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when an <see cref="BaseEntity"/> derived type 
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="NameExistsException"/>
+    /// </remarks>
+    /// <param name="name">The existing name</param>
     [ExcludeFromCodeCoverage]
-    public class Utf8JsonPropertyTypeNotMappedException : Exception
+    public class NameExistsException(string name) : Exception
     {
-        public Utf8JsonPropertyTypeNotMappedException(string name,
-                                                      Type propertyType)
-        {
-            Name = name;
-            PropertyType = propertyType;
-        }
-
-        public Utf8JsonPropertyTypeNotMappedException(string name,
-                                                      Type propertyType,
-                                                      string message) : base(message)
-        {
-            Name = name;
-            PropertyType = propertyType;
-        }
-
-        public Utf8JsonPropertyTypeNotMappedException(string name,
-                                                      Type propertyType,
-                                                      string message,
-                                                      Exception inner) : base(message, inner)
-        {
-            Name = name;
-            PropertyType = propertyType;
-        }
-
-        public string Name { get; }
-
-        public Type PropertyType { get; }
+        /// <summary>
+        /// The value of the existing name
+        /// </summary>
+        public string? Name { get; } = name;
     }
 }

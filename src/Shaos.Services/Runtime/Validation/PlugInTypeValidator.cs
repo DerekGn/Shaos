@@ -30,6 +30,9 @@ using System.Reflection;
 
 namespace Shaos.Services.Runtime.Validation
 {
+    /// <summary>
+    /// A PlugIn type validator
+    /// </summary>
     public class PlugInTypeValidator : IPlugInTypeValidator
     {
         private const int AllowedConstructorCount = 1;
@@ -38,6 +41,11 @@ namespace Shaos.Services.Runtime.Validation
         private readonly ILogger<PlugInTypeValidator> _logger;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInTypeValidator"/>
+        /// </summary>
+        /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="runtimeAssemblyLoadContextFactory">A <see cref="IRuntimeAssemblyLoadContextFactory"/> instance</param>
         public PlugInTypeValidator(ILogger<PlugInTypeValidator> logger,
                                    IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
@@ -66,7 +74,7 @@ namespace Shaos.Services.Runtime.Validation
             }
             finally
             {
-                unloadingWeakReference.Dispose();
+                unloadingWeakReference?.Dispose();
             }
         }
 
@@ -201,7 +209,7 @@ namespace Shaos.Services.Runtime.Validation
                     plugInType.Name,
                     hasLogger,
                     hasConfiguration,
-                    assembly.GetName().Version.ToString());
+                    assembly.GetName().Version!.ToString());
             }
             finally
             {

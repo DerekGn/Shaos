@@ -203,7 +203,7 @@ namespace Shaos.Repository
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
             ArgumentException.ThrowIfNullOrWhiteSpace(description);
 
-            var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new ShaosNotFoundException(id);
+            var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new NotFoundException(id);
 
             return await HandleDuplicatePlugInNameAsync(name, async () =>
             {
@@ -225,7 +225,7 @@ namespace Shaos.Repository
         {
             if (enabled.HasValue && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(description))
             {
-                var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new ShaosNotFoundException(id);
+                var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new NotFoundException(id);
 
                 await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
                 {
@@ -294,7 +294,7 @@ namespace Shaos.Repository
                 {
                     _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
 
-                    throw new ShaosNameExistsException(name);
+                    throw new NameExistsException(name);
                 }
 
                 throw;
@@ -313,7 +313,7 @@ namespace Shaos.Repository
                 {
                     _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
 
-                    throw new ShaosNameExistsException(name);
+                    throw new NameExistsException(name);
                 }
 
                 throw;

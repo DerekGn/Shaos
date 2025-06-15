@@ -27,8 +27,16 @@ using System.Text;
 
 namespace Shaos.Services.Runtime.Host
 {
+    /// <summary>
+    /// The configuration settings and metadata for an <see cref="Instance"/>
+    /// </summary>
     public class InstanceConfiguration
     {
+        /// <summary>
+        /// Create an instance of a <see cref="InstanceConfiguration"/>
+        /// </summary>
+        /// <param name="requiresConfiguration">Indicates if configuration is required</param>
+        /// <param name="configuration">The configuration settings as a JSON string</param>
         public InstanceConfiguration(bool requiresConfiguration,
                                      string? configuration = default)
         {

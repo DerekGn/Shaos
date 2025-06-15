@@ -72,14 +72,14 @@ namespace Shaos.Services
         public async Task<object?> LoadInstanceConfigurationAsync(int id,
                                                                   CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new ShaosNotFoundException(id);
+            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new NotFoundException(id);
 
             var package = plugInInstance!.PlugIn!.Package;
 
             if (!package!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
             {
                 _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
-                throw new PlugInHasNoConfigurationException(id);
+                throw new PlugInInstanceNotConfiguredException(id);
             }
 
             return _instanceHost.LoadConfiguration(id);

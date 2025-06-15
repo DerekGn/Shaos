@@ -23,22 +23,19 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Sdk;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="IPlugIn"/> has an invalid constructor
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInConstructorException"/>
+    /// </remarks>
+    /// <param name="message">An associated message</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInConstructorException : Exception
+    public class PlugInConstructorException(string message) : Exception(message)
     {
-        public PlugInConstructorException()
-        { }
-
-        public PlugInConstructorException(string message) : base(message)
-        {
-        }
-
-        public PlugInConstructorException(string message,
-                                          Exception inner) : base(message, inner)
-        {
-        }
     }
 }

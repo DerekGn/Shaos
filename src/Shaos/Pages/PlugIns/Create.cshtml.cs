@@ -66,7 +66,7 @@ namespace Shaos.Pages.PlugIns
 
                 return RedirectToPage("./Index");
             }
-            catch (ShaosNameExistsException ex)
+            catch (NameExistsException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
 

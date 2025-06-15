@@ -22,31 +22,24 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="PlugIn"/> has no <see cref="Package"/> assigned
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInPackageNotAssignedException"/>
+    /// </remarks>
+    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
     [ExcludeFromCodeCoverage]
-    public class PlugInPackageNotAssignedException : Exception
+    public class PlugInPackageNotAssignedException(int id) : Exception
     {
-        public PlugInPackageNotAssignedException(int id)
-        {
-            Id = id;
-        }
-
-        public PlugInPackageNotAssignedException(int id,
-                                                 string message) : base(message)
-        {
-            Id = id;
-        }
-
-        public PlugInPackageNotAssignedException(int id,
-                                                 string message,
-                                                 Exception inner) : base(message, inner)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        /// <summary>
+        /// The <see cref="PlugIn"/> instance identifier
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

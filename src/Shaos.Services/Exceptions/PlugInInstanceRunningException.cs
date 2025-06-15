@@ -22,29 +22,26 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="PlugInInstance"/> is still running
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInInstanceRunningException"/>
+    /// </remarks>
+    /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
+    /// <param name="message">An associated message</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceRunningException : Exception
+    public class PlugInInstanceRunningException(int id,
+                                                string message) : Exception(message)
     {
-        public PlugInInstanceRunningException(int id)
-        {
-            Id = id;
-        }
-        public PlugInInstanceRunningException(int id,
-                                              string message) : base(message)
-        {
-            Id = id;
-        }
-        public PlugInInstanceRunningException(int id,
-                                              string message,
-                                              Exception inner) : base(message, inner)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        /// <summary>
+        /// The running <see cref="PlugInInstance"/> identifier
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

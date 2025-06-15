@@ -28,11 +28,20 @@ using System.Reflection;
 
 namespace Shaos.Services.Runtime.Factories
 {
+    /// <summary>
+    /// A <see cref="IPlugIn"/> type instance factory
+    /// </summary>
     public class PlugInFactory : IPlugInFactory
     {
         private readonly ILogger<PlugInFactory> _logger;
         private readonly ILoggerFactory _loggerFactory;
 
+        /// <summary>
+        /// Create an instance of a <see cref="IPlugInFactory"/>
+        /// </summary>
+        /// <param name="loggerFactory">A <see cref="ILoggerFactory"/> instance</param>
+        /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public PlugInFactory(
             ILoggerFactory loggerFactory,
             ILogger<PlugInFactory> logger)

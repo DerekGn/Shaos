@@ -59,7 +59,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _completed = true;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task ExecuteMethod()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _executed = true;
         }

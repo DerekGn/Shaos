@@ -23,34 +23,20 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="Instance"/> already exists in the <see cref="InstanceHost"/>
+    /// </summary>
+    /// <param name="id">The identifier of the <see cref="Instance"/></param>
     [ExcludeFromCodeCoverage]
-    public class InstanceExistsException : Exception
+    public class InstanceExistsException(int id) : Exception
     {
-        public InstanceExistsException()
-        {
-        }
-
-        public InstanceExistsException(int id)
-        {
-            Id = id;
-        }
-
-        public InstanceExistsException(int id,
-                                       string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        public InstanceExistsException(int id,
-                                       string? message,
-                                       Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        /// <summary>
+        /// The identifier of the <see cref="Instance"/>
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

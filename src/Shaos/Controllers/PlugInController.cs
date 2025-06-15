@@ -54,12 +54,12 @@ namespace Shaos.Controllers
         private const string PlugInInstanceIdentifier = "The PlugIn Instance Identifier";
         private const string PluginNameExists = "A PlugIn with the same name exists";
 
-        private readonly ICodeFileValidationService _codeFileValidationService;
+        private readonly IZipFileValidationService _codeFileValidationService;
 
         public PlugInController(ILogger<PlugInController> logger,
                                 IShaosRepository repository,
                                 IPlugInService plugInService,
-                                ICodeFileValidationService codeFileValidationService) : base(logger, repository, plugInService)
+                                IZipFileValidationService codeFileValidationService) : base(logger, repository, plugInService)
         {
             _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
         }
@@ -84,7 +84,7 @@ namespace Shaos.Controllers
 
                 return Ok(plugInId);
             }
-            catch (ShaosNameExistsException)
+            catch (NameExistsException)
             {
                 return base.Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
                                                           $"A PlugIn with name [{create.Name}] already exists"));
@@ -112,13 +112,13 @@ namespace Shaos.Controllers
 
                 return Ok(plugInId);
             }
-            catch (ShaosNotFoundException ex)
+            catch (NotFoundException ex)
             {
                 return NotFound(
                     CreateProblemDetails(
                         HttpStatusCode.NotFound, ex.Message));
             }
-            catch (ShaosNameExistsException)
+            catch (NameExistsException)
             {
                 return Conflict(
                     CreateProblemDetails(
@@ -245,7 +245,7 @@ namespace Shaos.Controllers
 
                 return Ok();
             }
-            catch (ShaosNotFoundException)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -277,11 +277,11 @@ namespace Shaos.Controllers
                 Response.Headers.ContentLocation = new StringValues($"/api/v1/plugins/{id}");
                 return NoContent();
             }
-            catch (ShaosNameExistsException)
+            catch (NameExistsException)
             {
                 return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugIn with name [{update.Name}] already exists"));
             }
-            catch (ShaosNotFoundException)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -309,13 +309,13 @@ namespace Shaos.Controllers
 
                 return Accepted();
             }
-            catch (ShaosNameExistsException)
+            catch (NameExistsException)
             {
                 return Conflict(
                     CreateProblemDetails(
                         HttpStatusCode.Conflict, $"A PlugInInstance with name [{update.Name}] already exists"));
             }
-            catch (ShaosNotFoundException)
+            catch (NotFoundException)
             {
                 return NotFound();
             }
@@ -352,7 +352,7 @@ namespace Shaos.Controllers
 
                     return Accepted();
                 }
-                catch (ShaosNotFoundException ex)
+                catch (NotFoundException ex)
                 {
                     return NotFound(
                         CreateProblemDetails(

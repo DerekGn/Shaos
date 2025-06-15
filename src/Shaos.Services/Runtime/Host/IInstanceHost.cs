@@ -97,7 +97,6 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The id of the <see cref="Instance"/> to start</param>
         /// <returns>An <see cref="Instance"/></returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="InstanceCreateException">Thrown if the <see cref="PlugIn"/> instance cannot be created</exception>
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
         /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is already running</exception>
         /// <remarks>

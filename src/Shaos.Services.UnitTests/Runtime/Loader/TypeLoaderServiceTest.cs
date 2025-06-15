@@ -23,10 +23,14 @@
 */
 
 using Moq;
+using Shaos.Repository.Models;
+using Shaos.Sdk;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Factories;
+using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Loader;
+using Shaos.Test.PlugIn;
 using System.Reflection;
 using Xunit;
 
@@ -35,16 +39,19 @@ namespace Shaos.Services.UnitTests.Runtime.Loader
     public class TypeLoaderServiceTest
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
+        private readonly Mock<IPlugIn> _mockPlugIn;
         private readonly Mock<IPlugInFactory> _mockPlugInFactory;
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly TypeLoaderService _typeLoaderService;
-        private Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
 
         public TypeLoaderServiceTest()
         {
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockPlugInFactory = new Mock<IPlugInFactory>();
+            _mockPlugIn = new Mock<IPlugIn>();
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
 
             _typeLoaderService = new TypeLoaderService(_mockPlugInFactory.Object,
                                                        _mockFileStoreService.Object,
@@ -52,10 +59,30 @@ namespace Shaos.Services.UnitTests.Runtime.Loader
         }
 
         [Fact]
+        public void TestCreateInstance()
+        {
+            var instanceConfiguration = new InstanceConfiguration(true, "{\"Delay\": \"00:00:05\"}");
+
+            var configuration = new TestPlugInConfiguration();
+
+            _mockPlugInFactory
+                .Setup(_ => _.CreateConfiguration(It.IsAny<Assembly>()))
+                .Returns(configuration);
+
+            _mockPlugInFactory
+                .Setup(_ => _.CreateInstance(It.IsAny<Assembly>(),
+                                             It.IsAny<Object>()))
+                .Returns(_mockPlugIn.Object);
+
+            var plugIn = _typeLoaderService.CreateInstance(typeof(TestPlugIn).Assembly,
+                                                           instanceConfiguration);
+
+            Assert.NotNull(plugIn);
+        }
+
+        [Fact]
         public void TestLoadConfiguration()
         {
-            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
-
             _mockFileStoreService
                 .Setup(_ => _.GetAssemblyPath(It.IsAny<int>(),
                                               It.IsAny<string>()))

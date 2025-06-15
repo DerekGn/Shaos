@@ -22,12 +22,21 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
+using Shaos.Repository.Models;
 
-namespace Shaos.Services.Validation
+namespace Shaos.Services.Exceptions
 {
-    public interface ICodeFileValidationService
+    /// <summary>
+    /// An exception that is thrown when a <see cref="PlugIn"/> contains a <see cref="Package"/> that has no configuration
+    /// </summary>
+    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+    [ExcludeFromCodeCoverage]
+    public class PlugInPackageHasNoConfigurationException(int id) : Exception
     {
-        FileValidationResult ValidateFile(IFormFile formFile);
+        /// <summary>
+        /// The identifier of the <see cref="PlugIn"/>
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

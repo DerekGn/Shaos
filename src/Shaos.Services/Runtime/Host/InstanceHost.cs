@@ -32,8 +32,11 @@ using System.Diagnostics;
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// An instance hosting service
+    /// An instance hosting
     /// </summary>
+    /// <remarks>
+    /// Responsible for the runtime hosting and management of <see cref="Instance"/>
+    /// </remarks>
     public class InstanceHost : IInstanceHost
     {
         internal readonly List<Instance> _executingInstances;
@@ -44,6 +47,13 @@ namespace Shaos.Services.Runtime.Host
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
         private readonly ITypeLoaderService _typeLoaderService;
 
+        /// <summary>
+        /// Create an <see cref="Instance"/>
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="typeLoaderService">The <see cref="ITypeLoaderService"/> instance</param>
+        /// <param name="options">The <see cref="IOptions{TOptions}"/> of <see cref="InstanceHostOptions"/></param>
+        /// <param name="runtimeAssemblyLoadContextFactory">The <see cref="IRuntimeAssemblyLoadContextFactory"/> for loading <see cref="IRuntimeAssemblyLoadContext"/></param>
         public InstanceHost(
             ILogger<InstanceHost> logger,
             ITypeLoaderService typeLoaderService,
@@ -64,7 +74,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
+        public event EventHandler<InstanceStateEventArgs>? InstanceStateChanged;
 
         /// <inheritdoc/>
         public IReadOnlyList<Instance> Instances => _executingInstances.AsReadOnly();
@@ -195,7 +205,7 @@ namespace Shaos.Services.Runtime.Host
                                             instance.Name,
                                             instance.PlugInId);
 
-                        throw new PlugInNotCreatedException();
+                        throw new PlugInInstanceTypeNotCreatedException(id);
                     }
                     else
                     {

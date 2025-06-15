@@ -22,31 +22,24 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="PlugInInstance"/> is not configured
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInInstanceNotConfiguredException"/>
+    /// </remarks>
+    /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotConfiguredException : Exception
+    public class PlugInInstanceNotConfiguredException(int id) : Exception
     {
-        public PlugInInstanceNotConfiguredException(int id)
-        {
-            Id = id;
-        }
-
-        public PlugInInstanceNotConfiguredException(int id,
-                                                    string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        public PlugInInstanceNotConfiguredException(int id,
-                                                    string? message,
-                                                    Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        /// <summary>
+        /// The identifier of the <see cref="PlugInInstance"/> that was not configured
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

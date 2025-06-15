@@ -22,30 +22,40 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Repository.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when an <see cref="BaseEntity"/> type cannot be found in the repository
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class PlugInHasNoConfigurationException : Exception
+    public class NotFoundException : Exception
     {
-        public PlugInHasNoConfigurationException(int id)
+        /// <summary>
+        /// Create and instance of <see cref="NotFoundException"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
+        public NotFoundException(int id)
         {
             Id = id;
         }
 
-        public PlugInHasNoConfigurationException(int id, string message) : base(message)
+        /// <summary>
+        /// Create and instance of <see cref="NotFoundException"/>
+        /// </summary>
+        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
+        /// <param name="message">An associated message</param>
+        public NotFoundException(int id,
+                                 string message) : base(message)
         {
             Id = id;
         }
 
-        public PlugInHasNoConfigurationException(int id,
-                                                 string message,
-                                                 Exception inner) : base(message, inner)
-        {
-            Id = id;
-        }
-
+        /// <summary>
+        /// The identifier of the <see cref="BaseEntity"/> that was not found
+        /// </summary>
         public int Id { get; }
     }
 }

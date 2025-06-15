@@ -22,24 +22,21 @@
 * SOFTWARE.
 */
 
-
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Services.Runtime.Host;
+using Shaos.Sdk;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="IPlugIn"/> derived type cannot be created
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class InstanceConfigurationNullException : Exception
+    public class PlugInInstanceTypeNotCreatedException(int id) : Exception
     {
-        public InstanceConfigurationNullException(int id)
-        {
-        }
-
-        public InstanceConfigurationNullException(int id, string? message) : base(message)
-        {
-        }
-
-        public InstanceConfigurationNullException(int id, string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
+        /// <summary>
+        /// The identifier of the <see cref="Instance"/>
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

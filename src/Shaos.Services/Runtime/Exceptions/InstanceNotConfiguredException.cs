@@ -23,30 +23,20 @@
 */
 
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a <see cref="Instance"/> that has no configuration
+    /// </summary>
+    /// <param name="id">The identifier of the <see cref="Instance"/></param>
     [ExcludeFromCodeCoverage]
-    public class InstanceNotConfiguredException : Exception
+    public class InstanceNotConfiguredException(int id) : Exception
     {
-        public InstanceNotConfiguredException(int id)
-        {
-            Id = id;
-        }
-
-        public InstanceNotConfiguredException(int id,
-                                              string? message) : base(message)
-        {
-            Id = id;
-        }
-
-        public InstanceNotConfiguredException(int id,
-                                              string? message,
-                                              Exception? innerException) : base(message, innerException)
-        {
-            Id = id;
-        }
-
-        public int Id { get; }
+        /// <summary>
+        /// The identifier of the <see cref="Instance"/>
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

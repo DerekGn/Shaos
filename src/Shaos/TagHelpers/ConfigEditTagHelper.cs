@@ -31,35 +31,31 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace Shaos.TagHelpers
 {
     [HtmlTargetElement("config-edit", TagStructure = TagStructure.NormalOrSelfClosing)]
-    public class ConfigEditTagHelper : TagHelper
+    public class ConfigEditTagHelper(IHtmlGenerator generator) : TagHelper
     {
-        private readonly IHtmlGenerator _generator;
+        private const string DivTag = "div";
 
-        public ConfigEditTagHelper(IHtmlGenerator generator)
-        {
-            _generator = generator;
-        }
+        private readonly IHtmlGenerator _generator = generator;
 
         [HtmlAttributeName("asp-for")]
-        public ModelExpression For { get; set; }
+        public required ModelExpression For { get; set; }
 
-        [HtmlAttributeNotBound]
         [ViewContext]
-        public ViewContext ViewContext { get; set; }
+        [HtmlAttributeNotBound]
+        public ViewContext? ViewContext { get; set; }
 
         public override void Process(TagHelperContext context,
                                      TagHelperOutput output)
         {
             output.Attributes.Add("class", "form-group");
-            output.TagName = "div";
+            output.TagName = DivTag;
             output.TagMode = TagMode.StartTagAndEndTag;
 
             foreach (var property in For.ModelExplorer.Properties)
             {
                 var modelExpression = new ModelExpression($"{property.Container.Metadata.Name}.{property.Metadata.Name}", property);
 
-
-                TagBuilder tagBuilder = new TagBuilder("div");
+                TagBuilder tagBuilder = new TagBuilder(DivTag);
                 tagBuilder.Attributes.Add("class", "form-group");
                 tagBuilder.InnerHtml.AppendHtml(GenerateLabel(modelExpression));
 
@@ -74,10 +70,10 @@ namespace Shaos.TagHelpers
             var cssClass = modelExpression.ModelExplorer.ModelType == typeof(bool) ? "form-check-label" : "control-label";
 
             return _generator.GenerateLabel(ViewContext,
-                                modelExpression.ModelExplorer,
-                                modelExpression.Name,
-                                null,
-                                new { @class = cssClass });
+                                            modelExpression.ModelExplorer,
+                                            modelExpression.Name,
+                                            null,
+                                            new { @class = cssClass });
         }
 
         private TagHelperOutput GenerateInputTagHelper(ModelExpression modelExpression)
@@ -114,7 +110,7 @@ namespace Shaos.TagHelpers
             {
                 { "name",  modelExpression.Name },
                 { "type",  "text" },
-                { "value", modelExpression.Model?.ToString().ToLower() }
+                { "value", modelExpression.Model.ToString()?.ToLower()}
             };
 
             var tagContext = new TagHelperContext(

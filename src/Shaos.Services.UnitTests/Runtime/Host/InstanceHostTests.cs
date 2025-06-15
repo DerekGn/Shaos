@@ -283,7 +283,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _instanceHost._instanceLoadContexts.Add(1, instanceLoadContext);
 
-            Assert.Throws<PlugInNotCreatedException>(() => _instanceHost.StartInstance(1));
+            Assert.Throws<PlugInInstanceTypeNotCreatedException>(() => _instanceHost.StartInstance(1));
         }
 
         [Fact]

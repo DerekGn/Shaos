@@ -22,31 +22,26 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when one or more <see cref="PlugInInstance"/> have a running instance
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInInstancesRunningException"/>
+    /// </remarks>
+    /// <param name="ids">The set of <see cref="PlugInInstance"/> identifiers</param>
+    /// <param name="message">An associated message</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstancesRunningException : Exception
+    public class PlugInInstancesRunningException(IList<int> ids,
+                                                 string message) : Exception(message)
     {
-        public PlugInInstancesRunningException(IList<int> ids)
-        {
-            Ids = ids;
-        }
-
-        public PlugInInstancesRunningException(IList<int> ids,
-                                              string message) : base(message)
-        {
-            Ids = ids;
-        }
-
-        public PlugInInstancesRunningException(IList<int> ids,
-                                              string message,
-                                              Exception inner) : base(message, inner)
-        {
-            Ids = ids;
-        }
-
-        public IList<int> Ids { get; }
+        /// <summary>
+        /// The running <see cref="PlugInInstance"/> identifiers
+        /// </summary>
+        public IList<int> Ids { get; } = ids;
     }
 }

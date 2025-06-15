@@ -37,7 +37,7 @@ namespace Shaos.Api.Model.v1
         /// <summary>
         /// The PlugIn name
         /// </summary>
-        public string Name { get; init; }
+        public required string Name { get; init; }
 
         /// <summary>
         /// The state of the <see cref="Instance"/>

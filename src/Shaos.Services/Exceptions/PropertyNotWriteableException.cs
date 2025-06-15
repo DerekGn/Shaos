@@ -26,27 +26,19 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a type property is not writeable
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PropertyNotWriteableException"/>
+    /// </remarks>
+    /// <param name="name">The name of the property that is not writeable</param>
     [ExcludeFromCodeCoverage]
-    public class PropertyNotWriteableException : Exception
+    public class PropertyNotWriteableException(string name) : Exception
     {
-        public PropertyNotWriteableException(string name)
-        {
-            Name = name;
-        }
-
-        public PropertyNotWriteableException(string name,
-                                             string? message) : base(message)
-        {
-            Name = name;
-        }
-
-        public PropertyNotWriteableException(string name,
-                                             string? message,
-                                             Exception? innerException) : base(message, innerException)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
+        /// <summary>
+        /// The property name that is not writeable
+        /// </summary>
+        public string Name { get; } = name;
     }
 }

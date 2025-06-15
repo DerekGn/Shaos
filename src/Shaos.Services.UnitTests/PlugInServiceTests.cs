@@ -88,7 +88,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestCreatePlugInInstancePlugInNotFoundAsync()
         {
-            await Assert.ThrowsAsync<ShaosNotFoundException>(async () =>
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
                 {
                     Description = "description",
@@ -186,7 +186,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInNotFoundAsync()
         {
-            await Assert.ThrowsAsync<ShaosNotFoundException>(async () =>
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await _plugInService.DeletePlugInAsync(1));
         }
 
@@ -319,7 +319,7 @@ namespace Shaos.Services.UnitTests
                    PlugIn = plugIn
                });
 
-            var exception = await Assert.ThrowsAsync<PackageHasNoConfigurationException>(async () =>
+            var exception = await Assert.ThrowsAsync<PlugInPackageHasNoConfigurationException>(async () =>
                 await _plugInService.LoadPlugInInstanceConfigurationAsync(1));
 
             Assert.NotNull(exception);
@@ -351,7 +351,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestSetPlugInInstanceEnableNotFoundAsync()
         {
-            await Assert.ThrowsAsync<ShaosNotFoundException>(async () =>
+            await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await _plugInService.SetPlugInInstanceEnableAsync(10, true));
         }
 

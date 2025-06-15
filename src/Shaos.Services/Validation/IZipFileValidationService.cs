@@ -22,24 +22,20 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Http;
 
-namespace Shaos.Services.Runtime.Exceptions
+namespace Shaos.Services.Validation
 {
-    [ExcludeFromCodeCoverage]
-    public class PlugInNotCreatedException : Exception
+    /// <summary>
+    /// A zip file validation service interface
+    /// </summary>
+    public interface IZipFileValidationService
     {
-        public PlugInNotCreatedException()
-        {
-        }
-
-        public PlugInNotCreatedException(string? message) : base(message)
-        {
-        }
-
-        public PlugInNotCreatedException(string? message,
-                                         Exception? innerException) : base(message, innerException)
-        {
-        }
+        /// <summary>
+        /// Validate a <see cref="IFormFile"/> instance
+        /// </summary>
+        /// <param name="formFile">The <see cref="IFormFile"/> to validate</param>
+        /// <returns>A <see cref="FileValidationResult"/></returns>
+        FileValidationResult ValidateFile(IFormFile formFile);
     }
 }

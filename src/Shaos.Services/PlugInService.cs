@@ -186,16 +186,18 @@ namespace Shaos.Services
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                                 includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
-                                                                                cancellationToken: cancellationToken) ?? throw new ShaosNotFoundException(id);
+                                                                                cancellationToken: cancellationToken) ?? throw new NotFoundException(id);
 
             var package = (plugInInstance.PlugIn?.Package) ?? throw new PlugInPackageNotAssignedException(id);
 
             if (!package.HasConfiguration)
             {
-                throw new PackageHasNoConfigurationException(id);
+                throw new PlugInPackageHasNoConfigurationException(plugInInstance.PlugIn.Id);
             }
 
-            return _configurationLoaderService.LoadConfiguration(plugInInstance.PlugIn.Id, package.AssemblyFile, plugInInstance.Configuration);
+            return _configurationLoaderService.LoadConfiguration(plugInInstance.PlugIn.Id,
+                                                                 package.AssemblyFile,
+                                                                 plugInInstance.Configuration)!;
         }
 
         /// <inheritdoc/>
@@ -205,7 +207,7 @@ namespace Shaos.Services
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                                 false,
-                                                                                cancellationToken: cancellationToken) ?? throw new ShaosNotFoundException(id);
+                                                                                cancellationToken: cancellationToken) ?? throw new NotFoundException(id);
 
             plugInInstance.Enabled = enable;
 
@@ -348,7 +350,7 @@ namespace Shaos.Services
             else
             {
                 _logger.LogWarning("PlugIn: [{Id}] not found", id);
-                throw new ShaosNotFoundException(id, $"PlugIn: [{id}] not found");
+                throw new NotFoundException(id, $"PlugIn: [{id}] not found");
             }
         }
 
@@ -369,7 +371,7 @@ namespace Shaos.Services
                 .Where(_ => _.PlugInId == plugIn.Id && _.State == state).
                 Select(_=> _.Id)];
 
-            return runningInstanceIds.Any();
+            return runningInstanceIds.Count != 0;
         }
     }
 }

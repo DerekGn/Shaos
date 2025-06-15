@@ -26,27 +26,19 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when a type property is not found
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PropertyNotFoundException"/>
+    /// </remarks>
+    /// <param name="name">The name of the property that was not found</param>
     [ExcludeFromCodeCoverage]
-    public class PropertyNotFoundException : Exception
+    public class PropertyNotFoundException(string name) : Exception
     {
-        public PropertyNotFoundException(string name)
-        {
-            Name = name;
-        }
-
-        public PropertyNotFoundException(string name,
-                                         string? message) : base(message)
-        {
-            Name = name;
-        }
-
-        public PropertyNotFoundException(string name,
-                                         string? message,
-                                         Exception? innerException) : base(message, innerException)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
+        /// <summary>
+        /// The property name that was not found
+        /// </summary>
+        public string Name { get; } = name;
     }
 }

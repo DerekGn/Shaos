@@ -29,6 +29,9 @@ using System.Runtime.Loader;
 
 namespace Shaos.Services.Runtime
 {
+    /// <summary>
+    /// An unloadable runtime assembly context
+    /// </summary>
     [ExcludeFromCodeCoverage]
     [DebuggerDisplay("'{Name}' ({AssemblyPath})")]
     public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
@@ -36,16 +39,31 @@ namespace Shaos.Services.Runtime
         private readonly AssemblyDependencyResolver _assemblyDependencyResolver;
         private readonly AssemblyLoadContext _assemblyLoadContext;
 
+        /// <summary>
+        /// Create an instance of a <see cref="RuntimeAssemblyLoadContext"/>
+        /// </summary>
+        /// <param name="assemblyPath">The assembly path</param>
         public RuntimeAssemblyLoadContext(string assemblyPath)
             : this(GetAssemblyLoadContext(), assemblyPath, true)
         {
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="RuntimeAssemblyLoadContext"/>
+        /// </summary>
+        /// <param name="assemblyPath">The assembly path</param>
+        /// <param name="isCollectable">A flag to indicate is this instance is collectable</param>
         public RuntimeAssemblyLoadContext(string assemblyPath,
                                           bool isCollectable) : this(GetAssemblyLoadContext(), assemblyPath, isCollectable)
         {
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="RuntimeAssemblyLoadContext"/>
+        /// </summary>
+        /// <param name="assemblyLoadContext">The assembly load context of the assembly</param>
+        /// <param name="assemblyPath">The assembly path</param>
+        /// <param name="isCollectable">A flag to indicate is this instance is collectable</param>
         public RuntimeAssemblyLoadContext(AssemblyLoadContext assemblyLoadContext,
                                           string assemblyPath,
                                           bool isCollectable) : base(Path.GetFileNameWithoutExtension(assemblyPath), isCollectable)
@@ -58,10 +76,10 @@ namespace Shaos.Services.Runtime
             _assemblyDependencyResolver = new AssemblyDependencyResolver(assemblyPath);
         }
 
+        /// <inheritdoc/>
         public string AssemblyPath { get; }
 
-#warning TODO load plugin folder local assemblies. Include executing runtime assemblies look up
-
+        /// <inheritdoc/>
         protected override Assembly? Load(AssemblyName assemblyName)
         {
             ArgumentNullException.ThrowIfNull(assemblyName);
@@ -69,6 +87,7 @@ namespace Shaos.Services.Runtime
             return _assemblyLoadContext.LoadFromAssemblyName(assemblyName);
         }
 
+        /// <inheritdoc/>
         protected override nint LoadUnmanagedDll(string unmanagedDllName)
         {
             string? libraryPath = _assemblyDependencyResolver.ResolveUnmanagedDllToPath(unmanagedDllName);

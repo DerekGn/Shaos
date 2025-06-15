@@ -30,7 +30,7 @@ namespace Shaos.Testing.Shared
 {
     public abstract class BaseTestFixture : IDisposable
     {
-        public BaseTestFixture(string testProjectName, string packageName)
+        protected BaseTestFixture(string testProjectName, string packageName)
         {
             var assemblyDirectory = Path
                 .GetDirectoryName(
@@ -45,7 +45,7 @@ namespace Shaos.Testing.Shared
             PackageFile = string.Concat(PackageName, ".zip");
             PackageFileInvalid = string.Concat(PackageNameInvalid, ".zip");
 
-            BaseTestDirectory = Path.Combine(Path.Combine(assemblyDirectory, "testing"), Guid.NewGuid().ToString());
+            BaseTestDirectory = Path.Combine(Path.Combine(assemblyDirectory!, "testing"), Guid.NewGuid().ToString());
 
             PackageDirectory = Path.Combine(BaseTestDirectory, "packages");
             PackageDirectory.CreateDirectory();

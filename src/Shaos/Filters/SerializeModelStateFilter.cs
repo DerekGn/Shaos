@@ -2,39 +2,15 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 namespace Shaos.Filters
 {
     public class SerializeModelStatePageFilter : IPageFilter
     {
-        public class ModelStateTransferValue
-        {
-            public string Key { get; set; }
-            public string AttemptedValue { get; set; }
-            public object RawValue { get; set; }
-            public ICollection<string> ErrorMessages { get; set; } = new List<string>();
-        }
-
-
-        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
-        {
-            if (!(context.HandlerInstance is PageModel page))
-                return;
-
-            var serializedModelState = page.TempData[nameof(SerializeModelStatePageFilter)] as string;
-            if (serializedModelState.IsNullOrEmpty())
-                return;
-
-            var modelState = DeserializeModelState(serializedModelState);
-            page.ModelState.Merge(modelState);
-        }
-
-        public void OnPageHandlerExecuting(PageHandlerExecutingContext context) { }
-
         public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
         {
-            if (!(context.HandlerInstance is PageModel page))
+            if (context.HandlerInstance is not PageModel page)
                 return;
             if (page.ModelState.IsValid)
                 return;
@@ -45,33 +21,71 @@ namespace Shaos.Filters
             }
         }
 
+        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
+        { }
 
-        private static string SerializeModelState(ModelStateDictionary modelState)
+        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
         {
-            var errorList = modelState
-                .Select(kvp => new ModelStateTransferValue
-                {
-                    Key = kvp.Key,
-                    AttemptedValue = kvp.Value.AttemptedValue,
-                    RawValue = kvp.Value.RawValue,
-                    ErrorMessages = kvp.Value.Errors.Select(err => err.ErrorMessage).ToList(),
-                });
+            if (context.HandlerInstance is not PageModel page)
+                return;
 
-            return System.Text.Json.JsonSerializer.Serialize(errorList);
+            var serializedModelState = page.TempData[nameof(SerializeModelStatePageFilter)] as string;
+
+            if (string.IsNullOrWhiteSpace(serializedModelState))
+                return;
+
+            var modelState = DeserializeModelState(serializedModelState);
+
+            page.ModelState.Merge(modelState);
         }
 
         private static ModelStateDictionary DeserializeModelState(string serialisedErrorList)
         {
-            var errorList = System.Text.Json.JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
             var modelState = new ModelStateDictionary();
+            var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList);
 
-            foreach (var item in errorList)
+            if (errorList != null)
             {
-                modelState.SetModelValue(item.Key, item.RawValue, item.AttemptedValue);
-                foreach (var error in item.ErrorMessages)
-                    modelState.AddModelError(item.Key, error);
+                foreach (var item in errorList)
+                {
+                    modelState.SetModelValue(item.Key, item.RawValue, item.AttemptedValue);
+                    foreach (var error in item.ErrorMessages)
+                    {
+                        modelState.AddModelError(item.Key, error);
+                    }
+                }
             }
+
             return modelState;
+        }
+
+        private static string SerializeModelState(ModelStateDictionary modelState)
+        {
+            List<ModelStateTransferValue> values = [];
+
+            foreach (var kvp in modelState)
+            {
+                var attemptedValue = kvp.Value?.AttemptedValue;
+                var rawValue = kvp.Value?.RawValue;
+
+                values.Add(new ModelStateTransferValue()
+                {
+                    Key = kvp.Key,
+                    AttemptedValue = attemptedValue,
+                    RawValue = rawValue,
+                    ErrorMessages = kvp.Value == null ? [] : kvp.Value.Errors.Select(_ => _.ErrorMessage).ToList()
+                });
+            }
+
+            return JsonSerializer.Serialize(values);
+        }
+
+        internal class ModelStateTransferValue
+        {
+            public string? AttemptedValue { get; set; }
+            public ICollection<string> ErrorMessages { get; set; } = [];
+            public required string Key { get; set; }
+            public object? RawValue { get; set; }
         }
     }
 }

@@ -27,8 +27,18 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Shaos.Repository
 {
+    /// <summary>
+    ///  A factory for creating derived <see cref="DbContext" /> instances.
+    ///  Implement this interface to enable design-time services for context
+    ///  types that do not have a public default constructor.
+    /// </summary>
     public class DatabaseDesignTimeDbContextFactory : IDesignTimeDbContextFactory<ShaosDbContext>
     {
+        /// <summary>
+        /// Creates a new instance of a derived context.
+        /// </summary>
+        /// <param name="args">Arguments provided by the design-time service.</param>
+        /// <returns>An instance of <see cref="ShaosDbContext"/></returns>
         public ShaosDbContext CreateDbContext(string[] args)
         {
             var builder = new DbContextOptionsBuilder<ShaosDbContext>();

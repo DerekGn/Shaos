@@ -26,25 +26,19 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// An exception that is thrown when the maximum number of instances are already running
+    /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="MaxInstancesRunningException"/>
+    /// </remarks>
+    /// <param name="count">The number of running instances</param>
     [ExcludeFromCodeCoverage]
-    public class MaxInstancesRunningException : Exception
+    public class MaxInstancesRunningException(int count) : Exception
     {
-        public MaxInstancesRunningException(int instances)
-        {
-            Instances = instances;
-        }
-
-        public MaxInstancesRunningException(int instances,
-                                            string message) : base(message)
-        {
-        }
-
-        public MaxInstancesRunningException(int instances,
-                                            string message,
-                                            Exception inner) : base(message, inner)
-        {
-        }
-
-        public int Instances { get; }
+        /// <summary>
+        /// The number of running instances
+        /// </summary>
+        public int Count { get; } = count;
     }
 }
