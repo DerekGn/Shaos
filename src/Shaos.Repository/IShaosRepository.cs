@@ -35,6 +35,15 @@ namespace Shaos.Repository
     public interface IShaosRepository
     {
         /// <summary>
+        /// Determine if a <see cref="BaseEntity"/> exists in the store based on <paramref name="predicate"/>
+        /// </summary>
+        /// <param name="predicate">A function to test an element for a condition.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>True if the <see cref="BaseEntity"/> exists</returns>
+        Task<bool> AnyAsync<T>(Expression<Func<T, bool>>? predicate,
+                               CancellationToken cancellationToken = default) where T : BaseEntity;
+
+        /// <summary>
         /// Create a new <see cref="Package"/> instance
         /// </summary>
         /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
@@ -79,24 +88,15 @@ namespace Shaos.Repository
                             CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
-        /// Determine if a <see cref="BaseEntity"/> with <paramref name="id"/> exists in the store
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="BaseEntity"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>True if the <see cref="BaseEntity"/> exists</returns>
-        Task<bool> ExistsAsync<T>(int id,
-                                  CancellationToken cancellationToken = default) where T : BaseEntity;
-
-        /// <summary>
         /// Get an <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEntity"/> instances
         /// </summary>
-        /// <param name="filter">The filter expression to filter the <see cref="BaseEntity"/></param>
+        /// <param name="predicate">A function to test an element for a condition.</param>
         /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="BaseEntity"/> instances</param>
         /// <param name="withNoTracking">Disables change tracking on the returned <see cref="BaseEntity"/></param>
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEntity"/> instances</returns>
-        IAsyncEnumerable<T> GetAsync<T>(Expression<Func<T, bool>>? filter = null,
+        IAsyncEnumerable<T> GetAsync<T>(Expression<Func<T, bool>>? predicate = null,
                                         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
                                         bool withNoTracking = true,
                                         List<string>? includeProperties = null,
@@ -134,12 +134,12 @@ namespace Shaos.Repository
         /// <summary>
         /// Get an <see cref="IQueryable{T}"/> of <see cref="BaseEntity"/> instances
         /// </summary>
-        /// <param name="filter">The filter expression to filter the <see cref="BaseEntity"/></param>
+        /// <param name="predicate">A function to test an element for a condition.</param>
         /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="BaseEntity"/> instances</param>
         /// <param name="withNoTracking">Disables change tracking on the returned <see cref="BaseEntity"/></param>
         /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <returns>A <see cref="IQueryable{T}"/> of <see cref="BaseEntity"/> instances</returns>
-        IQueryable<T> GetQueryable<T>(Expression<Func<T, bool>>? filter = null,
+        IQueryable<T> GetQueryable<T>(Expression<Func<T, bool>>? predicate = null,
                                       Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
                                       bool withNoTracking = true,
                                       List<string>? includeProperties = null) where T : BaseEntity;
