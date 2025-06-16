@@ -58,6 +58,17 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
+        public async Task<bool> AnyAsync<T>(Expression<Func<T, bool>>? predicate,
+                                            CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            ArgumentNullException.ThrowIfNull(predicate);
+
+            return await _context
+                .Set<T>()
+                .AnyAsync(predicate, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task<int> CreatePackageAsync(PlugIn plugIn,
                                                   Package package,
                                                   CancellationToken cancellationToken = default)
@@ -121,13 +132,7 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public Task<bool> ExistsAsync<T>(int id, CancellationToken cancellationToken = default) where T : BaseEntity
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public IAsyncEnumerable<T> GetAsync<T>(Expression<Func<T, bool>>? filter = null,
+        public IAsyncEnumerable<T> GetAsync<T>(Expression<Func<T, bool>>? predicate = null,
                                                Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
                                                bool withNoTracking = true,
                                                List<string>? includeProperties = null,
@@ -136,7 +141,7 @@ namespace Shaos.Repository
             return _context
                 .Set<T>()
                 .GetAsync(withNoTracking,
-                             filter,
+                             predicate,
                              orderBy,
                              includeProperties,
                              cancellationToken);
@@ -178,14 +183,14 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public IQueryable<T> GetQueryable<T>(Expression<Func<T, bool>>? filter = null,
+        public IQueryable<T> GetQueryable<T>(Expression<Func<T, bool>>? predicate = null,
                                              Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
                                              bool withNoTracking = true,
                                              List<string>? includeProperties = null) where T : BaseEntity
         {
             return _context
                 .Set<T>()
-                .GetQueryable(withNoTracking, filter, orderBy, includeProperties);
+                .GetQueryable(withNoTracking, predicate, orderBy, includeProperties);
         }
 
         /// <inheritdoc/>
@@ -196,9 +201,9 @@ namespace Shaos.Repository
 
         /// <inheritdoc/>
         public async Task<PlugIn?> UpdatePlugInAsync(int id,
-                                               string name,
-                                               string description,
-                                               CancellationToken cancellationToken = default)
+                                                     string name,
+                                                     string description,
+                                                     CancellationToken cancellationToken = default)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
             ArgumentException.ThrowIfNullOrWhiteSpace(description);
@@ -301,7 +306,8 @@ namespace Shaos.Repository
             }
         }
 
-        private async Task<T> HandleDuplicatePlugInNameAsync<T>(string name, Func<Task<T>> operation)
+        private async Task<T> HandleDuplicatePlugInNameAsync<T>(string name,
+                                                                Func<Task<T>> operation)
         {
             try
             {

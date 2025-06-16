@@ -84,8 +84,8 @@ namespace Shaos.Pages.PlugIns
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await _repository.ExistsAsync<PlugIn>(PlugIn.Id,
-                                                           cancellationToken))
+                if (!await _repository.AnyAsync<PlugIn>(_ => _.Id == PlugIn.Id,
+                                                        cancellationToken))
                 {
                     ModelState.AddModelError("NotFound", $"PlugIn: [{PlugIn.Id}] was not found");
                 }
