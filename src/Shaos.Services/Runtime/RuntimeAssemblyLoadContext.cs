@@ -75,7 +75,7 @@ namespace Shaos.Services.Runtime
         {
             ArgumentNullException.ThrowIfNull(assemblyName);
 
-            _logger.LogDebug("");
+            _logger.LogDebug("Attempting to resolve assembly for [{AssemblyName}]", assemblyName);
 
             Assembly? assembly = null;
 
@@ -83,15 +83,27 @@ namespace Shaos.Services.Runtime
             {
                 assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName);
             }
-            catch (Exception ex)
+            catch (FileNotFoundException ex)
             {
+                _logger.LogDebug(ex, "Assembly not resolved from default context [{AssemblyName}]", assemblyName);
             }
 
             if (assembly == null)
             {
                 var assemblyPath = _assemblyDependencyResolver.ResolveAssemblyToPath(assemblyName);
 
-                assembly = LoadFromAssemblyPath(assemblyPath);
+                if(string.IsNullOrEmpty(assemblyPath))
+                {
+                    _logger.LogDebug("Resolved Assembly from dependency context [{AssemblyName}]", assemblyName);
+
+                    assembly = LoadFromAssemblyPath(assemblyPath!);
+                }
+
+                _logger.LogDebug("Assembly not resolved from dependency context [{AssemblyName}]", assemblyName);
+            }
+            else
+            {
+                _logger.LogDebug("Resolved Assembly from default context [{AssemblyName}]", assemblyName);
             }
 
             return assembly;
