@@ -25,23 +25,19 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Services.Runtime.Factories;
 using Shaos.Services.UnitTests.Fixtures;
-using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInTestFixture>
+    public class PlugInFactoryTests : PlugInFactoryBaseTests
     {
-        private readonly PlugInTestFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
 
         public PlugInFactoryTests(
             ITestOutputHelper output,
-            PlugInTestFixture fixture) : base(output)
+            TestFixture fixture) : base(output, fixture)
         {
-            _fixture = fixture;
-
             _plugInFactory = new PlugInFactory(
                 LoggerFactory!,
                 LoggerFactory!.CreateLogger<PlugInFactory>());
@@ -50,7 +46,7 @@ namespace Shaos.Services.UnitTests.Runtime
         [Fact]
         public void TestCreateInstance()
         {
-            var context = _fixture.AssemblyLoadContextReference.Target;
+            var context = _unloadingWeakReference.Target;
             var assembly = context.LoadFromAssemblyName(_fixture.AssemblyName);
 
             var configuration = _plugInFactory.CreateConfiguration(assembly);

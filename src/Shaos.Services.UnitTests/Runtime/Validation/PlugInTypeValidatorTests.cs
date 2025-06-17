@@ -35,16 +35,16 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime.Validation
 {
-    public class PlugInTypeValidatorTests : BaseTests, IClassFixture<PlugInTestFixture>
+    public class PlugInTypeValidatorTests : BaseTests, IClassFixture<TestFixture>
     {
-        private readonly PlugInTestFixture _fixture;
+        private readonly TestFixture _fixture;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly PlugInTypeValidator _pluginTypeValidator;
 
         public PlugInTypeValidatorTests(
             ITestOutputHelper output,
-            PlugInTestFixture fixture) : base(output)
+            TestFixture fixture) : base(output)
         {
             _fixture = fixture;
 

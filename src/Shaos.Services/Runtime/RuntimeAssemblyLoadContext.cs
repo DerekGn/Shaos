@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -37,41 +38,31 @@ namespace Shaos.Services.Runtime
     public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _assemblyDependencyResolver;
-        private readonly AssemblyLoadContext _assemblyLoadContext;
+        private readonly ILogger<RuntimeAssemblyLoadContext> _logger;
 
         /// <summary>
         /// Create an instance of a <see cref="RuntimeAssemblyLoadContext"/>
         /// </summary>
+        /// <param name="logger"></param>
         /// <param name="assemblyPath">The assembly path</param>
-        public RuntimeAssemblyLoadContext(string assemblyPath)
-            : this(GetAssemblyLoadContext(), assemblyPath, true)
+        public RuntimeAssemblyLoadContext(ILogger<RuntimeAssemblyLoadContext> logger,
+                                          string assemblyPath) : this(logger, assemblyPath, true)
         {
         }
 
         /// <summary>
         /// Create an instance of a <see cref="RuntimeAssemblyLoadContext"/>
         /// </summary>
+        /// <param name="logger"></param>
         /// <param name="assemblyPath">The assembly path</param>
         /// <param name="isCollectable">A flag to indicate is this instance is collectable</param>
-        public RuntimeAssemblyLoadContext(string assemblyPath,
-                                          bool isCollectable) : this(GetAssemblyLoadContext(), assemblyPath, isCollectable)
-        {
-        }
-
-        /// <summary>
-        /// Create an instance of a <see cref="RuntimeAssemblyLoadContext"/>
-        /// </summary>
-        /// <param name="assemblyLoadContext">The assembly load context of the assembly</param>
-        /// <param name="assemblyPath">The assembly path</param>
-        /// <param name="isCollectable">A flag to indicate is this instance is collectable</param>
-        public RuntimeAssemblyLoadContext(AssemblyLoadContext assemblyLoadContext,
+        public RuntimeAssemblyLoadContext(ILogger<RuntimeAssemblyLoadContext> logger,
                                           string assemblyPath,
                                           bool isCollectable) : base(Path.GetFileNameWithoutExtension(assemblyPath), isCollectable)
         {
-            ArgumentNullException.ThrowIfNull(assemblyLoadContext);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
-            _assemblyLoadContext = assemblyLoadContext;
+            _logger = logger;
             AssemblyPath = assemblyPath;
             _assemblyDependencyResolver = new AssemblyDependencyResolver(assemblyPath);
         }
@@ -84,7 +75,38 @@ namespace Shaos.Services.Runtime
         {
             ArgumentNullException.ThrowIfNull(assemblyName);
 
-            return _assemblyLoadContext.LoadFromAssemblyName(assemblyName);
+            _logger.LogDebug("Attempting to resolve assembly for [{AssemblyName}]", assemblyName);
+
+            Assembly? assembly = null;
+
+            try
+            {
+                assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName);
+            }
+            catch (FileNotFoundException ex)
+            {
+                _logger.LogDebug(ex, "Assembly not resolved from default context [{AssemblyName}]", assemblyName);
+            }
+
+            if (assembly == null)
+            {
+                var assemblyPath = _assemblyDependencyResolver.ResolveAssemblyToPath(assemblyName);
+
+                if(!string.IsNullOrEmpty(assemblyPath))
+                {
+                    _logger.LogDebug("Resolved Assembly from dependency context [{AssemblyName}]", assemblyName);
+
+                    assembly = LoadFromAssemblyPath(assemblyPath!);
+                }
+
+                _logger.LogDebug("Assembly not resolved from dependency context [{AssemblyName}]", assemblyName);
+            }
+            else
+            {
+                _logger.LogDebug("Resolved Assembly from default context [{AssemblyName}]", assemblyName);
+            }
+
+            return assembly;
         }
 
         /// <inheritdoc/>

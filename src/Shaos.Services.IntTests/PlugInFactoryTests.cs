@@ -31,15 +31,13 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.IntTests
 {
-    public class PlugInFactoryTests : BaseTests, IClassFixture<PlugInFactoryTestFixture>
+    public class PlugInFactoryTests : PlugInFactoryBaseTests
     {
-        private readonly PlugInFactoryTestFixture _fixture;
         private readonly PlugInFactory _plugInFactory;
 
-        public PlugInFactoryTests(ITestOutputHelper output, PlugInFactoryTestFixture fixture) : base(output)
+        public PlugInFactoryTests(ITestOutputHelper output,
+                                  TestFixture fixture) : base(output, fixture)
         {
-            _fixture = fixture;
-
             _plugInFactory = new PlugInFactory(
                 LoggerFactory!,
                 LoggerFactory!.CreateLogger<PlugInFactory>());
@@ -48,7 +46,7 @@ namespace Shaos.Services.IntTests
         [Fact]
         public void TestCreateInstance()
         {
-            var context = _fixture.AssemblyLoadContextReference.Target;
+            var context = _unloadingWeakReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
             var configuration = _plugInFactory.CreateConfiguration(assembly);
