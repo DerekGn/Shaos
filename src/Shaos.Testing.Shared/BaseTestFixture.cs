@@ -85,6 +85,9 @@ namespace Shaos.Testing.Shared
             AssemblyFilePath = Path.Combine(PlugInDirectory, AssemblyFileName);
             AssemblyFilePathInvalid = Path.Combine(PlugInDirectoryInvalid, String.Concat(PackageNameInvalid, ".dll"));
 
+            AssemblyName = new AssemblyName(Path.GetFileNameWithoutExtension(AssemblyFilePath));
+            AssemblyNameInvalid = new AssemblyName(Path.GetFileNameWithoutExtension(AssemblyFilePathInvalid));
+
             PlugInDirectory.CreateDirectory();
             PlugInDirectoryInvalid.CreateDirectory();
 
@@ -95,6 +98,8 @@ namespace Shaos.Testing.Shared
         public string AssemblyFileName { get; }
         public string AssemblyFilePath { get; }
         public string AssemblyFilePathInvalid { get; }
+        public AssemblyName AssemblyName { get; }
+        public AssemblyName AssemblyNameInvalid { get; }
         public string BaseTestDirectory { get; }
         public string BinariesDirectory { get; }
         public string PackageDirectory { get; }
