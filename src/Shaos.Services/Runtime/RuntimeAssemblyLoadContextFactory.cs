@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Runtime
@@ -30,12 +32,16 @@ namespace Shaos.Services.Runtime
     /// A <see cref="IRuntimeAssemblyLoadContextFactory"/> implementation
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class RuntimeAssemblyLoadContextFactory : IRuntimeAssemblyLoadContextFactory
+    public class RuntimeAssemblyLoadContextFactory(IServiceProvider serviceProvider) : IRuntimeAssemblyLoadContextFactory
     {
+        private readonly IServiceProvider _serviceProvider = serviceProvider;
+
         /// <inheritdoc/>
         public IRuntimeAssemblyLoadContext Create(string assemblyPath)
         {
-            return new RuntimeAssemblyLoadContext(assemblyPath, true);
+            var logger = _serviceProvider.GetService<ILogger<RuntimeAssemblyLoadContext>>();
+
+            return new RuntimeAssemblyLoadContext(logger!, assemblyPath, true);
         }
     }
 }
