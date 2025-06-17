@@ -92,7 +92,7 @@ namespace Shaos.Services.Runtime
             {
                 var assemblyPath = _assemblyDependencyResolver.ResolveAssemblyToPath(assemblyName);
 
-                if(string.IsNullOrEmpty(assemblyPath))
+                if(!string.IsNullOrEmpty(assemblyPath))
                 {
                     _logger.LogDebug("Resolved Assembly from dependency context [{AssemblyName}]", assemblyName);
 
