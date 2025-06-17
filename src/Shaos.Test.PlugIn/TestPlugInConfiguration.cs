@@ -33,8 +33,8 @@ namespace Shaos.Test.PlugIn
     public class TestPlugInConfiguration
     {
         [Required,
-            DataType(DataType.Time),
-            Display(Name = "Schedule Time", Description = "A test description"),
+            DataType(DataType.Duration),
+            Display(Name = "Schedule Time", Description = "A Test description"),
             Range(typeof(TimeSpan), "00:00:05", "00:00:10")]
         public TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(5);
     }

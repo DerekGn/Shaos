@@ -401,7 +401,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 instanceLoadContext.Dispose();
 
-                _instanceLoadContexts.Remove(instance.Id);
+                _instanceLoadContexts.Remove(instance.PlugInId);
             }
         }
 
