@@ -77,30 +77,34 @@ namespace Shaos.Pages.PlugInInstances
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
+                filter = _ => _.PlugInId == id && _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
             }
-
-            switch (sortOrder)
+            else
             {
-                case "name_desc":
-                    orderBy = _ => _.OrderByDescending(_ => _.Name);
-                    break;
-
-                case nameof(PlugInInstance.Name):
-                    orderBy = _ => _.OrderBy(_ => _.Name);
-                    break;
-
-                case "id_desc":
-                    orderBy = _ => _.OrderByDescending(_ => _.Id);
-                    break;
-
-                case nameof(PlugInInstance.Id):
-                    orderBy = _ => _.OrderBy(_ => _.Id);
-                    break;
-
-                default:
-                    break;
+                filter = _ => _.PlugInId == id;
             }
+
+                switch (sortOrder)
+                {
+                    case "name_desc":
+                        orderBy = _ => _.OrderByDescending(_ => _.Name);
+                        break;
+
+                    case nameof(PlugInInstance.Name):
+                        orderBy = _ => _.OrderBy(_ => _.Name);
+                        break;
+
+                    case "id_desc":
+                        orderBy = _ => _.OrderByDescending(_ => _.Id);
+                        break;
+
+                    case nameof(PlugInInstance.Id):
+                        orderBy = _ => _.OrderBy(_ => _.Id);
+                        break;
+
+                    default:
+                        break;
+                }
 
             var queryable = _repository.GetQueryable(
                 filter,

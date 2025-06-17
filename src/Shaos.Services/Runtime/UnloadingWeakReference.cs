@@ -31,6 +31,7 @@ namespace Shaos.Services.Runtime
     public class UnloadingWeakReference<T> : IDisposable where T : class
     {
         private readonly WeakReference _weakReference;
+        private T? _value = null;
         private bool disposedValue;
 
         /// <summary>
@@ -40,6 +41,8 @@ namespace Shaos.Services.Runtime
         public UnloadingWeakReference(T target)
         {
             ArgumentNullException.ThrowIfNull(target);
+
+            _value = target;
 
             _weakReference = new WeakReference(target);
         }
@@ -66,6 +69,8 @@ namespace Shaos.Services.Runtime
             {
                 if (disposing)
                 {
+                    _value = null;
+
 #warning Might need to bound this loop with configurable value
                     for (int i = 0; _weakReference.IsAlive && i < 10; i++)
                     {
