@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -25,13 +25,22 @@
 namespace Shaos.Sdk
 {
     /// <summary>
-    /// The PlugIn configuration attribute
+    /// The PlugIn class attribute
     /// </summary>
     /// <remarks>
-    /// Applied to a class that is a <see cref="IPlugIn"/> instance configuration
+    /// Applied to a class that is a <see cref="IPlugIn"/>
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class PlugInConfigurationClassAttribute : Attribute
+    public class PlugInAttribute : Attribute
     {
+        /// <summary>
+        /// The name of the <see cref="IPlugIn"/>
+        /// </summary>
+        public required string Name { get; init; }
+
+        /// <summary>
+        /// A description for this <see cref="IPlugIn"/>
+        /// </summary>
+        public string? Description { get; init; }
     }
 }

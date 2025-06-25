@@ -22,20 +22,16 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Shaos.Test.PlugIn
+namespace Shaos.Sdk
 {
-    [PlugInConfiguration]
-    [ExcludeFromCodeCoverage]
-    public class TestPlugInConfiguration
+    /// <summary>
+    /// The PlugIn configuration attribute
+    /// </summary>
+    /// <remarks>
+    /// Applied to a class that is a <see cref="IPlugIn"/> instance configuration
+    /// </remarks>
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    public class PlugInConfigurationAttribute : Attribute
     {
-        [Required,
-            DataType(DataType.Duration),
-            Display(Name = "Schedule Time", Description = "A Test description"),
-            Range(typeof(TimeSpan), "00:00:05", "00:00:10")]
-        public TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(5);
     }
 }
