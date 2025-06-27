@@ -45,7 +45,8 @@ namespace Shaos.Services.UnitTests
     {
         private const string InstanceName = "Test";
         private const string AssemblyPath = "AssemblyPath";
-
+        private const string Name = "name";
+        private const string Description = "description";
         private readonly Mock<ITypeLoaderService> _mockTypeLoaderService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
@@ -80,8 +81,8 @@ namespace Shaos.Services.UnitTests
             await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(async () =>
             await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
             {
-                Description = "description",
-                Name = "name"
+                Description = Description,
+                Name = Name
             }));
         }
 
@@ -91,8 +92,8 @@ namespace Shaos.Services.UnitTests
             await Assert.ThrowsAsync<NotFoundException>(async () =>
                 await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
                 {
-                    Description = "description",
-                    Name = "name"
+                    Description = Description,
+                    Name = Name
                 })
             );
         }
@@ -118,8 +119,8 @@ namespace Shaos.Services.UnitTests
 
             var result = await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
             {
-                Description = "description",
-                Name = "name"
+                Description = Description,
+                Name = Name
             });
 
             Assert.Equal(10, result);
@@ -199,7 +200,7 @@ namespace Shaos.Services.UnitTests
             {
                 Id = 1,
                 Name = InstanceName,
-                Description = "description"
+                Description = Description
             };
 
             plugIn.Instances.Add(plugInInstance);
@@ -237,7 +238,7 @@ namespace Shaos.Services.UnitTests
             {
                 Id = 10,
                 Name = InstanceName,
-                Description = "description"
+                Description = Description
             });
 
             var configuration = new InstanceConfiguration(true,
@@ -368,8 +369,8 @@ namespace Shaos.Services.UnitTests
                 .ReturnsAsync(
                     new PlugInInstance()
                     {
-                        Name = "name",
-                        Description = "description"
+                        Name = Name,
+                        Description = Description
                     });
 
             var result = await _plugInService.SetPlugInInstanceEnableAsync(10, state);
@@ -391,8 +392,8 @@ namespace Shaos.Services.UnitTests
             plugIn.Instances.Add(new PlugInInstance()
             {
                 Id = 1,
-                Description = "description",
-                Name = "name",
+                Description = Description,
+                Name = Name,
                 PlugInId = plugIn.Id
             });
 
@@ -435,8 +436,8 @@ namespace Shaos.Services.UnitTests
             plugIn.Instances.Add(new PlugInInstance()
             {
                 Id = 1,
-                Description = "description",
-                Name = "name",
+                Description = Description,
+                Name = Name,
                 PlugInId = plugIn.Id
             });
 
@@ -475,8 +476,8 @@ namespace Shaos.Services.UnitTests
             plugIn.Instances.Add(new PlugInInstance()
             {
                 Id = 1,
-                Description = "description",
-                Name = "name",
+                Description = Description,
+                Name = Name,
                 PlugInId = plugIn.Id
             });
 
@@ -489,7 +490,7 @@ namespace Shaos.Services.UnitTests
 
             _mockPlugInTypeValidator
                 .Setup(_ => _.Validate(It.IsAny<string>()))
-                .Returns(new PlugInTypeInformation("name", true, true, "1.0.0"));
+                .Returns(new PlugInTypeInformation(Name, Description, true, true, "1.0.0"));
 
             await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
@@ -522,8 +523,8 @@ namespace Shaos.Services.UnitTests
             plugIn.Instances.Add(new PlugInInstance()
             {
                 Id = 1,
-                Description = "description",
-                Name = "name",
+                Description = Description,
+                Name = Name,
                 PlugInId = plugIn.Id
             });
 
@@ -536,7 +537,7 @@ namespace Shaos.Services.UnitTests
 
             _mockPlugInTypeValidator
                .Setup(_ => _.Validate(It.IsAny<string>()))
-               .Returns(new PlugInTypeInformation("name", true, true, "1.0.0"));
+               .Returns(new PlugInTypeInformation(Name, Description, true, true, "1.0.0"));
 
             await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
@@ -558,7 +559,7 @@ namespace Shaos.Services.UnitTests
             var plugIn = new PlugIn()
             {
                 Name = "plugin",
-                Description = "description"
+                Description = Description
             };
 
             _mockRepository
@@ -578,7 +579,7 @@ namespace Shaos.Services.UnitTests
             {
                 Id = 1,
                 Name = "plugin",
-                Description = "description"
+                Description = Description
             };
 
             _mockRepository

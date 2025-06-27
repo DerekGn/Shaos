@@ -39,6 +39,7 @@ namespace Shaos.Services.Runtime.Validation
         /// <param name="hasConfiguration">Indicates if the <see cref="IPlugIn"/> derived type has configuration</param>
         /// <param name="assemblyVersion">The assembly version</param>
         public PlugInTypeInformation(string name,
+                                     string? description,
                                      bool hasLogger,
                                      bool hasConfiguration,
                                      string assemblyVersion)

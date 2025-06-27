@@ -74,7 +74,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeInvalidParameters()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters), out var _, out var _));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidParameters), out var _, out var _, out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInInvalidParameters] contains an invalid constructor parameters [Int32,Int32]",
@@ -85,7 +85,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeLogger()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidLogger), out var _, out var _));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInInvalidLogger), out var _, out var _, out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInInvalidLogger] [ILogger] parameter invalid generic type parameter [TestPlugIn]",
@@ -96,7 +96,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeMultipleConstructors()
         {
             var exception = Assert.Throws<PlugInConstructorsException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleConstructors), out var _, out var _));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleConstructors), out var _, out var _, out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInMultipleConstructors] contains invalid number of constructors [2]",
@@ -107,7 +107,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidatePlugInTypeMultipleParameters()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleParameters), out var _, out var _));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInMultipleParameters), out var _, out var _, out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInMultipleParameters] constructor contains invalid number of constructor parameters [3]",
@@ -163,7 +163,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidateTestPlugInInvalidGeneric()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInWithInvalidGeneric), out var _, out var _));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInWithInvalidGeneric), out var _, out var _, out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInWithInvalidGeneric] contains an invalid constructor parameters [IOptions`1]",
@@ -174,7 +174,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         public void TestValidateTestPlugInValidLoggerWithInvalid()
         {
             var exception = Assert.Throws<PlugInConstructorException>(() => _pluginTypeValidator
-                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInValidLoggerWithInvalid), out var _, out var _));
+                .ValidatePlugInType(typeof(Test.PlugIn.Invalid.TestPlugInValidLoggerWithInvalid), out var _, out var _, out var _, out var _));
 
             Assert.Equal(
                 "PlugIn [TestPlugInValidLoggerWithInvalid] contains an invalid constructor parameters [System.Int32]",
