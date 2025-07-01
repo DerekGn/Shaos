@@ -56,7 +56,7 @@ namespace Shaos.Services.Runtime.Validation
         }
 
         /// <inheritdoc/>
-        public PlugInTypeInformation Validate(string assemblyFile)
+        public PlugInInformation Validate(string assemblyFile)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFile);
 
@@ -178,13 +178,15 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        private static void LoadPlugInAttribute(Type plugInType, out string? name, out string? description)
+        private static void LoadPlugInAttribute(Type plugInType,
+                                                out string? name,
+                                                out string? description)
         {
-            var attribute = Attribute.GetCustomAttribute(plugInType, typeof(PlugInDescriptionAttribute));
+            var attribute = Attribute.GetCustomAttribute(plugInType, typeof(PlugInAttribute));
 
             if (attribute != null)
             {
-                var plugInAttribute = attribute as PlugInDescriptionAttribute;
+                var plugInAttribute = attribute as PlugInAttribute;
                 name = plugInAttribute!.Name;
                 description = plugInAttribute!.Description;
             }
@@ -195,8 +197,8 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile,
-                                                             out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
+        private PlugInInformation ValidatePlugInAssembly(string assemblyFile,
+                                                         out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
         {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
@@ -224,17 +226,18 @@ namespace Shaos.Services.Runtime.Validation
                 var plugInType = resolvedPlugIns.First();
 
                 ValidatePlugInType(plugInType,
-                out var name,
-                out var description,
-                out var hasLogger,
-                out var hasConfiguration);
+                                   out var name,
+                                   out var description,
+                                   out var hasLogger,
+                                   out var hasConfiguration);
 
-                return new PlugInTypeInformation(
-                    plugInType.Name,
-                    description,
-                    hasLogger,
-                    hasConfiguration,
-                    assembly.GetName().Version!.ToString());
+                return new PlugInInformation(name,
+                                             plugInType.Name,
+                                             description,
+                                             hasLogger,
+                                             hasConfiguration,
+                                             Path.GetFileName(assemblyFile),
+                                             assembly.GetName().Version!.ToString());
             }
             finally
             {

@@ -29,31 +29,56 @@ namespace Shaos.Services.Runtime.Validation
     /// <summary>
     /// Represents <see cref="IPlugIn"/> type information
     /// </summary>
-    public class PlugInTypeInformation
+    public class PlugInInformation
     {
         /// <summary>
-        /// Create an instance of a <see cref="PlugInTypeInformation"/>
+        /// 
         /// </summary>
-        /// <param name="name">The <see cref="IPlugIn"/> derived type name</param>
+        public PlugInInformation()
+        {
+        }
+
+        /// <summary>
+        /// Create an instance of a <see cref="PlugInInformation"/>
+        /// </summary>
+        /// <param name="name">The <see cref="IPlugIn"/> name from the <see cref="PlugInAttribute"/></param>
+        /// <param name="typeName">The <see cref="IPlugIn"/> derived type name</param>
+        /// <param name="description">The <see cref="IPlugIn"/> description from the <see cref="PlugInAttribute"/></param>
         /// <param name="hasLogger">Indicates if the <see cref="IPlugIn"/> derived type has a logger</param>
         /// <param name="hasConfiguration">Indicates if the <see cref="IPlugIn"/> derived type has configuration</param>
+        /// <param name="assemblyFile">The assembly file</param>
         /// <param name="assemblyVersion">The assembly version</param>
-        public PlugInTypeInformation(string name,
-                                     string? description,
-                                     bool hasLogger,
-                                     bool hasConfiguration,
-                                     string assemblyVersion)
+        public PlugInInformation(string? name,
+                                 string typeName,
+                                 string? description,
+                                 bool hasLogger,
+                                 bool hasConfiguration,
+                                 string assemblyFile,
+                                 string assemblyVersion)
         {
             Name = name;
+            TypeName = typeName;
+            Description = description;
             HasLogger = hasLogger;
             HasConfiguration = hasConfiguration;
+            AssemblyFile = assemblyFile;
             AssemblyVersion = assemblyVersion;
         }
 
         /// <summary>
+        /// The <see cref="IPlugIn"/> assembly file
+        /// </summary>
+        public string AssemblyFile { get; } = string.Empty;
+
+        /// <summary>
         /// The <see cref="IPlugIn"/> derived type assembly version
         /// </summary>
-        public string AssemblyVersion { get; }
+        public string AssemblyVersion { get; } = string.Empty;
+
+        /// <summary>
+        /// The <see cref="IPlugIn"/> description from the <see cref="PlugInAttribute"/>
+        /// </summary>
+        public string? Description { get; }
 
         /// <summary>
         /// Indicates if the <see cref="IPlugIn"/> derived type has a configuration type
@@ -66,8 +91,13 @@ namespace Shaos.Services.Runtime.Validation
         public bool HasLogger { get; }
 
         /// <summary>
-        /// The <see cref="IPlugIn"/> derived type name
+        /// The <see cref="IPlugIn"/> name from the <see cref="PlugInAttribute"/>
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
+
+        /// <summary>
+        /// The <see cref="IPlugIn"/> type name
+        /// </summary>
+        public string TypeName { get; } = string.Empty;
     }
 }

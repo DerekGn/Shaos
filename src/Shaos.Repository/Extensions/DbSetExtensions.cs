@@ -42,7 +42,9 @@ namespace Shaos.Repository.Extensions
         /// <param name="id">The identifier of the entity to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>
-        public static Task<int> DeleteAsync<T>(this DbSet<T> set, int id, CancellationToken cancellationToken = default) where T : BaseEntity
+        public static Task<int> DeleteAsync<T>(this DbSet<T> set,
+                                               int id,
+                                               CancellationToken cancellationToken = default) where T : BaseEntity
         {
             return set.Where(_ => _.Id == id).ExecuteDeleteAsync(cancellationToken);
         }
@@ -58,13 +60,12 @@ namespace Shaos.Repository.Extensions
         /// <param name="includeProperties">The set of include properties</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The <see cref="IAsyncEnumerable{T}"/></returns>
-        public static async IAsyncEnumerable<T> GetAsync<T>(
-            this DbSet<T> set,
-            bool withNoTracking = true,
-            Expression<Func<T, bool>>? filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            List<string>? includeProperties = null,
-            [EnumeratorCancellation] CancellationToken cancellationToken = default) where T : BaseEntity
+        public static async IAsyncEnumerable<T> GetAsync<T>(this DbSet<T> set,
+                                                            bool withNoTracking = true,
+                                                            Expression<Func<T, bool>>? filter = null,
+                                                            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+                                                            List<string>? includeProperties = null,
+                                                            [EnumeratorCancellation] CancellationToken cancellationToken = default) where T : BaseEntity
         {
             IQueryable<T> query = set;
 
@@ -113,12 +114,11 @@ namespace Shaos.Repository.Extensions
         /// <param name="includeProperties">The set of include properties</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An instance of <typeparamref name="T"/></returns>
-        public static async Task<T?> GetByIdAsync<T>(
-            this DbSet<T> set,
-            int id,
-            bool withNoTracking = true,
-            List<string>? includeProperties = null,
-            CancellationToken cancellationToken = default) where T : BaseEntity
+        public static async Task<T?> GetByIdAsync<T>(this DbSet<T> set,
+                                                     int id,
+                                                     bool withNoTracking = true,
+                                                     List<string>? includeProperties = null,
+                                                     CancellationToken cancellationToken = default) where T : BaseEntity
         {
             IQueryable<T> query = set.Where(_ => _.Id == id);
 
@@ -148,12 +148,11 @@ namespace Shaos.Repository.Extensions
         /// <param name="orderBy">The order expression to apply to the set</param>
         /// <param name="includeProperties">The set of include properties</param>
         /// <returns>An <see cref="IQueryable{T}"/> of <typeparamref name="T"/></returns>
-        public static IQueryable<T> GetQueryable<T>(
-            this DbSet<T> set,
-            bool withNoTracking = true,
-            Expression<Func<T, bool>>? filter = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            List<string>? includeProperties = null) where T : BaseEntity
+        public static IQueryable<T> GetQueryable<T>(this DbSet<T> set,
+                                                    bool withNoTracking = true,
+                                                    Expression<Func<T, bool>>? filter = null,
+                                                    Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+                                                    List<string>? includeProperties = null) where T : BaseEntity
         {
             IQueryable<T> query = set;
 

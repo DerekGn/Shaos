@@ -31,7 +31,7 @@ using Shaos.Sdk;
 namespace Shaos.Test.PlugIn
 {
     [ExcludeFromCodeCoverage]
-    [PlugInDescription(Name = "A test plugin", Description = "A test plugin that does nothing")]
+    [PlugIn(Name = "A test plugin", Description = "A test plugin that does nothing")]
     public class TestPlugIn : PlugInBase, IPlugIn
     {
         private readonly ILogger<TestPlugIn> _logger;

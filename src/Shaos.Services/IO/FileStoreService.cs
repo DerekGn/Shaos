@@ -68,13 +68,14 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public IEnumerable<string> ExtractPackage(int id,
+        public IEnumerable<string> ExtractPackage(string folder,
                                                   string packageFileName)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(folder);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
-            var sourcePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
-            var targetPath = Path.Combine(_options.Value.BinariesPath, id.ToString());
+            var sourcePath = Path.Combine(_options.Value.PackagesPath, folder);
+            var targetPath = Path.Combine(_options.Value.BinariesPath, folder);
 
             _logger.LogInformation("Emptying directory [{TargetPath}]", targetPath);
 
@@ -107,14 +108,7 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public async Task<string> WritePackageFileStreamAsync(string packageFileName,
-                                                        Stream packageFileStream,
-                                                        CancellationToken cancellationToken = default)
-        {
-            return await WritePackageFileStreamAsync(Guid.NewGuid().ToString(), packageFileName, packageFileStream, cancellationToken);
-        }
-
-        private async Task<string> WritePackageFileStreamAsync(string subFolder,
+        public async Task<string> WritePackageFileStreamAsync(string subFolder,
                                                               string packageFileName,
                                                               Stream packageFileStream,
                                                               CancellationToken cancellationToken = default)

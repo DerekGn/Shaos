@@ -42,9 +42,9 @@ namespace Shaos.Services.IO
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+        /// <param name="folder">The folder to extract the package</param>
         /// <param name="packageFileName">The package file name</param>
-        IEnumerable<string> ExtractPackage(int id,
+        IEnumerable<string> ExtractPackage(string folder,
                                            string packageFileName);
 
         /// <summary>
@@ -71,6 +71,7 @@ namespace Shaos.Services.IO
         /// <summary>
         /// Write a <see cref="Package"/> zip file to the file stream
         /// </summary>
+        /// <param name="subFolder">The sub folder to write the package files</param>
         /// <param name="packageFileName">The package filename to write too</param>
         /// <param name="packageFileStream">The stream to be written</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
@@ -78,7 +79,8 @@ namespace Shaos.Services.IO
         /// <remarks>
         /// Writes <see cref="Package"/> file to a temporary location
         /// </remarks>
-        Task<string> WritePackageFileStreamAsync(string packageFileName,
+        Task<string> WritePackageFileStreamAsync(string subFolder,
+                                                 string packageFileName,
                                                  Stream packageFileStream,
                                                  CancellationToken cancellationToken = default);
     }

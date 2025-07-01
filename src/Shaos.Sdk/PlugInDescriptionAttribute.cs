@@ -31,15 +31,16 @@ namespace Shaos.Sdk
     /// Applied to a class that is a <see cref="IPlugIn"/>
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class PlugInDescriptionAttribute : Attribute
+    public class PlugInAttribute : Attribute
     {
-        /// <summary>
-        /// The name of this <see cref="IPlugIn"/> instance
-        /// </summary>
-        public string? Name { get; init; }
         /// <summary>
         /// A description for this <see cref="IPlugIn"/> instance
         /// </summary>
         public string? Description { get; init; }
+
+        /// <summary>
+        /// The name of this <see cref="IPlugIn"/> instance
+        /// </summary>
+        public string? Name { get; init; }
     }
 }

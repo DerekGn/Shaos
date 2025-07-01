@@ -26,7 +26,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Pages.Instances
@@ -129,14 +128,14 @@ namespace Shaos.Pages.Instances
                 ModelState.AddModelError(string.Empty, $"Instance [{id}] not configured.");
             }
             
-            return RedirectToPage();
+            return Page();
         }
 
         public IActionResult OnPostStop(int id)
         {
             _instanceHostService.StopInstance(id);
 
-            return RedirectToPage();
+            return Page();
         }
     }
 }

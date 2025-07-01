@@ -33,7 +33,6 @@ using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Loader;
 using Shaos.Services.Runtime.Validation;
 using System.Diagnostics;
-using System.IO;
 
 namespace Shaos.Services
 {
@@ -182,21 +181,24 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<PlugInTypeInformation> ExtractPlugInTypeInformationAsync(string packageFileName,
-                                                                                   Stream packageFileStream,
-                                                                                   CancellationToken cancellationToken = default)
+        public async Task<PlugInInformation> ExtractPlugInInformationAsync(string packageFileName,
+                                                                           Stream packageFileStream,
+                                                                           CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
             ArgumentNullException.ThrowIfNull(packageFileStream);
 
             _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
 
-            var packageFilePath = await _fileStoreService.WritePackageFileStreamAsync(packageFileName,
-                                                                                      packageFileStream,
-                                                                                      cancellationToken);
+            var subFolder = Guid.NewGuid().ToString();
+
+            await _fileStoreService.WritePackageFileStreamAsync(subFolder,
+                                                                packageFileName,
+                                                                packageFileStream,
+                                                                cancellationToken);
 
             var plugInFile = _fileStoreService
-                .ExtractPackage(0, packageFileName)
+                .ExtractPackage(subFolder, packageFileName)
                 .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
 
             if (plugInFile == null)
@@ -254,46 +256,64 @@ namespace Shaos.Services
                                                    Stream stream,
                                                    CancellationToken cancellationToken = default)
         {
+            //ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+
+            //await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
+            //{
+            //    if (VerifyPlugState(plugIn, InstanceState.Running, out var ids))
+            //    {
+            //        _logger.LogError("Found running PlugIn Instances Id: [{Id}]", string.Join(",", ids));
+
+            //        throw new PlugInInstancesRunningException(ids, "Instances are Running");
+            //    }
+
+            //    _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+
+            //    await _fileStoreService.WritePackageFileStreamAsync(plugIn.Id,
+            //                                                        packageFileName,
+            //                                                        stream,
+            //                                                        cancellationToken);
+
+            //    var plugInFile = _fileStoreService
+            //        .ExtractPackage(plugIn.Id, packageFileName)
+            //        .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+
+            //    if (plugInFile == null)
+            //    {
+            //        _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
+            //            PlugInNamePostFix,
+            //            packageFileName);
+
+            //        throw new NoValidPlugInAssemblyFoundException(
+            //            $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+            //    }
+
+            //    await CreateOrUpdatePlugInPackageAsync(plugIn,
+            //                                           packageFileName,
+            //                                           Path.GetFileName(plugInFile),
+            //                                           _plugInTypeValidator.Validate(plugInFile),
+            //                                           cancellationToken);
+            //},
+            //false,
+            //cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> WritePackageAsync(string packageFileName,
+                                                    Stream packageFileStream,
+                                                    CancellationToken cancellationToken = default)
+        {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentNullException.ThrowIfNull(packageFileStream);
 
-            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
-            {
-                if (VerifyPlugState(plugIn, InstanceState.Running, out var ids))
-                {
-                    _logger.LogError("Found running PlugIn Instances Id: [{Id}]", string.Join(",", ids));
+            _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
 
-                    throw new PlugInInstancesRunningException(ids, "Instances are Running");
-                }
+            var subFolder = Guid.NewGuid().ToString();
 
-                _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
-
-                await _fileStoreService.WritePackageFileStreamAsync(plugIn.Id,
-                                                                    packageFileName,
-                                                                    stream,
-                                                                    cancellationToken);
-
-                var plugInFile = _fileStoreService
-                    .ExtractPackage(plugIn.Id, packageFileName)
-                    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
-
-                if (plugInFile == null)
-                {
-                    _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
-                        PlugInNamePostFix,
-                        packageFileName);
-
-                    throw new NoValidPlugInAssemblyFoundException(
-                        $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
-                }
-
-                await CreateOrUpdatePlugInPackageAsync(plugIn,
-                                                       packageFileName,
-                                                       Path.GetFileName(plugInFile),
-                                                       _plugInTypeValidator.Validate(plugInFile),
-                                                       cancellationToken);
-            },
-            false,
-            cancellationToken);
+            return await _fileStoreService.WritePackageFileStreamAsync(subFolder,
+                                                                       packageFileName,
+                                                                       packageFileStream,
+                                                                       cancellationToken);
         }
 
         private bool CheckPlugInRunning(PlugIn plugIn,
@@ -325,7 +345,7 @@ namespace Shaos.Services
         private async Task CreateOrUpdatePlugInPackageAsync(PlugIn plugIn,
                                                             string packagFileName,
                                                             string assemblyFileName,
-                                                            PlugInTypeInformation plugInTypeInformation,
+                                                            PlugInInformation plugInTypeInformation,
                                                             CancellationToken cancellationToken)
         {
             if (plugIn.Package == null)

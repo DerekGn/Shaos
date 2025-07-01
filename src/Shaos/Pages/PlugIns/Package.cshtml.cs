@@ -22,118 +22,65 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
 using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Validation;
 using Shaos.Services.Validation;
 
 namespace Shaos.Pages.PlugIns
 {
     public class PackageModel : PageModel
     {
-        private readonly IZipFileValidationService _codeFileValidationService;
+        private readonly IMemoryCache _memoryCache;
         private readonly IPlugInService _plugInService;
         private readonly ILogger<PackageModel> _logger;
         private readonly IShaosRepository _repository;
 
         public PackageModel(
+            IMemoryCache memoryCache,
             ILogger<PackageModel> logger,
             IShaosRepository repository,
-            IPlugInService plugInService,
-            IZipFileValidationService codeFileValidationService)
+            IPlugInService plugInService)
         {
-            ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(repository);
-            ArgumentNullException.ThrowIfNull(plugInService);
-            ArgumentNullException.ThrowIfNull(codeFileValidationService);
-            
+            _memoryCache = memoryCache;
             _logger = logger;
             _repository = repository;
             _plugInService = plugInService;
-            _codeFileValidationService = codeFileValidationService;
         }
 
         [BindProperty]
-        public Package? Package { get; set; } = default!;
+        public PlugInInformation? PlugInInformation { get; set; } = default!;
 
-        [BindProperty]
-        public IFormFile PackageFile { get; set; } = default!;
-
-        [BindProperty]
-        public PlugIn? PlugIn { get; set; } = default!;
-
-        public async Task<IActionResult> OnGetAsync(int id,
-                                                    CancellationToken cancellationToken = default)
-        {
-            var plugin = await _repository.GetByIdAsync<PlugIn>(id,
-                                                                cancellationToken: cancellationToken);
-
-            if (plugin == null)
-            {
-                ModelState.AddModelError("NotFound", $"PlugIn: [{id}] was not found");
-            }
-            else
-            {
-                PlugIn = plugin;
-                Package = plugin.Package;
-            }
-
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
+        public IActionResult OnGet(Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            try
-            {
-                _codeFileValidationService.ValidateFile(PackageFile);
+            _memoryCache.TryGetValue(id, out PlugInInformation? plugInInformation);
 
-                //_plugInService.ExtractPlugInTypeInformationAsync();
-            }
-            catch (FileContentInvalidException ex)
+            if(plugInInformation == null)
             {
-                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid content type: [{ex.ContentType}]");
-            }
-            catch (FileLengthInvalidException ex)
-            {
-                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid file length: [{ex.FileLength}]");
-            }
-            catch (FileNameEmptyException)
-            {
-                ModelState.AddModelError(string.Empty, $"The file name is empty");
-            }
-            catch (FileNameInvalidExtensionException ex)
-            {
-                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has an invalid extension.");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Exception occurred check the logs");
-
-                _logger.LogWarning(ex, "A exception occurred");
+                ModelState.AddModelError(string.Empty, "Unable to fetch PlugInInformation");
+                return Page();
             }
 
-            if (ModelState.ErrorCount != 0)
-            {
-                return RedirectToPage(new
-                {
-                    id = PlugIn!.Id
-                });
-            }
-            else
-            {
-                return RedirectToPage("./Index");
-            }
+            PlugInInformation = plugInInformation;
+
+            _memoryCache.Remove(id);
+            
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
+        {
+            return Page();
         }
     }
 }

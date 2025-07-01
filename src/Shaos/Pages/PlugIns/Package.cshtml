@@ -5,75 +5,71 @@
     ViewData["Title"] = "Package";
 }
 
-<h1>Package</h1>
+<h2>Package</h2>
 
 <h4>PlugIn</h4>
+
 <hr />
+
 <div class="row">
     <div class="col-md-4">
-        <form method="post" enctype="multipart/form-data">
-            <input type="hidden" asp-for="PlugIn.Id" />
+        <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <dl class="row">
                 <dt class="col-sm-6">
-                    @Html.DisplayNameFor(model => model.PlugIn!.Name)
+                    @Html.DisplayNameFor(model => model.PlugInInformation!.Name)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.PlugIn!.Name)
+                    @Html.DisplayFor(model => model.PlugInInformation!.Name)
                 </dd>
                 <dt class="col-sm-6">
-                    @Html.DisplayNameFor(model => model.PlugIn!.Description)
+                    @Html.DisplayNameFor(model => model.PlugInInformation!.Description)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.PlugIn!.Description)
+                    @Html.DisplayFor(model => model.PlugInInformation!.Description)
                 </dd>
             </dl>
             <h4>Package</h4>
             <hr />
             <dl class="row">
                 <dt class="col-sm-6">
-                    @Html.DisplayNameFor(model => model.Package!.AssemblyFile)
+                    @Html.DisplayNameFor(model => model.PlugInInformation!.AssemblyFile)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package!.AssemblyFile)
+                    @Html.DisplayFor(model => model.PlugInInformation!.AssemblyFile)
                 </dd>
                 <dt class="col-sm-6">
-                    @Html.DisplayNameFor(model => model.Package!.AssemblyVersion)
+                    @Html.DisplayNameFor(model => model.PlugInInformation!.AssemblyVersion)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package!.AssemblyVersion)
+                    @Html.DisplayFor(model => model.PlugInInformation!.AssemblyVersion)
                 </dd>
                 <dt class="col-sm-6">
-                    @Html.DisplayNameFor(model => model.Package!.FileName)
+                    @Html.DisplayNameFor(model => model.PlugInInformation!.HasConfiguration)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package!.FileName)
+                    @Html.DisplayFor(model => model.PlugInInformation!.HasConfiguration)
                 </dd>
                 <dt class="col-sm-6">
-                    @Html.DisplayNameFor(model => model.Package!.HasConfiguration)
+                    @Html.DisplayNameFor(model => model.PlugInInformation!.HasLogger)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package!.HasConfiguration)
+                    @Html.DisplayFor(model => model.PlugInInformation!.HasLogger)
                 </dd>
                 <dt class="col-sm-6">
-                    @Html.DisplayNameFor(model => model.Package!.HasLogger)
+                    @Html.DisplayNameFor(model => model.PlugInInformation!.TypeName)
                 </dt>
                 <dd class="col-sm-6">
-                    @Html.DisplayFor(model => model.Package!.HasLogger)
-                </dd>
-                <dt class="col-sm-6">
-                    Upload Package
-                </dt>
-                <dd class="col-sm-6">
-                    <input asp-for="PackageFile" type="file" />
+                    @Html.DisplayFor(model => model.PlugInInformation!.TypeName)
                 </dd>
             </dl>
 
             <div class="form-group">
                 <button type="submit" class="btn btn-sm btn-success">
                     <span>
-                        <svg bootstrap-icon="CloudArrowUp" width="18" height="18" aria-label="Save"></svg>
+                        <svg bootstrap-icon="Floppy" width="18" height="18" aria-label="Save"></svg>
                     </span>
+                    Save
                 </button>
                 <a asp-page="./Index" class="btn btn-sm btn-primary">Cancel</a>
             </div>

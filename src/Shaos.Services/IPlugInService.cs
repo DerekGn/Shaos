@@ -68,15 +68,18 @@ namespace Shaos.Services
                                        CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// 
+        /// Extract <see cref="PlugInInformation"/> from the extracted package
         /// </summary>
-        /// <param name="packageFileName"></param>
-        /// <param name="packageFileStream"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<PlugInTypeInformation> ExtractPlugInTypeInformationAsync(string packageFileName,
-                                                                      Stream packageFileStream,
-                                                                      CancellationToken cancellationToken = default);
+        /// <param name="packageFileName">The package file name</param>
+        /// <param name="packageFileStream">The package file stream</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The <see cref="PlugInInformation"/></returns>
+        /// <exception cref="NoValidPlugInAssemblyFoundException">Throw if no valid PlugIn assembly file was found</exception>
+        /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the package</exception>
+        /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
+        Task<PlugInInformation> ExtractPlugInInformationAsync(string packageFileName,
+                                                              Stream packageFileStream,
+                                                              CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Load a <see cref="PlugInInstance"/> configuration
@@ -115,5 +118,16 @@ namespace Shaos.Services
                                       string packageFileName,
                                       Stream stream,
                                       CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Write a package file
+        /// </summary>
+        /// <param name="packageFileName">The package file name</param>
+        /// <param name="packageFileStream">The package file stream</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
+        Task<string> WritePackageAsync(string packageFileName,
+                                       Stream packageFileStream,
+                                       CancellationToken cancellationToken = default);
     }
 }
