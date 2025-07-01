@@ -153,8 +153,12 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
             var plugInTypeInfo = _pluginTypeValidator.Validate(_fixture.AssemblyFilePath);
 
             Assert.NotNull(plugInTypeInfo);
-            Assert.Equal("TestPlugIn", plugInTypeInfo.Name);
-            Assert.Equal("1.0.0.0", plugInTypeInfo.AssemblyVersion.ToString());
+            
+            Assert.Equal("Shaos.Test.PlugIn.dll", plugInTypeInfo.AssemblyFile);
+            Assert.Equal("1.0.0.0", plugInTypeInfo.AssemblyVersion);
+            Assert.Equal("A test plugin that does nothing", plugInTypeInfo.Description);
+            Assert.Equal("A test plugin", plugInTypeInfo.Name);
+            Assert.Equal("TestPlugIn", plugInTypeInfo.TypeName);
             Assert.True(plugInTypeInfo.HasLogger);
             Assert.True(plugInTypeInfo.HasConfiguration);
         }
