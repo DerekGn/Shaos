@@ -40,15 +40,15 @@ namespace Shaos.Services.Validation
         {
             if (string.IsNullOrWhiteSpace(formFile.ContentType))
             {
-                throw new FileContentInvalidException(formFile.FileName, formFile.ContentType);
+                throw new FileContentInvalidException(formFile.FileName, formFile.ContentType, formFile.Length);
             }
             else if (!formFile.ContentType.Equals(ContentType, StringComparison.CurrentCultureIgnoreCase))
             {
-                throw new FileContentInvalidException(formFile.FileName, formFile.ContentType);
+                throw new FileContentInvalidException(formFile.FileName, formFile.ContentType, formFile.Length);
             }
             else if (formFile.Length == 0)
             {
-                throw new FileLengthInvalidException(formFile.Length);
+                throw new FileLengthInvalidException(formFile.FileName, formFile.ContentType, formFile.Length);
             }
             else if (string.IsNullOrEmpty(formFile.FileName))
             {
@@ -56,7 +56,7 @@ namespace Shaos.Services.Validation
             }
             else if (!ValidFileName(formFile.FileName))
             {
-                throw new FileNameInvalidExtensionException(formFile.FileName);
+                throw new FileNameInvalidExtensionException(formFile.FileName, formFile.ContentType, formFile.Length);
             }
         }
 

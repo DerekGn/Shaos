@@ -56,15 +56,30 @@ namespace Shaos.Services.IO
         string GetAssemblyPath(int id, string assemblyFileName);
 
         /// <summary>
+        /// Write a <see cref="Package"/> zip file to the file stream
         /// </summary>
         /// <param name="id">The <see cref="PlugIn"/> identifier</param>
         /// <param name="packageFileName">The package filename to write too</param>
-        /// <param name="stream">The stream to be written</param>
+        /// <param name="packageFileStream">The stream to be written</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The fully qualified file path of the file written to the file store</returns>
         Task<string> WritePackageFileStreamAsync(int id,
                                                  string packageFileName,
-                                                 Stream stream,
+                                                 Stream packageFileStream,
+                                                 CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Write a <see cref="Package"/> zip file to the file stream
+        /// </summary>
+        /// <param name="packageFileName">The package filename to write too</param>
+        /// <param name="packageFileStream">The stream to be written</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The fully qualified file path of the file written to the file store</returns>
+        /// <remarks>
+        /// Writes <see cref="Package"/> file to a temporary location
+        /// </remarks>
+        Task<string> WritePackageFileStreamAsync(string packageFileName,
+                                                 Stream packageFileStream,
                                                  CancellationToken cancellationToken = default);
     }
 }

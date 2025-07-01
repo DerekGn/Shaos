@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
@@ -38,17 +39,21 @@ namespace Shaos.Pages.PlugIns
     {
         private readonly IZipFileValidationService _codeFileValidationService;
         private readonly IPlugInService _plugInService;
+        private readonly ILogger<PackageModel> _logger;
         private readonly IShaosRepository _repository;
 
         public PackageModel(
+            ILogger<PackageModel> logger,
             IShaosRepository repository,
             IPlugInService plugInService,
             IZipFileValidationService codeFileValidationService)
         {
+            ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(plugInService);
             ArgumentNullException.ThrowIfNull(codeFileValidationService);
-
+            
+            _logger = logger;
             _repository = repository;
             _plugInService = plugInService;
             _codeFileValidationService = codeFileValidationService;
@@ -89,95 +94,46 @@ namespace Shaos.Pages.PlugIns
                 return Page();
             }
 
-            string? validation = ValidatePackageFile(PackageFile);
-            
-            if (validation != null)
-            {
-                ModelState.AddModelError(string.Empty, validation);
-
-                return RedirectToPage(new
-                {
-                    id = PlugIn!.Id
-                });
-            }
-
-            string? packageValidation = await ValidatePackageAsync(cancellationToken);
-
-            if (packageValidation != null)
-            {
-                ModelState.AddModelError(string.Empty, packageValidation);
-
-                return RedirectToPage(new
-                {
-                    id = PlugIn!.Id
-                });
-            }
-
-            return RedirectToPage("./Index");
-        }
-
-        private async Task<string?> ValidatePackageAsync(CancellationToken cancellationToken = default)
-        {
-            string? result = null;
-
             try
             {
-                await _plugInService.UploadPlugInPackageAsync(PlugIn!.Id,
-                                                              PackageFile.FileName,
-                                                              PackageFile.OpenReadStream(),
-                                                              cancellationToken);
+                _codeFileValidationService.ValidateFile(PackageFile);
+
+                //_plugInService.ExtractPlugInTypeInformationAsync();
             }
-            catch (PlugInInstancesRunningException ex)
+            catch (FileContentInvalidException ex)
             {
-                result = $"The PlugIn currently has running instances Id: [{string.Join(",", ex.Ids)}]";
+                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid content type: [{ex.ContentType}]");
             }
-            catch (NoValidPlugInAssemblyFoundException)
+            catch (FileLengthInvalidException ex)
             {
-                result = $"No valid assembly file found [{PackageFile.FileName}]";
+                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid file length: [{ex.FileLength}]");
             }
-            catch(PlugInTypeNotFoundException)
+            catch (FileNameEmptyException)
             {
-                result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
+                ModelState.AddModelError(string.Empty, $"The file name is empty");
             }
-            catch(PlugInTypesFoundException)
+            catch (FileNameInvalidExtensionException ex)
             {
-                result = $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{PackageFile.FileName}]";
+                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has an invalid extension.");
             }
-
-            return result;
-        }
-
-        private string? ValidatePackageFile(IFormFile formFile)
-        {
-            var validationResult = _codeFileValidationService.ValidateFile(formFile);
-            string? validation = null;
-
-            switch (validationResult)
+            catch (Exception ex)
             {
-                case FileValidationResult.Success:
-                    break;
+                ModelState.AddModelError(string.Empty, $"Exception occurred check the logs");
 
-                case FileValidationResult.FileNameEmpty:
-                    validation = "File name is empty";
-                    break;
-
-                case FileValidationResult.InvalidContentType:
-                    validation = $"File: [{formFile.FileName}] invalid content type";
-                    break;
-
-                case FileValidationResult.InvalidFileName:
-                    validation = $"File: [{formFile.Name}] has invalid length";
-                    break;
-
-                case FileValidationResult.InvalidFileLength:
-                    validation = $"File: [{formFile.Name}] has invalid type";
-                    break;
-
-                default:
-                    break;
+                _logger.LogWarning(ex, "A exception occurred");
             }
 
-            return validation;
+            if (ModelState.ErrorCount != 0)
+            {
+                return RedirectToPage(new
+                {
+                    id = PlugIn!.Id
+                });
+            }
+            else
+            {
+                return RedirectToPage("./Index");
+            }
         }
     }
 }

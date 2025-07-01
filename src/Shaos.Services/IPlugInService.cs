@@ -27,6 +27,7 @@ using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Validation;
 
 namespace Shaos.Services
 {
@@ -65,6 +66,17 @@ namespace Shaos.Services
         /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInInstanceAsync(int id,
                                        CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="packageFileName"></param>
+        /// <param name="packageFileStream"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<PlugInTypeInformation> ExtractPlugInTypeInformationAsync(string packageFileName,
+                                                                      Stream packageFileStream,
+                                                                      CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Load a <see cref="PlugInInstance"/> configuration

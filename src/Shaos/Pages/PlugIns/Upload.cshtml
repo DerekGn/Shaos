@@ -1,0 +1,42 @@
+﻿@page
+@model Shaos.Pages.PlugIns.UploadModel
+
+@{
+    ViewData["Title"] = "Upload PlugIn";
+}
+
+<h2>Upload Package</h2>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <dl class="row">
+                <dt class="col-sm-6">
+                    Upload Package
+                </dt>
+                <dd class="col-sm-6">
+                    <input asp-for="PackageFile" type="file" />
+                </dd>
+            </dl>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-sm btn-success">
+                    <span>
+                        <svg bootstrap-icon="CloudArrowUp" width="18" height="18" aria-label="Save"></svg>
+                    </span>
+                </button>
+                <a asp-page="./Index" class="btn btn-sm btn-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

@@ -29,13 +29,37 @@ namespace Shaos.Services.Exceptions
     /// <summary>
     /// Thrown when a file has an invalid length
     /// </summary>
-    /// <param name="length"></param>
     [ExcludeFromCodeCoverage]
-    public class FileLengthInvalidException(long length) : Exception
+    public class FileLengthInvalidException : Exception
     {
+        /// <param name="fileName">The file name</param>
+        /// <param name="contentType">The content</param>
+        /// <param name="fileLength">The file length</param>
+        public FileLengthInvalidException(string fileName,
+                                          string contentType,
+                                          long fileLength)
+        {
+            ArgumentNullException.ThrowIfNull(fileName);
+            ArgumentNullException.ThrowIfNull(contentType);
+
+            FileName = fileName;
+            ContentType = contentType;
+            FileLength = fileLength;
+        }
+
         /// <summary>
-        /// The length of the file
+        /// The file content
         /// </summary>
-        public long Length { get; } = length;
+        public string ContentType { get; }
+
+        /// <summary>
+        /// The file length
+        /// </summary>
+        public long FileLength { get; }
+
+        /// <summary>
+        /// The file name
+        /// </summary>
+        public string FileName { get; }
     }
 }

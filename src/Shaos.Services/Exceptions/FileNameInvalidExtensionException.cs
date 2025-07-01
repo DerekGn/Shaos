@@ -29,13 +29,40 @@ namespace Shaos.Services.Exceptions
     /// <summary>
     /// Throw when a file name has an invalid extension
     /// </summary>
-    /// <param name="fileName"></param>
     [ExcludeFromCodeCoverage]
-    public class FileNameInvalidExtensionException(string? fileName) : Exception
+    public class FileNameInvalidExtensionException : Exception
     {
         /// <summary>
-        /// The invalid file name
+        /// Create an instance of a <see cref="FileNameInvalidExtensionException"/>
         /// </summary>
-        public string? FileName { get; } = fileName;
+        /// <param name="fileName">The file name</param>
+        /// <param name="contentType">The content</param>
+        /// <param name="fileLength">The file length</param>
+        public FileNameInvalidExtensionException(string fileName,
+                                                 string contentType,
+                                                 long fileLength)
+        {
+            ArgumentNullException.ThrowIfNull(fileName);
+            ArgumentNullException.ThrowIfNull(contentType);
+
+            FileName = fileName;
+            ContentType = contentType;
+            FileLength = fileLength;
+        }
+
+        /// <summary>
+        /// The file name
+        /// </summary>
+        public string FileName { get; }
+
+        /// <summary>
+        /// The file content
+        /// </summary>
+        public string ContentType { get; }
+
+        /// <summary>
+        /// The file length
+        /// </summary>
+        public long FileLength { get; }
     }
 }

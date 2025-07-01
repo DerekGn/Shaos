@@ -30,7 +30,7 @@ using System.IO.Compression;
 namespace Shaos.Services.IO
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class FileStoreService : IFileStoreService
     {
@@ -38,7 +38,7 @@ namespace Shaos.Services.IO
         private readonly IOptions<FileStoreOptions> _options;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="options"></param>
@@ -100,10 +100,27 @@ namespace Shaos.Services.IO
         /// <inheritdoc/>
         public async Task<string> WritePackageFileStreamAsync(int id,
                                                               string packageFileName,
-                                                              Stream stream,
+                                                              Stream packageFileStream,
                                                               CancellationToken cancellationToken = default)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+            return await WritePackageFileStreamAsync(id.ToString(), packageFileName, packageFileStream, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<string> WritePackageFileStreamAsync(string packageFileName,
+                                                        Stream packageFileStream,
+                                                        CancellationToken cancellationToken = default)
+        {
+            return await WritePackageFileStreamAsync(Guid.NewGuid().ToString(), packageFileName, packageFileStream, cancellationToken);
+        }
+
+        private async Task<string> WritePackageFileStreamAsync(string subFolder,
+                                                              string packageFileName,
+                                                              Stream packageFileStream,
+                                                              CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(packageFileStream);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(subFolder);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             if (_options.Value.PackagesPath.CreateDirectory())
@@ -111,7 +128,7 @@ namespace Shaos.Services.IO
                 _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
             }
 
-            var packageFilePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath, subFolder);
 
             if (Directory.Exists(packageFilePath))
             {
@@ -132,9 +149,9 @@ namespace Shaos.Services.IO
 
             using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
 
-            await stream.CopyToAsync(outputStream, cancellationToken);
+            await packageFileStream.CopyToAsync(outputStream, cancellationToken);
 
-            await stream.FlushAsync(cancellationToken);
+            await packageFileStream.FlushAsync(cancellationToken);
 
             return packageFilePath;
         }

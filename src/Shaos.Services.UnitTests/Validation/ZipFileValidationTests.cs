@@ -67,6 +67,7 @@ namespace Shaos.Services.UnitTests.Validation
             Assert.NotNull(exception);
             Assert.Equal("filename", exception.FileName);
             Assert.Equal("content", exception.ContentType);
+            Assert.Equal(0, exception.FileLength);
         }
 
         [Fact]
@@ -80,6 +81,7 @@ namespace Shaos.Services.UnitTests.Validation
             Assert.NotNull(exception);
             Assert.Equal("filename", exception.FileName);
             Assert.Equal(string.Empty, exception.ContentType);
+            Assert.Equal(0, exception.FileLength);
         }
 
         [Fact]
@@ -93,6 +95,8 @@ namespace Shaos.Services.UnitTests.Validation
 
             Assert.NotNull(exception);
             Assert.Equal("filename.exe", exception.FileName);
+            Assert.Equal(ZipFileValidationService.ContentType, exception.ContentType);
+            Assert.Equal(20, exception.FileLength);
         }
 
         [Fact]
@@ -105,7 +109,9 @@ namespace Shaos.Services.UnitTests.Validation
             var exception = Assert.Throws<FileLengthInvalidException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
 
             Assert.NotNull(exception);
-            Assert.Equal(0, exception.Length);
+            Assert.Equal(FileNameZip, exception.FileName);
+            Assert.Equal(ZipFileValidationService.ContentType, exception.ContentType);
+            Assert.Equal(0, exception.FileLength);
         }
 
         [Fact]

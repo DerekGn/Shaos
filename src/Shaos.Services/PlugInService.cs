@@ -33,6 +33,7 @@ using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Loader;
 using Shaos.Services.Runtime.Validation;
 using System.Diagnostics;
+using System.IO;
 
 namespace Shaos.Services
 {
@@ -178,6 +179,37 @@ namespace Shaos.Services
             {
                 _logger.LogWarning("Instance [{Id}] not found", id);
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<PlugInTypeInformation> ExtractPlugInTypeInformationAsync(string packageFileName,
+                                                                                   Stream packageFileStream,
+                                                                                   CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentNullException.ThrowIfNull(packageFileStream);
+
+            _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+
+            var packageFilePath = await _fileStoreService.WritePackageFileStreamAsync(packageFileName,
+                                                                                      packageFileStream,
+                                                                                      cancellationToken);
+
+            var plugInFile = _fileStoreService
+                .ExtractPackage(0, packageFileName)
+                .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+
+            if (plugInFile == null)
+            {
+                _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
+                    PlugInNamePostFix,
+                    packageFileName);
+
+                throw new NoValidPlugInAssemblyFoundException(
+                    $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+            }
+
+            return _plugInTypeValidator.Validate(plugInFile);
         }
 
         /// <inheritdoc/>

@@ -36,8 +36,10 @@ namespace Shaos.Services.Validation
         /// Validate a <see cref="IFormFile"/> instance
         /// </summary>
         /// <param name="formFile">The <see cref="IFormFile"/> to validate</param>
+        /// <exception cref="FileContentInvalidException">Thrown when the file content type is invalid</exception>
+        /// <exception cref="FileLengthInvalidException">Thrown when the file length is invalid</exception>
         /// <exception cref="FileNameEmptyException">Thrown when the file name is empty</exception>
-        /// <exception cref="FileContentInvalidException">Thrown when the file name is empty</exception>
+        /// <exception cref="FileNameInvalidExtensionException">Thrown when the file extension is invalid</exception>
         void ValidateFile(IFormFile formFile);
     }
 }

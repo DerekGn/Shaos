@@ -37,14 +37,17 @@ namespace Shaos.Services.Exceptions
         /// </summary>
         /// <param name="fileName">The file name</param>
         /// <param name="contentType">The content</param>
+        /// <param name="fileLength">The file length</param>
         public FileContentInvalidException(string fileName,
-                                           string contentType)
+                                           string contentType,
+                                           long fileLength)
         {
             ArgumentNullException.ThrowIfNull(fileName);
             ArgumentNullException.ThrowIfNull(contentType);
 
             FileName = fileName;
             ContentType = contentType;
+            FileLength = fileLength;
         }
 
         /// <summary>
@@ -56,5 +59,10 @@ namespace Shaos.Services.Exceptions
         /// The file content
         /// </summary>
         public string ContentType { get; }
+
+        /// <summary>
+        /// The file length
+        /// </summary>
+        public long FileLength { get; }
     }
 }

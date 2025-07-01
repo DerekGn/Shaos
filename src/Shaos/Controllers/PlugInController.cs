@@ -398,23 +398,31 @@ namespace Shaos.Controllers
         {
             problemDetails = null;
 
-            var validationResult = _codeFileValidationService.ValidateFile(formFile);
-
-            if (validationResult == FileValidationResult.FileNameEmpty)
+            try
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File name is empty");
+                _codeFileValidationService.ValidateFile(formFile);
             }
-            else if (validationResult == FileValidationResult.InvalidContentType)
+            catch (FileContentInvalidException)
             {
                 problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
             }
-            else if (validationResult == FileValidationResult.InvalidFileLength)
+            catch (FileLengthInvalidException)
             {
                 problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
             }
-            else if (validationResult == FileValidationResult.InvalidFileName)
+            catch (FileNameEmptyException)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid type");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, "File name is empty");
+            }
+            catch (FileNameInvalidExtensionException)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
+            }
+            catch (Exception exception)
+            {
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"Exception occurred check the logs");
+
+                Logger.LogError(exception, "Exception occurred");
             }
 
             return problemDetails == null;
