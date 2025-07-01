@@ -118,16 +118,5 @@ namespace Shaos.Services
                                       string packageFileName,
                                       Stream stream,
                                       CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Write a package file
-        /// </summary>
-        /// <param name="packageFileName">The package file name</param>
-        /// <param name="packageFileStream">The package file stream</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
-        Task<string> WritePackageAsync(string packageFileName,
-                                       Stream packageFileStream,
-                                       CancellationToken cancellationToken = default);
     }
 }

@@ -298,24 +298,6 @@ namespace Shaos.Services
             //cancellationToken);
         }
 
-        /// <inheritdoc/>
-        public async Task<string> WritePackageAsync(string packageFileName,
-                                                    Stream packageFileStream,
-                                                    CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
-            ArgumentNullException.ThrowIfNull(packageFileStream);
-
-            _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
-
-            var subFolder = Guid.NewGuid().ToString();
-
-            return await _fileStoreService.WritePackageFileStreamAsync(subFolder,
-                                                                       packageFileName,
-                                                                       packageFileStream,
-                                                                       cancellationToken);
-        }
-
         private bool CheckPlugInRunning(PlugIn plugIn,
                                         out int plugInInstanceId)
         {
