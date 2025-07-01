@@ -24,6 +24,8 @@
 
 using Microsoft.AspNetCore.Http;
 using Moq;
+using Shaos.Repository.Exceptions;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Validation;
 using Xunit;
 
@@ -31,10 +33,10 @@ namespace Shaos.Services.UnitTests.Validation
 {
     public class ZipFileValidationTests
     {
-        private const string FileName = "filename.zip";
-
-        private readonly ZipFileValidationService _zipFileValidationService;
+        private const string FileName = "filename";
+        private const string FileNameZip = "filename.zip";
         private readonly Mock<IFormFile> _mockFile;
+        private readonly ZipFileValidationService _zipFileValidationService;
 
         public ZipFileValidationTests()
         {
@@ -43,58 +45,79 @@ namespace Shaos.Services.UnitTests.Validation
         }
 
         [Fact]
-        public void TestValidateFileInvalidContentType()
+        public void TestValidateFileFileNameEmpty()
         {
-            _mockFile.Setup(_ => _.FileName).Returns("filename");
-            _mockFile.Setup(_ => _.ContentType).Returns(string.Empty);
+            _mockFile.Setup(_ => _.FileName).Returns(string.Empty);
+            _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
+            _mockFile.Setup(_ => _.Length).Returns(10);
 
-            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
+            var exception = Assert.Throws<FileNameEmptyException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
 
-            Assert.Equal(FileValidationResult.InvalidContentType, result);
+            Assert.NotNull(exception);
         }
 
         [Fact]
-        public void TestValidateFileInvalidFileName()
+        public void TestValidateFileInvalidContentType()
         {
-            _mockFile.Setup(_ => _.FileName).Returns(string.Empty);
+            _mockFile.Setup(_ => _.FileName).Returns(FileName);
+            _mockFile.Setup(_ => _.ContentType).Returns("content");
 
-            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
+            var exception = Assert.Throws<FileContentInvalidException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
 
-            Assert.Equal(FileValidationResult.FileNameEmpty, result);
+            Assert.NotNull(exception);
+            Assert.Equal("filename", exception.FileName);
+            Assert.Equal("content", exception.ContentType);
         }
+
+        [Fact]
+        public void TestValidateFileInvalidContentTypeEmpty()
+        {
+            _mockFile.Setup(_ => _.FileName).Returns(FileName);
+            _mockFile.Setup(_ => _.ContentType).Returns(string.Empty);
+
+            var exception = Assert.Throws<FileContentInvalidException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
+
+            Assert.NotNull(exception);
+            Assert.Equal("filename", exception.FileName);
+            Assert.Equal(string.Empty, exception.ContentType);
+        }
+
         [Fact]
         public void TestValidateFileInvalidFileType()
         {
             _mockFile.Setup(_ => _.FileName).Returns("filename.exe");
             _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
+            _mockFile.Setup(_ => _.Length).Returns(20);
 
-            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
+            var exception = Assert.Throws<FileNameInvalidException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
 
-            Assert.Equal(FileValidationResult.InvalidFileName, result);
+            Assert.NotNull(exception);
+            Assert.Equal("filename.exe", exception.FileName);
         }
 
         [Fact]
         public void TestValidateFileInvalidLength()
         {
-            _mockFile.Setup(_ => _.FileName).Returns(FileName);
+            _mockFile.Setup(_ => _.FileName).Returns(FileNameZip);
             _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(0);
 
-            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
+            var exception = Assert.Throws<FileLengthInvalidException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
 
-            Assert.Equal(FileValidationResult.InvalidFileLength, result);
+            Assert.NotNull(exception);
+            Assert.Equal(0, exception.Length);
         }
 
         [Fact]
         public void TestValidateFileValid()
         {
-            _mockFile.Setup(_ => _.FileName).Returns(FileName);
+            _mockFile.Setup(_ => _.FileName).Returns(FileNameZip);
             _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(10);
 
-            var result = _zipFileValidationService.ValidateFile(_mockFile.Object);
+            var exception = Record.Exception(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
 
-            Assert.Equal(FileValidationResult.Success, result);
+            Assert.Null(exception);
         }
     }
 }

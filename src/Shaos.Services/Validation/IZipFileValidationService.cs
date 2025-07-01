@@ -23,6 +23,7 @@
 */
 
 using Microsoft.AspNetCore.Http;
+using Shaos.Services.Exceptions;
 
 namespace Shaos.Services.Validation
 {
@@ -35,7 +36,8 @@ namespace Shaos.Services.Validation
         /// Validate a <see cref="IFormFile"/> instance
         /// </summary>
         /// <param name="formFile">The <see cref="IFormFile"/> to validate</param>
-        /// <returns>A <see cref="FileValidationResult"/></returns>
-        FileValidationResult ValidateFile(IFormFile formFile);
+        /// <exception cref="FileNameEmptyException">Thrown when the file name is empty</exception>
+        /// <exception cref="FileContentInvalidException">Thrown when the file name is empty</exception>
+        void ValidateFile(IFormFile formFile);
     }
 }
