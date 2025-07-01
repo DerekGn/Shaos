@@ -89,7 +89,7 @@ namespace Shaos.Services.UnitTests.Validation
             _mockFile.Setup(_ => _.ContentType).Returns(ZipFileValidationService.ContentType);
             _mockFile.Setup(_ => _.Length).Returns(20);
 
-            var exception = Assert.Throws<FileNameInvalidException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
+            var exception = Assert.Throws<FileNameInvalidExtensionException>(() => _zipFileValidationService.ValidateFile(_mockFile.Object));
 
             Assert.NotNull(exception);
             Assert.Equal("filename.exe", exception.FileName);
