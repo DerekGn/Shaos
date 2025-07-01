@@ -56,7 +56,7 @@ namespace Shaos.Services.Validation
             }
             else if (!ValidFileName(formFile.FileName))
             {
-                throw new FileNameInvalidException(formFile.FileName);
+                throw new FileNameInvalidExtensionException(formFile.FileName);
             }
         }
 
