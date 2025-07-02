@@ -24,28 +24,25 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Caching.Memory;
 using Shaos.Sdk;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Validation;
 using Shaos.Services.Validation;
 
 namespace Shaos.Pages.PlugIns
 {
     public class UploadModel : PageModel
     {
-        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<UploadModel> _logger;
         private readonly IPlugInService _plugInService;
         private readonly IZipFileValidationService _zipFileValidationService;
 
-        public UploadModel(IMemoryCache memoryCache,
-                           ILogger<UploadModel> logger,
+        public UploadModel(ILogger<UploadModel> logger,
                            IPlugInService plugInService,
                            IZipFileValidationService zipFileValidationService)
         {
-            _memoryCache = memoryCache;
             _logger = logger;
             _plugInService = plugInService;
             _zipFileValidationService = zipFileValidationService;
@@ -54,6 +51,9 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public IFormFile PackageFile { get; set; } = default!;
 
+        [BindProperty]
+        public PlugInInformation? PlugInInformation { get; set; } = default!;
+
         public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
@@ -61,17 +61,13 @@ namespace Shaos.Pages.PlugIns
                 return Page();
             }
 
-            Guid guid = Guid.NewGuid();
-
             try
             {
                 _zipFileValidationService.ValidateFile(PackageFile);
 
-                var plugInTypeInformation = await _plugInService.ExtractPlugInInformationAsync(PackageFile.FileName,
-                                                                                           PackageFile.OpenReadStream(),
-                                                                                           cancellationToken);
-
-                _memoryCache.Set(guid, plugInTypeInformation);
+                PlugInInformation = await _plugInService.ExtractPlugInInformationAsync(PackageFile.FileName,
+                                                                                       PackageFile.OpenReadStream(),
+                                                                                       cancellationToken);
             }
             catch (FileContentInvalidException ex)
             {
@@ -108,14 +104,11 @@ namespace Shaos.Pages.PlugIns
                 _logger.LogWarning(ex, "A exception occurred");
             }
 
-            if (ModelState.ErrorCount != 0)
-            {
-                return Page();
-            }
-            else
-            {
-                return RedirectToPage("./Package", new { id = guid });
-            }
+            return Page();
+        }
+
+        public void OnPostSave()
+        {
         }
     }
 }
