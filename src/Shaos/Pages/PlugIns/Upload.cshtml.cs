@@ -54,7 +54,10 @@ namespace Shaos.Pages.PlugIns
         [BindProperty]
         public PlugInInformation? PlugInInformation { get; set; } = default!;
 
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
+        [BindProperty]
+        public bool SaveEnable { get; set; } = default!;
+
+        public async Task<IActionResult> OnPostUpload(CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -68,6 +71,8 @@ namespace Shaos.Pages.PlugIns
                 PlugInInformation = await _plugInService.ExtractPlugInInformationAsync(PackageFile.FileName,
                                                                                        PackageFile.OpenReadStream(),
                                                                                        cancellationToken);
+
+                SaveEnable = true;
             }
             catch (FileContentInvalidException ex)
             {
@@ -107,8 +112,14 @@ namespace Shaos.Pages.PlugIns
             return Page();
         }
 
+        public IActionResult OnPostCancel()
+        {
+            return RedirectToPage("./Index");
+        }
+
         public void OnPostSave()
         {
+            _logger.LogInformation("Save");
         }
     }
 }
