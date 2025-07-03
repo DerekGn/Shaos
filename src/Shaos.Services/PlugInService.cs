@@ -133,7 +133,7 @@ namespace Shaos.Services
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
                     {
-                        _fileStoreService.DeletePackage(id, plugIn.Package.FileName);
+                        _fileStoreService.DeletePackage(plugIn.Package.FileName);
                     }
 
                     await _repository.DeleteAsync<PlugInInstance>(id,
@@ -181,9 +181,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<PlugInInformation> ExtractPlugInInformationAsync(string packageFileName,
-                                                                           Stream packageFileStream,
-                                                                           CancellationToken cancellationToken = default)
+        public async Task<PackageInformation> ExtractPackageInformationAsync(string packageFileName,
+                                                                            Stream packageFileStream,
+                                                                            CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
             ArgumentNullException.ThrowIfNull(packageFileStream);
@@ -192,13 +192,13 @@ namespace Shaos.Services
 
             var subFolder = Guid.NewGuid().ToString();
 
-            await _fileStoreService.WritePackageFileStreamAsync(subFolder,
-                                                                packageFileName,
-                                                                packageFileStream,
-                                                                cancellationToken);
+            await _fileStoreService.WritePackageAsync(packageFileName,
+                                                      packageFileStream,
+                                                      cancellationToken);
 
-            var plugInFile = _fileStoreService
-                .ExtractPackage(subFolder, packageFileName)
+            var extractedPath = _fileStoreService.ExtractPackage(subFolder, packageFileName, out var files);
+
+            var plugInFile = files
                 .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
 
             if (plugInFile == null)
@@ -211,7 +211,13 @@ namespace Shaos.Services
                     $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
             }
 
-            return _plugInTypeValidator.Validate(plugInFile);
+            var pluginInformation = _plugInTypeValidator.Validate(plugInFile);
+
+            return new PackageInformation()
+            {
+                PackagePath = packageFileName,
+                PlugInInformation = pluginInformation
+            };
         }
 
         /// <inheritdoc/>

@@ -30,7 +30,7 @@ using System.IO.Compression;
 namespace Shaos.Services.IO
 {
     /// <summary>
-    ///
+    /// A file store implementation
     /// </summary>
     public class FileStoreService : IFileStoreService
     {
@@ -38,26 +38,27 @@ namespace Shaos.Services.IO
         private readonly IOptions<FileStoreOptions> _options;
 
         /// <summary>
-        ///
+        /// Create an instance of a <see cref="IFileStoreService"/>
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="options"></param>
+        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="options">The <see cref="IOptions{TOptions}"/> instance</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public FileStoreService(
-            ILogger<FileStoreService> logger,
-            IOptions<FileStoreOptions> options)
+        public FileStoreService(ILogger<FileStoreService> logger,
+                                IOptions<FileStoreOptions> options)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(options);
+
+            _logger = logger;
+            _options = options;
         }
 
         /// <inheritdoc/>
-        public void DeletePackage(int id,
-                                  string packageFileName)
+        public void DeletePackage(string packageFileName)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
-            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), packageFileName);
+            var filePath = Path.Combine(_options.Value.PackagesPath, packageFileName);
 
             if (File.Exists(filePath))
             {
@@ -74,12 +75,8 @@ namespace Shaos.Services.IO
             ArgumentNullException.ThrowIfNullOrWhiteSpace(folder);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
-            var sourcePath = Path.Combine(_options.Value.PackagesPath, folder);
+            var sourcePath = _options.Value.PackagesPath;
             var targetPath = Path.Combine(_options.Value.BinariesPath, folder);
-
-            _logger.LogInformation("Emptying directory [{TargetPath}]", targetPath);
-
-            targetPath.EmptyDirectory();
 
             sourcePath = Path.Combine(sourcePath, packageFileName);
 
@@ -93,28 +90,41 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
+        public string ExtractPackage(string folder,
+                                     string packageFileName,
+                                     out IEnumerable<string> files)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(folder);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+
+            var sourcePath = _options.Value.PackagesPath;
+            var targetPath = Path.Combine(_options.Value.BinariesPath, folder);
+
+            sourcePath = Path.Combine(sourcePath, packageFileName);
+
+            _logger.LogInformation("Extracting package: [{SourcePath}] to [{TargetPath}]",
+                sourcePath,
+                targetPath);
+
+            ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
+
+            files = Directory.EnumerateFiles(targetPath);
+
+            return targetPath;
+        }
+
+        /// <inheritdoc/>
         public string GetAssemblyPath(int id, string assemblyFileName)
         {
             return Path.Combine(Path.Combine(_options.Value.BinariesPath, id.ToString()), assemblyFileName);
         }
 
         /// <inheritdoc/>
-        public async Task<string> WritePackageFileStreamAsync(int id,
-                                                              string packageFileName,
-                                                              Stream packageFileStream,
-                                                              CancellationToken cancellationToken = default)
-        {
-            return await WritePackageFileStreamAsync(id.ToString(), packageFileName, packageFileStream, cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public async Task<string> WritePackageFileStreamAsync(string subFolder,
-                                                              string packageFileName,
-                                                              Stream packageFileStream,
-                                                              CancellationToken cancellationToken = default)
+        public async Task WritePackageAsync(string packageFileName,
+                                            Stream packageFileStream,
+                                            CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(packageFileStream);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(subFolder);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             if (_options.Value.PackagesPath.CreateDirectory())
@@ -122,7 +132,7 @@ namespace Shaos.Services.IO
                 _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
             }
 
-            var packageFilePath = Path.Combine(_options.Value.PackagesPath, subFolder);
+            var packageFilePath = _options.Value.PackagesPath;
 
             if (Directory.Exists(packageFilePath))
             {
@@ -146,8 +156,6 @@ namespace Shaos.Services.IO
             await packageFileStream.CopyToAsync(outputStream, cancellationToken);
 
             await packageFileStream.FlushAsync(cancellationToken);
-
-            return packageFilePath;
         }
     }
 }

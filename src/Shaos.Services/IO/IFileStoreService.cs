@@ -34,18 +34,19 @@ namespace Shaos.Services.IO
         /// <summary>
         /// Delete a <see cref="PlugIn"/> package from the file store
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
         /// <param name="packageFileName">The package file name</param>
-        void DeletePackage(int id,
-                           string packageFileName);
+        void DeletePackage(string packageFileName);
 
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
         /// </summary>
         /// <param name="folder">The folder to extract the package</param>
         /// <param name="packageFileName">The package file name</param>
-        IEnumerable<string> ExtractPackage(string folder,
-                                           string packageFileName);
+        /// <param name="files">The list of extracted files</param>
+        /// <returns>The fully qualified path to the extracted files</returns>
+        string ExtractPackage(string folder,
+                              string packageFileName,
+                              out IEnumerable<string> files);
 
         /// <summary>
         /// Gets the <see cref="PlugIn"/> assembly file
@@ -58,30 +59,14 @@ namespace Shaos.Services.IO
         /// <summary>
         /// Write a <see cref="Package"/> zip file to the file stream
         /// </summary>
-        /// <param name="id">The <see cref="PlugIn"/> identifier</param>
         /// <param name="packageFileName">The package filename to write too</param>
         /// <param name="packageFileStream">The stream to be written</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The fully qualified file path of the file written to the file store</returns>
-        Task<string> WritePackageFileStreamAsync(int id,
-                                                 string packageFileName,
-                                                 Stream packageFileStream,
-                                                 CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Write a <see cref="Package"/> zip file to the file stream
-        /// </summary>
-        /// <param name="subFolder">The sub folder to write the package files</param>
-        /// <param name="packageFileName">The package filename to write too</param>
-        /// <param name="packageFileStream">The stream to be written</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The fully qualified file path of the file written to the file store</returns>
         /// <remarks>
         /// Writes <see cref="Package"/> file to a temporary location
         /// </remarks>
-        Task<string> WritePackageFileStreamAsync(string subFolder,
-                                                 string packageFileName,
-                                                 Stream packageFileStream,
-                                                 CancellationToken cancellationToken = default);
+        Task WritePackageAsync(string packageFileName,
+                               Stream packageFileStream,
+                               CancellationToken cancellationToken = default);
     }
 }

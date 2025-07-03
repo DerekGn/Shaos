@@ -62,7 +62,7 @@ namespace Shaos.Services.UnitTests.IO
             var targetPath = Path.Combine(_fixture.PackageDirectory, _fixture.PlugInIdInvalid.ToString());
             var targetFilePath = Path.Combine(targetPath, _fixture.PackageFileInvalid);
 
-            _fileStoreService.DeletePackage(_fixture.PlugInIdInvalid, _fixture.PackageFileInvalid);
+            _fileStoreService.DeletePackage(_fixture.PackageFileInvalid);
 
             Assert.False(File.Exists(targetFilePath));
         }
@@ -94,9 +94,9 @@ namespace Shaos.Services.UnitTests.IO
             memoryStream.Write([0xAA, 0x55]);
             memoryStream.Position = 0;
 
-            var result = await _fileStoreService.WritePackageFileStreamAsync(8, "FileName.txt", memoryStream);
+            await _fileStoreService.WritePackageAsync("FileName.txt", memoryStream);
 
-            Assert.NotNull(result);
+            Assert.Equal(2, memoryStream.Position);
         }
     }
 }

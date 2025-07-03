@@ -68,9 +68,9 @@ namespace Shaos.Pages.PlugIns
             {
                 _zipFileValidationService.ValidateFile(PackageFile);
 
-                PlugInInformation = await _plugInService.ExtractPlugInInformationAsync(PackageFile.FileName,
-                                                                                       PackageFile.OpenReadStream(),
-                                                                                       cancellationToken);
+                //PlugInInformation = await _plugInService.ExtractPlugInInformationAsync(PackageFile.FileName,
+                //                                                                       PackageFile.OpenReadStream(),
+                //                                                                       cancellationToken);
 
                 SaveEnable = true;
             }
