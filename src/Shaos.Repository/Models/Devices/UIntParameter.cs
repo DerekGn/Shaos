@@ -22,26 +22,10 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk.Devices.Parameters
+namespace Shaos.Repository.Models.Devices
 {
-    /// <summary>
-    /// Represents a uint parameter
-    /// </summary>
     public class UIntParameter : BaseParameter
     {
-        private uint _value;
-
-        /// <summary>
-        /// The current <see cref="UIntParameter"/> value
-        /// </summary>
-        public uint Value
-        {
-            get => _value;
-            set
-            {
-#warning Trigger update event
-                _value = value;
-            }
-        }
+        public uint Value { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Shaos.Sdk.Devices
     /// </summary>
     public class SignalLevel
     {
-        public int _level;
+        private int _level;
 
         /// <summary>
         /// The maximum value allowable for the <see cref="Level"/>
@@ -49,7 +49,10 @@ namespace Shaos.Sdk.Devices
             get => _level;
             set
             {
-                _level = value;
+                if (_level <= Minimum && _level >= Maximum)
+                {
+                    _level = value;
+                }
             }
         }
     }

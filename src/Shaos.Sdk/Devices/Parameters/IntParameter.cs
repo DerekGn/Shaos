@@ -29,5 +29,19 @@ namespace Shaos.Sdk.Devices.Parameters
     /// </summary>
     public class IntParameter : BaseParameter
     {
+        private int _value;
+
+        /// <summary>
+        /// The current <see cref="IntParameter"/> value
+        /// </summary>
+        public int Value
+        {
+            get => _value;
+            set
+            {
+#warning Trigger update event
+                _value = value;
+            }
+        }
     }
 }

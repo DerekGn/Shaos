@@ -22,57 +22,41 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk.Devices.Parameters;
-
-namespace Shaos.Sdk.Devices
+namespace Shaos.Repository.Models.Devices
 {
     /// <summary>
-    /// Represents a <see cref="Device"/>
+    /// A device model
     /// </summary>
-    public class Device
+    public class Device : BaseEntity
     {
         /// <summary>
-        /// The <see cref="BatteryLevel"/> for this device
+        /// The <see cref="Device"/> last battery level
         /// </summary>
-        /// <remarks>
-        /// A <see cref="Device"/> optional battery level
-        /// </remarks>
-        public BatteryLevel? BatteryLevel { get; }
+        public uint? BatteryLevel { get; set; }
 
         /// <summary>
-        /// The created date of this <see cref="Device"/>
+        /// The <see cref="Device"/> instance name
         /// </summary>
-        public DateTime CreatedDate { get; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// The device identifier
+        /// The set of <see cref="BaseParameter"/>
         /// </summary>
-        public int Id { get; }
+        public IList<BaseParameter> Parameters { get; set; } = [];
 
         /// <summary>
-        /// The device name
+        /// The parent <see cref="PlugInInstance"/>
         /// </summary>
-        /// <remarks>
-        /// An optional <see cref="Device"/> name
-        /// </remarks>
-        public string? Name { get; }
+        public PlugInInstance? PlugInInstance { get; set; } = null;
 
         /// <summary>
-        /// The set of <see cref="Device"/> <see cref="BaseParameter"/>
+        /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
-        public IList<BaseParameter> Parameters { get; } = [];
+        public int? PlugInInstanceId { get; set; } = null;
 
         /// <summary>
-        /// The <see cref="SignalLevel"/> for this device
+        /// The <see cref="Device"/> last signal level
         /// </summary>
-        /// <remarks>
-        /// A <see cref="Device"/> optional signal level
-        /// </remarks>
-        public SignalLevel? SignalLevel { get; }
-
-        /// <summary>
-        /// The last update date of this <see cref="Device"/>
-        /// </summary>
-        public DateTime UpdatedDate { get; }
+        public int? SignalLevel { get; set; }
     }
 }

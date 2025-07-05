@@ -22,26 +22,34 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk.Devices.Parameters
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shaos.Repository.Models.Devices;
+
+namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// Represents a uint parameter
+    /// The <see cref="BaseParameter"/> EF configuration
     /// </summary>
-    public class UIntParameter : BaseParameter
+    public class BaseParameterEntityTypeConfiguration : IEntityTypeConfiguration<BaseParameter>
     {
-        private uint _value;
-
-        /// <summary>
-        /// The current <see cref="UIntParameter"/> value
-        /// </summary>
-        public uint Value
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<BaseParameter> builder)
         {
-            get => _value;
-            set
-            {
-#warning Trigger update event
-                _value = value;
-            }
+            builder
+                .Property(_ => _.Id);
+
+            builder
+                .Property(_ => _.Name)
+                .HasMaxLength(100);
+
+            builder
+                .Property(_ => _.ParameterType)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.Units)
+                .HasMaxLength(20);
         }
     }
 }

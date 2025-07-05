@@ -29,18 +29,18 @@ namespace Shaos.Sdk.Devices.Parameters
     /// </summary>
     public class BooleanParameter : BaseParameter
     {
-        private bool _state;
+        private bool _value;
 
         /// <summary>
         /// The current <see cref="BooleanParameter"/> value
         /// </summary>
-        public bool State
+        public bool Value
         {
-            get => _state;
+            get => _value;
             set
             {
 #warning Trigger update event
-                _state = value;
+                _value = value;
             }
         }
     }

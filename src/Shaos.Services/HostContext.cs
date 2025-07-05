@@ -24,49 +24,93 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
+using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Sdk.Devices;
+using Shaos.Services.Exceptions;
 using System.Runtime.CompilerServices;
+using DeviceModel = Shaos.Repository.Models.Devices.Device;
 
 namespace Shaos.Services
 {
+#warning TODO map device type
+
     /// <summary>
     /// A <see cref="IHostContext"/> implementation
     /// </summary>
     public class HostContext : IHostContext
     {
         private readonly ILogger<HostContext> _logger;
+        private readonly int _instanceIdentifier;
         private readonly IShaosRepository _repository;
-        private readonly int _plugInInstanceIdentifier;
 
         /// <summary>
         /// Create an instance of a <see cref="HostContext"/>
         /// </summary>
         /// <param name="logger">A <see cref="ILogger{T}"/> instance</param>
         /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
-        /// <param name="plugInInstanceIdentifier"></param>
+        /// <param name="instanceIdentifier"></param>
         public HostContext(ILogger<HostContext> logger,
                            IShaosRepository repository,
-                           int plugInInstanceIdentifier)
+                           int instanceIdentifier)
         {
             _logger = logger;
             _repository = repository;
-            _plugInInstanceIdentifier = plugInInstanceIdentifier;
+            _instanceIdentifier = instanceIdentifier;
         }
 
-        public Task<Device> CreateDeviceAsync(Device device, CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public async Task<Device> CreateDeviceAsync(Device device,
+                                                    CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var plugInInstance = await _repository.GetFirstOrDefaultAsync<PlugInInstance>(_ => _.Id == _instanceIdentifier,
+                                                                                          cancellationToken);
+
+            if (plugInInstance != null)
+            {
+                //_logger.LogInformation("Created Device: [{}] PlugInInstance: [{}]", );
+            }
+            else
+            {
+                _logger.LogWarning("Unable to resolve [{Type}] Id: [{Identifier}]",
+                    nameof(PlugInInstance),
+                    _instanceIdentifier);
+
+                throw new PlugInInstanceNotFoundException(_instanceIdentifier);
+            }
+
+            return new Device();
         }
 
-        public Task DeleteDeviceAsync(int identifier, CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public async Task DeleteDeviceAsync(int identifier,
+                                            CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var device = await _repository.GetFirstOrDefaultAsync<DeviceModel>(_ => _.Id == identifier && _.PlugInInstance!.Id == _instanceIdentifier,
+                                                                               cancellationToken);
+
+            if (device != null)
+            {
+                _logger.LogInformation("Deleting [{Device}] Id: [{Identifier}] For [{Type}] Id: [{InstanceIdentifier}]",
+                    nameof(DeviceModel), identifier, nameof(PlugInInstance), _instanceIdentifier);
+
+                await _repository.DeleteAsync<DeviceModel>(device.Id, cancellationToken);
+            }
+            else
+            {
+                _logger.LogInformation("No device found Id: [{Identifier}] Instance Identifier: [{InstanceIdentifier}]", identifier, _instanceIdentifier);
+            }
         }
 
-        public IAsyncEnumerable<Device> GetDevicesAsync(CancellationToken cancellationToken = default)
+        /// <inheritdoc/>
+        public async IAsyncEnumerable<Device> GetDevicesAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await foreach (var device in _repository.GetEnumerableAsync<DeviceModel>(_ => _.PlugInInstance!.Id == _instanceIdentifier,
+                                                                                     withNoTracking: false,
+                                                                                     cancellationToken: cancellationToken))
+            {
+                yield return new Device();
+            }
         }
     }
 }

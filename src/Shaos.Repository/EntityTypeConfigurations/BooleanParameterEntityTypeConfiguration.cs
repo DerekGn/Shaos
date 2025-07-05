@@ -22,26 +22,23 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk.Devices.Parameters
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shaos.Repository.Models.Devices;
+
+namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// Represents a uint parameter
+    /// The <see cref="BooleanParameter"/> EF configuration
     /// </summary>
-    public class UIntParameter : BaseParameter
+    public class BooleanParameterEntityTypeConfiguration : IEntityTypeConfiguration<BooleanParameter>
     {
-        private uint _value;
-
-        /// <summary>
-        /// The current <see cref="UIntParameter"/> value
-        /// </summary>
-        public uint Value
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<BooleanParameter> builder)
         {
-            get => _value;
-            set
-            {
-#warning Trigger update event
-                _value = value;
-            }
+            builder
+                .Property(_ => _.Value)
+                .IsRequired();
         }
     }
 }

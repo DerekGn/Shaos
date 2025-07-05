@@ -24,7 +24,24 @@
 
 namespace Shaos.Sdk.Devices.Parameters
 {
+    /// <summary>
+    /// Represents a float parameter
+    /// </summary>
     public class FloatParameter : BaseParameter
     {
+        private float _value;
+
+        /// <summary>
+        /// The current <see cref="FloatParameter"/> value
+        /// </summary>
+        public float Value
+        {
+            get => _value;
+            set
+            {
+#warning Trigger update event
+                _value = value;
+            }
+        }
     }
 }

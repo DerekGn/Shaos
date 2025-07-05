@@ -25,16 +25,16 @@
 namespace Shaos.Sdk.Devices.Parameters
 {
     /// <summary>
-    /// Represents a uint parameter
+    /// Represents a string parameter
     /// </summary>
-    public class UIntParameter : BaseParameter
+    public class StringParameter : BaseParameter
     {
-        private uint _value;
+        private string _value;
 
         /// <summary>
-        /// The current <see cref="UIntParameter"/> value
+        /// The current <see cref="StringParameter"/> value
         /// </summary>
-        public uint Value
+        public string Value
         {
             get => _value;
             set

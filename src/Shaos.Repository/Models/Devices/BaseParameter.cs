@@ -24,55 +24,36 @@
 
 using Shaos.Sdk.Devices.Parameters;
 
-namespace Shaos.Sdk.Devices
+namespace Shaos.Repository.Models.Devices
 {
     /// <summary>
-    /// Represents a <see cref="Device"/>
+    /// A device base parameter
     /// </summary>
-    public class Device
+    public abstract class BaseParameter : BaseEntity
     {
         /// <summary>
-        /// The <see cref="BatteryLevel"/> for this device
+        /// The parent <see cref="Device"/>
         /// </summary>
-        /// <remarks>
-        /// A <see cref="Device"/> optional battery level
-        /// </remarks>
-        public BatteryLevel? BatteryLevel { get; }
+        public Device? Device { get; set; }
 
         /// <summary>
-        /// The created date of this <see cref="Device"/>
+        /// The parent <see cref="Device"/> identifier
         /// </summary>
-        public DateTime CreatedDate { get; }
+        public int? DeviceId { get; set; }
 
         /// <summary>
-        /// The device identifier
+        /// The <see cref="BaseParameter"/> name
         /// </summary>
-        public int Id { get; }
-
-        /// <summary>
-        /// The device name
-        /// </summary>
-        /// <remarks>
-        /// An optional <see cref="Device"/> name
-        /// </remarks>
         public string? Name { get; }
 
         /// <summary>
-        /// The set of <see cref="Device"/> <see cref="BaseParameter"/>
+        /// The <see cref="ParameterType"/>
         /// </summary>
-        public IList<BaseParameter> Parameters { get; } = [];
+        public ParameterType? ParameterType { get; }
 
         /// <summary>
-        /// The <see cref="SignalLevel"/> for this device
+        /// The <see cref="BaseParameter"/> units
         /// </summary>
-        /// <remarks>
-        /// A <see cref="Device"/> optional signal level
-        /// </remarks>
-        public SignalLevel? SignalLevel { get; }
-
-        /// <summary>
-        /// The last update date of this <see cref="Device"/>
-        /// </summary>
-        public DateTime UpdatedDate { get; }
+        public string? Units { get; }
     }
 }

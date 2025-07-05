@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models.Devices;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
@@ -52,6 +53,11 @@ namespace Shaos.Repository.Models
         /// The name of this <see cref="PlugInInstance"/>
         /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>
+        /// </summary>
+        public IList<Device> Devices { get; set; } = [];
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]

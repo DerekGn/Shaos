@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Shaos.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,7 +24,7 @@ namespace Shaos.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PrimaryKey_LogLevelSwitch", x => x.Id);
+                    table.PrimaryKey("PK_LogLevelSwitches", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -40,7 +40,7 @@ namespace Shaos.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PrimaryKey_PlugInId", x => x.Id);
+                    table.PrimaryKey("PK_PlugIns", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -81,7 +81,7 @@ namespace Shaos.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PrimaryKey_PlugInInstanceId", x => x.Id);
+                    table.PrimaryKey("PK_PlugInInstances", x => x.Id);
                     table.ForeignKey(
                         name: "FK_PlugInInstances_PlugIns_PlugInId",
                         column: x => x.PlugInId,
@@ -89,14 +89,76 @@ namespace Shaos.Repository.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Device",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    BatteryLevel = table.Column<uint>(type: "INTEGER", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
+                    PlugInInstanceId = table.Column<int>(type: "INTEGER", nullable: true),
+                    SignalLevel = table.Column<int>(type: "INTEGER", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Device", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Device_PlugInInstances_PlugInInstanceId",
+                        column: x => x.PlugInInstanceId,
+                        principalTable: "PlugInInstances",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BaseParameter",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
+                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
+                    Value = table.Column<bool>(type: "INTEGER", nullable: true),
+                    FloatParameter_Value = table.Column<float>(type: "REAL", nullable: true),
+                    IntParameter_Value = table.Column<int>(type: "INTEGER", nullable: true),
+                    StringParameter_Value = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                    UIntParameter_Value = table.Column<uint>(type: "INTEGER", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BaseParameter", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BaseParameter_Device_DeviceId",
+                        column: x => x.DeviceId,
+                        principalTable: "Device",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_LogLevelSwitch_Name_Ascending",
+                name: "IX_BaseParameter_DeviceId",
+                table: "BaseParameter",
+                column: "DeviceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Device_PlugInInstanceId",
+                table: "Device",
+                column: "PlugInInstanceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogLevelSwitches_Name",
                 table: "LogLevelSwitches",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlugInInstance_Name_Ascending",
+                name: "IX_PlugInInstances_Name",
                 table: "PlugInInstances",
                 column: "Name",
                 unique: true);
@@ -107,7 +169,7 @@ namespace Shaos.Repository.Migrations
                 column: "PlugInId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlugIn_Name_Ascending",
+                name: "IX_PlugIns_Name",
                 table: "PlugIns",
                 column: "Name",
                 unique: true);
@@ -117,10 +179,16 @@ namespace Shaos.Repository.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BaseParameter");
+
+            migrationBuilder.DropTable(
                 name: "LogLevelSwitches");
 
             migrationBuilder.DropTable(
                 name: "Packages");
+
+            migrationBuilder.DropTable(
+                name: "Device");
 
             migrationBuilder.DropTable(
                 name: "PlugInInstances");
