@@ -30,10 +30,108 @@ namespace Shaos.Sdk.Devices.Parameters
     public enum ParameterType
     {
         /// <summary>
-        /// A <see cref="BaseParameter"/> represents air pressure
+        /// The absolute active energy
         /// </summary>
-        AirPressure,
+        AbsoluteActiveEnergy,
+        /// <summary>
+        /// The absolute reactive energy
+        /// </summary>
+        AbsoluteReactiveEnergy,
+        /// <summary>
+        /// The active power of the phase
+        /// </summary>
+        ActivePower,
+        /// <summary>
+        /// The apparent power of a phase
+        /// </summary>
+        ApparentPower,
+        /// <summary>
+        /// The current of a phase
+        /// </summary>
+        Current,
+        /// <summary>
+        /// The estimated carbon dioxide level
+        /// </summary>
+        eCo2,
+        /// <summary>
+        /// The equivalent ethanol level
+        /// </summary>
+        EtOH,
+        /// <summary>
+        /// Flow rate
+        /// </summary>
+        FlowRate,
+        /// <summary>
+        /// The forward active energy
+        /// </summary>
+        ForwardActiveEnergy,
+        /// <summary>
+        /// The forward reactive energy
+        /// </summary>
+        ForwardReactiveEnergy,
+        /// <summary>
+        /// Frequency
+        /// </summary>
+        Frequency,
+        /// <summary>
+        /// The Indoor air quality
+        /// </summary>
+        Iaq,
+        /// <summary>
+        /// The level
+        /// </summary>
+        Level,
+        /// <summary>
+        /// The phase angle of a phase
+        /// </summary>
+        PhaseAngle,
+        /// <summary>
+        /// The power factor of a phase
+        /// </summary>
+        PowerFactor,
+        /// <summary>
+        /// The pressure
+        /// </summary>
+        Pressure,
+        /// <summary>
+        /// Reactive power
+        /// </summary>
+        ReactivePower,
+        /// <summary>
+        /// Real power
+        /// </summary>
+        RealPower,
+        /// <summary>
+        /// Relative humidity
+        /// </summary>
         RelativeHumidity,
-        Temperature
+        /// <summary>
+        /// The reverse active power of a phase
+        /// </summary>
+        ReverseActiveEnergy,
+        /// <summary>
+        /// The reverse reactive power of a phase
+        /// </summary>
+        ReverseReactiveEnergy,
+        /// <summary>
+        /// The temperature
+        /// </summary>
+        Temperature,
+        /// <summary>
+        /// The total volatile organic compounds
+        /// </summary>
+        TVOC,
+        /// <summary>
+        /// The voltage
+        /// </summary>
+        Voltage,
+        /// <summary>
+        /// A voltage
+        /// </summary>
+        Volume,
+        /// <summary>
+        /// Rotational speed
+        /// </summary>
+        RotationSpeed
     }
 }
