@@ -211,11 +211,11 @@ namespace Shaos.Services.UnitTests
                                         AssemblyPath,
                                         new InstanceConfiguration(true, "configuration"));
 
-            _mockRepository.Setup(_ => _.GetAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
-                                                          It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
-                                                          It.IsAny<bool>(),
-                                                          It.IsAny<List<string>?>(),
-                                                          It.IsAny<CancellationToken>()))
+            _mockRepository.Setup(_ => _.GetEnumerableAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
+                                                                    It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                                                                    It.IsAny<bool>(),
+                                                                    It.IsAny<List<string>?>(),
+                                                                    It.IsAny<CancellationToken>()))
                 .Returns(plugIns.ToAsyncEnumerable());
 
             _mockFileStoreService
@@ -232,11 +232,11 @@ namespace Shaos.Services.UnitTests
 
             await _instanceHostService.StartInstancesAsync();
 
-            _mockRepository.Verify(_ => _.GetAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
-                                                           It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
-                                                           It.IsAny<bool>(),
-                                                           It.IsAny<List<string>?>(),
-                                                           It.IsAny<CancellationToken>()),
+            _mockRepository.Verify(_ => _.GetEnumerableAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
+                                                                     It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                                                                     It.IsAny<bool>(),
+                                                                     It.IsAny<List<string>?>(),
+                                                                     It.IsAny<CancellationToken>()),
                     Times.Once);
 
             _mockFileStoreService

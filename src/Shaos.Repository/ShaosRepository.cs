@@ -132,11 +132,35 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<T> GetAsync<T>(Expression<Func<T, bool>>? predicate = null,
-                                               Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-                                               bool withNoTracking = true,
-                                               List<string>? includeProperties = null,
-                                               CancellationToken cancellationToken = default) where T : BaseEntity
+        public Task<T?> GetByIdAsync<T>(int id,
+                                        bool withNoTracking = true,
+                                        List<string>? includeProperties = null,
+                                        CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            return _context
+                .Set<T>()
+                .GetByIdAsync(id,
+                              withNoTracking,
+                              includeProperties,
+                              cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<LogLevelSwitch?> GetByNameAsync(string name,
+                                                          CancellationToken cancellationToken = default)
+        {
+            return await _context
+                .LogLevelSwitches
+                .Where(_ => _.Name == name)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IAsyncEnumerable<T> GetEnumerableAsync<T>(Expression<Func<T, bool>>? predicate = null,
+                                                         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+                                                         bool withNoTracking = true,
+                                                         List<string>? includeProperties = null,
+                                                         CancellationToken cancellationToken = default) where T : BaseEntity
         {
             return _context
                 .Set<T>()
@@ -148,7 +172,7 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<T> GetAsync<T>([EnumeratorCancellation] CancellationToken cancellationToken = default) where T : BaseEntity
+        public async IAsyncEnumerable<T> GetEnumerableAsync<T>([EnumeratorCancellation] CancellationToken cancellationToken = default) where T : BaseEntity
         {
             await foreach (var item in _context
                 .Set<T>()
@@ -161,25 +185,19 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public Task<T?> GetByIdAsync<T>(int id,
-                                        bool withNoTracking = true,
-                                        List<string>? includeProperties = null,
-                                        CancellationToken cancellationToken = default) where T : BaseEntity
+        public Task<T?> GetFirstOrDefaultAsync<T>(Expression<Func<T, bool>>? predicate = null,
+                                                  CancellationToken cancellationToken = default) where T : BaseEntity
         {
-            return _context.Set<T>().GetByIdAsync(id,
-                                                     withNoTracking,
-                                                     includeProperties,
-                                                     cancellationToken);
-        }
+            var query = _context.Set<T>();
 
-        /// <inheritdoc/>
-        public async Task<LogLevelSwitch?> GetByNameAsync(string name,
-                                                          CancellationToken cancellationToken = default)
-        {
-            return await _context
-                .LogLevelSwitches
-                .Where(_ => _.Name == name)
-                .FirstOrDefaultAsync(cancellationToken);
+            if (predicate != null)
+            {
+                return query.FirstOrDefaultAsync(predicate, cancellationToken);
+            }
+            else
+            {
+                return query.FirstOrDefaultAsync(cancellationToken);
+            }
         }
 
         /// <inheritdoc/>

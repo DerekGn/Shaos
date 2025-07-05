@@ -562,11 +562,11 @@ namespace Shaos.Services.UnitTests
             };
 
             _mockRepository
-                .Setup(_ => _.GetAsync(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
-                                       It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
-                                       It.IsAny<bool>(),
-                                       It.IsAny<List<string>?>(),
-                                       It.IsAny<CancellationToken>()))
+                .Setup(_ => _.GetEnumerableAsync(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
+                                                 It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                                                 It.IsAny<bool>(),
+                                                 It.IsAny<List<string>?>(),
+                                                 It.IsAny<CancellationToken>()))
                 .Returns(new List<PlugIn>() { plugIn }.ToAsyncEnumerable());
 
             return plugIn;

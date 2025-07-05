@@ -88,28 +88,6 @@ namespace Shaos.Repository
                             CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
-        /// Get an <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEntity"/> instances
-        /// </summary>
-        /// <param name="predicate">A function to test an element for a condition.</param>
-        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="BaseEntity"/> instances</param>
-        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="BaseEntity"/></param>
-        /// <param name="includeProperties">The list of child properties to include in the query</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEntity"/> instances</returns>
-        IAsyncEnumerable<T> GetAsync<T>(Expression<Func<T, bool>>? predicate = null,
-                                        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-                                        bool withNoTracking = true,
-                                        List<string>? includeProperties = null,
-                                        CancellationToken cancellationToken = default) where T : BaseEntity;
-
-        /// <summary>
-        /// Get the <see cref="BaseEntity"/>
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>An <see cref="IAsyncEnumerable{T}"/> instance</returns>
-        IAsyncEnumerable<T> GetAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity;
-
-        /// <summary>
         /// Get a <see cref="BaseEntity"/> instance by identifier
         /// </summary>
         /// <param name="id">The identifier of the <see cref="BaseEntity"/></param>
@@ -130,6 +108,38 @@ namespace Shaos.Repository
         /// <returns>A <see cref="LogLevelSwitch"/></returns>
         Task<LogLevelSwitch?> GetByNameAsync(string name,
                                              CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get an <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEntity"/> instances
+        /// </summary>
+        /// <param name="predicate">A function to test an element for a condition.</param>
+        /// <param name="orderBy">The order by function to apply to the <see cref="IQueryable{T}"/> of <see cref="BaseEntity"/> instances</param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="BaseEntity"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEntity"/> instances</returns>
+        IAsyncEnumerable<T> GetEnumerableAsync<T>(Expression<Func<T, bool>>? predicate = null,
+                                                  Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+                                                  bool withNoTracking = true,
+                                                  List<string>? includeProperties = null,
+                                                  CancellationToken cancellationToken = default) where T : BaseEntity;
+
+        /// <summary>
+        /// Get the <see cref="BaseEntity"/>
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> instance</returns>
+        IAsyncEnumerable<T> GetEnumerableAsync<T>(CancellationToken cancellationToken = default) where T : BaseEntity;
+
+        /// <summary>
+        /// Get the first or default value matching the <paramref name="predicate"/>
+        /// </summary>
+        /// <typeparam name="T">The <see cref="BaseEntity"/></typeparam>
+        /// <param name="predicate">A function to test an element for a condition.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An instance of a <see cref="BaseEntity"/></returns>
+        Task<T?> GetFirstOrDefaultAsync<T>(Expression<Func<T, bool>>? predicate = null,
+                                           CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
         /// Get an <see cref="IQueryable{T}"/> of <see cref="BaseEntity"/> instances
