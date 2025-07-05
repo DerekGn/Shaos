@@ -23,6 +23,7 @@
 */
 
 using Microsoft.EntityFrameworkCore;
+using Shaos.Repository.EntityTypeConfigurations;
 using Shaos.Repository.Models;
 
 namespace Shaos.Repository
@@ -69,90 +70,7 @@ namespace Shaos.Repository
         /// <inheritdoc/>>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PlugIn>()
-                .HasKey(_ => _.Id)
-                .HasName("PrimaryKey_PlugInId");
-
-            modelBuilder
-               .Entity<PlugIn>()
-               .HasMany(_ => _.Instances)
-               .WithOne(_ => _.PlugIn)
-               .HasForeignKey(_ => _.PlugInId)
-               .IsRequired(false);
-
-            modelBuilder
-                .Entity<PlugIn>()
-                .Property(_ => _.Name)
-                .IsRequired()
-                .HasMaxLength(ModelConstants.MaxNameLength);
-
-            modelBuilder
-                .Entity<PlugIn>()
-                .Property(_ => _.Description)
-                .IsRequired()
-                .HasMaxLength(ModelConstants.MaxDescriptionLength);
-
-            modelBuilder
-                .Entity<PlugIn>()
-                .HasIndex(_ => _.Name )
-                .HasDatabaseName("IX_PlugIn_Name_Ascending")
-                .IsUnique(true);
-
-            modelBuilder
-                .Entity<PlugIn>()
-                .OwnsOne(
-                    _ => _.Package,
-                    _ =>
-                    {
-                        _.Property(_ => _.AssemblyFile).HasMaxLength(ModelConstants.MaxFilePathLength).IsRequired();
-                        _.Property(_ => _.FileName).HasMaxLength(ModelConstants.MaxNameLength).IsRequired();
-                        _.Property(_ => _.HasConfiguration).IsRequired();
-                        _.Property(_ => _.HasLogger).IsRequired();
-                        _.Property(_ => _.AssemblyVersion).HasMaxLength(ModelConstants.MaxVersionLength).IsRequired();
-                    });
-
-            modelBuilder.Entity<PlugInInstance>()
-                .HasKey(_ => _.Id)
-                .HasName("PrimaryKey_PlugInInstanceId");
-
-            modelBuilder
-                .Entity<PlugInInstance>()
-                .Property(_ => _.Name)
-                .IsRequired()
-                .HasMaxLength(ModelConstants.MaxNameLength);
-
-            modelBuilder
-               .Entity<PlugInInstance>()
-               .Property(_ => _.Description)
-               .IsRequired(false)
-               .HasMaxLength(ModelConstants.MaxDescriptionLength);
-
-            modelBuilder
-               .Entity<PlugInInstance>()
-               .HasIndex(_ => _.Name)
-               .HasDatabaseName("IX_PlugInInstance_Name_Ascending")
-               .IsUnique(true);
-
-            modelBuilder.Entity<LogLevelSwitch>()
-                .HasKey(_ => _.Id)
-                .HasName("PrimaryKey_LogLevelSwitch");
-
-            modelBuilder
-                .Entity<LogLevelSwitch>()
-                .Property(_ => _.Name)
-                .IsRequired()
-                .HasMaxLength(ModelConstants.MaxNameLength);
-
-            modelBuilder
-               .Entity<LogLevelSwitch>()
-               .HasIndex(_ => _.Name)
-               .HasDatabaseName("IX_LogLevelSwitch_Name_Ascending")
-               .IsUnique(true);
-
-            modelBuilder
-                .Entity<LogLevelSwitch>()
-                .Property(_ => _.Level)
-                .IsRequired();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PlugInEntityTypeConfiguration).Assembly);
         }
     }
 }
