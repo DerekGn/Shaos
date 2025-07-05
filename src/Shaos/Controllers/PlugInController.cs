@@ -215,8 +215,8 @@ namespace Shaos.Controllers
             OperationId = "GetPlugIns")]
         public async IAsyncEnumerable<PlugIn> GetPlugInsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var plugIns = Repository.GetAsync<ModelPlugIn>(includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)],
-                                                           cancellationToken: cancellationToken);
+            var plugIns = Repository.GetEnumerableAsync<ModelPlugIn>(includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)],
+                                                                     cancellationToken: cancellationToken);
 
             await foreach (var item in plugIns)
             {

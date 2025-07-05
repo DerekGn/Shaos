@@ -122,9 +122,9 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task StartInstancesAsync(CancellationToken cancellationToken = default)
         {
-            var plugIns = _repository.GetAsync<PlugIn>(_ => _.Package != null,
-                                                       includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
-                                                       cancellationToken: cancellationToken);
+            var plugIns = _repository.GetEnumerableAsync<PlugIn>(_ => _.Package != null,
+                                                                 includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
+                                                                 cancellationToken: cancellationToken);
 
             await foreach (var plugIn in plugIns)
             {

@@ -57,7 +57,7 @@ namespace Shaos.Services.Logging
         {
             _logger.LogInformation("Initialising logging configuration");
 
-            await foreach (var logSwitch in _repository.GetAsync<LogLevelSwitch>(cancellationToken))
+            await foreach (var logSwitch in _repository.GetEnumerableAsync<LogLevelSwitch>(cancellationToken))
             {
                 _logger.LogDebug("Updating LogLevelSwitch [{Name}] Level: [{Level}]", logSwitch.Name, logSwitch.Level);
 

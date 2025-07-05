@@ -69,7 +69,7 @@ namespace Shaos.Services.UnitTests.Logging
             };
 
             _mockRepository
-                .Setup(_ => _.GetAsync<LogLevelSwitch>(It.IsAny<CancellationToken>()))
+                .Setup(_ => _.GetEnumerableAsync<LogLevelSwitch>(It.IsAny<CancellationToken>()))
                 .Returns(logLevels.ToAsyncEnumerable());
 
             _mockLoggingConfiguration
