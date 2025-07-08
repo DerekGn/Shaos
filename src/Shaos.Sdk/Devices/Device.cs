@@ -32,17 +32,33 @@ namespace Shaos.Sdk.Devices
     public class Device
     {
         /// <summary>
+        /// Create an instance of a <see cref="Device"/>
+        /// </summary>
+        /// <param name="id">The identifier</param>
+        /// <param name="name">The device name</param>
+        /// <param name="parameters">The set of <see cref="BaseParameter"/> instances for this <see cref="Device"/></param>
+        /// <param name="batteryLevel">The optional battery level if the <see cref="Device"/> instance is battery powered</param>
+        /// <param name="signalLevel">The optional signal level if the <see cref="Device"/> is wireless</param>
+        public Device(int id,
+                      string name,
+                      IList<BaseParameter> parameters,
+                      BatteryLevel? batteryLevel,
+                      SignalLevel? signalLevel)
+        {
+            Id = id;
+            Name = name;
+            BatteryLevel = batteryLevel;
+            SignalLevel = signalLevel;
+            Parameters = parameters??[];
+        }
+
+        /// <summary>
         /// The <see cref="BatteryLevel"/> for this device
         /// </summary>
         /// <remarks>
         /// A <see cref="Device"/> optional battery level
         /// </remarks>
         public BatteryLevel? BatteryLevel { get; }
-
-        /// <summary>
-        /// The created date of this <see cref="Device"/>
-        /// </summary>
-        public DateTime CreatedDate { get; }
 
         /// <summary>
         /// The device identifier
@@ -55,7 +71,7 @@ namespace Shaos.Sdk.Devices
         /// <remarks>
         /// An optional <see cref="Device"/> name
         /// </remarks>
-        public string? Name { get; }
+        public string Name { get; }
 
         /// <summary>
         /// The set of <see cref="Device"/> <see cref="BaseParameter"/>
@@ -69,10 +85,5 @@ namespace Shaos.Sdk.Devices
         /// A <see cref="Device"/> optional signal level
         /// </remarks>
         public SignalLevel? SignalLevel { get; }
-
-        /// <summary>
-        /// The last update date of this <see cref="Device"/>
-        /// </summary>
-        public DateTime UpdatedDate { get; }
     }
 }

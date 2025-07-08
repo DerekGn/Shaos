@@ -42,6 +42,15 @@ namespace Shaos.Sdk.Devices
         public const int Minimum = -100;
 
         /// <summary>
+        /// Create an instance of a <see cref="SignalLevel"/>
+        /// </summary>
+        /// <param name="level">The signal level</param>
+        public SignalLevel(int level)
+        {
+            Level = level;
+        }
+
+        /// <summary>
         /// The signal level value
         /// </summary>
         public int Level

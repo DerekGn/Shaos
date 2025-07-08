@@ -31,6 +31,11 @@ namespace Shaos.Sdk.Devices.Parameters
     {
         private float _value;
 
+        public FloatParameter(int id, float value) : base(id)
+        {
+            Value = value;
+        }
+
         /// <summary>
         /// The current <see cref="FloatParameter"/> value
         /// </summary>

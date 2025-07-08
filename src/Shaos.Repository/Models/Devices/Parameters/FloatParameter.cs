@@ -22,10 +22,15 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices
+namespace Shaos.Repository.Models.Devices.Parameters
 {
     public class FloatParameter : BaseParameter
     {
-        public float Value { get; set; }
+        public FloatParameter(int id, float value) : base(id)
+        {
+            Value = value;
+        }
+
+        public float Value { get; }
     }
 }

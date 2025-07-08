@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models.Devices.Parameters;
+
 namespace Shaos.Repository.Models.Devices
 {
     /// <summary>

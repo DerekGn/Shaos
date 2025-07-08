@@ -22,10 +22,43 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices
+using Shaos.Sdk.Devices.Parameters;
+
+namespace Shaos.Repository.Models.Devices.Parameters
 {
-    public class UIntParameter : BaseParameter
+    /// <summary>
+    /// A device base parameter
+    /// </summary>
+    public abstract class BaseParameter : BaseEntity
     {
-        public uint Value { get; set; }
+        protected BaseParameter(int id)
+        {
+            Id = id;
+        }
+
+        /// <summary>
+        /// The parent <see cref="Device"/>
+        /// </summary>
+        public Device? Device { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="Device"/> identifier
+        /// </summary>
+        public int? DeviceId { get; set; }
+
+        /// <summary>
+        /// The <see cref="BaseParameter"/> name
+        /// </summary>
+        public string? Name { get; }
+
+        /// <summary>
+        /// The <see cref="ParameterType"/>
+        /// </summary>
+        public ParameterType? ParameterType { get; }
+
+        /// <summary>
+        /// The <see cref="BaseParameter"/> units
+        /// </summary>
+        public string? Units { get; }
     }
 }

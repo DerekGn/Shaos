@@ -31,6 +31,11 @@ namespace Shaos.Sdk.Devices.Parameters
     {
         private int _value;
 
+        public IntParameter(int id, int value) : base(id)
+        {
+            Value = value;
+        }
+
         /// <summary>
         /// The current <see cref="IntParameter"/> value
         /// </summary>

@@ -35,6 +35,14 @@ namespace Shaos.Repository
     public interface IShaosRepository
     {
         /// <summary>
+        /// Add a <see cref="BaseEntity"/> to the repository
+        /// </summary>
+        /// <typeparam name="T">The <see cref="BaseEntity"/></typeparam>
+        /// <param name="entity">The entity to add to the repository</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : BaseEntity;
+
+        /// <summary>
         /// Determine if a <see cref="BaseEntity"/> exists in the store based on <paramref name="predicate"/>
         /// </summary>
         /// <param name="predicate">A function to test an element for a condition.</param>
@@ -81,6 +89,7 @@ namespace Shaos.Repository
         /// <summary>
         /// Delete a <see cref="BaseEntity"/>
         /// </summary>
+        /// <typeparam name="T">The <see cref="BaseEntity"/></typeparam>
         /// <param name="id">The identifier of the <see cref="BaseEntity"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of rows deleted</returns>

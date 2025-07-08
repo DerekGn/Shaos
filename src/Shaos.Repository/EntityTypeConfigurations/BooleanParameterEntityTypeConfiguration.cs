@@ -24,17 +24,17 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models.Devices;
+using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// The <see cref="BooleanParameter"/> EF configuration
+    /// The <see cref="BoolParameter"/> EF configuration
     /// </summary>
-    public class BooleanParameterEntityTypeConfiguration : IEntityTypeConfiguration<BooleanParameter>
+    public class BooleanParameterEntityTypeConfiguration : IEntityTypeConfiguration<BoolParameter>
     {
         /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<BooleanParameter> builder)
+        public void Configure(EntityTypeBuilder<BoolParameter> builder)
         {
             builder
                 .Property(_ => _.Value)

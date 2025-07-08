@@ -28,8 +28,9 @@ using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Sdk.Devices;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
 using System.Runtime.CompilerServices;
-using DeviceModel = Shaos.Repository.Models.Devices.Device;
+using ModelDevice = Shaos.Repository.Models.Devices.Device;
 
 namespace Shaos.Services
 {
@@ -66,9 +67,17 @@ namespace Shaos.Services
             var plugInInstance = await _repository.GetFirstOrDefaultAsync<PlugInInstance>(_ => _.Id == _instanceIdentifier,
                                                                                           cancellationToken);
 
+            ModelDevice modelDevice = device.ToModel();
+
             if (plugInInstance != null)
             {
-                //_logger.LogInformation("Created Device: [{}] PlugInInstance: [{}]", );
+                await _repository.AddAsync(modelDevice, cancellationToken);
+
+                await _repository.SaveChangesAsync(cancellationToken);
+                
+                _logger.LogInformation("Created PlugInInstance: [{InstanceId}] Device: [{DeviceId}]",
+                                       _instanceIdentifier,
+                                       modelDevice.Id);
             }
             else
             {
@@ -79,22 +88,22 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotFoundException(_instanceIdentifier);
             }
 
-            return new Device();
+            return device;
         }
 
         /// <inheritdoc/>
         public async Task DeleteDeviceAsync(int identifier,
                                             CancellationToken cancellationToken = default)
         {
-            var device = await _repository.GetFirstOrDefaultAsync<DeviceModel>(_ => _.Id == identifier && _.PlugInInstance!.Id == _instanceIdentifier,
+            var device = await _repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.Id == identifier && _.PlugInInstance!.Id == _instanceIdentifier,
                                                                                cancellationToken);
 
             if (device != null)
             {
                 _logger.LogInformation("Deleting [{Device}] Id: [{Identifier}] For [{Type}] Id: [{InstanceIdentifier}]",
-                    nameof(DeviceModel), identifier, nameof(PlugInInstance), _instanceIdentifier);
+                    nameof(ModelDevice), identifier, nameof(PlugInInstance), _instanceIdentifier);
 
-                await _repository.DeleteAsync<DeviceModel>(device.Id, cancellationToken);
+                await _repository.DeleteAsync<ModelDevice>(device.Id, cancellationToken);
             }
             else
             {
@@ -105,11 +114,11 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async IAsyncEnumerable<Device> GetDevicesAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach (var device in _repository.GetEnumerableAsync<DeviceModel>(_ => _.PlugInInstance!.Id == _instanceIdentifier,
+            await foreach (var device in _repository.GetEnumerableAsync<ModelDevice>(_ => _.PlugInInstance!.Id == _instanceIdentifier,
                                                                                      withNoTracking: false,
                                                                                      cancellationToken: cancellationToken))
             {
-                yield return new Device();
+                yield return device.ToSdk();
             }
         }
     }

@@ -58,6 +58,15 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
+        public async Task AddAsync<T>(T entity,
+                                      CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            await _context
+                .Set<T>()
+                .AddAsync(entity, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task<bool> AnyAsync<T>(Expression<Func<T, bool>>? predicate,
                                             CancellationToken cancellationToken = default) where T : BaseEntity
         {

@@ -27,12 +27,17 @@ namespace Shaos.Sdk.Devices.Parameters
     /// <summary>
     /// Represents a boolean parameter
     /// </summary>
-    public class BooleanParameter : BaseParameter
+    public class BoolParameter : BaseParameter
     {
         private bool _value;
 
+        public BoolParameter(int id, bool value) : base(id)
+        {
+            Value = value;
+        }
+
         /// <summary>
-        /// The current <see cref="BooleanParameter"/> value
+        /// The current <see cref="BoolParameter"/> value
         /// </summary>
         public bool Value
         {

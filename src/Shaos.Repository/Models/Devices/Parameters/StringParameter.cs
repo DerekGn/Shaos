@@ -22,10 +22,15 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices
+namespace Shaos.Repository.Models.Devices.Parameters
 {
-    public class BooleanParameter : BaseParameter
+    public class StringParameter : BaseParameter
     {
-        public bool Value { get; set; }
+        public StringParameter(int id, string value) : base(id)
+        {
+            Value = value;
+        }
+
+        public string Value { get; set; }
     }
 }

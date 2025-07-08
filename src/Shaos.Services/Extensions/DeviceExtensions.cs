@@ -22,44 +22,41 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk.Devices
+using Shaos.Sdk.Devices;
+
+namespace Shaos.Services.Extensions
 {
-    /// <summary>
-    /// Represents a battery level for a <see cref="Device"/>
-    /// </summary>
-    public class BatteryLevel
+    internal static class DeviceExtensions
     {
-        /// <summary>
-        /// The maximum value allowable for the <see cref="Level"/>
-        /// </summary>
-        public const uint Maximum = 100;
-
-        /// <summary>
-        /// The minimal value allowable for the <see cref="Level"/>
-        /// </summary>
-        public const uint Minimum = 0;
-
-        private uint _level;
-
-        /// <summary>
-        /// Create an instance of a <see cref="BatteryLevel"/>
-        /// </summary>
-        /// <param name="level">The battery level</param>
-        public BatteryLevel(uint level)
+        public static Repository.Models.Devices.Device ToModel(this Device device)
         {
-            Level = level;
+            return new Repository.Models.Devices.Device()
+            {
+                Id = device.Id,
+                Name = device.Name,
+                BatteryLevel = device.BatteryLevel?.Level,
+                Parameters = device.Parameters.ToModel(),
+                SignalLevel = device.SignalLevel?.Level,
+            };
         }
 
-        /// <summary>
-        /// The battery level value
-        /// </summary>
-        public uint Level
+        public static Device ToSdk(this Repository.Models.Devices.Device device)
         {
-            get => _level;
-            set
-            {
-                _level = value;
-            }
+            return new Device(device.Id,
+                                 device.Name,
+                                 device.Parameters.ToSdk(),
+                                 device.BatteryLevel.ToSdk(),
+                                 device.SignalLevel.ToSdk());
+        }
+
+        public static BatteryLevel? ToSdk(this uint? value)
+        {
+            return value != null ? new BatteryLevel((uint)value!) : null;
+        }
+
+        public static SignalLevel? ToSdk(this int? value)
+        {
+            return value != null ? new SignalLevel((int)value!) : null;
         }
     }
 }

@@ -31,8 +31,13 @@ namespace Shaos.Sdk.Devices.Parameters
     {
         private uint _value;
 
+        public UIntParameter(int id, uint value) : base(id)
+        {
+            Value = value;
+        }
+
         /// <summary>
-        /// The current <see cref="UIntParameter"/> value
+        /// The current <see cref="FloatParameter"/> value
         /// </summary>
         public uint Value
         {

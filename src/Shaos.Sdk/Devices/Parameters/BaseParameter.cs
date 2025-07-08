@@ -25,10 +25,20 @@
 namespace Shaos.Sdk.Devices.Parameters
 {
     /// <summary>
-    /// A device base parameter
+    /// A device <see cref="BaseParameter"/>
     /// </summary>
     public abstract class BaseParameter
     {
+        protected BaseParameter(int id)
+        {
+            Id = id;
+        }
+
+        /// <summary>
+        /// The <see cref="BaseParameter"/> identifier
+        /// </summary>
+        public int Id { get; }
+
         /// <summary>
         /// The <see cref="BaseParameter"/> name
         /// </summary>

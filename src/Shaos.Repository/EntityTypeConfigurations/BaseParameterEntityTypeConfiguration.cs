@@ -24,7 +24,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models.Devices;
+using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Repository.EntityTypeConfigurations
 {
