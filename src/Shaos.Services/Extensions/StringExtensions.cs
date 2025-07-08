@@ -59,11 +59,6 @@ namespace Shaos.Services.Extensions
             }
         }
 
-        public static bool IsEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
-        }
-
         public static bool IsEmptyOrWhiteSpace(this string value)
         {
             return string.IsNullOrWhiteSpace(value);
