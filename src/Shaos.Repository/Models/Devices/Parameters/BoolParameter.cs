@@ -24,13 +24,14 @@
 
 namespace Shaos.Repository.Models.Devices.Parameters
 {
+    /// <summary>
+    /// Represents a boolean parameter
+    /// </summary>
     public class BoolParameter : BaseParameter
     {
-        public BoolParameter(int id, bool value) : base(id)
-        {
-            Value = value;
-        }
-
+        /// <summary>
+        /// The boolean value
+        /// </summary>
         public bool Value { get; set; }
     }
 }

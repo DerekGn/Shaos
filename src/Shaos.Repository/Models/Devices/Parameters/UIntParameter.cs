@@ -24,13 +24,14 @@
 
 namespace Shaos.Repository.Models.Devices.Parameters
 {
+    /// <summary>
+    /// Represents an unsigned parameter
+    /// </summary>
     public class UIntParameter : BaseParameter
     {
-        public UIntParameter(int id, uint value) : base(id)
-        {
-            Value = value;
-        }
-
+        /// <summary>
+        /// The current value
+        /// </summary>
         public uint Value { get; set; }
     }
 }

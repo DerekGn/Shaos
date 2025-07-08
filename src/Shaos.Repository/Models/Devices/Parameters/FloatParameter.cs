@@ -24,13 +24,14 @@
 
 namespace Shaos.Repository.Models.Devices.Parameters
 {
+    /// <summary>
+    /// Represents a float parameter
+    /// </summary>
     public class FloatParameter : BaseParameter
     {
-        public FloatParameter(int id, float value) : base(id)
-        {
-            Value = value;
-        }
-
-        public float Value { get; }
+        /// <summary>
+        /// The current value
+        /// </summary>
+        public float Value { get; set; }
     }
 }

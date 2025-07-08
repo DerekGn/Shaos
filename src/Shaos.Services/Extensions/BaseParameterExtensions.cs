@@ -96,23 +96,58 @@ namespace Shaos.Services.Extensions
             switch (type)
             {
                 case Type _ when type == typeof(Sdk.Devices.Parameters.BoolParameter):
-                    result = new BoolParameter(parameter.Id, ((Sdk.Devices.Parameters.BoolParameter)parameter).Value);
+                    result = new BoolParameter()
+                    {
+                        Id = parameter.Id,
+                        Name = parameter.Name,
+                        ParameterType = parameter.ParameterType,
+                        Units = parameter.Units,
+                        Value = ((Sdk.Devices.Parameters.BoolParameter)parameter).Value
+                    };
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.FloatParameter):
-                    result = new FloatParameter(parameter.Id, ((Sdk.Devices.Parameters.FloatParameter)parameter).Value);
+                    result = new FloatParameter()
+                    {
+                        Id = parameter.Id,
+                        Name = parameter.Name,
+                        ParameterType = parameter.ParameterType,
+                        Units = parameter.Units,
+                        Value = ((Sdk.Devices.Parameters.FloatParameter)parameter).Value
+                    };
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.IntParameter):
-                    result = new IntParameter(parameter.Id, ((Sdk.Devices.Parameters.IntParameter)parameter).Value);
+                    result = new IntParameter()
+                    {
+                        Id = parameter.Id,
+                        Name = parameter.Name,
+                        ParameterType = parameter.ParameterType,
+                        Units = parameter.Units,
+                        Value = ((Sdk.Devices.Parameters.IntParameter)parameter).Value
+                    };
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.StringParameter):
-                    result = new StringParameter(parameter.Id, ((Sdk.Devices.Parameters.StringParameter)parameter).Value);
+                    result = new StringParameter()
+                    {
+                        Id = parameter.Id,
+                        Name = parameter.Name,
+                        ParameterType = parameter.ParameterType,
+                        Units = parameter.Units,
+                        Value = ((Sdk.Devices.Parameters.StringParameter)parameter).Value
+                    };
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.UIntParameter):
-                    result = new UIntParameter(parameter.Id, ((Sdk.Devices.Parameters.UIntParameter)parameter).Value);
+                    result = new UIntParameter()
+                    {
+                        Id = parameter.Id,
+                        Name = parameter.Name,
+                        ParameterType = parameter.ParameterType,
+                        Units = parameter.Units,
+                        Value = ((Sdk.Devices.Parameters.UIntParameter)parameter).Value
+                    };
                     break;
             }
 

@@ -73,11 +73,11 @@ namespace Shaos.Services.UnitTests
                 SignalLevel = 3,
             };
 
-            deviceModel.Parameters.Add(new BoolParameter(1, true));
-            deviceModel.Parameters.Add(new FloatParameter(2, 2.0f));
-            deviceModel.Parameters.Add(new IntParameter(3, 3));
-            deviceModel.Parameters.Add(new StringParameter(4, "four"));
-            deviceModel.Parameters.Add(new UIntParameter(5, 5));
+            deviceModel.Parameters.Add(new BoolParameter() { });
+            deviceModel.Parameters.Add(new FloatParameter() { });
+            deviceModel.Parameters.Add(new IntParameter());
+            deviceModel.Parameters.Add(new StringParameter());
+            deviceModel.Parameters.Add(new UIntParameter());
 
             List<DeviceModel> devices =
             [
@@ -102,8 +102,12 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(1, result.Id);
             Assert.NotNull(result.Name);
             Assert.NotNull(result.Parameters);
+            Assert.NotEmpty(result.Parameters);
             Assert.NotNull(result.BatteryLevel);
             Assert.NotNull(result.SignalLevel);
+
+            Assert.Equal(1, result.Parameters[0].Id);
+            Assert.Equal("name", result.Parameters[0].Name);
         }
     }
 }

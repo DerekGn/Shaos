@@ -31,11 +31,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
     /// </summary>
     public abstract class BaseParameter : BaseEntity
     {
-        protected BaseParameter(int id)
-        {
-            Id = id;
-        }
-
         /// <summary>
         /// The parent <see cref="Device"/>
         /// </summary>
@@ -49,16 +44,16 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The <see cref="BaseParameter"/> name
         /// </summary>
-        public string? Name { get; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// The <see cref="ParameterType"/>
         /// </summary>
-        public ParameterType? ParameterType { get; }
+        public ParameterType? ParameterType { get; set; }
 
         /// <summary>
         /// The <see cref="BaseParameter"/> units
         /// </summary>
-        public string? Units { get; }
+        public string? Units { get; set; }
     }
 }

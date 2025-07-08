@@ -24,13 +24,14 @@
 
 namespace Shaos.Repository.Models.Devices.Parameters
 {
+    /// <summary>
+    /// Represents an integer parameter
+    /// </summary>
     public class IntParameter : BaseParameter
     {
-        public IntParameter(int id, int value) : base(id)
-        {
-            Value = value;
-        }
-
+        /// <summary>
+        /// The current value
+        /// </summary>
         public int Value { get; set; }
     }
 }

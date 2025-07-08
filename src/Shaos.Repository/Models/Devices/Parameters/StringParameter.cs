@@ -24,13 +24,14 @@
 
 namespace Shaos.Repository.Models.Devices.Parameters
 {
+    /// <summary>
+    /// Represents a string
+    /// </summary>
     public class StringParameter : BaseParameter
     {
-        public StringParameter(int id, string value) : base(id)
-        {
-            Value = value;
-        }
-
+        /// <summary>
+        /// The current value
+        /// </summary>
         public string Value { get; set; }
     }
 }
