@@ -29,12 +29,12 @@ namespace Shaos.Sdk.Devices.Parameters
     /// </summary>
     public abstract class BaseParameter
     {
-        protected BaseParameter(int id, ParameterType parameterType, string? name, string? units)
+        protected BaseParameter(int id, string? name, string? units, ParameterType? parameterType)
         {
             Id = id;
-            ParameterType = parameterType;
             Name = name;
             Units = units;
+            ParameterType = parameterType;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Shaos.Sdk.Devices.Parameters
         /// <summary>
         /// The <see cref="ParameterType"/>
         /// </summary>
-        public ParameterType ParameterType { get; }
+        public ParameterType? ParameterType { get; }
 
         /// <summary>
         /// The <see cref="BaseParameter"/> units

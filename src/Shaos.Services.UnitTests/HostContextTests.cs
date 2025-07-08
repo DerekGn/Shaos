@@ -73,7 +73,7 @@ namespace Shaos.Services.UnitTests
                 SignalLevel = 3,
             };
 
-            deviceModel.Parameters.Add(new BoolParameter() { });
+            deviceModel.Parameters.Add(new BoolParameter() { Id = 1, Name = "name", Units = "units", Value = true, ParameterType = Sdk.Devices.Parameters.ParameterType.AbsoluteActiveEnergy });
             deviceModel.Parameters.Add(new FloatParameter() { });
             deviceModel.Parameters.Add(new IntParameter());
             deviceModel.Parameters.Add(new StringParameter());
@@ -103,11 +103,16 @@ namespace Shaos.Services.UnitTests
             Assert.NotNull(result.Name);
             Assert.NotNull(result.Parameters);
             Assert.NotEmpty(result.Parameters);
+            Assert.Equal(5, result.Parameters.Count);
             Assert.NotNull(result.BatteryLevel);
             Assert.NotNull(result.SignalLevel);
 
+            Assert.IsType<Sdk.Devices.Parameters.BoolParameter>(result.Parameters[0]);
+
             Assert.Equal(1, result.Parameters[0].Id);
             Assert.Equal("name", result.Parameters[0].Name);
+            Assert.Equal("units", result.Parameters[0].Units);
+            Assert.Equal(Sdk.Devices.Parameters.ParameterType.AbsoluteActiveEnergy, result.Parameters[0].ParameterType);
         }
     }
 }

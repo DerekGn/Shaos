@@ -49,7 +49,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The <see cref="ParameterType"/>
         /// </summary>
-        public ParameterType ParameterType { get; set; }
+        public ParameterType? ParameterType { get; set; }
 
         /// <summary>
         /// The <see cref="BaseParameter"/> units

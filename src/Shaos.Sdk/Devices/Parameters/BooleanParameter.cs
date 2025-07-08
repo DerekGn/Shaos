@@ -33,9 +33,9 @@ namespace Shaos.Sdk.Devices.Parameters
 
         public BoolParameter(int id,
                              bool value,
-                             ParameterType parameterType,
-                             string? name,
-                             string? units) : base(id, parameterType, name, units)
+                              string? name,
+                              string? units,
+                              ParameterType? parameterType) : base(id, name, units, parameterType)
         {
             Value = value;
         }

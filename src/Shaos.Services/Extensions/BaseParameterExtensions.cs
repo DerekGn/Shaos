@@ -71,41 +71,41 @@ namespace Shaos.Services.Extensions
                 case Type _ when type == typeof(BoolParameter):
                     result = new Sdk.Devices.Parameters.BoolParameter(parameter.Id,
                                                                       ((BoolParameter)parameter).Value,
-                                                                      parameter.ParameterType,
                                                                       parameter.Name,
-                                                                      parameter.Units);
+                                                                      parameter.Units,
+                                                                      parameter.ParameterType);
                     break;
 
                 case Type _ when type == typeof(FloatParameter):
                     result = new Sdk.Devices.Parameters.FloatParameter(parameter.Id,
                                                                        ((FloatParameter)parameter).Value,
-                                                                       parameter.ParameterType,
                                                                        parameter.Name,
-                                                                       parameter.Units);
+                                                                       parameter.Units,
+                                                                       parameter.ParameterType);
                     break;
 
                 case Type _ when type == typeof(IntParameter):
                     result = new Sdk.Devices.Parameters.IntParameter(parameter.Id,
                                                                      ((IntParameter)parameter).Value,
-                                                                     parameter.ParameterType,
                                                                      parameter.Name,
-                                                                     parameter.Units);
+                                                                     parameter.Units,
+                                                                     parameter.ParameterType);
                     break;
 
                 case Type _ when type == typeof(BoolParameter):
                     result = new Sdk.Devices.Parameters.StringParameter(parameter.Id,
                                                                         ((StringParameter)parameter).Value,
-                                                                        parameter.ParameterType,
                                                                         parameter.Name,
-                                                                        parameter.Units);
+                                                                        parameter.Units,
+                                                                        parameter.ParameterType);
                     break;
 
                 case Type _ when type == typeof(IntParameter):
                     result = new Sdk.Devices.Parameters.UIntParameter(parameter.Id,
                                                                       ((UIntParameter)parameter).Value,
-                                                                      parameter.ParameterType,
                                                                       parameter.Name,
-                                                                      parameter.Units);
+                                                                      parameter.Units,
+                                                                      parameter.ParameterType);
                     break;
             }
 

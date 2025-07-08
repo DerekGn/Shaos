@@ -34,8 +34,6 @@ using ModelDevice = Shaos.Repository.Models.Devices.Device;
 
 namespace Shaos.Services
 {
-#warning TODO map device type
-
     /// <summary>
     /// A <see cref="IHostContext"/> implementation
     /// </summary>
