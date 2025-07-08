@@ -25,8 +25,10 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository;
+using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk.Devices;
+using Shaos.Services.Exceptions;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
 using System.Linq.Expressions;
@@ -46,6 +48,32 @@ namespace Shaos.Services.UnitTests
         {
             _mockRepository = new Mock<IShaosRepository>();
             _hostContext = new HostContext(LoggerFactory!.CreateLogger<HostContext>(), _mockRepository.Object, 10);
+        }
+
+        [Fact]
+        public async Task TestCreateDeviceAsync()
+        {
+            _mockRepository
+                .Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<PlugInInstance, bool>>?>(),
+                                                     It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugInInstance());
+
+            Device device = CreateDevice();
+
+            var result = await _hostContext.CreateDeviceAsync(device);
+
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task TestCreateDevicePlugInNotFoundExceptionAsync()
+        {
+            Device device = CreateDevice();
+
+            var exception = await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(async () => await _hostContext.CreateDeviceAsync(device));
+
+            Assert.NotNull(exception);
+            Assert.Equal(10, exception.Id);
         }
 
         [Fact]
@@ -93,7 +121,7 @@ namespace Shaos.Services.UnitTests
 
             Device? result = null;
 
-            await foreach(var device in _hostContext.GetDevicesAsync())
+            await foreach (var device in _hostContext.GetDevicesAsync())
             {
                 result = device;
             }
@@ -113,6 +141,19 @@ namespace Shaos.Services.UnitTests
             Assert.Equal("name", result.Parameters[0].Name);
             Assert.Equal("units", result.Parameters[0].Units);
             Assert.Equal(Sdk.Devices.Parameters.ParameterType.AbsoluteActiveEnergy, result.Parameters[0].ParameterType);
+        }
+
+        private static Device CreateDevice()
+        {
+            List<Sdk.Devices.Parameters.BaseParameter> parameters = [
+                new Sdk.Devices.Parameters.BoolParameter(1,true,"name","units",Sdk.Devices.Parameters.ParameterType.Pressure),
+                new Sdk.Devices.Parameters.FloatParameter(1,2.0f,"name","units",Sdk.Devices.Parameters.ParameterType.Pressure),
+                new Sdk.Devices.Parameters.IntParameter(1,-3,"name","units",Sdk.Devices.Parameters.ParameterType.Pressure),
+                new Sdk.Devices.Parameters.StringParameter(1,"value","name","units",Sdk.Devices.Parameters.ParameterType.Pressure),
+                new Sdk.Devices.Parameters.UIntParameter(1,4,"name","units",Sdk.Devices.Parameters.ParameterType.Pressure)
+                ];
+
+            return new Device(1, "name", parameters, new BatteryLevel(1), new SignalLevel(-2));
         }
     }
 }

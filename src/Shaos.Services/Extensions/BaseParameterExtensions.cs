@@ -92,7 +92,7 @@ namespace Shaos.Services.Extensions
                                                                      parameter.ParameterType);
                     break;
 
-                case Type _ when type == typeof(BoolParameter):
+                case Type _ when type == typeof(StringParameter):
                     result = new Sdk.Devices.Parameters.StringParameter(parameter.Id,
                                                                         ((StringParameter)parameter).Value,
                                                                         parameter.Name,
@@ -100,7 +100,7 @@ namespace Shaos.Services.Extensions
                                                                         parameter.ParameterType);
                     break;
 
-                case Type _ when type == typeof(IntParameter):
+                case Type _ when type == typeof(UIntParameter):
                     result = new Sdk.Devices.Parameters.UIntParameter(parameter.Id,
                                                                       ((UIntParameter)parameter).Value,
                                                                       parameter.Name,
