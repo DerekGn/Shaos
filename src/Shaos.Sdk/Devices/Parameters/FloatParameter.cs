@@ -31,7 +31,11 @@ namespace Shaos.Sdk.Devices.Parameters
     {
         private float _value;
 
-        public FloatParameter(int id, float value) : base(id)
+        public FloatParameter(int id,
+                              float value,
+                              ParameterType parameterType,
+                              string? name,
+                              string? units) : base(id, parameterType, name, units)
         {
             Value = value;
         }

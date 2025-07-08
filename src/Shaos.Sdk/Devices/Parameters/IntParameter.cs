@@ -31,7 +31,11 @@ namespace Shaos.Sdk.Devices.Parameters
     {
         private int _value;
 
-        public IntParameter(int id, int value) : base(id)
+        public IntParameter(int id,
+                            int value,
+                            ParameterType parameterType,
+                            string? name,
+                            string? units) : base(id, parameterType, name, units)
         {
             Value = value;
         }
