@@ -31,6 +31,14 @@ namespace Shaos.Sdk.Devices.Parameters
     {
         private bool _value;
 
+        /// <summary>
+        /// Create an instance of a <see cref="BoolParameter"/>
+        /// </summary>
+        /// <param name="id">The identifier of the parameter</param>
+        /// <param name="value">The value of the parameter</param>
+        /// <param name="name">The name of the parameter</param>
+        /// <param name="units">The units of this parameter</param>
+        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
         public BoolParameter(int id,
                              bool value,
                               string? name,

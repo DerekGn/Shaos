@@ -24,6 +24,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Shaos.Sdk;
+using Shaos.Sdk.Exceptions;
 
 namespace Shaos.Services.Runtime.Exceptions
 {

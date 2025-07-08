@@ -27,7 +27,8 @@ using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Sdk.Devices;
-using Shaos.Services.Exceptions;
+using Shaos.Sdk.Devices.Parameters;
+using Shaos.Sdk.Exceptions;
 using Shaos.Services.Extensions;
 using System.Runtime.CompilerServices;
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
@@ -72,7 +73,7 @@ namespace Shaos.Services
                 await _repository.AddAsync(modelDevice, cancellationToken);
 
                 await _repository.SaveChangesAsync(cancellationToken);
-                
+
                 _logger.LogInformation("Created PlugInInstance: [{InstanceId}] Device: [{DeviceId}]",
                                        _instanceIdentifier,
                                        modelDevice.Id);
@@ -80,33 +81,77 @@ namespace Shaos.Services
             else
             {
                 _logger.LogWarning("Unable to resolve [{Type}] Id: [{Identifier}]",
-                    nameof(PlugInInstance),
-                    _instanceIdentifier);
+                                   nameof(PlugInInstance),
+                                   _instanceIdentifier);
 
-                throw new PlugInInstanceNotFoundException(_instanceIdentifier);
+                throw new DeviceParentNotFoundException(_instanceIdentifier);
             }
 
             return device;
         }
 
         /// <inheritdoc/>
-        public async Task DeleteDeviceAsync(int identifier,
+        public async Task<Device> CreateDeviceParameterAsync(int id,
+                                                             BaseParameter parameter,
+                                                             CancellationToken cancellationToken = default)
+        {
+            var device = await ResolveDeviceAsync(id, cancellationToken);
+
+            if (device == null)
+            {
+                throw new DeviceNotFoundException(id);
+            }
+            else
+            {
+                device.Parameters.Add(parameter.ToModel()!);
+
+                await _repository.SaveChangesAsync(cancellationToken);
+            }
+
+            return device.ToSdk();
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteDeviceAsync(int id,
                                             CancellationToken cancellationToken = default)
         {
-            var device = await _repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.Id == identifier && _.PlugInInstance!.Id == _instanceIdentifier,
-                                                                               cancellationToken);
+            var device = await ResolveDeviceAsync(id, cancellationToken);
 
             if (device != null)
             {
                 _logger.LogInformation("Deleting [{Device}] Id: [{Identifier}] For [{Type}] Id: [{InstanceIdentifier}]",
-                    nameof(ModelDevice), identifier, nameof(PlugInInstance), _instanceIdentifier);
+                                       nameof(ModelDevice),
+                                       id,
+                                       nameof(PlugInInstance),
+                                       _instanceIdentifier);
 
                 await _repository.DeleteAsync<ModelDevice>(device.Id, cancellationToken);
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<Device> DeleteDeviceParameterAsync(int id,
+                                                             int parameterId,
+                                                             CancellationToken cancellationToken = default)
+        {
+            var device = await ResolveDeviceAsync(id, cancellationToken);
+
+            if (device == null)
+            {
+                throw new DeviceNotFoundException(id);
+            }
             else
             {
-                _logger.LogInformation("No device found Id: [{Identifier}] Instance Identifier: [{InstanceIdentifier}]", identifier, _instanceIdentifier);
+                var parameter = device.Parameters.FirstOrDefault(_ => _.Id == id);
+                if (parameter != null)
+                {
+                    device.Parameters.Remove(parameter);
+                }
+
+                await _repository.SaveChangesAsync(cancellationToken);
             }
+
+            return device.ToSdk();
         }
 
         /// <inheritdoc/>
@@ -118,6 +163,19 @@ namespace Shaos.Services
             {
                 yield return device.ToSdk();
             }
+        }
+
+        private async Task<ModelDevice?> ResolveDeviceAsync(int id, CancellationToken cancellationToken)
+        {
+            var device = await _repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.Id == id && _.PlugInInstance!.Id == _instanceIdentifier,
+                                                                               cancellationToken);
+
+            if (device == null)
+            {
+                _logger.LogInformation("No device found Id: [{Identifier}] Instance Identifier: [{InstanceIdentifier}]", id, _instanceIdentifier);
+            }
+
+            return device;
         }
     }
 }

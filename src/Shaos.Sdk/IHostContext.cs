@@ -23,6 +23,8 @@
 */
 
 using Shaos.Sdk.Devices;
+using Shaos.Sdk.Devices.Parameters;
+using Shaos.Sdk.Exceptions;
 
 namespace Shaos.Sdk
 {
@@ -37,20 +39,44 @@ namespace Shaos.Sdk
         /// <param name="device">The <see cref="Device"/> instance to create</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The created <see cref="Device"/> instance</returns>
-        Task<Device> CreateDeviceAsync(Device device, CancellationToken cancellationToken = default);
+        /// <exception cref="DeviceParentNotFoundException">Thrown when the parent of the <see cref="Device"/> cannot be found</exception>
+        Task<Device> CreateDeviceAsync(Device device,
+                                       CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Create a <see cref="BaseParameter"/> instance association to a device
+        /// </summary>
+        /// <param name="id">The <see cref="Device"/> identifier</param>
+        /// <param name="parameter">The <see cref="BaseParameter"/> instance to create</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The updated <see cref="Device"/></returns>
+        /// <exception cref="DeviceParentNotFoundException">Thrown when the parent of the <see cref="Device"/> cannot be found</exception>
+        Task<Device> CreateDeviceParameterAsync(int id,
+                                                       BaseParameter parameter,
+                                                       CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete a <see cref="Device"/> instance
         /// </summary>
-        /// <param name="identifier">The identifier of the <see cref="Device"/> to delete</param>
+        /// <param name="id">The identifier of the <see cref="Device"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task DeleteDeviceAsync(int identifier, CancellationToken cancellationToken = default);
+        Task DeleteDeviceAsync(int id,
+                               CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete a <see cref="BaseParameter"/> from a <see cref="Device"/>
+        /// </summary>
+        /// <param name="id">The <see cref="Device"/> identifier</param>
+        /// <param name="parameterId">The <see cref="BaseParameter"/> identifier</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The modifier <see cref="Device"/> instance</returns>
+        Task<Device> DeleteDeviceParameterAsync(int id, int parameterId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the <see cref="IAsyncEnumerable{T}"/> of <see cref="Device"/> instances
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns></returns>
+        /// <returns>The <see cref="IAsyncEnumerable{T}"/> of <see cref="Device"/> instances</returns>
         IAsyncEnumerable<Device> GetDevicesAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -22,43 +22,24 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk.Devices.Parameters
+using Shaos.Sdk.Devices;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Sdk.Exceptions
 {
     /// <summary>
-    /// Represents a string parameter
+    /// Thrown when the parent of a <see cref="Device"/> instance cannot be found
     /// </summary>
-    public class StringParameter : BaseParameter
+    /// <remarks>
+    /// Create an instance of a <see cref="DeviceParentNotFoundException"/>
+    /// </remarks>
+    /// <param name="id">The identifier of the parent</param>
+    [ExcludeFromCodeCoverage]
+    public class DeviceParentNotFoundException(int id) : Exception
     {
-        private string _value;
-
         /// <summary>
-        /// Create an instance of a <see cref="StringParameter"/>
+        /// The identifier of the <see cref="Device"/> parent
         /// </summary>
-        /// <param name="id">The identifier of the parameter</param>
-        /// <param name="value">The value of the parameter</param>
-        /// <param name="name">The name of the parameter</param>
-        /// <param name="units">The units of this parameter</param>
-        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        public StringParameter(int id,
-                               string value,
-                               string? name,
-                               string? units,
-                               ParameterType? parameterType) : base(id, name, units, parameterType)
-        {
-            Value = value;
-        }
-
-        /// <summary>
-        /// The current <see cref="StringParameter"/> value
-        /// </summary>
-        public string Value
-        {
-            get => _value;
-            set
-            {
-#warning Trigger update event
-                _value = value;
-            }
-        }
+        public int Id { get; } = id;
     }
 }

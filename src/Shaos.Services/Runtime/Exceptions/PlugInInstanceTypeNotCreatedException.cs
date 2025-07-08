@@ -25,6 +25,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Shaos.Services.Runtime.Host;
 using Shaos.Sdk;
+using Shaos.Sdk.Exceptions;
 
 namespace Shaos.Services.Runtime.Exceptions
 {

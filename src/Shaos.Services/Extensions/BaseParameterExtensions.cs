@@ -38,8 +38,20 @@ namespace Shaos.Services.Extensions
 
                 foreach (var parameter in parameters)
                 {
-                    result.Add(Convert(parameter));
+                    result.Add(parameter.ToModel()!);
                 }
+            }
+
+            return result!;
+        }
+
+        public static BaseParameter? ToModel(this Sdk.Devices.Parameters.BaseParameter parameter)
+        {
+            BaseParameter? result = null;
+
+            if (parameter != null)
+            {
+                result = Convert(parameter);
             }
 
             return result!;
