@@ -49,6 +49,11 @@ namespace Shaos.Sdk.Devices.Parameters
         }
 
         /// <summary>
+        /// Raised when the value of the parameter changes
+        /// </summary>
+        public event EventHandler<ParameterValueChangedEvent<bool>>? ValueChanged;
+
+        /// <summary>
         /// The current <see cref="BoolParameter"/> value
         /// </summary>
         public bool Value
@@ -56,9 +61,18 @@ namespace Shaos.Sdk.Devices.Parameters
             get => _value;
             set
             {
-#warning Trigger update event
                 _value = value;
+                OnValueChanged(new ParameterValueChangedEvent<bool>() { Value = _value });
             }
+        }
+
+        /// <summary>
+        /// Raise the value changed event to subscribed listeners
+        /// </summary>
+        /// <param name="e">The <see cref="ParameterValueChangedEvent{T}"/></param>
+        protected virtual void OnValueChanged(ParameterValueChangedEvent<bool> e)
+        {
+            ValueChanged?.Invoke(this, e);
         }
     }
 }
