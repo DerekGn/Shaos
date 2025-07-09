@@ -29,7 +29,17 @@ namespace Shaos.Sdk.Devices.Parameters
     /// </summary>
     public abstract class BaseParameter
     {
-        protected BaseParameter(int id, string? name, string? units, ParameterType? parameterType)
+        /// <summary>
+        /// Create an instance of a <see cref="BoolParameter"/>
+        /// </summary>
+        /// <param name="id">The identifier of the parameter</param>
+        /// <param name="name">The name of the parameter</param>
+        /// <param name="units">The units of this parameter</param>
+        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
+        protected BaseParameter(int id,
+                                string? name,
+                                string? units,
+                                ParameterType? parameterType)
         {
             Id = id;
             Name = name;
