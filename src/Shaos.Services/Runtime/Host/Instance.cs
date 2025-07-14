@@ -24,7 +24,6 @@
 
 using Shaos.Repository.Models;
 using Shaos.Sdk;
-using Shaos.Sdk.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 

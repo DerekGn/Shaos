@@ -25,7 +25,7 @@
 namespace Shaos.Sdk.Devices.Parameters
 {
     /// <summary>
-    /// Represents a counter parameter
+    /// Represents a <see cref="int"/> parameter
     /// </summary>
     public class IntParameter : BaseParameter
     {
@@ -51,7 +51,7 @@ namespace Shaos.Sdk.Devices.Parameters
         /// <summary>
         /// Raised when the value of the parameter changes
         /// </summary>
-        public event EventHandler<ParameterValueChangedEvent<int>>? ValueChanged;
+        public event EventHandler<ParameterValueChangedEventArgs<int>>? ValueChanged;
 
         /// <summary>
         /// The current <see cref="IntParameter"/> value
@@ -62,15 +62,15 @@ namespace Shaos.Sdk.Devices.Parameters
             set
             {
                 _value = value;
-                OnValueChanged(new ParameterValueChangedEvent<int>() { Value = _value });
+                OnValueChanged(new ParameterValueChangedEventArgs<int>() { Value = _value });
             }
         }
 
         /// <summary>
         /// Raise the value changed event to subscribed listeners
         /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEvent{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEvent<int> e)
+        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
+        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<int> e)
         {
             ValueChanged?.Invoke(this, e);
         }

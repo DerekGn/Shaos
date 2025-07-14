@@ -22,51 +22,17 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk.Devices
+namespace Shaos.Sdk.Devices.Parameters
 {
     /// <summary>
-    /// Represents a battery level for a <see cref="Device"/>
+    /// The <see cref="EventArgs"/> that is raised when a parameter value changes
     /// </summary>
-    public class BatteryLevel
+    /// <typeparam name="T"></typeparam>
+    public class ParameterValueChangedEventArgs<T> : EventArgs
     {
         /// <summary>
-        /// The maximum value allowable for the <see cref="Level"/>
+        /// The changed value
         /// </summary>
-        public const uint Maximum = 100;
-
-        /// <summary>
-        /// The minimal value allowable for the <see cref="Level"/>
-        /// </summary>
-        public const uint Minimum = 0;
-
-        private readonly Device _device;
-        private uint _level;
-
-        /// <summary>
-        /// Create an instance of a <see cref="BatteryLevel"/>
-        /// </summary>
-        /// <param name="device">The parent <see cref="Device"/></param>
-        /// <param name="level">The battery level</param>
-        internal BatteryLevel(Device device, uint level)
-        {
-            _device = device;
-            Level = level;
-        }
-
-        /// <summary>
-        /// The battery level value
-        /// </summary>
-        /// <remarks>
-        /// Level is bounded from <see cref="Minimum"/> to <see cref="Maximum"/>
-        /// </remarks>
-        public uint Level
-        {
-            get => _level;
-            set
-            {
-                _level = value;
-                _device.BatteryLevelChanged(_level);
-            }
-        }
+        public required T Value { get; set; }
     }
 }

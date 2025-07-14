@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk.Devices;
+using System.Collections.ObjectModel;
+
 namespace Shaos.Sdk
 {
     /// <summary>
@@ -30,9 +33,14 @@ namespace Shaos.Sdk
     /// <remarks>
     /// Implements the standard dispose pattern
     /// </remarks>
-    public abstract class PlugInBase : IDisposable
+    public abstract class PlugInBase : IDisposable, IPlugIn
     {
+        private readonly ObservableCollection<Device> _devices = [];
+
         private bool _disposedValue;
+
+        /// <inheritdoc/>
+        public ObservableCollection<Device> Devices => _devices;
 
         /// <inheritdoc/>
         public void Dispose()
@@ -41,6 +49,9 @@ namespace Shaos.Sdk
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        /// <inheritdoc/>
+        public abstract Task ExecuteAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Dispose resources

@@ -25,48 +25,18 @@
 namespace Shaos.Sdk.Devices
 {
     /// <summary>
-    /// Represents a battery level for a <see cref="Device"/>
+    /// Raised when a <see cref="Device"/> properties change
     /// </summary>
-    public class BatteryLevel
+    public class DeviceChangedEventArgs : EventArgs
     {
         /// <summary>
-        /// The maximum value allowable for the <see cref="Level"/>
+        /// The battery level
         /// </summary>
-        public const uint Maximum = 100;
+        public uint? BatteryLevel { get; init; }
 
         /// <summary>
-        /// The minimal value allowable for the <see cref="Level"/>
+        /// The signal level
         /// </summary>
-        public const uint Minimum = 0;
-
-        private readonly Device _device;
-        private uint _level;
-
-        /// <summary>
-        /// Create an instance of a <see cref="BatteryLevel"/>
-        /// </summary>
-        /// <param name="device">The parent <see cref="Device"/></param>
-        /// <param name="level">The battery level</param>
-        internal BatteryLevel(Device device, uint level)
-        {
-            _device = device;
-            Level = level;
-        }
-
-        /// <summary>
-        /// The battery level value
-        /// </summary>
-        /// <remarks>
-        /// Level is bounded from <see cref="Minimum"/> to <see cref="Maximum"/>
-        /// </remarks>
-        public uint Level
-        {
-            get => _level;
-            set
-            {
-                _level = value;
-                _device.BatteryLevelChanged(_level);
-            }
-        }
+        public int? SignalLevel { get; init; }
     }
 }

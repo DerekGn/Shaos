@@ -23,6 +23,7 @@
 */
 
 using Shaos.Sdk.Devices.Parameters;
+using System.Collections.ObjectModel;
 
 namespace Shaos.Sdk.Devices
 {
@@ -42,15 +43,24 @@ namespace Shaos.Sdk.Devices
         public Device(int id,
                       string name,
                       IList<BaseParameter> parameters,
-                      BatteryLevel? batteryLevel,
-                      SignalLevel? signalLevel)
+                      uint? batteryLevel,
+                      int? signalLevel)
         {
             Id = id;
             Name = name;
-            BatteryLevel = batteryLevel;
-            SignalLevel = signalLevel;
-            Parameters = parameters??[];
+            BatteryLevel = batteryLevel != null ? new BatteryLevel(this, (uint)batteryLevel) : null;
+            SignalLevel = signalLevel != null ? new SignalLevel(this, (int)signalLevel) : null;
+
+            foreach (var parameter in parameters)
+            {
+                Parameters.Add(parameter);
+            }
         }
+
+        /// <summary>
+        /// Raised when the <see cref="Device"/> changes
+        /// </summary>
+        public event EventHandler<DeviceChangedEventArgs>? DeviceChanged;
 
         /// <summary>
         /// The <see cref="BatteryLevel"/> for this device
@@ -76,7 +86,7 @@ namespace Shaos.Sdk.Devices
         /// <summary>
         /// The set of <see cref="Device"/> <see cref="BaseParameter"/>
         /// </summary>
-        public IList<BaseParameter> Parameters { get; } = [];
+        public ObservableCollection<BaseParameter> Parameters { get; } = [];
 
         /// <summary>
         /// The <see cref="SignalLevel"/> for this device
@@ -85,5 +95,24 @@ namespace Shaos.Sdk.Devices
         /// A <see cref="Device"/> optional signal level
         /// </remarks>
         public SignalLevel? SignalLevel { get; }
+
+        /// <summary>
+        /// Raise the value changed event to subscribed listeners
+        /// </summary>
+        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
+        protected virtual void OnDeviceChanged(DeviceChangedEventArgs e)
+        {
+            DeviceChanged?.Invoke(this, e);
+        }
+
+        internal void BatteryLevelChanged(uint level)
+        {
+            OnDeviceChanged(new DeviceChangedEventArgs() { BatteryLevel = level });
+        }
+
+        internal void SignalLevelChanged(int level)
+        {
+            OnDeviceChanged(new DeviceChangedEventArgs() { SignalLevel = level });
+        }
     }
 }

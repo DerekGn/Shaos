@@ -25,7 +25,7 @@
 namespace Shaos.Sdk.Devices.Parameters
 {
     /// <summary>
-    /// Represents a string parameter
+    /// Represents a <see cref="string"/> parameter
     /// </summary>
     public class StringParameter : BaseParameter
     {
@@ -51,7 +51,7 @@ namespace Shaos.Sdk.Devices.Parameters
         /// <summary>
         /// Raised when the value of the parameter changes
         /// </summary>
-        public event EventHandler<ParameterValueChangedEvent<string>>? ValueChanged;
+        public event EventHandler<ParameterValueChangedEventArgs<string>>? ValueChanged;
 
         /// <summary>
         /// The current <see cref="StringParameter"/> value
@@ -62,15 +62,15 @@ namespace Shaos.Sdk.Devices.Parameters
             set
             {
                 _value = value;
-                OnValueChanged(new ParameterValueChangedEvent<string>() { Value = _value });
+                OnValueChanged(new ParameterValueChangedEventArgs<string>() { Value = _value });
             }
         }
 
         /// <summary>
         /// Raise the value changed event to subscribed listeners
         /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEvent{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEvent<string> e)
+        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
+        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<string> e)
         {
             ValueChanged?.Invoke(this, e);
         }

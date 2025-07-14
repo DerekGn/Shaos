@@ -41,26 +41,34 @@ namespace Shaos.Sdk.Devices
         /// </summary>
         public const int Minimum = -100;
 
+        private readonly Device _device;
+
         /// <summary>
         /// Create an instance of a <see cref="SignalLevel"/>
         /// </summary>
+        /// <param name="device">The parent <see cref="Device"/></param>
         /// <param name="level">The signal level</param>
-        public SignalLevel(int level)
+        internal SignalLevel(Device device, int level)
         {
+            _device = device;
             Level = level;
         }
 
         /// <summary>
         /// The signal level value
         /// </summary>
+        /// <remarks>
+        /// Level is bounded from <see cref="Minimum"/> to <see cref="Maximum"/>
+        /// </remarks>
         public int Level
         {
             get => _level;
             set
             {
-                if (_level <= Minimum && _level >= Maximum)
+                if (value >= Minimum && value <= Maximum)
                 {
                     _level = value;
+                    _device.SignalLevelChanged(_level);
                 }
             }
         }

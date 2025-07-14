@@ -25,7 +25,7 @@
 namespace Shaos.Sdk.Devices.Parameters
 {
     /// <summary>
-    /// Represents a float parameter
+    /// Represents a <see cref="float"/> parameter
     /// </summary>
     public class FloatParameter : BaseParameter
     {
@@ -51,7 +51,7 @@ namespace Shaos.Sdk.Devices.Parameters
         /// <summary>
         /// Raised when the value of the parameter changes
         /// </summary>
-        public event EventHandler<ParameterValueChangedEvent<float>>? ValueChanged;
+        public event EventHandler<ParameterValueChangedEventArgs<float>>? ValueChanged;
 
         /// <summary>
         /// The current <see cref="FloatParameter"/> value
@@ -62,15 +62,15 @@ namespace Shaos.Sdk.Devices.Parameters
             set
             {
                 _value = value;
-                OnValueChanged(new ParameterValueChangedEvent<float>() { Value = _value });
+                OnValueChanged(new ParameterValueChangedEventArgs<float>() { Value = _value });
             }
         }
 
         /// <summary>
         /// Raise the value changed event to subscribed listeners
         /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEvent{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEvent<float> e)
+        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
+        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<float> e)
         {
             ValueChanged?.Invoke(this, e);
         }

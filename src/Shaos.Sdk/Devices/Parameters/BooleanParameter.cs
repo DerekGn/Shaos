@@ -25,7 +25,7 @@
 namespace Shaos.Sdk.Devices.Parameters
 {
     /// <summary>
-    /// Represents a boolean parameter
+    /// Represents a <see cref="bool"/> parameter
     /// </summary>
     public class BoolParameter : BaseParameter
     {
@@ -51,7 +51,7 @@ namespace Shaos.Sdk.Devices.Parameters
         /// <summary>
         /// Raised when the value of the parameter changes
         /// </summary>
-        public event EventHandler<ParameterValueChangedEvent<bool>>? ValueChanged;
+        public event EventHandler<ParameterValueChangedEventArgs<bool>>? ValueChanged;
 
         /// <summary>
         /// The current <see cref="BoolParameter"/> value
@@ -62,15 +62,15 @@ namespace Shaos.Sdk.Devices.Parameters
             set
             {
                 _value = value;
-                OnValueChanged(new ParameterValueChangedEvent<bool>() { Value = _value });
+                OnValueChanged(new ParameterValueChangedEventArgs<bool>() { Value = _value });
             }
         }
 
         /// <summary>
         /// Raise the value changed event to subscribed listeners
         /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEvent{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEvent<bool> e)
+        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
+        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<bool> e)
         {
             ValueChanged?.Invoke(this, e);
         }

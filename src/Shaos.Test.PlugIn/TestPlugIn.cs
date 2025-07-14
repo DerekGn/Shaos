@@ -31,7 +31,7 @@ using Shaos.Sdk;
 namespace Shaos.Test.PlugIn
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugIn : PlugInBase, IPlugIn
+    public class TestPlugIn : PlugInBase
     {
         private readonly ILogger<TestPlugIn> _logger;
         private readonly TestPlugInConfiguration _configuration;
@@ -47,7 +47,7 @@ namespace Shaos.Test.PlugIn
             _configuration = configuration;
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Starting [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
 

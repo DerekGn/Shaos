@@ -30,7 +30,7 @@ namespace Shaos.Sdk.Devices.Parameters
     public abstract class BaseParameter
     {
         /// <summary>
-        /// Create an instance of a <see cref="BoolParameter"/>
+        /// Create an instance of a <see cref="BaseParameter"/>
         /// </summary>
         /// <param name="id">The identifier of the parameter</param>
         /// <param name="name">The name of the parameter</param>

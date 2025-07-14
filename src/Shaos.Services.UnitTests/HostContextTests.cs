@@ -26,9 +26,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
-using Shaos.Services.Exceptions;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
 using System.Linq.Expressions;
@@ -181,7 +179,7 @@ namespace Shaos.Services.UnitTests
                 new UIntParameter(1,4,"name","units",ParameterType.Pressure)
                 ];
 
-            return new SdkDevice(1, "name", parameters, new BatteryLevel(1), new SignalLevel(-2));
+            return new SdkDevice(1, "name", parameters, 1, -2);
         }
     }
 }

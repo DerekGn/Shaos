@@ -45,18 +45,8 @@ namespace Shaos.Services.Extensions
             return new Device(device.Id,
                                  device.Name,
                                  device.Parameters.ToSdk(),
-                                 device.BatteryLevel.ToSdk(),
-                                 device.SignalLevel.ToSdk());
-        }
-
-        public static BatteryLevel? ToSdk(this uint? value)
-        {
-            return value != null ? new BatteryLevel((uint)value!) : null;
-        }
-
-        public static SignalLevel? ToSdk(this int? value)
-        {
-            return value != null ? new SignalLevel((int)value!) : null;
+                                 device.BatteryLevel,
+                                 device.SignalLevel);
         }
     }
 }

@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk.Devices;
+using System.Collections.ObjectModel;
+
 namespace Shaos.Sdk
 {
     /// <summary>
@@ -34,5 +37,10 @@ namespace Shaos.Sdk
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the <see cref="IPlugIn"/> method execution</param>
         Task ExecuteAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// The collection of <see cref="Device"/> instances a <see cref="IPlugIn"/> instance manages
+        /// </summary>
+        ObservableCollection<Device> Devices { get; }
     }
 }
