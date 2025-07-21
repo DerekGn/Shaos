@@ -49,6 +49,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly AutoResetEvent _autoResetEvent;
         private readonly InstanceHost _instanceHost;
         private readonly Mock<IPlugIn> _mockPlugIn;
+        private readonly Mock<IInstanceEventHandler> _mockInstanceEventHandler;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly Mock<ITypeLoaderService> _mockTypeLoaderService;
@@ -61,6 +62,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+            _mockInstanceEventHandler = new Mock<IInstanceEventHandler>();
             _mockTypeLoaderService = new Mock<ITypeLoaderService>();
             _mockPlugIn = new Mock<IPlugIn>();
 
@@ -73,6 +75,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 LoggerFactory!.CreateLogger<InstanceHost>(),
                 _mockTypeLoaderService.Object,
                 Options.Create(optionsInstance),
+                _mockInstanceEventHandler.Object,
                 _mockRuntimeAssemblyLoadContextFactory.Object);
 
             _autoResetEvent = new AutoResetEvent(false);

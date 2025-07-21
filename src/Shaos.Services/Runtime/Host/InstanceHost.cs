@@ -42,6 +42,7 @@ namespace Shaos.Services.Runtime.Host
         internal readonly List<Instance> _executingInstances;
         internal readonly Dictionary<int, InstanceLoadContext> _instanceLoadContexts;
 
+        private readonly IInstanceEventHandler _instanceEventHandler;
         private readonly ILogger<InstanceHost> _logger;
         private readonly IOptions<InstanceHostOptions> _options;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
@@ -53,20 +54,19 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="typeLoaderService">The <see cref="ITypeLoaderService"/> instance</param>
         /// <param name="options">The <see cref="IOptions{TOptions}"/> of <see cref="InstanceHostOptions"/></param>
+        /// <param name="instanceEventHandler"></param>
         /// <param name="runtimeAssemblyLoadContextFactory">The <see cref="IRuntimeAssemblyLoadContextFactory"/> for loading <see cref="IRuntimeAssemblyLoadContext"/></param>
         public InstanceHost(
             ILogger<InstanceHost> logger,
             ITypeLoaderService typeLoaderService,
             IOptions<InstanceHostOptions> options,
+            IInstanceEventHandler instanceEventHandler,
             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
-            ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(options);
-            ArgumentNullException.ThrowIfNull(runtimeAssemblyLoadContextFactory);
-
             _logger = logger;
             _typeLoaderService = typeLoaderService;
             _options = options;
+            _instanceEventHandler = instanceEventHandler;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
 
             _executingInstances = new List<Instance>();
@@ -210,6 +210,8 @@ namespace Shaos.Services.Runtime.Host
                     else
                     {
                         instance.LoadContext(plugIn!);
+
+                        //_instanceEventHandler.Attach(instance.Context.PlugIn);
 
                         _ = Task.Run(() => StartExecutingInstance(instance));
                     }
