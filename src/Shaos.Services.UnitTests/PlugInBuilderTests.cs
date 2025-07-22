@@ -47,9 +47,10 @@ namespace Shaos.Services.UnitTests
             var context = _unloadingWeakReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var instanceConfiguration = new InstanceConfiguration(false);
+            var instanceConfiguration = new InstanceConfiguration(true);
 
-            _builder.Load(assembly, instanceConfiguration);
+            _builder.Load(assembly,
+                          instanceConfiguration);
 
             Assert.NotNull(_builder.PlugIn);
         }
