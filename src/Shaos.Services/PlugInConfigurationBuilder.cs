@@ -62,15 +62,14 @@ namespace Shaos.Services
         public object? LoadConfiguration(Assembly assembly,
                                          string? configuration)
         {
-            object? result = null;
             object? configurationInstance = CreateConfigurationInternal(assembly);
 
             if (!string.IsNullOrEmpty(configuration))
             {
-                result = Utf8JsonSerializer.Deserialize(configuration, configurationInstance!.GetType());
+                configurationInstance = Utf8JsonSerializer.Deserialize(configuration, configurationInstance!.GetType());
             }
 
-            return result;
+            return configurationInstance;
         }
 
         /// <inheritdoc/>

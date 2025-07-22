@@ -52,7 +52,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
-        private readonly Mock<IServiceScope> _mockServiceScope;
+        private readonly Mock<IServiceScopeFactory> _mockServiceScope;
         private InstanceState _waitingState;
 
         public InstanceHostTests(ITestOutputHelper output, TestFixture fixture) : base(output)
@@ -66,7 +66,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockServiceProvider = new Mock<IServiceProvider>();
-            _mockServiceScope = new Mock<IServiceScope>();
+            _mockServiceScope = new Mock<IServiceScopeFactory>();
 
             var optionsInstance = new InstanceHostOptions()
             {

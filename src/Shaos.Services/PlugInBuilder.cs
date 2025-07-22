@@ -30,6 +30,11 @@ using System.Reflection;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// A <see cref="IPlugIn"/> builder
+    /// </summary>
+    /// <param name="loggerFactory">A <see cref="ILoggerFactory"/> instance</param>
+    /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
     public class PlugInBuilder(ILoggerFactory loggerFactory,
                                ILogger<PlugInBuilder> logger) : BasePlugInBuilder(logger), IPlugInBuilder
     {

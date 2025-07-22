@@ -28,6 +28,9 @@ using System.Reflection;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// The <see cref="IPlugIn"/> builder
+    /// </summary>
     public interface IPlugInBuilder
     {
         /// <summary>

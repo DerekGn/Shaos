@@ -46,24 +46,25 @@ namespace Shaos.Services.Runtime.Host
         private readonly IOptions<InstanceHostOptions> _options;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
-        private readonly IServiceScope _serviceScope;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
         /// <summary>
         /// Create an <see cref="Instance"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="options">The <see cref="IOptions{TOptions}"/> of <see cref="InstanceHostOptions"/></param>
-        /// <param name="serviceScope"></param>
+        /// <param name="serviceScopeFactory"></param>
         /// <param name="plugInConfigurationBuilder"></param>
         /// <param name="runtimeAssemblyLoadContextFactory">The <see cref="IRuntimeAssemblyLoadContextFactory"/> for loading <see cref="IRuntimeAssemblyLoadContext"/></param>
         public InstanceHost(ILogger<InstanceHost> logger,
                             IOptions<InstanceHostOptions> options,
-                            IServiceScope serviceScope,
+                            IServiceScopeFactory serviceScopeFactory,
                             IPlugInConfigurationBuilder plugInConfigurationBuilder,
                             IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
         {
             _logger = logger;
             _options = options;
-            _serviceScope = serviceScope;
+            _serviceScopeFactory = serviceScopeFactory;
             _plugInConfigurationBuilder = plugInConfigurationBuilder;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
 
@@ -193,7 +194,9 @@ namespace Shaos.Services.Runtime.Host
                 {
                     var instanceloadContext = GetInstanceLoadContext(instance);
 
-                    var plugInBuilder = _serviceScope.ServiceProvider.GetService<IPlugInBuilder>();
+                    using IServiceScope scope = _serviceScopeFactory.CreateScope();
+
+                    var plugInBuilder = scope.ServiceProvider.GetRequiredService<IPlugInBuilder>();
 
                     plugInBuilder!.Load(instanceloadContext.Assembly!,
                                         instance.Configuration);
