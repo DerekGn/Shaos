@@ -28,9 +28,7 @@ using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
-using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
-using Shaos.Services.Runtime.Loader;
 using Shaos.Services.Runtime.Validation;
 using System.Diagnostics;
 
@@ -43,11 +41,11 @@ namespace Shaos.Services
     {
         private const string PlugInNamePostFix = ".PlugIn.dll";
 
-        private readonly ITypeLoaderService _configurationLoaderService;
         private readonly IFileStoreService _fileStoreService;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
         private readonly IPlugInTypeValidator _plugInTypeValidator;
+        private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
         private readonly IShaosRepository _repository;
 
         /// <summary>
@@ -56,32 +54,22 @@ namespace Shaos.Services
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/></param>
         /// <param name="instanceHost">The <see cref="IInstanceHost"/> instance</param>
         /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
-        /// <param name="plugInFactory">The <see cref="IPlugInFactory"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="plugInTypeValidator">The <see cref="IPlugInTypeValidator"/> instance</param>
-        /// <param name="configurationLoaderService"></param>
+        /// <param name="plugInConfigurationBuilder"></param>
         public PlugInService(ILogger<PlugInService> logger,
                              IInstanceHost instanceHost,
                              IShaosRepository repository,
-                             IPlugInFactory plugInFactory,
                              IFileStoreService fileStoreService,
                              IPlugInTypeValidator plugInTypeValidator,
-                             ITypeLoaderService configurationLoaderService)
+                             IPlugInConfigurationBuilder plugInConfigurationBuilder)
         {
-            ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(instanceHost);
-            ArgumentNullException.ThrowIfNull(repository);
-            ArgumentNullException.ThrowIfNull(plugInFactory);
-            ArgumentNullException.ThrowIfNull(fileStoreService);
-            ArgumentNullException.ThrowIfNull(plugInTypeValidator);
-            ArgumentNullException.ThrowIfNull(configurationLoaderService);
-
             _logger = logger;
             _instanceHost = instanceHost;
             _repository = repository;
             _fileStoreService = fileStoreService;
             _plugInTypeValidator = plugInTypeValidator;
-            _configurationLoaderService = configurationLoaderService;
+            _plugInConfigurationBuilder = plugInConfigurationBuilder;
         }
 
         /// <inheritdoc/>
@@ -195,7 +183,7 @@ namespace Shaos.Services
                 throw new PlugInPackageHasNoConfigurationException(plugInInstance.PlugIn.Id);
             }
 
-            return _configurationLoaderService.LoadConfiguration(plugInInstance.PlugIn.Id,
+            return _plugInConfigurationBuilder.LoadConfiguration(plugInInstance.PlugIn.Id,
                                                                  package.AssemblyFile,
                                                                  plugInInstance.Configuration)!;
         }
@@ -273,14 +261,14 @@ namespace Shaos.Services
 
             if (plugIn != null)
             {
-                foreach (var plugInInstance in plugIn.Instances)
+                foreach (var id in plugIn.Instances.Select(_ => _.Id))
                 {
-                    var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == plugInInstance.Id);
+                    var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
 
                     if (instance != null && instance.State == InstanceState.Running)
                     {
-                        _logger.LogDebug("Found running instance [{Id}]", plugInInstance.Id);
-                        plugInInstanceId = plugInInstance.Id;
+                        _logger.LogDebug("Found running instance [{Id}]", plugInInstanceId);
+                        plugInInstanceId = id;
                         result = true;
                         break;
                     }
@@ -356,10 +344,10 @@ namespace Shaos.Services
 
         private void RemoveInstancesFromHost(PlugIn plugIn)
         {
-            foreach (var instance in plugIn.Instances)
+            foreach (var id in plugIn.Instances.Select(_ => _.Id))
             {
-                _logger.LogDebug("Removing Instance [{Id}] from instance host", instance.Id);
-                _instanceHost.RemoveInstance(instance.Id);
+                _logger.LogDebug("Removing Instance [{Id}] from instance host", id);
+                _instanceHost.RemoveInstance(id);
             }
         }
 

@@ -1,19 +1,18 @@
-﻿
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Shaos.Services.Runtime;
-using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
-using Xunit;
 using Xunit.Abstractions;
+using Xunit;
+using Shaos.Services.UnitTests.Fixtures;
 
 namespace Shaos.Services.UnitTests
 {
-    public abstract class PlugInFactoryBaseTests : BaseTests, IClassFixture<TestFixture>
+    public abstract class PlugInBuilderBaseTests : BaseTests, IClassFixture<TestFixture>
     {
         internal readonly UnloadingWeakReference<RuntimeAssemblyLoadContext> _unloadingWeakReference;
         internal readonly TestFixture _fixture;
 
-        protected PlugInFactoryBaseTests(ITestOutputHelper outputHelper,
+        protected PlugInBuilderBaseTests(ITestOutputHelper outputHelper,
                                          TestFixture fixture) : base(outputHelper)
         {
             _fixture = fixture;
