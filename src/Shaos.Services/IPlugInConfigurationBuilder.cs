@@ -35,12 +35,6 @@ namespace Shaos.Services
         /// <summary>
         /// Load a <see cref="IPlugIn"/> configuration instance from an <see cref="Assembly"/>
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to load the configuration</param>
-        object? CreateConfiguration(Assembly assembly);
-
-        /// <summary>
-        /// Load a <see cref="IPlugIn"/> configuration instance from an <see cref="Assembly"/>
-        /// </summary>
         /// <param name="assembly">The <see cref="Assembly"/> to load the configuration instance</param>
         /// <param name="configuration">The optional json configuration to apply to the configuration instance</param>
         object? LoadConfiguration(Assembly assembly,

@@ -34,7 +34,7 @@ namespace Shaos.Services
     /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
     public abstract class BasePlugInBuilder(ILogger<BasePlugInBuilder> logger)
     {
-        protected ILogger<BasePlugInBuilder> Logger = logger;
+        private protected ILogger<BasePlugInBuilder> Logger = logger;
 
         /// <summary>
         /// Create a PlugIn configuration instance

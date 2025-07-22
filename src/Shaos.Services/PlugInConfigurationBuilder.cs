@@ -53,12 +53,6 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public object? CreateConfiguration(Assembly assembly)
-        {
-            return CreateConfigurationInternal(assembly);
-        }
-
-        /// <inheritdoc/>
         public object? LoadConfiguration(Assembly assembly,
                                          string? configuration)
         {
