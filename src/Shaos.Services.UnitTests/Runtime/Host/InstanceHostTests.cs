@@ -52,7 +52,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
-        private readonly Mock<IServiceScopeFactory> _mockServiceScope;
+        private readonly Mock<IServiceScope> _mockServiceScope;
+        private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
         private InstanceState _waitingState;
 
         public InstanceHostTests(ITestOutputHelper output, TestFixture fixture) : base(output)
@@ -66,7 +67,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockServiceProvider = new Mock<IServiceProvider>();
-            _mockServiceScope = new Mock<IServiceScopeFactory>();
+            _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
+            _mockServiceScope = new Mock<IServiceScope>();
 
             var optionsInstance = new InstanceHostOptions()
             {
@@ -74,7 +76,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             };
 
             _instanceHost = new InstanceHost(LoggerFactory!.CreateLogger<InstanceHost>(),
-                                             Options.Create(optionsInstance), _mockServiceScope.Object,
+                                             Options.Create(optionsInstance),
+                                             _mockServiceScopeFactory.Object,
                                              _mockPlugInConfigurationBuilder.Object,
                                              _mockRuntimeAssemblyLoadContextFactory.Object);
 
@@ -259,9 +262,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _instanceHost._instanceLoadContexts.Add(1, instanceLoadContext);
 
-            _mockServiceScope
-                .Setup(_ => _.ServiceProvider)
-                .Returns(_mockServiceProvider.Object);
+            SetupServiceScopeFactory();
 
             _mockServiceProvider
                 .Setup(_ => _.GetService(It.IsAny<Type>()))
@@ -270,10 +271,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockPlugInBuilder
                 .Setup(_ => _.PlugIn)
                 .Returns(_mockPlugIn.Object);
-
-            //_mockPlugInConfigurationBuilder
-            //    .Setup(_ => _.CreateInstance(It.IsAny<Assembly>(), It.IsAny<InstanceConfiguration>()))
-            //    .Returns(_mockPlugIn.Object);
 
             SetupStateWait(InstanceState.Running);
 
@@ -298,9 +295,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _instanceHost._instanceLoadContexts.Add(1, instanceLoadContext);
 
-            _mockServiceScope
-                .Setup(_ => _.ServiceProvider)
-                .Returns(_mockServiceProvider.Object);
+            SetupServiceScopeFactory();
 
             _mockServiceProvider
                 .Setup(_ => _.GetService(It.IsAny<Type>()))
@@ -379,6 +374,17 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _instanceHost._executingInstances.Add(
                 new Instance(1, 1, InstanceName, AssemblyPath, state, configuration));
+        }
+
+        private void SetupServiceScopeFactory()
+        {
+            _mockServiceScopeFactory
+                .Setup(_ => _.CreateScope())
+                .Returns(_mockServiceScope.Object);
+
+            _mockServiceScope
+                .Setup(_ => _.ServiceProvider)
+                .Returns(_mockServiceProvider.Object);
         }
 
         private void SetupStateWait(InstanceState state)
