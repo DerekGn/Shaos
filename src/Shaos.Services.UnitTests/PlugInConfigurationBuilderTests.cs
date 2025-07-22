@@ -22,62 +22,33 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Logging;
 using Moq;
-using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime;
-using Shaos.Services.Runtime.Factories;
-using Shaos.Services.Runtime.Host;
-using Shaos.Services.Runtime.Loader;
 using Shaos.Test.PlugIn;
-using System.Reflection;
+using Shaos.Testing.Shared;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace Shaos.Services.UnitTests.Runtime.Loader
+namespace Shaos.Services.UnitTests
 {
-    public class TypeLoaderServiceTest
+    public class PlugInConfigurationBuilderTests : BaseTests
     {
         private readonly Mock<IFileStoreService> _mockFileStoreService;
-        private readonly Mock<IPlugIn> _mockPlugIn;
-        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private readonly TypeLoaderService _typeLoaderService;
+        private readonly PlugInConfigurationBuilder _plugInConfigurationBuiilder;
 
-        public TypeLoaderServiceTest()
+        public PlugInConfigurationBuilderTests(ITestOutputHelper output) : base(output)
         {
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockPlugInFactory = new Mock<IPlugInFactory>();
-            _mockPlugIn = new Mock<IPlugIn>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
 
-            _typeLoaderService = new TypeLoaderService(_mockPlugInFactory.Object,
-                                                       _mockFileStoreService.Object,
-                                                       _mockRuntimeAssemblyLoadContextFactory.Object);
-        }
-
-        [Fact]
-        public void TestCreateInstance()
-        {
-            var instanceConfiguration = new InstanceConfiguration(true, "{\"Delay\": \"00:00:05\"}");
-
-            var configuration = new TestPlugInConfiguration();
-
-            _mockPlugInFactory
-                .Setup(_ => _.CreateConfiguration(It.IsAny<Assembly>()))
-                .Returns(configuration);
-
-            _mockPlugInFactory
-                .Setup(_ => _.CreateInstance(It.IsAny<Assembly>(),
-                                             It.IsAny<Object>()))
-                .Returns(_mockPlugIn.Object);
-
-            var plugIn = _typeLoaderService.CreateInstance(typeof(TestPlugIn).Assembly,
-                                                           instanceConfiguration);
-
-            Assert.NotNull(plugIn);
+            _plugInConfigurationBuiilder = new PlugInConfigurationBuilder(LoggerFactory!.CreateLogger<PlugInConfigurationBuilder>(),
+                                                                          _mockFileStoreService.Object,
+                                                                          _mockRuntimeAssemblyLoadContextFactory.Object);
         }
 
         [Fact]
@@ -94,24 +65,15 @@ namespace Shaos.Services.UnitTests.Runtime.Loader
 
             _mockRuntimeAssemblyLoadContext
                 .Setup(_ => _.LoadFromAssemblyPath(It.IsAny<string>()))
-                .Returns(new Test().GetType().Assembly);
+                .Returns(typeof(TestPlugIn).Assembly);
 
-            _mockPlugInFactory
-                .Setup(_ => _.CreateConfiguration(It.IsAny<Assembly>()))
-                .Returns(new Test());
-
-            var result = _typeLoaderService.LoadConfiguration(1,
-                                                              "AssemblyFile",
-                                                              "{\"id\":5}");
+            var result = _plugInConfigurationBuiilder.LoadConfiguration(1,
+                                                                        "AssemblyFile",
+                                                                        "{\"Delay\":\"0:0:5\"}");
 
             Assert.NotNull(result);
-            Assert.IsType<Test>(result);
-            Assert.Equal(5, ((Test)result).Id);
-        }
-
-        public class Test
-        {
-            public int Id { get; set; }
+            Assert.IsType<TestPlugInConfiguration>(result);
+            Assert.Equal(new TimeSpan(0,0,5), ((TestPlugInConfiguration)result).Delay);
         }
     }
 }

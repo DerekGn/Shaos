@@ -23,38 +23,36 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Shaos.Services.IntTests.Fixtures;
-using Shaos.Services.Runtime.Factories;
-using Shaos.Testing.Shared;
+using Shaos.Services.Runtime.Host;
+using Shaos.Services.UnitTests.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Shaos.Services.IntTests
+namespace Shaos.Services.UnitTests
 {
-    public class PlugInFactoryTests : PlugInFactoryBaseTests
+    public class PlugInBuilderTests : PlugInBuilderBaseTests
     {
-        private readonly PlugInFactory _plugInFactory;
+        private readonly PlugInBuilder _builder;
 
-        public PlugInFactoryTests(ITestOutputHelper output,
+        public PlugInBuilderTests(ITestOutputHelper output,
                                   TestFixture fixture) : base(output, fixture)
         {
-            _plugInFactory = new PlugInFactory(
-                LoggerFactory!,
-                LoggerFactory!.CreateLogger<PlugInFactory>());
+            _builder = new PlugInBuilder(LoggerFactory!,
+                                         LoggerFactory!.CreateLogger<PlugInBuilder>());
         }
 
         [Fact]
-        public void TestCreateInstance()
+        public void TestLoad()
         {
             var context = _unloadingWeakReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var configuration = _plugInFactory.CreateConfiguration(assembly);
-            var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
+            var instanceConfiguration = new InstanceConfiguration(true, "{\"Delay\": \"00:00:00\"}");
 
-            Assert.NotNull(plugIn);
+            _builder.Load(assembly,
+                          instanceConfiguration);
 
-            context.Unload();
+            Assert.NotNull(_builder.PlugIn);
         }
     }
 }

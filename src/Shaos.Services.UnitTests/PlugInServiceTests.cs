@@ -29,9 +29,7 @@ using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
-using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
-using Shaos.Services.Runtime.Loader;
 using Shaos.Services.Runtime.Validation;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
@@ -46,10 +44,9 @@ namespace Shaos.Services.UnitTests
         private const string InstanceName = "Test";
         private const string AssemblyPath = "AssemblyPath";
 
-        private readonly Mock<ITypeLoaderService> _mockTypeLoaderService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
-        private readonly Mock<IPlugInFactory> _mockPlugInFactory;
+        private readonly Mock<IPlugInConfigurationBuilder> _mockPlugConfigurationBuilder;
         private readonly Mock<IPlugInTypeValidator> _mockPlugInTypeValidator;
         private readonly Mock<IShaosRepository> _mockRepository;
         private readonly PlugInService _plugInService;
@@ -58,18 +55,16 @@ namespace Shaos.Services.UnitTests
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockInstanceHost = new Mock<IInstanceHost>();
-            _mockPlugInFactory = new Mock<IPlugInFactory>();
             _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
             _mockRepository = new Mock<IShaosRepository>();
-            _mockTypeLoaderService = new Mock<ITypeLoaderService>();
+            _mockPlugConfigurationBuilder = new Mock<IPlugInConfigurationBuilder>();
 
             _plugInService = new PlugInService(LoggerFactory!.CreateLogger<PlugInService>(),
                                                _mockInstanceHost.Object,
                                                _mockRepository.Object,
-                                               _mockPlugInFactory.Object,
                                                _mockFileStoreService.Object,
                                                _mockPlugInTypeValidator.Object,
-                                               _mockTypeLoaderService.Object);
+                                               _mockPlugConfigurationBuilder.Object);
         }
 
         [Fact]
@@ -288,10 +283,9 @@ namespace Shaos.Services.UnitTests
                    PlugIn = plugIn
                });
 
-            _mockTypeLoaderService.Setup(_ => _.LoadConfiguration(
-                It.IsAny<int>(),
-                It.IsAny<string>(),
-                It.IsAny<string?>()))
+            _mockPlugConfigurationBuilder.Setup(_ => _.LoadConfiguration(It.IsAny<int>(),
+                                                                         It.IsAny<string>(),
+                                                                         It.IsAny<string?>()))
                 .Returns(new object());
 
             var result = await _plugInService.LoadPlugInInstanceConfigurationAsync(1);
