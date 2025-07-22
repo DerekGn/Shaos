@@ -22,64 +22,59 @@
 * SOFTWARE.
 */
 
-using Serilog.Context;
-using Shaos.Sdk;
+using Microsoft.Extensions.Logging;
 using Shaos.Services.IO;
 using Shaos.Services.Json;
-using Shaos.Services.Runtime.Factories;
-using Shaos.Services.Runtime.Host;
+using Shaos.Services.Runtime;
 using System.Reflection;
 
-namespace Shaos.Services.Runtime.Loader
+namespace Shaos.Services
 {
     /// <summary>
-    /// The configuration loader service
+    /// A PlugIn configuration builder
     /// </summary>
-    public class TypeLoaderService : ITypeLoaderService
+    public class PlugInConfigurationBuilder : BasePlugInBuilder, IPlugInConfigurationBuilder
     {
         private readonly IFileStoreService _fileStoreService;
-        private readonly IPlugInFactory _plugInFactory;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
 
         /// <summary>
-        /// Create an instance of a configuration loader service
+        /// Create an instance of a PlugIn configuration builder
         /// </summary>
-        /// <param name="plugInFactory">The <see cref="IPlugInFactory"/> instance</param>
+        /// <param name="logger"></param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="runtimeAssemblyLoadContextFactory">The <see cref="IRuntimeAssemblyLoadContextFactory"/> instance</param>
-        public TypeLoaderService(IPlugInFactory plugInFactory,
-                                 IFileStoreService fileStoreService,
-                                 IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory)
+        public PlugInConfigurationBuilder(ILogger<PlugInConfigurationBuilder> logger,
+                                          IFileStoreService fileStoreService,
+                                          IRuntimeAssemblyLoadContextFactory runtimeAssemblyLoadContextFactory) : base(logger)
         {
-            _plugInFactory = plugInFactory;
             _fileStoreService = fileStoreService;
             _runtimeAssemblyLoadContextFactory = runtimeAssemblyLoadContextFactory;
         }
 
         /// <inheritdoc/>
-        public IPlugIn? CreateInstance(Assembly assembly,
-                                       InstanceConfiguration instanceConfiguration)
+        public object? CreateConfiguration(Assembly assembly)
         {
-            object? configuration = null;
-            
-            if (instanceConfiguration.RequiresConfiguration)
-            {
-                configuration = _plugInFactory.CreateConfiguration(assembly);
-
-                if (instanceConfiguration.IsConfigured)
-                {
-                    configuration = Utf8JsonSerializer.Deserialize(instanceConfiguration.Configuration!,
-                                                                   configuration!.GetType());
-                }
-            }
-
-            return _plugInFactory.CreateInstance(assembly, configuration);
+            return CreateConfigurationInternal(assembly);
         }
 
         /// <inheritdoc/>
-        public object? LoadConfiguration(int id,
-                                         string assemblyFile,
-                                         string? configuration = default)
+        public object? LoadConfiguration(Assembly assembly,
+                                         string? configuration)
+        {
+            object? result = null;
+            object? configurationInstance = CreateConfigurationInternal(assembly);
+
+            if (!string.IsNullOrEmpty(configuration))
+            {
+                result = Utf8JsonSerializer.Deserialize(configuration, configurationInstance!.GetType());
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public object? LoadConfiguration(int id, string assemblyFile, string? configuration = null)
         {
             var assemblyPath = _fileStoreService.GetAssemblyPath(id,
                                                                  assemblyFile);
@@ -101,22 +96,6 @@ namespace Shaos.Services.Runtime.Loader
             }
 
             return configurationInstance!;
-        }
-
-        /// <inheritdoc/>
-        public object? LoadConfiguration(Assembly assembly,
-                                          string? configuration)
-        {
-            object? configurationInstance;
-
-            configurationInstance = _plugInFactory.CreateConfiguration(assembly);
-
-            if (!string.IsNullOrEmpty(configuration))
-            {
-                configurationInstance = Utf8JsonSerializer.Deserialize(configuration, configurationInstance!.GetType());
-            }
-
-            return configurationInstance;
         }
     }
 }

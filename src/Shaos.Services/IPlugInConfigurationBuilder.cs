@@ -23,24 +23,28 @@
 */
 
 using Shaos.Sdk;
-using Shaos.Services.Runtime.Host;
 using System.Reflection;
 
-namespace Shaos.Services.Runtime.Loader
+namespace Shaos.Services
 {
     /// <summary>
-    /// Defines the interface for a type loader service
+    /// A <see cref="IPlugIn"/> configuration builder
     /// </summary>
-    public interface ITypeLoaderService
+    public interface IPlugInConfigurationBuilder
     {
         /// <summary>
-        /// Creates a <see cref="IPlugIn"/> instance
+        /// Load a <see cref="IPlugIn"/> configuration instance from an <see cref="Assembly"/>
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="IPlugIn"/> instance</param>
-        /// <param name="instanceConfiguration">The instance configuration to apply to the <see cref="IPlugIn"/> instance</param>
-        /// <returns></returns>
-        IPlugIn? CreateInstance(Assembly assembly,
-                               InstanceConfiguration instanceConfiguration);
+        /// <param name="assembly">The <see cref="Assembly"/> to load the configuration</param>
+        object? CreateConfiguration(Assembly assembly);
+
+        /// <summary>
+        /// Load a <see cref="IPlugIn"/> configuration instance from an <see cref="Assembly"/>
+        /// </summary>
+        /// <param name="assembly">The <see cref="Assembly"/> to load the configuration instance</param>
+        /// <param name="configuration">The optional json configuration to apply to the configuration instance</param>
+        object? LoadConfiguration(Assembly assembly,
+                                  string? configuration);
 
         /// <summary>
         /// Load the configuration type from a PlugIn assembly
@@ -52,14 +56,5 @@ namespace Shaos.Services.Runtime.Loader
         object? LoadConfiguration(int id,
                                   string assemblyFile,
                                   string? configuration = default);
-
-        /// <summary>
-        /// Load a <see cref="IPlugIn"/> configuration instance
-        /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to load the configuration instance</param>
-        /// <param name="configuration">The optional json configuration to apply to the configuration instance</param>
-        /// <returns>An instance of a configuration type</returns>
-        object? LoadConfiguration(Assembly assembly,
-                                  string? configuration);
     }
 }

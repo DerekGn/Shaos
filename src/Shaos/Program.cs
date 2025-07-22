@@ -38,9 +38,7 @@ using Shaos.Services;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
 using Shaos.Services.Runtime;
-using Shaos.Services.Runtime.Factories;
 using Shaos.Services.Runtime.Host;
-using Shaos.Services.Runtime.Loader;
 using Shaos.Services.Runtime.Validation;
 using Shaos.Services.SystemInformation;
 using Shaos.Services.Validation;
@@ -165,11 +163,10 @@ namespace Shaos
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IInstanceHost, InstanceHost>();
-            builder.Services.AddSingleton<IPlugInFactory, PlugInFactory>();
+            builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
-            builder.Services.AddSingleton<ITypeLoaderService, TypeLoaderService>();
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
@@ -189,9 +186,9 @@ namespace Shaos
             app.UseSwagger();
             app.UseSwaggerUI(_ =>
             {
-                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
+                foreach (var groupName in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse().Select(_ => _.GroupName))
                 {
-                    _.SwaggerEndpoint($"{description.GroupName}/swagger.json", description.GroupName);
+                    _.SwaggerEndpoint($"{groupName}/swagger.json", groupName);
                 }
             });
 

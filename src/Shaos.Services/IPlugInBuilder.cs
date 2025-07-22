@@ -23,29 +23,24 @@
 */
 
 using Shaos.Sdk;
+using Shaos.Services.Runtime.Host;
 using System.Reflection;
 
-namespace Shaos.Services.Runtime.Factories
+namespace Shaos.Services
 {
-    /// <summary>
-    /// A <see cref="PlugInFactory"/> interface definition
-    /// </summary>
-    public interface IPlugInFactory
+    public interface IPlugInBuilder
     {
         /// <summary>
-        /// Create a new <see cref="IPlugIn"/> instance
+        /// The <see cref="PlugIn"/> instance that the builder has created
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="IPlugIn"/></param>
-        /// <param name="configuration"></param>
-        /// <returns>A <see cref="IPlugIn"/> instance</returns>
-        IPlugIn? CreateInstance(Assembly assembly,
-                                object? configuration = default);
+        IPlugIn? PlugIn { get; }
 
         /// <summary>
-        /// Create an instance of a PlugIn configuration
+        /// Load a <see cref="PlugIn"/> instance from the <paramref name="assembly"/>
         /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> </param>
-        /// <returns>The PlugIn configuration instance</returns>
-        object? CreateConfiguration(Assembly assembly);
+        /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="PlugIn"/></param>
+        /// <param name="instanceConfiguration"></param>
+        void Load(Assembly assembly,
+                  InstanceConfiguration instanceConfiguration);
     }
 }

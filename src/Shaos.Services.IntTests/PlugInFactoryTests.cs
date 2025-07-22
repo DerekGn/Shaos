@@ -24,37 +24,35 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Services.IntTests.Fixtures;
-using Shaos.Services.Runtime.Factories;
-using Shaos.Testing.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Shaos.Services.IntTests
 {
-    public class PlugInFactoryTests : PlugInFactoryBaseTests
-    {
-        private readonly PlugInFactory _plugInFactory;
+    //public class PlugInFactoryTests : PlugInFactoryBaseTests
+    //{
+    //    private readonly PlugInFactory _plugInFactory;
 
-        public PlugInFactoryTests(ITestOutputHelper output,
-                                  TestFixture fixture) : base(output, fixture)
-        {
-            _plugInFactory = new PlugInFactory(
-                LoggerFactory!,
-                LoggerFactory!.CreateLogger<PlugInFactory>());
-        }
+    //    public PlugInFactoryTests(ITestOutputHelper output,
+    //                              TestFixture fixture) : base(output, fixture)
+    //    {
+    //        _plugInFactory = new PlugInFactory(
+    //            LoggerFactory!,
+    //            LoggerFactory!.CreateLogger<PlugInFactory>());
+    //    }
 
-        [Fact]
-        public void TestCreateInstance()
-        {
-            var context = _unloadingWeakReference.Target;
-            var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
+    //    [Fact]
+    //    public void TestCreateInstance()
+    //    {
+    //        var context = _unloadingWeakReference.Target;
+    //        var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var configuration = _plugInFactory.CreateConfiguration(assembly);
-            var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
+    //        var configuration = _plugInFactory.CreateConfiguration(assembly);
+    //        var plugIn = _plugInFactory.CreateInstance(assembly, configuration);
 
-            Assert.NotNull(plugIn);
+    //        Assert.NotNull(plugIn);
 
-            context.Unload();
-        }
-    }
+    //        context.Unload();
+    //    }
+    //}
 }
