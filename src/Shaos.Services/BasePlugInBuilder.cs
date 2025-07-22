@@ -28,10 +28,19 @@ using System.Reflection;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// The base PlugIn builder class
+    /// </summary>
+    /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
     public abstract class BasePlugInBuilder(ILogger<BasePlugInBuilder> logger)
     {
         protected ILogger<BasePlugInBuilder> Logger = logger;
 
+        /// <summary>
+        /// Create a PlugIn configuration instance
+        /// </summary>
+        /// <param name="assembly">The <see cref="Assembly"/> to load the configuration from</param>
+        /// <returns>The configuration instance</returns>
         protected object? CreateConfigurationInternal(Assembly assembly)
         {
             ArgumentNullException.ThrowIfNull(assembly);
@@ -60,6 +69,12 @@ namespace Shaos.Services
             return configuration;
         }
 
+        /// <summary>
+        /// Resolve a <see cref="IPlugIn"/> type from an <see cref="Assembly"/>
+        /// </summary>
+        /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="IPlugIn"/> derived type from</param>
+        /// <returns>The resolved <see cref="IPlugIn"/> derived type</returns>
+        /// <exception cref="InvalidOperationException">Thrown if an <see cref="IPlugIn"/> derived type cannot be resolved</exception>
         protected Type ResolvePlugInType(Assembly assembly)
         {
             var result = from Type type in assembly.GetTypes()
