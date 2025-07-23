@@ -80,7 +80,7 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public void Restore(IList<Device> devices)
+        public void Restore(IEnumerable<Device> devices)
         {
             ArgumentNullException.ThrowIfNull(devices);
 

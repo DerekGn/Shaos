@@ -157,6 +157,7 @@ namespace Shaos
             builder.Services.AddScoped<IInstanceHostService, InstanceHostService>();
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
+            builder.Services.AddScoped<IPlugInBuilder, PlugInBuilder>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IShaosRepository, ShaosRepository>();
 

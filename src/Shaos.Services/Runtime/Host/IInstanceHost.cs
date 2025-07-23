@@ -23,6 +23,7 @@
 */
 
 using Shaos.Repository.Models;
+using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 
 namespace Shaos.Services.Runtime.Host
@@ -41,6 +42,8 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="IReadOnlyList{T}"/> of <see cref="Instance"/>
         /// </summary>
         IReadOnlyList<Instance> Instances { get; }
+
+        IReadOnlyDictionary<int, InstanceLoadContext> LoadContexts { get; }
 
         /// <summary>
         /// Create an <see cref="Instance"/> in the <see cref="InstanceHost"/>
@@ -103,6 +106,8 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="Instance"/> is not synchronously started
         /// </remarks>
         Instance StartInstance(int id);
+
+        void StartInstance(int id, IPlugIn? plugIn);
 
         /// <summary>
         /// Stop a running <see cref="Instance"/>

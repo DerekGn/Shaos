@@ -57,7 +57,7 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>
         /// </summary>
-        public IList<Device> Devices { get; set; } = [];
+        public List<Device> Devices { get; } = [];
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]

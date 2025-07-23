@@ -26,7 +26,7 @@ using System.Reflection;
 
 namespace Shaos.Services.Runtime.Host
 {
-    internal class InstanceLoadContext : IDisposable
+    public class InstanceLoadContext : IDisposable
     {
         private readonly UnloadingWeakReference<IRuntimeAssemblyLoadContext> _unloadingWeakReference;
         private bool disposedValue;

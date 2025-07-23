@@ -24,29 +24,43 @@
 
 using Shaos.Sdk.Devices;
 
+using ModelDevice = Shaos.Repository.Models.Devices.Device;
+using SdkDevice = Shaos.Sdk.Devices.Device;
+
 namespace Shaos.Services.Extensions
 {
     internal static class DeviceExtensions
     {
-        public static Repository.Models.Devices.Device ToModel(this Device device)
+        public static ModelDevice ToModel(this SdkDevice device)
         {
-            return new Repository.Models.Devices.Device()
+            var modelDevice = new ModelDevice()
             {
                 Id = device.Id,
                 Name = device.Name,
                 BatteryLevel = device.BatteryLevel?.Level,
-                Parameters = device.Parameters.ToModel(),
                 SignalLevel = device.SignalLevel?.Level,
             };
+
+            modelDevice.Parameters.AddRange(device.Parameters.ToModel());
+
+            return modelDevice;
         }
 
-        public static Device ToSdk(this Repository.Models.Devices.Device device)
+        public static SdkDevice ToSdk(this ModelDevice device)
         {
             return new Device(device.Id,
                                  device.Name,
                                  device.Parameters.ToSdk(),
                                  device.BatteryLevel,
                                  device.SignalLevel);
+        }
+
+        public static IEnumerable<SdkDevice> ToSdk(this IList<ModelDevice> modelDevices)
+        {
+            foreach (var modelDevice in modelDevices)
+            {
+                yield return ToSdk(modelDevice);
+            }
         }
     }
 }

@@ -22,10 +22,12 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
@@ -41,6 +43,7 @@ namespace Shaos.Services
     public class InstanceHostService : IInstanceHostService
     {
         private readonly IFileStoreService _fileStoreService;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IShaosRepository _repository;
@@ -52,20 +55,18 @@ namespace Shaos.Services
         /// <param name="instanceHost">The <see cref="IInstanceHost"/> instance</param>
         /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
+        /// <param name="serviceScopeFactory"></param>
         public InstanceHostService(ILogger<InstanceHostService> logger,
                                    IInstanceHost instanceHost,
                                    IShaosRepository repository,
-                                   IFileStoreService fileStoreService)
+                                   IFileStoreService fileStoreService,
+                                   IServiceScopeFactory serviceScopeFactory)
         {
-            ArgumentNullException.ThrowIfNull(instanceHost);
-            ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(repository);
-            ArgumentNullException.ThrowIfNull(fileStoreService);
-
             _logger = logger;
             _repository = repository;
             _instanceHost = instanceHost;
             _fileStoreService = fileStoreService;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <inheritdoc/>
@@ -123,37 +124,80 @@ namespace Shaos.Services
         public async Task StartInstancesAsync(CancellationToken cancellationToken = default)
         {
             var plugIns = _repository.GetEnumerableAsync<PlugIn>(_ => _.Package != null,
-                                                                 includeProperties: [nameof(Package), nameof(PlugIn.Instances)],
+                                                                 includeProperties: [
+                                                                     nameof(Package),
+                                                                     nameof(PlugIn.Instances),
+                                                                     $"{nameof(PlugIn.Instances)}.{nameof(PlugInInstance.Devices)}",
+                                                                     $"{nameof(PlugIn.Instances)}.{nameof(PlugInInstance.Devices)}.{nameof(Device.Parameters)}"],
                                                                  cancellationToken: cancellationToken);
 
             await foreach (var plugIn in plugIns)
             {
-                foreach (var plugInInstance in plugIn.Instances)
+                var package = plugIn.Package!;
+
+                if(package != null)
                 {
-                    var package = plugIn.Package;
-
-                    var assemblyFile = _fileStoreService.GetAssemblyPath(plugIn.Id,
-                                                                         package!.AssemblyFile);
-
-                    var configuration = new InstanceConfiguration(package!.HasConfiguration,
-                                                                  plugInInstance.Configuration);
-
-                    Instance instance = _instanceHost.CreateInstance(plugInInstance.Id,
-                                                                     plugIn.Id,
-                                                                     plugInInstance.Name,
-                                                                     assemblyFile,
-                                                                     configuration);
-
-                    if (plugInInstance.Enabled && instance.Configuration.IsConfigured)
+                    foreach (var plugInInstance in plugIn.Instances)
                     {
-                        _logger.LogInformation("Starting PlugIn instance. Id: [{Id} Name: [{Name}]]",
-                            instance.Id,
-                            instance.Name);
+                        if (package.HasConfiguration && !plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
+                        {
+                            Instance instance = CreatePlugInInstance(plugIn, package, plugInInstance);
 
-                        _instanceHost.StartInstance(instance.Id);
+                            InstanceLoadContext loadContext = _instanceHost.LoadContexts[plugIn.Id];
+
+                            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+
+                            var plugInBuilder = scope.ServiceProvider.GetRequiredService<IPlugInBuilder>();
+
+                            plugInBuilder!.Load(loadContext.Assembly!,
+                                                instance.Configuration);
+
+                            plugInBuilder.Restore(plugInInstance.Devices.ToSdk());
+
+                            if (plugInInstance.Enabled)
+                            {
+                                _logger.LogInformation("Starting PlugIn instance. Id: [{Id} Name: [{Name}]]",
+                                                   instance.Id,
+                                                   instance.Name);
+
+                                _instanceHost.StartInstance(instance.Id, plugInBuilder.PlugIn);
+                            }
+                            else
+                            {
+                                _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not enabled for startUp",
+                                                   nameof(plugInInstance),
+                                                   plugInInstance.Id,
+                                                   plugInInstance.Name);
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not configured",
+                                               nameof(plugInInstance),
+                                               plugInInstance.Id,
+                                               plugInInstance.Name);
+                        }
+
+                        
                     }
                 }
             }
+        }
+
+        private Instance CreatePlugInInstance(PlugIn plugIn, Package package, PlugInInstance plugInInstance)
+        {
+            var assemblyFilePath = _fileStoreService.GetAssemblyPath(plugIn.Id,
+                                                                                                     package!.AssemblyFile);
+
+            var configuration = new InstanceConfiguration(package!.HasConfiguration,
+                                                          plugInInstance.Configuration);
+
+            Instance instance = _instanceHost.CreateInstance(plugInInstance.Id,
+                                                             plugIn.Id,
+                                                             plugInInstance.Name,
+                                                             assemblyFilePath,
+                                                             configuration);
+            return instance;
         }
 
         /// <inheritdoc/>

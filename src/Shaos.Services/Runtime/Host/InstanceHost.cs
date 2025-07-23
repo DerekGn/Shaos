@@ -25,6 +25,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shaos.Sdk;
 using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
 using System.Diagnostics;
@@ -42,7 +43,6 @@ namespace Shaos.Services.Runtime.Host
         internal readonly List<Instance> _executingInstances;
         internal readonly Dictionary<int, InstanceLoadContext> _instanceLoadContexts;
 
-        private readonly IInstanceEventHandler _instanceEventHandler;
         private readonly ILogger<InstanceHost> _logger;
         private readonly IOptions<InstanceHostOptions> _options;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
@@ -80,6 +80,9 @@ namespace Shaos.Services.Runtime.Host
         public IReadOnlyList<Instance> Instances => _executingInstances.AsReadOnly();
 
         /// <inheritdoc/>
+        public IReadOnlyDictionary<int, InstanceLoadContext> LoadContexts => _instanceLoadContexts.AsReadOnly();
+
+        /// <inheritdoc/>
         public Instance CreateInstance(int id,
                                        int plugInId,
                                        string instanceName,
@@ -102,6 +105,8 @@ namespace Shaos.Services.Runtime.Host
                 instance = new Instance(id, plugInId, instanceName, assemblyPath, configuration);
 
                 _executingInstances.Add(instance);
+
+                InitaliseInstanceLoadContext(instance);
 
                 InstanceStateChanged?.Invoke(this,
                     new InstanceStateEventArgs(id, instance.State));
@@ -228,6 +233,13 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
+        public void StartInstance(int id, IPlugIn plugIn)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+            ArgumentNullException.ThrowIfNull(plugIn);
+        }
+
+        /// <inheritdoc/>
         public Instance StopInstance(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
@@ -279,7 +291,7 @@ namespace Shaos.Services.Runtime.Host
 
             _logger.LogInformation("Unloading instance execution context for instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
 
-            instance.Context?.Dispose();
+            instance.ExecutionContext?.Dispose();
 
             if (!_executingInstances.Any(_ => _.State == InstanceState.Running && _.PlugInId == instance.PlugInId))
             {
@@ -325,6 +337,17 @@ namespace Shaos.Services.Runtime.Host
             }
 
             return instanceLoadContext;
+        }
+
+        private void InitaliseInstanceLoadContext(Instance instance)
+        {
+            var instanceLoadContext = _instanceLoadContexts.GetValueOrDefault(instance.PlugInId);
+
+            if (instanceLoadContext == null)
+            {
+                instanceLoadContext = new InstanceLoadContext(_runtimeAssemblyLoadContextFactory.Create(instance.AssemblyPath));
+                _instanceLoadContexts.Add(instance.PlugInId, instanceLoadContext);
+            }
         }
 
         [DebuggerStepThrough]

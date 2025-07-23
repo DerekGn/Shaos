@@ -79,7 +79,7 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// The <see cref="IPlugIn"/> instance execution context
         /// </summary>
-        public InstanceExecutionContext? Context { get; private set; }
+        public InstanceExecutionContext? ExecutionContext { get; private set; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
@@ -164,7 +164,7 @@ namespace Shaos.Services.Runtime.Host
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
             stringBuilder.AppendLine($"{nameof(Configuration)}: {Configuration}");
-            stringBuilder.AppendLine($"{nameof(Context)}: {Context}");
+            stringBuilder.AppendLine($"{nameof(ExecutionContext)}: {ExecutionContext}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
             stringBuilder.AppendLine($"{nameof(Name)}: {Name}");
             stringBuilder.AppendLine($"{nameof(PlugInId)}: {PlugInId}");
@@ -178,14 +178,14 @@ namespace Shaos.Services.Runtime.Host
 
         internal async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            await Context!.PlugIn!.ExecuteAsync(cancellationToken);
+            await ExecutionContext!.PlugIn!.ExecuteAsync(cancellationToken);
         }
 
         internal void LoadContext(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
 
-            Context = new InstanceExecutionContext(plugIn);
+            ExecutionContext = new InstanceExecutionContext(plugIn);
         }
 
         internal void SetComplete()
@@ -212,20 +212,19 @@ namespace Shaos.Services.Runtime.Host
             StartTime = DateTime.UtcNow;
         }
 
-        internal void StartExecution(
-            Func<CancellationToken, Task> executeTask,
-            Action<Task> completionTask)
+        internal void StartExecution(Func<CancellationToken, Task> executeTask,
+                                     Action<Task> completionTask)
         {
             State = InstanceState.Starting;
 
-            Context!.StartExecution(executeTask, completionTask);
+            ExecutionContext!.StartExecution(executeTask, completionTask);
         }
 
         internal async Task<bool> StopExecutionAsync(TimeSpan stopTimeout)
         {
-            await Context!.TokenSource!.CancelAsync();
+            await ExecutionContext!.TokenSource!.CancelAsync();
 
-            return await Task.WhenAny(Context!.Task!, Task.Delay(stopTimeout)) == Context.Task;
+            return await Task.WhenAny(ExecutionContext!.Task!, Task.Delay(stopTimeout)) == ExecutionContext.Task;
         }
 
         private TimeSpan CalculateRunningTime()

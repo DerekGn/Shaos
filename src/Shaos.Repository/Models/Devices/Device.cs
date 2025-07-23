@@ -44,7 +44,7 @@ namespace Shaos.Repository.Models.Devices
         /// <summary>
         /// The set of <see cref="BaseParameter"/>
         /// </summary>
-        public IList<BaseParameter> Parameters { get; set; } = [];
+        public List<BaseParameter> Parameters { get; } = [];
 
         /// <summary>
         /// The parent <see cref="PlugInInstance"/>

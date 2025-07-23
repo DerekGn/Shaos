@@ -22,11 +22,13 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Exceptions;
@@ -41,24 +43,27 @@ namespace Shaos.Services.UnitTests
 {
     public class InstanceHostServiceTest : BaseTests
     {
-        private const string InstanceName = "Test";
         private const string AssemblyPath = "AssemblyPath";
+        private const string InstanceName = "Test";
 
         private readonly InstanceHostService _instanceHostService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly Mock<IShaosRepository> _mockRepository;
+        private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
 
         public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockInstanceHost = new Mock<IInstanceHost>();
             _mockRepository = new Mock<IShaosRepository>();
+            _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
 
             _instanceHostService = new InstanceHostService(LoggerFactory!.CreateLogger<InstanceHostService>(),
                                                            _mockInstanceHost.Object,
                                                            _mockRepository.Object,
-                                                           _mockFileStoreService.Object);
+                                                           _mockFileStoreService.Object,
+                                                           _mockServiceScopeFactory.Object);
         }
 
         [Fact]
@@ -197,8 +202,15 @@ namespace Shaos.Services.UnitTests
             plugIn.Instances.Add(new PlugInInstance()
             {
                 Id = 1,
-                Enabled = true,
+                Enabled = true
             });
+
+            plugIn.Instances[0].Devices.Add(new Repository.Models.Devices.Device()
+            {
+                Id = 1
+            });
+
+            plugIn.Instances[0].Devices[0].Parameters.Add(new BoolParameter());
 
             List<PlugIn> plugIns =
             [
@@ -329,9 +341,7 @@ namespace Shaos.Services.UnitTests
                                                                       It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PlugInInstance()
                 {
-
                 });
-
 
             await _instanceHostService.UpdateInstanceConfigurationAsync(1, collection);
 

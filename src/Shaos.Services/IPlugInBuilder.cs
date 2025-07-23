@@ -51,6 +51,6 @@ namespace Shaos.Services
         /// Restore the <see cref="IPlugIn"/> devices
         /// </summary>
         /// <param name="devices"></param>
-        void Restore(IList<Device> devices);
+        void Restore(IEnumerable<Device> devices);
     }
 }

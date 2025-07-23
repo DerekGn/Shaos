@@ -279,7 +279,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             Assert.True(WaitForStateChange());
 
             Assert.NotNull(instance);
-            Assert.NotNull(instance.Context);
+            Assert.NotNull(instance.ExecutionContext);
             Assert.Equal(InstanceState.Running, instance.State);
         }
 
