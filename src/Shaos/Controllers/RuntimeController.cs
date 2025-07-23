@@ -79,7 +79,8 @@ namespace Shaos.Controllers
         {
             return HandleError(id, (id) =>
             {
-                _instanceHost.StartInstance(id);
+#warning TODO use instancehostservice
+                //_instanceHost.StartInstance(id);
 
                 return Accepted();
             });

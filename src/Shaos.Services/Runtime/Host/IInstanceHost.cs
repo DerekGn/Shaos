@@ -43,8 +43,6 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         IReadOnlyList<Instance> Instances { get; }
 
-        IReadOnlyDictionary<int, InstanceLoadContext> LoadContexts { get; }
-
         /// <summary>
         /// Create an <see cref="Instance"/> in the <see cref="InstanceHost"/>
         /// </summary>
@@ -52,7 +50,6 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="plugInId"></param>
         /// <param name="instanceName">The name of the <see cref="Instance"/></param>
         /// <param name="assemblyPath">The path of the assembly file for the <see cref="Instance"/></param>
-        /// <param name="configuration"></param>
         /// <returns>The <see cref="Instance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="instanceName"/> or <paramref name="assemblyPath"/> is null of empty</exception>
@@ -61,8 +58,9 @@ namespace Shaos.Services.Runtime.Host
         Instance CreateInstance(int id,
                                 int plugInId,
                                 string instanceName,
-                                string assemblyPath,
-                                InstanceConfiguration configuration);
+                                string assemblyPath);
+
+        InstanceLoadContext GetInstanceLoadContext(int id);
 
         /// <summary>
         /// Indicates if an <see cref="Instance"/> exists in the runtime
@@ -70,13 +68,6 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The identifier of the <see cref="Instance"/> to check</param>
         /// <returns>true if the <see cref="Instance"/> exists in the <see cref="InstanceHost"/></returns>
         bool InstanceExists(int id);
-
-        /// <summary>
-        /// Load the <see cref="Instance"/> configuration
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration is to be loaded for</param>
-        /// <returns>The configuration</returns>
-        object? LoadConfiguration(int id);
 
         /// <summary>
         /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
@@ -88,26 +79,12 @@ namespace Shaos.Services.Runtime.Host
         void RemoveInstance(int id);
 
         /// <summary>
-        /// Set an <see cref="Instance"/> configuration
+        ///
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/> the configuration to set</param>
-        /// <param name="configuration">The JSON configuration setting</param>
-        void SetConfiguration(int id, string? configuration);
-
-        /// <summary>
-        /// Start the execution of a <see cref="Instance"/>
-        /// </summary>
-        /// <param name="id">The id of the <see cref="Instance"/> to start</param>
-        /// <returns>An <see cref="Instance"/></returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
-        /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is already running</exception>
-        /// <remarks>
-        /// The <see cref="Instance"/> is not synchronously started
-        /// </remarks>
-        Instance StartInstance(int id);
-
-        void StartInstance(int id, IPlugIn? plugIn);
+        /// <param name="id"></param>
+        /// <param name="plugIn"></param>
+        /// <returns></returns>
+        Instance StartInstance(int id, IPlugIn plugIn);
 
         /// <summary>
         /// Stop a running <see cref="Instance"/>

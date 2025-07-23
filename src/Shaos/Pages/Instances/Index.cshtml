@@ -88,7 +88,9 @@
                         @{
                             var canStart = item.CanStart();
                             var canStop = item.CanStop();
-                            var canConfigure = item.CanConfigure() ? null : "disabled";
+                            #warning TODO
+                            //var canConfigure = item.CanConfigure() ? null : "disabled";
+                            var canConfigure = "disabled";
                         }
                         <input type="submit" asp-page-handler="Start" class="btn btn-sm btn-success" asp-route-id="@item.Id" value="Start" disabled="@(canStart ? null : "disabled")" />
                         <input type="submit" asp-page-handler="Stop" class="btn btn-sm btn-danger" asp-route-id="@item.Id" value="Stop" disabled="@(canStop ? null : "disabled")" />

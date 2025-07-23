@@ -41,40 +41,29 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="plugInId">The parent <see cref="PlugIn"/> identifier</param>
         /// <param name="name"><see cref="Instance"/> name </param>
         /// <param name="assemblyPath">The path to the <see cref="PlugIn"/> assembly</param>
-        /// <param name="configuration">The <see cref="Configuration"/> for this <see cref="Instance"/></param>
-        public Instance(
-            int id,
-            int plugInId,
-            string name,
-            string assemblyPath,
-            InstanceConfiguration configuration)
+        public Instance(int id,
+                        int plugInId,
+                        string name,
+                        string assemblyPath)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
-            ArgumentNullException.ThrowIfNull(configuration);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             Id = id;
             PlugInId = plugInId;
             Name = name;
             AssemblyPath = assemblyPath;
-            Configuration = configuration;
         }
 
         internal Instance(int id,
                           int parentId,
                           string name,
                           string assemblyPath,
-                          InstanceState state,
-                          InstanceConfiguration configuration)
-            : this(id, parentId, name, assemblyPath, configuration)
+                          InstanceState state)
+            : this(id, parentId, name, assemblyPath)
         {
             State = state;
         }
-
-        /// <summary>
-        /// The <see cref="InstanceConfiguration"/> for this instances
-        /// </summary>
-        public InstanceConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> instance execution context
@@ -127,24 +116,12 @@ namespace Shaos.Services.Runtime.Host
         public DateTime? StopTime { get; private set; }
 
         /// <summary>
-        /// Indicates if this instance can be configured
-        /// </summary>
-        /// <returns>true if this instance can be configured</returns>
-        public bool CanConfigure()
-        {
-            return State != InstanceState.Running && Configuration.RequiresConfiguration;
-        }
-
-        /// <summary>
         /// Indicates if this instance can be started
         /// </summary>
         /// <returns>true if this instance can be started</returns>
         public bool CanStart()
         {
-            if (Configuration.RequiresConfiguration && !Configuration.IsConfigured)
-                return false;
-            else
-                return State != InstanceState.Running;
+            return State != InstanceState.Running;
         }
 
         /// <summary>
@@ -163,7 +140,6 @@ namespace Shaos.Services.Runtime.Host
             StringBuilder stringBuilder = new StringBuilder();
 
             stringBuilder.AppendLine($"{nameof(Id)}: {Id}");
-            stringBuilder.AppendLine($"{nameof(Configuration)}: {Configuration}");
             stringBuilder.AppendLine($"{nameof(ExecutionContext)}: {ExecutionContext}");
             stringBuilder.AppendLine($"{nameof(Exception)}: {(Exception == null ? "Empty" : Exception.ToString())}");
             stringBuilder.AppendLine($"{nameof(Name)}: {Name}");

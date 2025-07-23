@@ -29,6 +29,7 @@ using Shaos.Repository;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices.Parameters;
+using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Exceptions;
@@ -51,6 +52,8 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly Mock<IShaosRepository> _mockRepository;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
+        private readonly Mock<IServiceProvider> _mockServiceProvider;
+        private readonly Mock<IServiceScope> _mockServiceScope;
 
         public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
@@ -100,7 +103,8 @@ namespace Shaos.Services.UnitTests
                     PlugIn = plugIn
                 });
 
-            _mockInstanceHost.Setup(_ => _.LoadConfiguration(1)).Returns(new object());
+#warning TODO REFACTOR
+            //_mockInstanceHost.Setup(_ => _.LoadConfiguration(1)).Returns(new object());
 
             var result = await _instanceHostService.LoadInstanceConfigurationAsync(1);
 
@@ -220,8 +224,7 @@ namespace Shaos.Services.UnitTests
             var instance = new Instance(1,
                                         2,
                                         InstanceName,
-                                        AssemblyPath,
-                                        new InstanceConfiguration(true, "configuration"));
+                                        AssemblyPath);
 
             _mockRepository.Setup(_ => _.GetEnumerableAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
                                                                     It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
@@ -238,8 +241,7 @@ namespace Shaos.Services.UnitTests
             _mockInstanceHost.Setup(_ => _.CreateInstance(It.IsAny<int>(),
                                                           It.IsAny<int>(),
                                                           It.IsAny<string>(),
-                                                          It.IsAny<string>(),
-                                                          It.IsAny<InstanceConfiguration>()))
+                                                          It.IsAny<string>()))
                 .Returns(instance);
 
             await _instanceHostService.StartInstancesAsync();
@@ -260,12 +262,12 @@ namespace Shaos.Services.UnitTests
                 .Verify(_ => _.CreateInstance(It.IsAny<int>(),
                                               It.IsAny<int>(),
                                               It.IsAny<string>(),
-                                              It.IsAny<string>(),
-                                              It.IsAny<InstanceConfiguration>()),
+                                              It.IsAny<string>()),
                                               Times.Once);
 
             _mockInstanceHost
-                .Verify(_ => _.StartInstance(It.IsAny<int>()), Times.Once);
+                .Verify(_ => _.StartInstance(It.IsAny<int>(),
+                                             It.IsAny<IPlugIn>()), Times.Once);
         }
 
         [Fact]
@@ -331,9 +333,10 @@ namespace Shaos.Services.UnitTests
                 new("TestSetting","10")
             ];
 
-            _mockInstanceHost
-                .Setup(_ => _.LoadConfiguration(It.IsAny<int>()))
-                .Returns(new TestConfig());
+#warning TODO REFACTOR
+            //_mockInstanceHost
+            //    .Setup(_ => _.LoadConfiguration(It.IsAny<int>()))
+            //    .Returns(new TestConfig());
 
             _mockRepository.Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
                                                                       It.IsAny<bool>(),
@@ -367,6 +370,17 @@ namespace Shaos.Services.UnitTests
         public class TestConfig
         {
             public int TestSetting { get; set; }
+        }
+
+        private void SetupServiceScopeFactory()
+        {
+            _mockServiceScopeFactory
+                .Setup(_ => _.CreateScope())
+                .Returns(_mockServiceScope.Object);
+
+            _mockServiceScope
+                .Setup(_ => _.ServiceProvider)
+                .Returns(_mockServiceProvider.Object);
         }
     }
 }

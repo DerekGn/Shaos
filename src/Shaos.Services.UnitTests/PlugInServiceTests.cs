@@ -137,14 +137,11 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceRunningAsync()
         {
-            var configuration = new InstanceConfiguration(true, string.Empty);
-
             var instance = new Instance(12,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None,
-                                        configuration);
+                                        InstanceState.None);
 
             instance.SetRunning();
 
@@ -162,8 +159,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceSuccessAsync()
         {
-            var configuration = new InstanceConfiguration(true, string.Empty);
-            var instance = new Instance(12, 1, InstanceName, AssemblyPath, InstanceState.None, configuration);
+            var instance = new Instance(12, 1, InstanceName, AssemblyPath, InstanceState.None);
 
             instance.SetComplete();
 
@@ -199,14 +195,11 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(plugInInstance);
 
-            var configuration = new InstanceConfiguration(true, string.Empty);
-
             var instance = new Instance(plugInInstance.Id,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None,
-                                        configuration);
+                                        InstanceState.None);
 
             instance.SetRunning();
 
@@ -235,15 +228,11 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var configuration = new InstanceConfiguration(true,
-                                                          string.Empty);
-
             var instance = new Instance(12,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None,
-                                        configuration);
+                                        InstanceState.None);
 
             instance.SetComplete();
 
@@ -587,14 +576,11 @@ namespace Shaos.Services.UnitTests
 
         private Instance SetupRunningInstances()
         {
-            var configuration = new InstanceConfiguration(true, string.Empty);
-
             var instance = new Instance(1,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None,
-                                        configuration);
+                                        InstanceState.None);
 
             _mockInstanceHost
                .Setup(_ => _.Instances)

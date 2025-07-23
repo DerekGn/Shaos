@@ -94,8 +94,7 @@ namespace Shaos.Services
                     _instanceHost.CreateInstance(plugInInstance.Id,
                                                  plugIn.Id,
                                                  plugInInstance.Name,
-                                                 _fileStoreService.GetAssemblyPath(plugIn.Id, package.AssemblyFile),
-                                                 new InstanceConfiguration(package!.HasConfiguration));
+                                                 _fileStoreService.GetAssemblyPath(plugIn.Id, package.AssemblyFile));
                 }
                 else
                 {

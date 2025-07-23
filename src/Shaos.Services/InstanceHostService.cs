@@ -28,6 +28,7 @@ using Shaos.Repository;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices;
+using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
@@ -43,10 +44,10 @@ namespace Shaos.Services
     public class InstanceHostService : IInstanceHostService
     {
         private readonly IFileStoreService _fileStoreService;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IShaosRepository _repository;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         /// <summary>
         /// Create an instance of a instance host service
@@ -73,17 +74,18 @@ namespace Shaos.Services
         public async Task<object?> LoadInstanceConfigurationAsync(int id,
                                                                   CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new NotFoundException(id);
+            throw new NotImplementedException();
+            //var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken) ?? throw new NotFoundException(id);
 
-            var package = plugInInstance!.PlugIn!.Package;
+            //var package = plugInInstance!.PlugIn!.Package;
 
-            if (!package!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
-            {
-                _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
-                throw new PlugInInstanceNotConfiguredException(id);
-            }
+            //if (!package!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
+            //{
+            //    _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
+            //    throw new PlugInInstanceNotConfiguredException(id);
+            //}
 
-            return _instanceHost.LoadConfiguration(id);
+            //return _instanceHost.LoadConfiguration(id);
         }
 
         /// <inheritdoc/>
@@ -105,19 +107,22 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotFoundException(id);
             }
 
-            var package = plugInInstance.PlugIn!.Package!;
+#warning CHECK PLUGIN PACKAGE
+            var plugIn = plugInInstance.PlugIn;
+            var package = plugIn!.Package!;
 
             if (package.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))
             {
                 _logger.LogWarning("PlugIn instance Id: [{Id}] was not found.", id);
                 throw new PlugInInstanceNotConfiguredException(id);
             }
-            else
-            {
-                _instanceHost.SetConfiguration(id, plugInInstance.Configuration);
-            }
 
-            _instanceHost.StartInstance(id);
+            var configuration = new InstanceConfiguration(package!.HasConfiguration,
+                                                          plugInInstance.Configuration);
+
+            var runtimeInstance = CreatePlugInInstance(plugIn, plugInInstance, configuration);
+
+            _instanceHost.StartInstance(id, runtimeInstance!);
         }
 
         /// <inheritdoc/>
@@ -135,24 +140,18 @@ namespace Shaos.Services
             {
                 var package = plugIn.Package!;
 
-                if(package != null)
+                if (package != null)
                 {
                     foreach (var plugInInstance in plugIn.Instances)
                     {
                         if (package.HasConfiguration && !plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
                         {
-                            Instance instance = CreatePlugInInstance(plugIn, package, plugInInstance);
+                            var configuration = new InstanceConfiguration(package!.HasConfiguration,
+                                                                          plugInInstance.Configuration);
 
-                            InstanceLoadContext loadContext = _instanceHost.LoadContexts[plugIn.Id];
+                            Instance instance = CreateRuntimeInstance(plugIn, package, plugInInstance);
 
-                            using IServiceScope scope = _serviceScopeFactory.CreateScope();
-
-                            var plugInBuilder = scope.ServiceProvider.GetRequiredService<IPlugInBuilder>();
-
-                            plugInBuilder!.Load(loadContext.Assembly!,
-                                                instance.Configuration);
-
-                            plugInBuilder.Restore(plugInInstance.Devices.ToSdk());
+                            var runtimeInstance = CreatePlugInInstance(plugIn, plugInInstance, configuration);
 
                             if (plugInInstance.Enabled)
                             {
@@ -160,7 +159,7 @@ namespace Shaos.Services
                                                    instance.Id,
                                                    instance.Name);
 
-                                _instanceHost.StartInstance(instance.Id, plugInBuilder.PlugIn);
+                                _instanceHost.StartInstance(instance.Id, runtimeInstance!);
                             }
                             else
                             {
@@ -177,27 +176,9 @@ namespace Shaos.Services
                                                plugInInstance.Id,
                                                plugInInstance.Name);
                         }
-
-                        
                     }
                 }
             }
-        }
-
-        private Instance CreatePlugInInstance(PlugIn plugIn, Package package, PlugInInstance plugInInstance)
-        {
-            var assemblyFilePath = _fileStoreService.GetAssemblyPath(plugIn.Id,
-                                                                                                     package!.AssemblyFile);
-
-            var configuration = new InstanceConfiguration(package!.HasConfiguration,
-                                                          plugInInstance.Configuration);
-
-            Instance instance = _instanceHost.CreateInstance(plugInInstance.Id,
-                                                             plugIn.Id,
-                                                             plugInInstance.Name,
-                                                             assemblyFilePath,
-                                                             configuration);
-            return instance;
         }
 
         /// <inheritdoc/>
@@ -211,31 +192,64 @@ namespace Shaos.Services
                                                            IEnumerable<KeyValuePair<string, string>> collection,
                                                            CancellationToken cancellationToken = default)
         {
-            var configuration = _instanceHost.LoadConfiguration(id) ?? throw new ConfigurationNotLoadedException(id);
-            var configurationType = configuration.GetType();
+#warning TODO refactor
+            throw new NotImplementedException();
+            //var configuration = _instanceHost.LoadConfiguration(id) ?? throw new ConfigurationNotLoadedException(id);
+            //var configurationType = configuration.GetType();
 
-            foreach (var kvp in collection)
-            {
-                var value = configurationType.Parse(kvp.Key, kvp.Value);
+            //foreach (var kvp in collection)
+            //{
+            //    var value = configurationType.Parse(kvp.Key, kvp.Value);
 
-                configurationType.SetProperty(configuration!, kvp.Key, value);
-            }
+            //    configurationType.SetProperty(configuration!, kvp.Key, value);
+            //}
 
-            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
-                                                                                false,
-                                                                                cancellationToken: cancellationToken);
+            //var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
+            //                                                                    false,
+            //                                                                    cancellationToken: cancellationToken);
 
-            var serializedConfiguration = Utf8JsonSerializer.Serialize(configuration);
+            //var serializedConfiguration = Utf8JsonSerializer.Serialize(configuration);
 
-            plugInInstance!.Configuration = serializedConfiguration;
+            //plugInInstance!.Configuration = serializedConfiguration;
 
-            await _repository.SaveChangesAsync(cancellationToken);
+            //await _repository.SaveChangesAsync(cancellationToken);
+        }
+
+        private IPlugIn? CreatePlugInInstance(PlugIn plugIn, PlugInInstance plugInInstance, InstanceConfiguration configuration)
+        {
+            InstanceLoadContext loadContext = _instanceHost.GetInstanceLoadContext(plugIn.Id);
+
+            var scope = _serviceScopeFactory.CreateScope();
+            var plugInBuilder = scope.ServiceProvider.GetRequiredService<IPlugInBuilder>();
+
+            plugInBuilder!.Load(loadContext.Assembly!,
+                                configuration);
+
+            plugInBuilder.Restore(plugInInstance.Devices.ToSdk());
+
+            return plugInBuilder.PlugIn;
+        }
+
+        private Instance CreateRuntimeInstance(PlugIn plugIn, Package package, PlugInInstance plugInInstance)
+        {
+            var assemblyFilePath = _fileStoreService.GetAssemblyPath(plugIn.Id,
+                                                                     package!.AssemblyFile);
+
+            Instance instance = _instanceHost.CreateInstance(plugInInstance.Id,
+                                                             plugIn.Id,
+                                                             plugInInstance.Name,
+                                                             assemblyFilePath);
+            return instance;
         }
 
         private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _repository.GetByIdAsync<PlugInInstance>(id,
-                                                                  includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
+                                                                  includeProperties: [
+                                                                      nameof(PlugIn),
+                                                                      $"{nameof(PlugIn)}.{nameof(Package)}",
+                                                                      $"{nameof(PlugInInstance.Devices)}",
+                                                                      $"{nameof(PlugInInstance.Devices)}.{nameof(Device.Parameters)}"],
                                                                   cancellationToken: cancellationToken);
         }
     }
