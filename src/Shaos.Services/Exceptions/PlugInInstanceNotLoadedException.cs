@@ -23,34 +23,15 @@
 */
 
 using Shaos.Sdk;
-using Shaos.Sdk.Devices;
-using Shaos.Services.Runtime.Host;
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// The <see cref="IPlugIn"/> builder
+    /// Thrown when a <see cref="IPlugIn"/> was not loaded by a <see cref="PlugInBuilder"/> instance
     /// </summary>
-    public interface IPlugInBuilder
+    [ExcludeFromCodeCoverage]
+    public class PlugInInstanceNotLoadedException : Exception
     {
-        /// <summary>
-        /// The <see cref="PlugIn"/> instance that the builder has created
-        /// </summary>
-        IPlugIn? PlugIn { get; }
-
-        /// <summary>
-        /// Load an <see cref="IPlugIn"/> instance from the <paramref name="assembly"/>
-        /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="PlugIn"/></param>
-        /// <param name="instanceConfiguration"></param>
-        void Load(Assembly assembly,
-                  InstanceConfiguration instanceConfiguration);
-
-        /// <summary>
-        /// Restore the <see cref="IPlugIn"/> devices
-        /// </summary>
-        /// <param name="devices"></param>
-        void Restore(IList<Device> devices);
     }
 }

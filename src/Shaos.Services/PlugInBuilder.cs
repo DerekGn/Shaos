@@ -24,6 +24,8 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
+using Shaos.Sdk.Devices;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Json;
 using Shaos.Services.Runtime.Host;
 using System.Reflection;
@@ -75,6 +77,22 @@ namespace Shaos.Services
             }
 
             _plugin = Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
+        }
+
+        /// <inheritdoc/>
+        public void Restore(IList<Device> devices)
+        {
+            ArgumentNullException.ThrowIfNull(devices);
+
+            if(_plugin == null)
+            {
+                throw new PlugInInstanceNotLoadedException();
+            }
+
+            foreach (var device in devices)
+            {
+                _plugin.Devices.Add(device);
+            }
         }
 
         private List<object> GetConstructorParameters(Type plugInType)
