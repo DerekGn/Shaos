@@ -124,12 +124,9 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotConfiguredException(id);
             }
 
-            var configuration = new InstanceConfiguration(package!.HasConfiguration,
-                                                          plugInInstance.Configuration);
-
             var runtimeInstance = CreatePlugInInstance(plugIn,
                                                        plugInInstance,
-                                                       configuration);
+                                                       plugInInstance.Configuration);
 
             _instanceHost.StartInstance(id, runtimeInstance!);
         }
@@ -155,17 +152,14 @@ namespace Shaos.Services
                     {
                         if (package.HasConfiguration && !plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
                         {
-                            var configuration = new InstanceConfiguration(package!.HasConfiguration,
-                                                                          plugInInstance.Configuration);
-
                             Instance instance = CreateRuntimeInstance(plugIn,
                                                                       package,
                                                                       plugInInstance,
-                                                                      configuration.RequiresConfiguration);
+                                                                      package.HasConfiguration);
 
                             var runtimeInstance = CreatePlugInInstance(plugIn,
                                                                        plugInInstance,
-                                                                       configuration);
+                                                                       plugInInstance.Configuration);
 
                             if (plugInInstance.Enabled)
                             {
@@ -231,7 +225,7 @@ namespace Shaos.Services
 
         private IPlugIn? CreatePlugInInstance(PlugIn plugIn,
                                               PlugInInstance plugInInstance,
-                                              InstanceConfiguration configuration)
+                                              string? configuration)
         {
             InstanceLoadContext loadContext = _instanceHost.GetInstanceLoadContext(plugIn.Id);
 

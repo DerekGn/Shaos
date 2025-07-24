@@ -47,10 +47,8 @@ namespace Shaos.Services.UnitTests
             var context = _unloadingWeakReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var instanceConfiguration = new InstanceConfiguration(true, "{\"Delay\": \"00:00:00\"}");
-
             _builder.Load(assembly,
-                          instanceConfiguration);
+                          "{\"Delay\": \"00:00:00\"}");
 
             Assert.NotNull(_builder.PlugIn);
         }

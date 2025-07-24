@@ -43,9 +43,9 @@ namespace Shaos.Services
         /// Load an <see cref="IPlugIn"/> instance from the <paramref name="assembly"/>
         /// </summary>
         /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="PlugIn"/></param>
-        /// <param name="instanceConfiguration"></param>
+        /// <param name="configuration">The json configuration setting parameters</param>
         void Load(Assembly assembly,
-                  InstanceConfiguration instanceConfiguration);
+                  string? configuration);
 
         /// <summary>
         /// Restore the <see cref="IPlugIn"/> devices

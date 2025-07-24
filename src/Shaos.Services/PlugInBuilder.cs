@@ -26,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using Shaos.Sdk.Devices;
 using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
 using Shaos.Services.Json;
 using Shaos.Services.Runtime.Host;
 using System.Reflection;
@@ -59,21 +60,23 @@ namespace Shaos.Services
 
         /// <inheritdoc/>
         public void Load(Assembly assembly,
-                         InstanceConfiguration instanceConfiguration)
+                         string? configuration)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
             var plugInType = ResolvePlugInType(assembly);
 
-            _logger.LogDebug("Resolved PlugIn: [{Name}] from Assembly: [{Assembly}]", plugInType.Name, assembly.FullName);
+            _logger.LogDebug("Resolved PlugIn: [{Name}] from Assembly: [{Assembly}]",
+                             plugInType.Name,
+                             assembly.FullName);
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
-            object? configuration = LoadConfiguration(assembly, instanceConfiguration);
+            object? configurationInstance = LoadConfiguration(assembly, configuration);
 
-            if (configuration != null)
+            if (configurationInstance != null)
             {
-                constructorParameters.Add(configuration);
+                constructorParameters.Add(configurationInstance);
             }
 
             _plugin = Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
@@ -130,22 +133,17 @@ namespace Shaos.Services
         }
 
         private object? LoadConfiguration(Assembly assembly,
-                                          InstanceConfiguration instanceConfiguration)
+                                          string? configuration)
         {
-            object? configuration = null;
+            object? configurationInstance = CreateConfigurationInternal(assembly);
 
-            if (instanceConfiguration.RequiresConfiguration)
+            if (!configuration!.IsEmptyOrWhiteSpace())
             {
-                configuration = CreateConfigurationInternal(assembly);
-
-                if (instanceConfiguration.IsConfigured)
-                {
-                    configuration = Utf8JsonSerializer.Deserialize(instanceConfiguration.Configuration!,
-                                                                   configuration!.GetType());
-                }
+                configurationInstance = Utf8JsonSerializer.Deserialize(configuration!,
+                                                                       configurationInstance!.GetType());
             }
 
-            return configuration;
+            return configurationInstance;
         }
     }
 }
