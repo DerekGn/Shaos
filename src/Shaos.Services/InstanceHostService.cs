@@ -25,7 +25,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
-using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices;
 using Shaos.Sdk;
@@ -78,7 +77,8 @@ namespace Shaos.Services
         public async Task<object?> LoadInstanceConfigurationAsync(int id,
                                                                   CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken: cancellationToken);
+            var plugInInstance = await LoadPlugInInstanceAsync(id,
+                                                               cancellationToken: cancellationToken);
 
             var package = plugInInstance!.PlugIn!.Package;
 
@@ -105,17 +105,18 @@ namespace Shaos.Services
                 throw new InstanceNotFoundException(id);
             }
 
-            var plugInInstance = await LoadPlugInInstanceAsync(id, cancellationToken: cancellationToken);
+            var plugInInstance = await LoadPlugInInstanceAsync(id,
+                                                               cancellationToken: cancellationToken);
 
-            if (plugInInstance == null)
+            var plugIn = plugInInstance.PlugIn!;
+            var package = plugIn.Package!;
+
+            if(plugIn.Package == null)
             {
-                _logger.LogWarning("Unable to start a PlugIn instance. PlugIn instance Id: [{Id}] was not found.", id);
-                throw new PlugInInstanceNotFoundException(id);
-            }
+                _logger.LogWarning("PlugInInstance package not assigned. Id: [{Id}]", id);
 
-#warning CHECK PLUGIN PACKAGE
-            var plugIn = plugInInstance.PlugIn;
-            var package = plugIn!.Package!;
+                throw new PlugInPackageNotAssignedException(id);
+            }
 
             if (package.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))
             {
@@ -126,7 +127,9 @@ namespace Shaos.Services
             var configuration = new InstanceConfiguration(package!.HasConfiguration,
                                                           plugInInstance.Configuration);
 
-            var runtimeInstance = CreatePlugInInstance(plugIn, plugInInstance, configuration);
+            var runtimeInstance = CreatePlugInInstance(plugIn,
+                                                       plugInInstance,
+                                                       configuration);
 
             _instanceHost.StartInstance(id, runtimeInstance!);
         }
@@ -259,12 +262,12 @@ namespace Shaos.Services
             return instance;
         }
 
-        private async Task<PlugInInstance?> LoadPlugInInstanceAsync(int id,
+        private async Task<PlugInInstance> LoadPlugInInstanceAsync(int id,
                                                                     bool withNoTracking = true,
                                                                     CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
-                withNoTracking,
+            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id, 
+                                                                  withNoTracking,
                                                                   includeProperties: [
                                                                       nameof(PlugIn),
                                                                       $"{nameof(PlugIn)}.{nameof(Package)}",

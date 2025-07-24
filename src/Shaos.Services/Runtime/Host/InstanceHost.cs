@@ -116,7 +116,8 @@ namespace Shaos.Services.Runtime.Host
         public InstanceLoadContext GetInstanceLoadContext(int id)
         {
 #warning TODO CHECK NULL
-            var instance = _executingInstances.FirstOrDefault(_ => _.PlugInId == id);
+            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
+
 
             InitaliseInstanceLoadContext(instance);
 

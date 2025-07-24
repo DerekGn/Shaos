@@ -34,9 +34,11 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
+using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
 using System.Linq.Expressions;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -50,19 +52,23 @@ namespace Shaos.Services.UnitTests
         private readonly InstanceHostService _instanceHostService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
+        private readonly Mock<IPlugInBuilder> _mockPlugInBuilder;
+        private readonly Mock<IPlugInConfigurationBuilder> _mockPlugInConfigurationBuilder;
         private readonly Mock<IShaosRepository> _mockRepository;
-        private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
-        private readonly Mock<IPlugInConfigurationBuilder> _mockPlugInConfigurationBuilder;
+        private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
 
         public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockInstanceHost = new Mock<IInstanceHost>();
-            _mockRepository = new Mock<IShaosRepository>();
-            _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
+            _mockPlugInBuilder = new Mock<IPlugInBuilder>();
             _mockPlugInConfigurationBuilder = new Mock<IPlugInConfigurationBuilder>();
+            _mockRepository = new Mock<IShaosRepository>();
+            _mockServiceProvider = new Mock<IServiceProvider>();
+            _mockServiceScope = new Mock<IServiceScope>();
+            _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
 
             _instanceHostService = new InstanceHostService(LoggerFactory!.CreateLogger<InstanceHostService>(),
                                                            _mockInstanceHost.Object,
@@ -73,9 +79,9 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
-        public async Task TestLoadInstanceConfigurationNotFoundAsync()
+        public async Task TestLoadInstanceConfigurationPlugInInstanceNotFoundExceptionAsync()
         {
-            var exception = await Assert.ThrowsAsync<NotFoundException>(
+            var exception = await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(
                 async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
 
             Assert.NotNull(exception);
@@ -106,8 +112,8 @@ namespace Shaos.Services.UnitTests
                     PlugIn = plugIn
                 });
 
-#warning TODO REFACTOR
-            //_mockInstanceHost.Setup(_ => _.LoadConfiguration(1)).Returns(new object());
+            SetupInstanceLoadContext();
+            SetupConfigurationLoad();
 
             var result = await _instanceHostService.LoadInstanceConfigurationAsync(1);
 
@@ -165,6 +171,10 @@ namespace Shaos.Services.UnitTests
                     PlugIn = plugIn
                 });
 
+            SetupInstanceLoadContext();
+
+            SetupServiceScopeFactory();
+
             await _instanceHostService.StartInstanceAsync(1);
 
             _mockInstanceHost
@@ -172,10 +182,10 @@ namespace Shaos.Services.UnitTests
 
             _mockRepository
                 .Verify(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
-                                                          It.IsAny<bool>(),
-                                                          It.IsAny<List<string>?>(),
-                                                          It.IsAny<CancellationToken>()),
-                                                          Times.Once);
+                                                            It.IsAny<bool>(),
+                                                            It.IsAny<List<string>?>(),
+                                                            It.IsAny<CancellationToken>()),
+                                                            Times.Once);
         }
 
         [Fact]
@@ -373,9 +383,19 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(1, exception.Id);
         }
 
-        public class TestConfig
+        private void SetupConfigurationLoad()
         {
-            public int TestSetting { get; set; }
+            _mockPlugInConfigurationBuilder.Setup(_ => _.LoadConfiguration(It.IsAny<Assembly>(),
+                                                                           It.IsAny<string?>()))
+                .Returns(new object());
+        }
+
+        private void SetupInstanceLoadContext()
+        {
+            var instanceLoadContext = new InstanceLoadContext(typeof(TestPlugIn).Assembly);
+
+            _mockInstanceHost.Setup(_ => _.GetInstanceLoadContext(It.IsAny<int>()))
+                            .Returns(instanceLoadContext);
         }
 
         private void SetupServiceScopeFactory()
@@ -387,6 +407,15 @@ namespace Shaos.Services.UnitTests
             _mockServiceScope
                 .Setup(_ => _.ServiceProvider)
                 .Returns(_mockServiceProvider.Object);
+
+            _mockServiceProvider
+                .Setup(_ => _.GetService(typeof(IPlugInBuilder)))
+                .Returns(_mockPlugInBuilder.Object);
+        }
+
+        public class TestConfig
+        {
+            public int TestSetting { get; set; }
         }
     }
 }
