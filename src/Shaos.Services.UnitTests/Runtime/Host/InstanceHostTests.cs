@@ -112,7 +112,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             Assert.Throws<ArgumentNullException>(() => _instanceHost.CreateInstance(1,
                                                                                     2,
                                                                                     null!,
-                                                                                    null!));
+                                                                                    null!,
+                                                                                    true));
         }
 
         [Fact]
@@ -122,13 +123,14 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             {
                 _instanceHost
                     ._executingInstances
-                    .Add(new Instance(i, i, i.ToString(), AssemblyPath));
+                    .Add(new Instance(i, i, i.ToString(), AssemblyPath, false));
             }
 
             Assert.Throws<MaxInstancesRunningException>(() => _instanceHost.CreateInstance(10,
                                                                                            1,
                                                                                            InstanceName,
-                                                                                           AssemblyPath));
+                                                                                           AssemblyPath,
+                                                                                           true));
         }
 
         [Fact]

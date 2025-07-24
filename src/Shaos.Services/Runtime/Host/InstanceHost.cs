@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Sdk;
@@ -75,7 +74,8 @@ namespace Shaos.Services.Runtime.Host
         public Instance CreateInstance(int id,
                                        int plugInId,
                                        string instanceName,
-                                       string assemblyPath)
+                                       string assemblyPath,
+                                       bool configurable = false)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(instanceName);
@@ -89,7 +89,11 @@ namespace Shaos.Services.Runtime.Host
             {
                 _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);
 
-                instance = new Instance(id, plugInId, instanceName, assemblyPath);
+                instance = new Instance(id,
+                                        plugInId,
+                                        instanceName,
+                                        assemblyPath,
+                                        configurable);
 
                 _executingInstances.Add(instance);
 
@@ -206,18 +210,19 @@ namespace Shaos.Services.Runtime.Host
                 instance.SetComplete();
 
                 _logger.LogInformation("Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
-                    instance.Id,
-                    instance.Name,
-                    antecedent.Status);
+                                       instance.Id,
+                                       instance.Name,
+                                       antecedent.Status);
             }
             else if (antecedent.Status == TaskStatus.Faulted)
             {
                 instance.SetFaulted(antecedent.Exception);
 
-                _logger.LogError(antecedent.Exception, "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
-                    instance.Id,
-                    instance.Name,
-                    antecedent.Status);
+                _logger.LogError(antecedent.Exception,
+                                 "Instance completed. Id: [{Id}] Name: [{Name}] Task Status: [{Status}]",
+                                 instance.Id,
+                                 instance.Name,
+                                 antecedent.Status);
             }
 
             _logger.LogInformation("Unloading instance execution context for instance: [{Id}] Name: [{Name}]", instance.Id, instance.Name);
@@ -309,8 +314,8 @@ namespace Shaos.Services.Runtime.Host
         private void StartExecutingInstance(Instance instance)
         {
             _logger.LogInformation("Starting PlugIn instance execution Id: [{Id}] Name: [{Name}]",
-                instance.Id,
-                instance.Name);
+                                   instance.Id,
+                                   instance.Name);
 
             instance.StartExecution(
                 async (cancellationToken) => await ExecutePlugInMethod(instance, cancellationToken),

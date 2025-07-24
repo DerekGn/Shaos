@@ -58,10 +58,9 @@ namespace Shaos.Pages.Instances
                 .Where(_ => _.Key.StartsWith(nameof(Configuration)))
                 .Select(_ => new KeyValuePair<string, string>(_.Key.Replace($"{nameof(Configuration)}.", string.Empty), _.Value.FirstOrDefault() ?? string.Empty));
 
-            await _instanceHostService.UpdateInstanceConfigurationAsync(
-                id,
-                configurationSettings,
-                cancellationToken);
+            await _instanceHostService.UpdateInstanceConfigurationAsync(id,
+                                                                        configurationSettings,
+                                                                        cancellationToken);
 
             return RedirectToPage("./Index");
         }

@@ -54,6 +54,7 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
+        private readonly Mock<IPlugInConfigurationBuilder> _mockPlugInConfigurationBuilder;
 
         public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
@@ -61,12 +62,14 @@ namespace Shaos.Services.UnitTests
             _mockInstanceHost = new Mock<IInstanceHost>();
             _mockRepository = new Mock<IShaosRepository>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
+            _mockPlugInConfigurationBuilder = new Mock<IPlugInConfigurationBuilder>();
 
             _instanceHostService = new InstanceHostService(LoggerFactory!.CreateLogger<InstanceHostService>(),
                                                            _mockInstanceHost.Object,
                                                            _mockRepository.Object,
                                                            _mockFileStoreService.Object,
-                                                           _mockServiceScopeFactory.Object);
+                                                           _mockServiceScopeFactory.Object,
+                                                           _mockPlugInConfigurationBuilder.Object);
         }
 
         [Fact]
@@ -224,7 +227,8 @@ namespace Shaos.Services.UnitTests
             var instance = new Instance(1,
                                         2,
                                         InstanceName,
-                                        AssemblyPath);
+                                        AssemblyPath,
+                                        true);
 
             _mockRepository.Setup(_ => _.GetEnumerableAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
                                                                     It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
@@ -241,7 +245,8 @@ namespace Shaos.Services.UnitTests
             _mockInstanceHost.Setup(_ => _.CreateInstance(It.IsAny<int>(),
                                                           It.IsAny<int>(),
                                                           It.IsAny<string>(),
-                                                          It.IsAny<string>()))
+                                                          It.IsAny<string>(),
+                                                          It.IsAny<bool>()))
                 .Returns(instance);
 
             await _instanceHostService.StartInstancesAsync();
@@ -262,7 +267,8 @@ namespace Shaos.Services.UnitTests
                 .Verify(_ => _.CreateInstance(It.IsAny<int>(),
                                               It.IsAny<int>(),
                                               It.IsAny<string>(),
-                                              It.IsAny<string>()),
+                                              It.IsAny<string>(),
+                                              It.IsAny<bool>()),
                                               Times.Once);
 
             _mockInstanceHost

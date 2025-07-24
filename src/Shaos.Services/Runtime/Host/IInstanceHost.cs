@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 
@@ -50,6 +49,7 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="plugInId"></param>
         /// <param name="instanceName">The name of the <see cref="Instance"/></param>
         /// <param name="assemblyPath">The path of the assembly file for the <see cref="Instance"/></param>
+        /// <param name="configurable"></param>
         /// <returns>The <see cref="Instance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="instanceName"/> or <paramref name="assemblyPath"/> is null of empty</exception>
@@ -58,8 +58,14 @@ namespace Shaos.Services.Runtime.Host
         Instance CreateInstance(int id,
                                 int plugInId,
                                 string instanceName,
-                                string assemblyPath);
+                                string assemblyPath,
+                                bool configurable = false);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         InstanceLoadContext GetInstanceLoadContext(int id);
 
         /// <summary>
@@ -78,12 +84,6 @@ namespace Shaos.Services.Runtime.Host
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
         void RemoveInstance(int id);
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="plugIn"></param>
-        /// <returns></returns>
         Instance StartInstance(int id, IPlugIn plugIn);
 
         /// <summary>

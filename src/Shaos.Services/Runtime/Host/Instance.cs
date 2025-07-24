@@ -34,6 +34,8 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class Instance
     {
+        private readonly bool _configurable;
+
         /// <summary>
         /// Create a <see cref="PlugIn"/> instance
         /// </summary>
@@ -41,10 +43,12 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="plugInId">The parent <see cref="PlugIn"/> identifier</param>
         /// <param name="name"><see cref="Instance"/> name </param>
         /// <param name="assemblyPath">The path to the <see cref="PlugIn"/> assembly</param>
+        /// <param name="configurable"></param>
         public Instance(int id,
                         int plugInId,
                         string name,
-                        string assemblyPath)
+                        string assemblyPath,
+                        bool configurable = false)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
@@ -53,27 +57,34 @@ namespace Shaos.Services.Runtime.Host
             PlugInId = plugInId;
             Name = name;
             AssemblyPath = assemblyPath;
+            _configurable = configurable;
         }
 
         internal Instance(int id,
                           int parentId,
                           string name,
                           string assemblyPath,
-                          InstanceState state)
-            : this(id, parentId, name, assemblyPath)
+                          InstanceState state,
+                          bool configurable = false)
+            : this(id, parentId, name, assemblyPath, configurable)
         {
             State = state;
         }
 
         /// <summary>
-        /// The <see cref="IPlugIn"/> instance execution context
+        /// The assembly path for this <see cref="PlugIn"/> instance.
         /// </summary>
-        public InstanceExecutionContext? ExecutionContext { get; private set; }
+        public string AssemblyPath { get; }
 
         /// <summary>
         /// The captured <see cref="Exception"/> that occurs during the <see cref="IPlugIn"/> execution
         /// </summary>
         public Exception? Exception { get; private set; }
+
+        /// <summary>
+        /// The <see cref="IPlugIn"/> instance execution context
+        /// </summary>
+        public InstanceExecutionContext? ExecutionContext { get; private set; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
@@ -84,11 +95,6 @@ namespace Shaos.Services.Runtime.Host
         /// The <see cref="PlugInInstance"/> name
         /// </summary>
         public string Name { get; }
-
-        /// <summary>
-        /// The assembly path for this <see cref="PlugIn"/> instance.
-        /// </summary>
-        public string AssemblyPath { get; }
 
         /// <summary>
         /// The PlugIn identifier
@@ -114,6 +120,15 @@ namespace Shaos.Services.Runtime.Host
         /// The last stop time of this instance
         /// </summary>
         public DateTime? StopTime { get; private set; }
+
+        /// <summary>
+        /// Indicates if this instance can be configured
+        /// </summary>
+        /// <returns>true if this instance can be configured</returns>
+        public bool CanConfigure()
+        {
+            return State != InstanceState.Running && _configurable;
+        }
 
         /// <summary>
         /// Indicates if this instance can be started
