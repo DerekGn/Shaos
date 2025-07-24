@@ -26,16 +26,31 @@ using System.Reflection;
 
 namespace Shaos.Services.Runtime.Host
 {
+    /// <summary>
+    /// An instance load context
+    /// </summary>
+    /// <remarks>
+    /// A container for a <see cref="IRuntimeAssemblyLoadContext"/>
+    /// The container will release the <see cref="IRuntimeAssemblyLoadContext"/> on dispose
+    /// </remarks>
     public class InstanceLoadContext : IDisposable
     {
-        private readonly UnloadingWeakReference<IRuntimeAssemblyLoadContext> _unloadingWeakReference;
+        private readonly UnloadingWeakReference<IRuntimeAssemblyLoadContext>? _unloadingWeakReference;
         private bool disposedValue;
 
+        /// <summary>
+        /// Create an instance of a <see cref="InstanceLoadContext"/>
+        /// </summary>
+        /// <param name="assembly"></param>
         internal InstanceLoadContext(Assembly assembly)
         {
             Assembly = assembly;
         }
 
+        /// <summary>
+        /// Create an instance of a <see cref="InstanceLoadContext"/>
+        /// </summary>
+        /// <param name="assemblyLoadContext">The <see cref="IRuntimeAssemblyLoadContext"/></param>
         public InstanceLoadContext(IRuntimeAssemblyLoadContext assemblyLoadContext)
         {
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
@@ -52,6 +67,9 @@ namespace Shaos.Services.Runtime.Host
 
         #region Dispose
 
+        /// <summary>
+        /// Dispose the instance releasing the <see cref="IRuntimeAssemblyLoadContext"/>
+        /// </summary>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -59,6 +77,10 @@ namespace Shaos.Services.Runtime.Host
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Dispose the instance releasing the <see cref="IRuntimeAssemblyLoadContext"/>
+        /// </summary>
+        /// <param name="disposing">Indicates that instance is explicitly being disposed</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -67,7 +89,7 @@ namespace Shaos.Services.Runtime.Host
                 {
                     Assembly = null;
 
-                    _unloadingWeakReference.Target.Unload();
+                    _unloadingWeakReference?.Target.Unload();
 
                     _unloadingWeakReference?.Dispose();
                 }
