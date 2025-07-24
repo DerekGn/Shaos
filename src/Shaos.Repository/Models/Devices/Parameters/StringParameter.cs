@@ -32,6 +32,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The current value
         /// </summary>
-        public string Value { get; set; }
+        public required string Value { get; set; }
     }
 }

@@ -163,25 +163,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         }
 
         [Fact]
-        public void TestLoadConfiguration()
-        {
-#warning TODO Refactor
-            //SetupExecutingInstance();
-
-            //_instanceHost
-            //    ._instanceLoadContexts
-            //    .Add(1, new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object));
-
-            //_mockPlugInConfigurationBuilder
-            //    .Setup(_ => _.LoadConfiguration(It.IsAny<Assembly>(), It.IsAny<string?>()))
-            //    .Returns(new Test());
-
-            //var result = _instanceHost.LoadConfiguration(1);
-
-            //Assert.NotNull(result);
-        }
-
-        [Fact]
         public void TestRemoveInstance()
         {
             SetupExecutingInstance();

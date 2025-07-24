@@ -32,7 +32,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
     public class InstanceLoadContextTests
     {
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
-        private InstanceLoadContext _instanceLoadContext;
+        private InstanceLoadContext? _instanceLoadContext;
 
         public InstanceLoadContextTests()
         {

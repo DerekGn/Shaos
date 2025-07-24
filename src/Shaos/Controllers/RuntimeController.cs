@@ -24,6 +24,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
+using Shaos.Services;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
 using Swashbuckle.AspNetCore.Annotations;
@@ -38,14 +39,14 @@ namespace Shaos.Controllers
         private const string InstanceIdentifier = "The Instance identifier";
 
         private readonly IInstanceHost _instanceHost;
+        private readonly IInstanceHostService _instanceHostService;
 
         public InstanceHostController(ILogger<InstanceHostController> logger,
-                                      IInstanceHost instanceHost) : base(logger)
+                                      IInstanceHost instanceHost,
+                                      IInstanceHostService instanceHostService) : base(logger)
         {
-            ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(instanceHost);
-
             _instanceHost = instanceHost;
+            _instanceHostService = instanceHostService;
         }
 
         [HttpGet()]
@@ -79,8 +80,7 @@ namespace Shaos.Controllers
         {
             return HandleError(id, (id) =>
             {
-#warning TODO use instancehostservice
-                //_instanceHost.StartInstance(id);
+                _instanceHostService.StartInstanceAsync(id);
 
                 return Accepted();
             });

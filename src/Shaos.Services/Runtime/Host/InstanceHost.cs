@@ -45,7 +45,7 @@ namespace Shaos.Services.Runtime.Host
         private readonly ILogger<InstanceHost> _logger;
         private readonly IOptions<InstanceHostOptions> _options;
         private readonly IRuntimeAssemblyLoadContextFactory _runtimeAssemblyLoadContextFactory;
-        
+
         /// <summary>
         /// Create an <see cref="Instance"/>
         /// </summary>
@@ -115,9 +115,7 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public InstanceLoadContext GetInstanceLoadContext(int id)
         {
-#warning TODO CHECK NULL
-            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id);
-
+            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
 
             InitaliseInstanceLoadContext(instance);
 

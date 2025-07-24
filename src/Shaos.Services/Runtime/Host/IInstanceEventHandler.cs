@@ -24,6 +24,9 @@
 
 namespace Shaos.Services.Runtime.Host
 {
+    /// <summary>
+    /// An instance event handler
+    /// </summary>
     public interface IInstanceEventHandler
     {
     }

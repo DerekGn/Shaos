@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Runtime.Exceptions;
 
@@ -84,6 +85,12 @@ namespace Shaos.Services.Runtime.Host
         /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
         void RemoveInstance(int id);
 
+        /// <summary>
+        /// Start a <see cref="IPlugIn"/> instance
+        /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
+        /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
+        /// <returns>The <see cref="Instance"/></returns>
         Instance StartInstance(int id, IPlugIn plugIn);
 
         /// <summary>

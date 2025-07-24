@@ -45,7 +45,7 @@ namespace Shaos.Sdk.Devices.Parameters
                                string? units,
                                ParameterType? parameterType) : base(id, name, units, parameterType)
         {
-            Value = value;
+            _value = value;
         }
 
         /// <summary>
