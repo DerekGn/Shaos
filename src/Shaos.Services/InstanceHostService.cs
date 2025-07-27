@@ -111,7 +111,7 @@ namespace Shaos.Services
             var plugIn = plugInInstance.PlugIn!;
             var package = plugIn.Package!;
 
-            if(plugIn.Package == null)
+            if (plugIn.Package == null)
             {
                 _logger.LogWarning("PlugInInstance package not assigned. Id: [{Id}]", id);
 
@@ -150,40 +150,39 @@ namespace Shaos.Services
                 {
                     foreach (var plugInInstance in plugIn.Instances)
                     {
-                        if (package.HasConfiguration && !plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
+                        Instance instance = CreateRuntimeInstance(plugIn,
+                                                                  package,
+                                                                  plugInInstance,
+                                                                  package.HasConfiguration);
+
+                        var runtimeInstance = CreatePlugInInstance(plugIn,
+                                                                   plugInInstance,
+                                                                   plugInInstance.Configuration);
+
+                        if (!plugInInstance.Enabled)
                         {
-                            Instance instance = CreateRuntimeInstance(plugIn,
-                                                                      package,
-                                                                      plugInInstance,
-                                                                      package.HasConfiguration);
-
-                            var runtimeInstance = CreatePlugInInstance(plugIn,
-                                                                       plugInInstance,
-                                                                       plugInInstance.Configuration);
-
-                            if (plugInInstance.Enabled)
-                            {
-                                _logger.LogInformation("Starting PlugIn instance. Id: [{Id} Name: [{Name}]]",
-                                                   instance.Id,
-                                                   instance.Name);
-
-                                _instanceHost.StartInstance(instance.Id, runtimeInstance!);
-                            }
-                            else
-                            {
-                                _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not enabled for startUp",
-                                                   nameof(plugInInstance),
-                                                   plugInInstance.Id,
-                                                   plugInInstance.Name);
-                            }
-                        }
-                        else
-                        {
-                            _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not configured",
+                            _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not enabled for startUp",
                                                nameof(plugInInstance),
                                                plugInInstance.Id,
                                                plugInInstance.Name);
+                            continue;
                         }
+
+                        if (package.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
+                        {
+                            _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not configured",
+                                            nameof(plugInInstance),
+                                            plugInInstance.Id,
+                                            plugInInstance.Name);
+
+                            continue;
+                        }
+
+                        _logger.LogInformation("Starting PlugIn instance. Id: [{Id} Name: [{Name}]]",
+                                            instance.Id,
+                                            instance.Name);
+
+                        _instanceHost.StartInstance(instance.Id, runtimeInstance!);
                     }
                 }
             }
@@ -260,7 +259,7 @@ namespace Shaos.Services
                                                                     bool withNoTracking = true,
                                                                     CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id, 
+            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                   withNoTracking,
                                                                   includeProperties: [
                                                                       nameof(PlugIn),
