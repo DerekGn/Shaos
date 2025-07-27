@@ -51,7 +51,7 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInBuilder> _mockPlugInBuilder;
         private readonly Mock<IPlugInConfigurationBuilder> _mockPlugInConfigurationBuilder;
-        
+
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
@@ -155,6 +155,31 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public async Task TestStartInstanceNoPackageAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Description = "Test",
+                Name = "Test"
+            };
+
+            _mockInstanceHost
+                .Setup(_ => _.InstanceExists(It.IsAny<int>()))
+                .Returns(true);
+
+            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
+            {
+                PlugIn = plugIn
+            });
+
+            var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(
+                async () => await _instanceHostService.StartInstanceAsync(1));
+
+            Assert.NotNull(exception);
+            Assert.Equal(1, exception.Id);
+        }
+
+        [Fact]
         public async Task TestStartInstanceNotFoundAsync()
         {
             _mockInstanceHost
@@ -209,10 +234,10 @@ namespace Shaos.Services.UnitTests
                                         true);
 
             MockRepository.Setup(_ => _.GetEnumerableAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
-                                                                    It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
-                                                                    It.IsAny<bool>(),
-                                                                    It.IsAny<List<string>?>(),
-                                                                    It.IsAny<CancellationToken>()))
+                                                                   It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                                                                   It.IsAny<bool>(),
+                                                                   It.IsAny<List<string>?>(),
+                                                                   It.IsAny<CancellationToken>()))
                 .Returns(plugIns.ToAsyncEnumerable());
 
             _mockFileStoreService
@@ -234,10 +259,10 @@ namespace Shaos.Services.UnitTests
             await _instanceHostService.StartInstancesAsync();
 
             MockRepository.Verify(_ => _.GetEnumerableAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
-                                                                     It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
-                                                                     It.IsAny<bool>(),
-                                                                     It.IsAny<List<string>?>(),
-                                                                     It.IsAny<CancellationToken>()),
+                                                                    It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
+                                                                    It.IsAny<bool>(),
+                                                                    It.IsAny<List<string>?>(),
+                                                                    It.IsAny<CancellationToken>()),
                     Times.Once);
 
             _mockFileStoreService

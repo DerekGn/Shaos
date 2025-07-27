@@ -23,8 +23,14 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Shaos.Services.Runtime.Host;
+using Moq;
+using Shaos.Repository.Exceptions;
+using Shaos.Sdk;
+using Shaos.Sdk.Devices;
+using Shaos.Sdk.Devices.Parameters;
+using Shaos.Services.Exceptions;
 using Shaos.Services.UnitTests.Fixtures;
+using System.Collections.ObjectModel;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,10 +39,13 @@ namespace Shaos.Services.UnitTests
     public class PlugInBuilderTests : PlugInBuilderBaseTests
     {
         private readonly PlugInBuilder _builder;
+        private readonly Mock<IPlugIn> _plugIn;
 
         public PlugInBuilderTests(ITestOutputHelper output,
                                   TestFixture fixture) : base(output, fixture)
         {
+            _plugIn = new Mock<IPlugIn>();
+
             _builder = new PlugInBuilder(LoggerFactory!,
                                          LoggerFactory!.CreateLogger<PlugInBuilder>());
         }
@@ -51,6 +60,52 @@ namespace Shaos.Services.UnitTests
                           "{\"Delay\": \"00:00:00\"}");
 
             Assert.NotNull(_builder.PlugIn);
+        }
+
+        [Fact]
+        public void TestRestore()
+        {
+            _builder.PlugIn = _plugIn.Object;
+
+            var plugInDevices = new ObservableCollection<Device>();
+
+            _plugIn
+                .Setup(_ => _.Devices)
+                .Returns(plugInDevices);
+
+            var parameter = new FloatParameter(1,
+                                               1.0f,
+                                               "volts",
+                                               "v",
+                                               ParameterType.Voltage);
+
+            var device = new Device(1,
+                                    "name",
+                                    [parameter],
+                                    100,
+                                    0);
+
+            _builder.Restore([device]);
+
+            Assert.Single(plugInDevices);
+        }
+
+        [Fact]
+        public void TestRestoreInstanceNotLoaded()
+        {
+            var parameter = new FloatParameter(1,
+                                               1.0f,
+                                               "volts",
+                                               "v",
+                                               ParameterType.Voltage);
+
+            var device = new Device(1,
+                                    "name",
+                                    [parameter],
+                                    100,
+                                    0);
+
+            Assert.Throws<PlugInInstanceNotLoadedException>(() => _builder.Restore([device]));
         }
     }
 }

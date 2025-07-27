@@ -28,7 +28,6 @@ using Shaos.Sdk.Devices;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.Json;
-using Shaos.Services.Runtime.Host;
 using System.Reflection;
 
 namespace Shaos.Services
@@ -56,6 +55,7 @@ namespace Shaos.Services
 
                 return plugin;
             }
+            internal set => _plugin = value;
         }
 
         /// <inheritdoc/>
