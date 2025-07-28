@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
+
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
@@ -29,5 +31,7 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public interface IInstanceEventHandler
     {
+        void Attach(IPlugIn? runtimeInstance);
+        void Detach(IPlugIn? plugIn);
     }
 }

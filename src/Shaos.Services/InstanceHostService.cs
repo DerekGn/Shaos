@@ -43,6 +43,7 @@ namespace Shaos.Services
     public class InstanceHostService : IInstanceHostService
     {
         private readonly IFileStoreService _fileStoreService;
+        private readonly IInstanceEventHandler _instanceEventHandler;
         private readonly IInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
@@ -57,12 +58,14 @@ namespace Shaos.Services
         /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="serviceScopeFactory"></param>
+        /// <param name="instanceEventHandler"></param>
         /// <param name="plugInConfigurationBuilder"></param>
         public InstanceHostService(ILogger<InstanceHostService> logger,
                                    IInstanceHost instanceHost,
                                    IShaosRepository repository,
                                    IFileStoreService fileStoreService,
                                    IServiceScopeFactory serviceScopeFactory,
+                                   IInstanceEventHandler instanceEventHandler,
                                    IPlugInConfigurationBuilder plugInConfigurationBuilder)
         {
             _logger = logger;
@@ -70,6 +73,7 @@ namespace Shaos.Services
             _instanceHost = instanceHost;
             _fileStoreService = fileStoreService;
             _serviceScopeFactory = serviceScopeFactory;
+            _instanceEventHandler = instanceEventHandler;
             _plugInConfigurationBuilder = plugInConfigurationBuilder;
         }
 
@@ -191,6 +195,13 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public void StopInstance(int id)
         {
+            var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
+
+            if (instance != null && instance.ExecutionContext != null)
+            {
+                _instanceEventHandler.Detach(instance.ExecutionContext.PlugIn);
+            }
+
             _instanceHost.StopInstance(id);
         }
 
@@ -236,7 +247,11 @@ namespace Shaos.Services
 
             plugInBuilder.Restore(plugInInstance.Devices.ToSdk());
 
-            return plugInBuilder.PlugIn;
+            var runtimeInstance = plugInBuilder.PlugIn;
+
+            _instanceEventHandler.Attach(runtimeInstance);
+
+            return runtimeInstance;
         }
 
         private Instance CreateRuntimeInstance(PlugIn plugIn,

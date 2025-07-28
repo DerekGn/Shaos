@@ -1,7 +1,16 @@
 ﻿
+using Shaos.Sdk;
+
 namespace Shaos.Services.Runtime.Host
 {
-    internal class InstanceEventHandler : IInstanceEventHandler
+    public class InstanceEventHandler : IInstanceEventHandler
     {
+        public void Attach(IPlugIn? plugIn)
+        {
+        }
+
+        public void Detach(IPlugIn? plugIn)
+        {
+        }
     }
 }

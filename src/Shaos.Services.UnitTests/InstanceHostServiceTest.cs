@@ -48,10 +48,10 @@ namespace Shaos.Services.UnitTests
         private const string InstanceName = "Test";
         private readonly InstanceHostService _instanceHostService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
+        private readonly Mock<IInstanceEventHandler> _mockInstanceEventHandler;
         private readonly Mock<IInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInBuilder> _mockPlugInBuilder;
         private readonly Mock<IPlugInConfigurationBuilder> _mockPlugInConfigurationBuilder;
-
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
@@ -59,6 +59,7 @@ namespace Shaos.Services.UnitTests
         public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
+            _mockInstanceEventHandler = new Mock<IInstanceEventHandler>();
             _mockInstanceHost = new Mock<IInstanceHost>();
             _mockPlugInBuilder = new Mock<IPlugInBuilder>();
             _mockPlugInConfigurationBuilder = new Mock<IPlugInConfigurationBuilder>();
@@ -71,6 +72,7 @@ namespace Shaos.Services.UnitTests
                                                            MockRepository.Object,
                                                            _mockFileStoreService.Object,
                                                            _mockServiceScopeFactory.Object,
+                                                           _mockInstanceEventHandler.Object,
                                                            _mockPlugInConfigurationBuilder.Object);
         }
 
@@ -223,34 +225,6 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
-        public async Task TestStartInstancesNotEnabledAsync()
-        {
-            var plugIn = new PlugIn()
-            {
-                Id = 1,
-                Description = "description",
-                Name = InstanceName,
-                Package = new Package()
-                {
-                    AssemblyFile = "AssemblyFile",
-                    HasConfiguration = true
-                }
-            };
-
-            var plugInInstance = new PlugInInstance()
-            {
-                Id = 1,
-                Configuration = configurationValue
-            };
-
-            await TestStartInstance(plugIn, plugInInstance);
-
-            _mockInstanceHost
-                .Verify(_ => _.StartInstance(It.IsAny<int>(),
-                                             It.IsAny<IPlugIn>()), Times.Never);
-        }
-
-        [Fact]
         public async Task TestStartInstancesNotConfiguredAsync()
         {
             var plugIn = new PlugIn()
@@ -269,6 +243,34 @@ namespace Shaos.Services.UnitTests
             {
                 Id = 1,
                 Enabled = true
+            };
+
+            await TestStartInstance(plugIn, plugInInstance);
+
+            _mockInstanceHost
+                .Verify(_ => _.StartInstance(It.IsAny<int>(),
+                                             It.IsAny<IPlugIn>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task TestStartInstancesNotEnabledAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Id = 1,
+                Description = "description",
+                Name = InstanceName,
+                Package = new Package()
+                {
+                    AssemblyFile = "AssemblyFile",
+                    HasConfiguration = true
+                }
+            };
+
+            var plugInInstance = new PlugInInstance()
+            {
+                Id = 1,
+                Configuration = configurationValue
             };
 
             await TestStartInstance(plugIn, plugInInstance);

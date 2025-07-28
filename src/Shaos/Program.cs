@@ -154,6 +154,7 @@ namespace Shaos
             });
 
             // Application defined services
+            builder.Services.AddScoped<IInstanceEventHandler, InstanceEventHandler>();
             builder.Services.AddScoped<IInstanceHostService, InstanceHostService>();
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
