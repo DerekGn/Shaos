@@ -22,16 +22,33 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
-
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// An instance event handler
+    /// An event that represents an <see cref="RuntimeInstance"/> state change
     /// </summary>
-    public interface IInstanceEventHandler
+    public class RuntimeInstanceStateEventArgs : EventArgs
     {
-        void Attach(IPlugIn? runtimeInstance);
-        void Detach(IPlugIn? plugIn);
+        /// <summary>
+        /// Create an instance of a <see cref="RuntimeInstanceStateEventArgs"/>
+        /// </summary>
+        /// <param name="id">The <see cref="RuntimeInstance"/> who's state changed</param>
+        /// <param name="state">The new state of the <see cref="RuntimeInstance"/></param>
+        public RuntimeInstanceStateEventArgs(int id,
+                                             RuntimeInstanceState state)
+        {
+            Id = id;
+            State = state;
+        }
+
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> identifier
+        /// </summary>
+        public int Id { get; init; }
+
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> state change
+        /// </summary>
+        public RuntimeInstanceState State { get; init; }
     }
 }

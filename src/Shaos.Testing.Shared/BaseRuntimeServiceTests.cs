@@ -31,7 +31,7 @@ namespace Shaos.Testing.Shared
     public abstract class BaseRuntimeServiceTests : BaseTests
     {
         private readonly AutoResetEvent _autoResetEvent;
-        private InstanceState _waitingState;
+        private RuntimeInstanceState _waitingState;
 
         protected BaseRuntimeServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
@@ -55,7 +55,7 @@ namespace Shaos.Testing.Shared
             };
         }
 
-        protected internal void RuntimeServiceInstanceStateChanged(object? sender, InstanceStateEventArgs e)
+        protected internal void RuntimeServiceInstanceStateChanged(object? sender, RuntimeInstanceStateEventArgs e)
         {
             if (e.State == _waitingState)
             {
@@ -63,7 +63,7 @@ namespace Shaos.Testing.Shared
             }
         }
 
-        protected internal void SetUpStateWait(InstanceState state)
+        protected internal void SetUpStateWait(RuntimeInstanceState state)
         {
             _autoResetEvent.Reset();
 

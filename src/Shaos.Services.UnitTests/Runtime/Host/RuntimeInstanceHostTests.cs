@@ -36,20 +36,20 @@ using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
-    public class InstanceHostTests : BaseTests, IClassFixture<TestFixture>, IDisposable
+    public class RuntimeInstanceHostTests : BaseTests, IClassFixture<TestFixture>, IDisposable
     {
         private const string AssemblyPath = "AssemblyPath";
         private const string InstanceName = "Test";
         private const int WaitDelay = 10;
         private const int WaitItterations = 500;
         private readonly AutoResetEvent _autoResetEvent;
-        private readonly InstanceHost _instanceHost;
+        private readonly RuntimeInstanceHost _instanceHost;
         private readonly Mock<IPlugIn> _mockPlugIn;
         private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
-        private InstanceState _waitingState;
+        private RuntimeInstanceState _waitingState;
 
-        public InstanceHostTests(ITestOutputHelper output, TestFixture fixture) : base(output)
+        public RuntimeInstanceHostTests(ITestOutputHelper output, TestFixture fixture) : base(output)
         {
             ArgumentNullException.ThrowIfNull(output);
             ArgumentNullException.ThrowIfNull(fixture);
@@ -58,14 +58,14 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
 
-            var optionsInstance = new InstanceHostOptions()
+            var optionsInstance = new RuntimeInstanceHostOptions()
             {
                 MaxExecutingInstances = 5
             };
 
-            _instanceHost = new InstanceHost(LoggerFactory!.CreateLogger<InstanceHost>(),
-                                             Options.Create(optionsInstance),
-                                             _mockRuntimeAssemblyLoadContextFactory.Object);
+            _instanceHost = new RuntimeInstanceHost(LoggerFactory!.CreateLogger<RuntimeInstanceHost>(),
+                                                    Options.Create(optionsInstance),
+                                                    _mockRuntimeAssemblyLoadContextFactory.Object);
 
             _autoResetEvent = new AutoResetEvent(false);
 
@@ -123,7 +123,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             {
                 _instanceHost
                     ._executingInstances
-                    .Add(new Instance(i, i, i.ToString(), AssemblyPath, false));
+                    .Add(new RuntimeInstance(i, i, i.ToString(), AssemblyPath, false));
             }
 
             Assert.Throws<MaxInstancesRunningException>(() => _instanceHost.CreateInstance(10,
@@ -138,14 +138,14 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupAssemblyLoadContext();
 
-            SetupStateWait(InstanceState.None);
+            SetupStateWait(RuntimeInstanceState.None);
 
             var instance = _instanceHost.CreateInstance(1, 1, InstanceName, AssemblyPath);
 
             Assert.True(WaitForStateChange());
 
             Assert.NotNull(instance);
-            Assert.Equal(InstanceState.None, instance.State);
+            Assert.Equal(RuntimeInstanceState.None, instance.State);
         }
 
         [Fact]
@@ -187,7 +187,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestRemoveInstanceRunning()
         {
-            SetupExecutingInstance(InstanceState.Running);
+            SetupExecutingInstance(RuntimeInstanceState.Running);
 
             Assert.Throws<InstanceRunningException>(() => _instanceHost.RemoveInstance(1));
         }
@@ -202,13 +202,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestStartInstancePlugInLoaded()
         {
             _instanceHost._executingInstances.Add(
-                new Instance(1, 1, InstanceName, AssemblyPath, InstanceState.None));
+                new RuntimeInstance(1, 1, InstanceName, AssemblyPath, RuntimeInstanceState.None));
 
-            var instanceLoadContext = new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
+            var instanceLoadContext = new RuntimeInstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
 
             _instanceHost._instanceLoadContexts.Add(1, instanceLoadContext);
 
-            SetupStateWait(InstanceState.Running);
+            SetupStateWait(RuntimeInstanceState.Running);
 
             var instance = _instanceHost.StartInstance(1, _mockPlugIn.Object);
 
@@ -216,13 +216,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             Assert.NotNull(instance);
             Assert.NotNull(instance.ExecutionContext);
-            Assert.Equal(InstanceState.Running, instance.State);
+            Assert.Equal(RuntimeInstanceState.Running, instance.State);
         }
 
         [Fact]
         public void TestStartInstanceRunning()
         {
-            SetupExecutingInstance(InstanceState.Running);
+            SetupExecutingInstance(RuntimeInstanceState.Running);
 
             Assert.Throws<InstanceRunningException>(() => _instanceHost.StartInstance(1, _mockPlugIn.Object));
         }
@@ -242,7 +242,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public async Task TestStopInstanceRunning()
         {
-            var instance = new Instance(1, 1, InstanceName, AssemblyPath, InstanceState.Running);
+            var instance = new RuntimeInstance(1, 1, InstanceName, AssemblyPath, RuntimeInstanceState.Running);
 
             instance.LoadContext(_mockPlugIn.Object);
 
@@ -254,13 +254,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _instanceHost.StopInstance(1);
 
-            var executingInstance = await WaitForState(InstanceState.Complete);
+            var executingInstance = await WaitForState(RuntimeInstanceState.Complete);
 
             Assert.NotNull(executingInstance);
-            Assert.Equal(InstanceState.Complete, executingInstance.State);
+            Assert.Equal(RuntimeInstanceState.Complete, executingInstance.State);
         }
 
-        private void InstanceHostInstanceStateChanged(object? sender, InstanceStateEventArgs e)
+        private void InstanceHostInstanceStateChanged(object? sender, RuntimeInstanceStateEventArgs e)
         {
             if (e.State == _waitingState)
             {
@@ -281,23 +281,23 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Returns(typeof(object).Assembly);
         }
 
-        private void SetupExecutingInstance(InstanceState state = InstanceState.None)
+        private void SetupExecutingInstance(RuntimeInstanceState state = RuntimeInstanceState.None)
         {
             _instanceHost._executingInstances.Add(
-                new Instance(1, 1, InstanceName, AssemblyPath, state));
+                new RuntimeInstance(1, 1, InstanceName, AssemblyPath, state));
         }
 
-        private void SetupStateWait(InstanceState state)
+        private void SetupStateWait(RuntimeInstanceState state)
         {
             _autoResetEvent.Reset();
 
             _waitingState = state;
         }
 
-        private async Task<Instance?> WaitForState(InstanceState state)
+        private async Task<RuntimeInstance?> WaitForState(RuntimeInstanceState state)
         {
             int i = 0;
-            Instance? executingInstance;
+            RuntimeInstance? executingInstance;
 
             do
             {

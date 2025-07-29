@@ -43,8 +43,8 @@ namespace Shaos.Services
     public class InstanceHostService : IInstanceHostService
     {
         private readonly IFileStoreService _fileStoreService;
-        private readonly IInstanceEventHandler _instanceEventHandler;
-        private readonly IInstanceHost _instanceHost;
+        private readonly IRuntimeInstanceEventHandler _instanceEventHandler;
+        private readonly IRuntimeInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
         private readonly IShaosRepository _repository;
@@ -54,18 +54,18 @@ namespace Shaos.Services
         /// Create an instance of a instance host service
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
-        /// <param name="instanceHost">The <see cref="IInstanceHost"/> instance</param>
+        /// <param name="instanceHost">The <see cref="IRuntimeInstanceHost"/> instance</param>
         /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="serviceScopeFactory"></param>
         /// <param name="instanceEventHandler"></param>
         /// <param name="plugInConfigurationBuilder"></param>
         public InstanceHostService(ILogger<InstanceHostService> logger,
-                                   IInstanceHost instanceHost,
+                                   IRuntimeInstanceHost instanceHost,
                                    IShaosRepository repository,
                                    IFileStoreService fileStoreService,
                                    IServiceScopeFactory serviceScopeFactory,
-                                   IInstanceEventHandler instanceEventHandler,
+                                   IRuntimeInstanceEventHandler instanceEventHandler,
                                    IPlugInConfigurationBuilder plugInConfigurationBuilder)
         {
             _logger = logger;
@@ -154,7 +154,7 @@ namespace Shaos.Services
                 {
                     foreach (var plugInInstance in plugIn.Instances)
                     {
-                        Instance instance = CreateRuntimeInstance(plugIn,
+                        RuntimeInstance instance = CreateRuntimeInstance(plugIn,
                                                                   package,
                                                                   plugInInstance,
                                                                   package.HasConfiguration);
@@ -237,7 +237,7 @@ namespace Shaos.Services
                                               PlugInInstance plugInInstance,
                                               string? configuration)
         {
-            InstanceLoadContext loadContext = _instanceHost.GetInstanceLoadContext(plugIn.Id);
+            RuntimeInstanceLoadContext loadContext = _instanceHost.GetInstanceLoadContext(plugIn.Id);
 
             var scope = _serviceScopeFactory.CreateScope();
             var plugInBuilder = scope.ServiceProvider.GetRequiredService<IPlugInBuilder>();
@@ -254,7 +254,7 @@ namespace Shaos.Services
             return runtimeInstance;
         }
 
-        private Instance CreateRuntimeInstance(PlugIn plugIn,
+        private RuntimeInstance CreateRuntimeInstance(PlugIn plugIn,
                                                Package package,
                                                PlugInInstance plugInInstance,
                                                bool configurable)
@@ -262,7 +262,7 @@ namespace Shaos.Services
             var assemblyFilePath = _fileStoreService.GetAssemblyPath(plugIn.Id,
                                                                      package!.AssemblyFile);
 
-            Instance instance = _instanceHost.CreateInstance(plugInInstance.Id,
+            RuntimeInstance instance = _instanceHost.CreateInstance(plugInInstance.Id,
                                                              plugIn.Id,
                                                              plugInInstance.Name,
                                                              assemblyFilePath,

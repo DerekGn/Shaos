@@ -33,15 +33,15 @@ namespace Shaos.Services.Runtime.Host
     /// <remarks>
     /// This is a container for <see cref="IPlugIn"/> instances. It manages the start and dispose of an <see cref="IPlugIn"/> instance
     /// </remarks>
-    public class InstanceExecutionContext : IDisposable
+    public class RuntimeExecutionContext : IDisposable
     {
         private bool disposedValue;
 
         /// <summary>
-        /// Create an instance of an <see cref="InstanceExecutionContext"/>
+        /// Create an instance of an <see cref="RuntimeExecutionContext"/>
         /// </summary>
         /// <param name="plugIn">The <see cref="IPlugIn"/> to manage</param>
-        public InstanceExecutionContext(IPlugIn plugIn)
+        public RuntimeExecutionContext(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
 
@@ -49,7 +49,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <summary>
-        /// The <see cref="IPlugIn"/> instance contained by this <see cref="InstanceExecutionContext"/>
+        /// The <see cref="IPlugIn"/> instance contained by this <see cref="RuntimeExecutionContext"/>
         /// </summary>
         public IPlugIn? PlugIn { get; private set; }
 

@@ -38,11 +38,11 @@ namespace Shaos.Controllers
     {
         private const string InstanceIdentifier = "The Instance identifier";
 
-        private readonly IInstanceHost _instanceHost;
+        private readonly IRuntimeInstanceHost _instanceHost;
         private readonly IInstanceHostService _instanceHostService;
 
         public InstanceHostController(ILogger<InstanceHostController> logger,
-                                      IInstanceHost instanceHost,
+                                      IRuntimeInstanceHost instanceHost,
                                       IInstanceHostService instanceHostService) : base(logger)
         {
             _instanceHost = instanceHost;

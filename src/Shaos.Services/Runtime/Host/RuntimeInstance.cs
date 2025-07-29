@@ -32,23 +32,23 @@ namespace Shaos.Services.Runtime.Host
     /// <summary>
     /// An executing <see cref="PlugIn"/> instance
     /// </summary>
-    public class Instance
+    public class RuntimeInstance
     {
         private readonly bool _configurable;
 
         /// <summary>
         /// Create a <see cref="PlugIn"/> instance
         /// </summary>
-        /// <param name="id">The <see cref="Instance"/> identifier</param>
+        /// <param name="id">The <see cref="RuntimeInstance"/> identifier</param>
         /// <param name="plugInId">The parent <see cref="PlugIn"/> identifier</param>
-        /// <param name="name"><see cref="Instance"/> name </param>
+        /// <param name="name"><see cref="RuntimeInstance"/> name </param>
         /// <param name="assemblyPath">The path to the <see cref="PlugIn"/> assembly</param>
         /// <param name="configurable"></param>
-        public Instance(int id,
-                        int plugInId,
-                        string name,
-                        string assemblyPath,
-                        bool configurable = false)
+        public RuntimeInstance(int id,
+                               int plugInId,
+                               string name,
+                               string assemblyPath,
+                               bool configurable = false)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
@@ -60,12 +60,12 @@ namespace Shaos.Services.Runtime.Host
             _configurable = configurable;
         }
 
-        internal Instance(int id,
-                          int parentId,
-                          string name,
-                          string assemblyPath,
-                          InstanceState state,
-                          bool configurable = false)
+        internal RuntimeInstance(int id,
+                                 int parentId,
+                                 string name,
+                                 string assemblyPath,
+                                 RuntimeInstanceState state,
+                                 bool configurable = false)
             : this(id, parentId, name, assemblyPath, configurable)
         {
             State = state;
@@ -84,7 +84,7 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// The <see cref="IPlugIn"/> instance execution context
         /// </summary>
-        public InstanceExecutionContext? ExecutionContext { get; private set; }
+        public RuntimeExecutionContext? ExecutionContext { get; private set; }
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
@@ -112,9 +112,9 @@ namespace Shaos.Services.Runtime.Host
         public DateTime? StartTime { get; private set; }
 
         /// <summary>
-        /// The <see cref="InstanceState"/> of the <see cref="Instance"/>
+        /// The <see cref="RuntimeInstanceState"/> of the <see cref="RuntimeInstance"/>
         /// </summary>
-        public InstanceState State { get; private set; }
+        public RuntimeInstanceState State { get; private set; }
 
         /// <summary>
         /// The last stop time of this instance
@@ -127,7 +127,7 @@ namespace Shaos.Services.Runtime.Host
         /// <returns>true if this instance can be configured</returns>
         public bool CanConfigure()
         {
-            return State != InstanceState.Running && _configurable;
+            return State != RuntimeInstanceState.Running && _configurable;
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Shaos.Services.Runtime.Host
         /// <returns>true if this instance can be started</returns>
         public bool CanStart()
         {
-            return State != InstanceState.Running;
+            return State != RuntimeInstanceState.Running;
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Shaos.Services.Runtime.Host
         /// <returns>true if this instance can be stopped</returns>
         public bool CanStop()
         {
-            return State == InstanceState.Running;
+            return State == RuntimeInstanceState.Running;
         }
 
         /// <inheritdoc/>
@@ -176,37 +176,37 @@ namespace Shaos.Services.Runtime.Host
         {
             ArgumentNullException.ThrowIfNull(plugIn);
 
-            ExecutionContext = new InstanceExecutionContext(plugIn);
+            ExecutionContext = new RuntimeExecutionContext(plugIn);
         }
 
         internal void SetComplete()
         {
-            State = InstanceState.Complete;
+            State = RuntimeInstanceState.Complete;
             StopTime = DateTime.UtcNow;
         }
 
         internal void SetFaulted(AggregateException? exception)
         {
-            State = InstanceState.Faulted;
+            State = RuntimeInstanceState.Faulted;
             Exception = exception;
         }
 
         internal void SetFaulted(Exception? exception)
         {
-            State = InstanceState.Faulted;
+            State = RuntimeInstanceState.Faulted;
             Exception = exception;
         }
 
         internal void SetRunning()
         {
-            State = InstanceState.Running;
+            State = RuntimeInstanceState.Running;
             StartTime = DateTime.UtcNow;
         }
 
         internal void StartExecution(Func<CancellationToken, Task> executeTask,
                                      Action<Task> completionTask)
         {
-            State = InstanceState.Starting;
+            State = RuntimeInstanceState.Starting;
 
             ExecutionContext!.StartExecution(executeTask, completionTask);
         }

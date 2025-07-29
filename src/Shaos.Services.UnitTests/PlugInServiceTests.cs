@@ -44,7 +44,7 @@ namespace Shaos.Services.UnitTests
         private const string AssemblyPath = "AssemblyPath";
 
         private readonly Mock<IFileStoreService> _mockFileStoreService;
-        private readonly Mock<IInstanceHost> _mockInstanceHost;
+        private readonly Mock<IRuntimeInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInConfigurationBuilder> _mockPlugConfigurationBuilder;
         private readonly Mock<IPlugInTypeValidator> _mockPlugInTypeValidator;
         private readonly PlugInService _plugInService;
@@ -52,7 +52,7 @@ namespace Shaos.Services.UnitTests
         public PlugInServiceTests(ITestOutputHelper output) : base(output)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockInstanceHost = new Mock<IInstanceHost>();
+            _mockInstanceHost = new Mock<IRuntimeInstanceHost>();
             _mockPlugInTypeValidator = new Mock<IPlugInTypeValidator>();
             _mockPlugConfigurationBuilder = new Mock<IPlugInConfigurationBuilder>();
 
@@ -134,11 +134,11 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceRunningAsync()
         {
-            var instance = new Instance(12,
+            var instance = new RuntimeInstance(12,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None);
+                                        RuntimeInstanceState.None);
 
             instance.SetRunning();
 
@@ -156,7 +156,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestDeletePlugInInstanceSuccessAsync()
         {
-            var instance = new Instance(12, 1, InstanceName, AssemblyPath, InstanceState.None);
+            var instance = new RuntimeInstance(12, 1, InstanceName, AssemblyPath, RuntimeInstanceState.None);
 
             instance.SetComplete();
 
@@ -192,11 +192,11 @@ namespace Shaos.Services.UnitTests
 
             plugIn.Instances.Add(plugInInstance);
 
-            var instance = new Instance(plugInInstance.Id,
+            var instance = new RuntimeInstance(plugInInstance.Id,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None);
+                                        RuntimeInstanceState.None);
 
             instance.SetRunning();
 
@@ -225,11 +225,11 @@ namespace Shaos.Services.UnitTests
                 Description = "description"
             });
 
-            var instance = new Instance(12,
+            var instance = new RuntimeInstance(12,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None);
+                                        RuntimeInstanceState.None);
 
             instance.SetComplete();
 
@@ -538,13 +538,13 @@ namespace Shaos.Services.UnitTests
             return plugIn;
         }
 
-        private Instance SetupRunningInstances()
+        private RuntimeInstance SetupRunningInstances()
         {
-            var instance = new Instance(1,
+            var instance = new RuntimeInstance(1,
                                         1,
                                         InstanceName,
                                         AssemblyPath,
-                                        InstanceState.None);
+                                        RuntimeInstanceState.None);
 
             _mockInstanceHost
                .Setup(_ => _.Instances)

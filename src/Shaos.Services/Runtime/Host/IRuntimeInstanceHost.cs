@@ -29,60 +29,60 @@ using Shaos.Services.Runtime.Exceptions;
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// A <see cref="Instance"/> host
+    /// A <see cref="RuntimeInstance"/> host
     /// </summary>
-    public interface IInstanceHost
+    public interface IRuntimeInstanceHost
     {
         /// <summary>
-        /// An event that is raised when an <see cref="Instance"/> state changes
+        /// An event that is raised when an <see cref="RuntimeInstance"/> state changes
         /// </summary>
-        event EventHandler<InstanceStateEventArgs> InstanceStateChanged;
+        event EventHandler<RuntimeInstanceStateEventArgs> InstanceStateChanged;
 
         /// <summary>
-        /// The <see cref="IReadOnlyList{T}"/> of <see cref="Instance"/>
+        /// The <see cref="IReadOnlyList{T}"/> of <see cref="RuntimeInstance"/>
         /// </summary>
-        IReadOnlyList<Instance> Instances { get; }
+        IReadOnlyList<RuntimeInstance> Instances { get; }
 
         /// <summary>
-        /// Create an <see cref="Instance"/> in the <see cref="InstanceHost"/>
+        /// Create an <see cref="RuntimeInstance"/> in the <see cref="RuntimeInstanceHost"/>
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/></param>
+        /// <param name="id">The identifier of the <see cref="RuntimeInstance"/></param>
         /// <param name="plugInId"></param>
-        /// <param name="instanceName">The name of the <see cref="Instance"/></param>
-        /// <param name="assemblyPath">The path of the assembly file for the <see cref="Instance"/></param>
+        /// <param name="instanceName">The name of the <see cref="RuntimeInstance"/></param>
+        /// <param name="assemblyPath">The path of the assembly file for the <see cref="RuntimeInstance"/></param>
         /// <param name="configurable"></param>
-        /// <returns>The <see cref="Instance"/> that was added</returns>
+        /// <returns>The <see cref="RuntimeInstance"/> that was added</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="instanceName"/> or <paramref name="assemblyPath"/> is null of empty</exception>
-        /// <exception cref="InstanceExistsException">Thrown if the <see cref="InstanceHost"/> already contains an <see cref="Instance"/> with <paramref name="id"/></exception>
+        /// <exception cref="InstanceExistsException">Thrown if the <see cref="RuntimeInstanceHost"/> already contains an <see cref="RuntimeInstance"/> with <paramref name="id"/></exception>
         /// <exception cref="MaxInstancesRunningException">Thrown if the maximum number of instances are loaded</exception>
-        Instance CreateInstance(int id,
-                                int plugInId,
-                                string instanceName,
-                                string assemblyPath,
-                                bool configurable = false);
+        RuntimeInstance CreateInstance(int id,
+                                       int plugInId,
+                                       string instanceName,
+                                       string assemblyPath,
+                                       bool configurable = false);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        InstanceLoadContext GetInstanceLoadContext(int id);
+        RuntimeInstanceLoadContext GetInstanceLoadContext(int id);
 
         /// <summary>
-        /// Indicates if an <see cref="Instance"/> exists in the runtime
+        /// Indicates if an <see cref="RuntimeInstance"/> exists in the runtime
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/> to check</param>
-        /// <returns>true if the <see cref="Instance"/> exists in the <see cref="InstanceHost"/></returns>
+        /// <param name="id">The identifier of the <see cref="RuntimeInstance"/> to check</param>
+        /// <returns>true if the <see cref="RuntimeInstance"/> exists in the <see cref="RuntimeInstanceHost"/></returns>
         bool InstanceExists(int id);
 
         /// <summary>
-        /// Remove an <see cref="Instance"/> from the <see cref="InstanceHost"/>
+        /// Remove an <see cref="RuntimeInstance"/> from the <see cref="RuntimeInstanceHost"/>
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/> to remove</param>
+        /// <param name="id">The identifier of the <see cref="RuntimeInstance"/> to remove</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="InstanceRunningException">Thrown if the <see cref="Instance"/> is still running</exception>
-        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
+        /// <exception cref="InstanceRunningException">Thrown if the <see cref="RuntimeInstance"/> is still running</exception>
+        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="RuntimeInstance"/> is not found</exception>
         void RemoveInstance(int id);
 
         /// <summary>
@@ -90,18 +90,19 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
         /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
-        /// <returns>The <see cref="Instance"/></returns>
-        Instance StartInstance(int id, IPlugIn plugIn);
+        /// <returns>The <see cref="RuntimeInstance"/></returns>
+        RuntimeInstance StartInstance(int id,
+                                      IPlugIn plugIn);
 
         /// <summary>
-        /// Stop a running <see cref="Instance"/>
+        /// Stop a running <see cref="RuntimeInstance"/>
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="Instance"/> that is to be stopped</param>
+        /// <param name="id">The identifier of the <see cref="RuntimeInstance"/> that is to be stopped</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="Instance"/> is not found</exception>
+        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="RuntimeInstance"/> is not found</exception>
         /// <remarks>
-        /// The <see cref="Instance"/> is not synchronously stopped
+        /// The <see cref="RuntimeInstance"/> is not synchronously stopped
         /// </remarks>
-        Instance StopInstance(int id);
+        RuntimeInstance StopInstance(int id);
     }
 }

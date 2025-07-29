@@ -33,25 +33,25 @@ namespace Shaos.Services.Runtime.Host
     /// A container for a <see cref="IRuntimeAssemblyLoadContext"/>
     /// The container will release the <see cref="IRuntimeAssemblyLoadContext"/> on dispose
     /// </remarks>
-    public class InstanceLoadContext : IDisposable
+    public class RuntimeInstanceLoadContext : IDisposable
     {
         private readonly UnloadingWeakReference<IRuntimeAssemblyLoadContext>? _unloadingWeakReference;
         private bool disposedValue;
 
         /// <summary>
-        /// Create an instance of a <see cref="InstanceLoadContext"/>
+        /// Create an instance of a <see cref="RuntimeInstanceLoadContext"/>
         /// </summary>
         /// <param name="assembly"></param>
-        internal InstanceLoadContext(Assembly assembly)
+        internal RuntimeInstanceLoadContext(Assembly assembly)
         {
             Assembly = assembly;
         }
 
         /// <summary>
-        /// Create an instance of a <see cref="InstanceLoadContext"/>
+        /// Create an instance of a <see cref="RuntimeInstanceLoadContext"/>
         /// </summary>
         /// <param name="assemblyLoadContext">The <see cref="IRuntimeAssemblyLoadContext"/></param>
-        public InstanceLoadContext(IRuntimeAssemblyLoadContext assemblyLoadContext)
+        public RuntimeInstanceLoadContext(IRuntimeAssemblyLoadContext assemblyLoadContext)
         {
             ArgumentNullException.ThrowIfNull(assemblyLoadContext);
 

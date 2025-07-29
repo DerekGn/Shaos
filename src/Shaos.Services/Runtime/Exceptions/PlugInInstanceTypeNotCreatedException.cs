@@ -36,7 +36,7 @@ namespace Shaos.Services.Runtime.Exceptions
     public class PlugInInstanceTypeNotCreatedException(int id) : Exception
     {
         /// <summary>
-        /// The identifier of the <see cref="Instance"/>
+        /// The identifier of the <see cref="RuntimeInstance"/>
         /// </summary>
         public int Id { get; } = id;
     }

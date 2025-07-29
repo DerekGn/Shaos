@@ -28,14 +28,14 @@ using Shaos.Services.Runtime.Host;
 namespace Shaos.Services.Runtime.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="Instance"/> already exists in the <see cref="InstanceHost"/>
+    /// An exception that is thrown when a <see cref="RuntimeInstance"/> already exists in the <see cref="RuntimeInstanceHost"/>
     /// </summary>
-    /// <param name="id">The identifier of the <see cref="Instance"/></param>
+    /// <param name="id">The identifier of the <see cref="RuntimeInstance"/></param>
     [ExcludeFromCodeCoverage]
     public class InstanceExistsException(int id) : Exception
     {
         /// <summary>
-        /// The identifier of the <see cref="Instance"/>
+        /// The identifier of the <see cref="RuntimeInstance"/>
         /// </summary>
         public int Id { get; } = id;
     }

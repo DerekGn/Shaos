@@ -22,29 +22,37 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
+using Moq;
+using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
+using Xunit;
 
-namespace Shaos.Services.Runtime.Host
+namespace Shaos.Services.UnitTests.Runtime.Host
 {
-    /// <summary>
-    /// The runtime configuration options
-    /// </summary>
-    public class InstanceHostOptions
+    public class RuntimeInstanceLoadContextTests
     {
-        /// <summary>
-        /// The maximum number of <see cref="Instance"/> that can be executed in parallel
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 50
-        /// </remarks>
-        public int MaxExecutingInstances { get; init; } = 50;
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
+        private RuntimeInstanceLoadContext? _instanceLoadContext;
 
-        /// <summary>
-        /// The wait time for a <see cref="PlugIn"/> stop request
-        /// </summary>
-        /// <remarks>
-        /// Defaults to 1 second
-        /// </remarks>
-        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
+        public RuntimeInstanceLoadContextTests()
+        {
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+        }
+
+        [Fact]
+        public void TestDispose()
+        {
+            _mockRuntimeAssemblyLoadContext
+                .Setup(_ => _.LoadFromAssemblyPath(It.IsAny<string>()))
+                .Returns(new Object().GetType().Assembly);
+
+            _instanceLoadContext = new RuntimeInstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
+
+            Assert.NotNull(_instanceLoadContext.Assembly);
+
+            _instanceLoadContext.Dispose();
+
+            Assert.Null(_instanceLoadContext.Assembly);
+        }
     }
 }

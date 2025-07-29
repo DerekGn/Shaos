@@ -48,8 +48,8 @@ namespace Shaos.Services.UnitTests
         private const string InstanceName = "Test";
         private readonly InstanceHostService _instanceHostService;
         private readonly Mock<IFileStoreService> _mockFileStoreService;
-        private readonly Mock<IInstanceEventHandler> _mockInstanceEventHandler;
-        private readonly Mock<IInstanceHost> _mockInstanceHost;
+        private readonly Mock<IRuntimeInstanceEventHandler> _mockInstanceEventHandler;
+        private readonly Mock<IRuntimeInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInBuilder> _mockPlugInBuilder;
         private readonly Mock<IPlugInConfigurationBuilder> _mockPlugInConfigurationBuilder;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
@@ -59,8 +59,8 @@ namespace Shaos.Services.UnitTests
         public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
-            _mockInstanceEventHandler = new Mock<IInstanceEventHandler>();
-            _mockInstanceHost = new Mock<IInstanceHost>();
+            _mockInstanceEventHandler = new Mock<IRuntimeInstanceEventHandler>();
+            _mockInstanceHost = new Mock<IRuntimeInstanceHost>();
             _mockPlugInBuilder = new Mock<IPlugInBuilder>();
             _mockPlugInConfigurationBuilder = new Mock<IPlugInConfigurationBuilder>();
             _mockServiceProvider = new Mock<IServiceProvider>();
@@ -366,7 +366,7 @@ namespace Shaos.Services.UnitTests
 
         private void SetupInstanceLoadContext()
         {
-            var instanceLoadContext = new InstanceLoadContext(typeof(TestPlugIn).Assembly);
+            var instanceLoadContext = new RuntimeInstanceLoadContext(typeof(TestPlugIn).Assembly);
 
             _mockInstanceHost.Setup(_ => _.GetInstanceLoadContext(It.IsAny<int>()))
                             .Returns(instanceLoadContext);
@@ -403,7 +403,7 @@ namespace Shaos.Services.UnitTests
                 plugIn
             ];
 
-            var instance = new Instance(1,
+            var instance = new RuntimeInstance(1,
                                         2,
                                         InstanceName,
                                         AssemblyPath,

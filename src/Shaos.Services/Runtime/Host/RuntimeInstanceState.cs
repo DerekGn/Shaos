@@ -25,34 +25,34 @@
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// The execution state of a <see cref="Instance"/>
+    /// The execution state of a <see cref="RuntimeInstance"/>
     /// </summary>
-    public enum InstanceState
+    public enum RuntimeInstanceState
     {
         /// <summary>
-        /// The initial <see cref="Instance"/> state
+        /// The initial <see cref="RuntimeInstance"/> state
         /// </summary>
         None,
         /// <summary>
-        /// The <see cref="Instance"/> is starting
+        /// The <see cref="RuntimeInstance"/> is starting
         /// </summary>
         Starting,
         /// <summary>
-        /// The <see cref="Instance"/> is running
+        /// The <see cref="RuntimeInstance"/> is running
         /// </summary>
         Running,
         /// <summary>
-        /// The <see cref="Instance"/> is complete.
+        /// The <see cref="RuntimeInstance"/> is complete.
         /// </summary>
         /// <remarks>
-        /// This is the result of the <see cref="Instance"/> self terminating or <see cref="Instance"/> being stopped.
+        /// This is the result of the <see cref="RuntimeInstance"/> self terminating or <see cref="RuntimeInstance"/> being stopped.
         /// </remarks>
         Complete,
         /// <summary>
-        /// The <see cref="Instance"/> is faulted
+        /// The <see cref="RuntimeInstance"/> is faulted
         /// </summary>
         /// <remarks>
-        /// This is the result of the <see cref="Instance"/> self terminating due to an exception.
+        /// This is the result of the <see cref="RuntimeInstance"/> self terminating due to an exception.
         /// </remarks>
         Faulted
     }

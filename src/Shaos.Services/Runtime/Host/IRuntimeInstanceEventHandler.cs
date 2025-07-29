@@ -22,25 +22,28 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Runtime.Host;
-using System.Diagnostics.CodeAnalysis;
+using Shaos.Sdk;
 
-namespace Shaos.Services.Runtime.Exceptions
+namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="RuntimeInstance"/> is in the <see cref="RuntimeInstanceState.Running"/>
+    /// A runtime instance event handler.
     /// </summary>
     /// <remarks>
-    /// Create an instance of a <see cref="InstanceRunningException"/>
+    /// A centralised event handler for <see cref="IPlugIn"/> events
     /// </remarks>
-    /// <param name="id">The identifier of the running instance</param>
-    [ExcludeFromCodeCoverage]
-    public class InstanceRunningException(int id) : Exception
+    public interface IRuntimeInstanceEventHandler
     {
+        /// <summary>
+        /// Attach a <see cref="IPlugIn"/> instance to the event handler
+        /// </summary>
+        /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
+        void Attach(IPlugIn? plugIn);
 
         /// <summary>
-        /// The identifier of the running instance
+        /// Detach a <see cref="IPlugIn"/> instance from the event handler
         /// </summary>
-        public int Id { get; } = id;
+        /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
+        void Detach(IPlugIn? plugIn);
     }
 }

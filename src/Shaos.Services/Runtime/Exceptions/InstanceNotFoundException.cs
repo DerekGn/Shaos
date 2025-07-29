@@ -28,14 +28,14 @@ using Shaos.Services.Runtime.Host;
 namespace Shaos.Services.Runtime.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="Instance"/> was not found
+    /// An exception that is thrown when a <see cref="RuntimeInstance"/> was not found
     /// </summary>
-    /// <param name="id">The identifier of the <see cref="Instance"/></param>
+    /// <param name="id">The identifier of the <see cref="RuntimeInstance"/></param>
     [ExcludeFromCodeCoverage]
     public class InstanceNotFoundException(int id) : Exception
     {
         /// <summary>
-        /// The identifier of the <see cref="Instance"/>
+        /// The identifier of the <see cref="RuntimeInstance"/>
         /// </summary>
         public int Id { get; } = id;
     }

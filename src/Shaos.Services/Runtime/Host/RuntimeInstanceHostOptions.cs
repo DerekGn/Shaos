@@ -22,33 +22,29 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
+
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// An event that represents an <see cref="Instance"/> state change
+    /// The runtime configuration options
     /// </summary>
-    public class InstanceStateEventArgs : EventArgs
+    public class RuntimeInstanceHostOptions
     {
         /// <summary>
-        /// Create an instance of a <see cref="InstanceStateEventArgs"/>
+        /// The maximum number of <see cref="RuntimeInstance"/> that can be executed in parallel
         /// </summary>
-        /// <param name="id">The <see cref="Instance"/> who's state changed</param>
-        /// <param name="state">The new state of the <see cref="Instance"/></param>
-        public InstanceStateEventArgs(int id,
-                                      InstanceState state)
-        {
-            Id = id;
-            State = state;
-        }
+        /// <remarks>
+        /// Defaults to 50
+        /// </remarks>
+        public int MaxExecutingInstances { get; init; } = 50;
 
         /// <summary>
-        /// The <see cref="Instance"/> identifier
+        /// The wait time for a <see cref="PlugIn"/> stop request
         /// </summary>
-        public int Id { get; init; }
-
-        /// <summary>
-        /// The <see cref="Instance"/> state change
-        /// </summary>
-        public InstanceState State { get; init; }
+        /// <remarks>
+        /// Defaults to 1 second
+        /// </remarks>
+        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
     }
 }

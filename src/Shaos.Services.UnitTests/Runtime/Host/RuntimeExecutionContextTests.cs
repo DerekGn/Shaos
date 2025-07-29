@@ -23,36 +23,47 @@
 */
 
 using Moq;
-using Shaos.Services.Runtime;
+using Shaos.Sdk;
 using Shaos.Services.Runtime.Host;
 using Xunit;
 
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
-    public class InstanceLoadContextTests
+    public class RuntimeExecutionContextTests
     {
-        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
-        private InstanceLoadContext? _instanceLoadContext;
+        private readonly RuntimeExecutionContext _instanceExecutionContext;
+        private readonly Mock<IPlugIn> _mockPlugIn;
+        private bool _executed;
+        private bool _completed;
 
-        public InstanceLoadContextTests()
+        public RuntimeExecutionContextTests()
         {
-            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+            _mockPlugIn = new Mock<IPlugIn>();
+
+            _instanceExecutionContext = new RuntimeExecutionContext(_mockPlugIn.Object);
         }
 
         [Fact]
-        public void TestDispose()
+        public void TestStartExecution()
         {
-            _mockRuntimeAssemblyLoadContext
-                .Setup(_ => _.LoadFromAssemblyPath(It.IsAny<string>()))
-                .Returns(new Object().GetType().Assembly);
+            _instanceExecutionContext.StartExecution(
+                async (cancellationToken) => await ExecuteMethod(),
+                (antecedent) => CompletionMethod());
 
-            _instanceLoadContext = new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
+            Assert.False(_executed);
+            Assert.False(_completed);
+        }
 
-            Assert.NotNull(_instanceLoadContext.Assembly);
+        private void CompletionMethod()
+        {
+            _completed = true;
+        }
 
-            _instanceLoadContext.Dispose();
-
-            Assert.Null(_instanceLoadContext.Assembly);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async Task ExecuteMethod()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            _executed = true;
         }
     }
 }
