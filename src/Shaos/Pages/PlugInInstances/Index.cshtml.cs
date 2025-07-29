@@ -33,10 +33,10 @@ namespace Shaos.Pages.PlugInInstances
     public class IndexModel : PaginatedModel<PlugInInstance>
     {
         private readonly IConfiguration _configuration;
-        private readonly IShaosRepository _repository;
+        private readonly IPlugInRepository _repository;
 
         public IndexModel(IConfiguration configuration,
-                          IShaosRepository repository)
+                          IPlugInRepository repository)
         {
             ArgumentNullException.ThrowIfNull(configuration);
             ArgumentNullException.ThrowIfNull(repository);

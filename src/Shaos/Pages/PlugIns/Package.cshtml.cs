@@ -38,10 +38,10 @@ namespace Shaos.Pages.PlugIns
     {
         private readonly IZipFileValidationService _codeFileValidationService;
         private readonly IPlugInService _plugInService;
-        private readonly IShaosRepository _repository;
+        private readonly IPlugInRepository _repository;
 
         public PackageModel(
-            IShaosRepository repository,
+            IPlugInRepository repository,
             IPlugInService plugInService,
             IZipFileValidationService codeFileValidationService)
         {

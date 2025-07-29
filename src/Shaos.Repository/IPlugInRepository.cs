@@ -30,9 +30,9 @@ using System.Linq.Expressions;
 namespace Shaos.Repository
 {
     /// <summary>
-    /// Defines a <see cref="IShaosRepository"/> interface
+    /// Defines a <see cref="IPlugInRepository"/> interface
     /// </summary>
-    public interface IShaosRepository
+    public interface IPlugInRepository
     {
         /// <summary>
         /// Add a <see cref="BaseEntity"/> to the repository

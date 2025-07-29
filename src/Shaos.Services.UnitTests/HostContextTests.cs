@@ -49,11 +49,11 @@ namespace Shaos.Services.UnitTests
     public class HostContextTests : BaseTests
     {
         private readonly HostContext _hostContext;
-        private readonly Mock<IShaosRepository> _mockRepository;
+        private readonly Mock<IPlugInRepository> _mockRepository;
 
         public HostContextTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
-            _mockRepository = new Mock<IShaosRepository>();
+            _mockRepository = new Mock<IPlugInRepository>();
             _hostContext = new HostContext(LoggerFactory!.CreateLogger<HostContext>(), _mockRepository.Object, 10);
         }
 

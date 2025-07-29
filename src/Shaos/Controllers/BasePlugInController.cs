@@ -34,7 +34,7 @@ namespace Shaos.Controllers
 
         protected BasePlugInController(
             ILogger<BasePlugInController> logger,
-            IShaosRepository repository,
+            IPlugInRepository repository,
             IPlugInService plugInService) : base(logger)
         {
             ArgumentNullException.ThrowIfNull(logger);
@@ -47,6 +47,6 @@ namespace Shaos.Controllers
 
         public IPlugInService PlugInService { get; }
 
-        public IShaosRepository Repository { get; }
+        public IPlugInRepository Repository { get; }
     }
 }

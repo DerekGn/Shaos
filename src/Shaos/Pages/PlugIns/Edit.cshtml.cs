@@ -33,9 +33,9 @@ namespace Shaos.Pages.PlugIns
 {
     public class EditModel : PageModel
     {
-        private readonly IShaosRepository _repository;
+        private readonly IPlugInRepository _repository;
 
-        public EditModel(IShaosRepository repository)
+        public EditModel(IPlugInRepository repository)
         {
             ArgumentNullException.ThrowIfNull(repository);
 

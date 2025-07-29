@@ -47,7 +47,7 @@ namespace Shaos.Services
         private readonly IRuntimeInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
-        private readonly IShaosRepository _repository;
+        private readonly IPlugInRepository _repository;
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
         /// <summary>
@@ -55,14 +55,14 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="instanceHost">The <see cref="IRuntimeInstanceHost"/> instance</param>
-        /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
+        /// <param name="repository">The <see cref="IPlugInRepository"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="serviceScopeFactory"></param>
         /// <param name="instanceEventHandler"></param>
         /// <param name="plugInConfigurationBuilder"></param>
         public InstanceHostService(ILogger<InstanceHostService> logger,
                                    IRuntimeInstanceHost instanceHost,
-                                   IShaosRepository repository,
+                                   IPlugInRepository repository,
                                    IFileStoreService fileStoreService,
                                    IServiceScopeFactory serviceScopeFactory,
                                    IRuntimeInstanceEventHandler instanceEventHandler,
@@ -155,9 +155,9 @@ namespace Shaos.Services
                     foreach (var plugInInstance in plugIn.Instances)
                     {
                         RuntimeInstance instance = CreateRuntimeInstance(plugIn,
-                                                                  package,
-                                                                  plugInInstance,
-                                                                  package.HasConfiguration);
+                                                                         package,
+                                                                         plugInInstance,
+                                                                         package.HasConfiguration);
 
                         var runtimeInstance = CreatePlugInInstance(plugIn,
                                                                    plugInInstance,
@@ -175,18 +175,19 @@ namespace Shaos.Services
                         if (package.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
                         {
                             _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not configured",
-                                            nameof(plugInInstance),
-                                            plugInInstance.Id,
-                                            plugInInstance.Name);
+                                               nameof(plugInInstance),
+                                               plugInInstance.Id,
+                                               plugInInstance.Name);
 
                             continue;
                         }
 
                         _logger.LogInformation("Starting PlugIn instance. Id: [{Id} Name: [{Name}]]",
-                                            instance.Id,
-                                            instance.Name);
+                                               instance.Id,
+                                               instance.Name);
 
-                        _instanceHost.StartInstance(instance.Id, runtimeInstance!);
+                        _instanceHost.StartInstance(instance.Id,
+                                                    runtimeInstance!);
                     }
                 }
             }
@@ -255,24 +256,24 @@ namespace Shaos.Services
         }
 
         private RuntimeInstance CreateRuntimeInstance(PlugIn plugIn,
-                                               Package package,
-                                               PlugInInstance plugInInstance,
-                                               bool configurable)
+                                                      Package package,
+                                                      PlugInInstance plugInInstance,
+                                                      bool configurable)
         {
             var assemblyFilePath = _fileStoreService.GetAssemblyPath(plugIn.Id,
                                                                      package!.AssemblyFile);
 
             RuntimeInstance instance = _instanceHost.CreateInstance(plugInInstance.Id,
-                                                             plugIn.Id,
-                                                             plugInInstance.Name,
-                                                             assemblyFilePath,
-                                                             configurable);
+                                                                    plugIn.Id,
+                                                                    plugInInstance.Name,
+                                                                    assemblyFilePath,
+                                                                    configurable);
             return instance;
         }
 
         private async Task<PlugInInstance> LoadPlugInInstanceAsync(int id,
-                                                                    bool withNoTracking = true,
-                                                                    CancellationToken cancellationToken = default)
+                                                                   bool withNoTracking = true,
+                                                                   CancellationToken cancellationToken = default)
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                   withNoTracking,

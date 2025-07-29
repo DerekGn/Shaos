@@ -40,11 +40,11 @@ namespace Shaos.Services.UnitTests.Logging
     {
         private readonly LoggingConfigurationService _loggingConfigurationService;
         private readonly Mock<ILoggingConfiguration> _mockLoggingConfiguration;
-        private readonly Mock<IShaosRepository> _mockRepository;
+        private readonly Mock<IPlugInRepository> _mockRepository;
 
         public LoggingConfigurationServiceTests(ITestOutputHelper output) : base(output)
         {
-            _mockRepository = new Mock<IShaosRepository>();
+            _mockRepository = new Mock<IPlugInRepository>();
             _mockLoggingConfiguration = new Mock<ILoggingConfiguration>();
 
             _loggingConfigurationService = new LoggingConfigurationService(LoggerFactory!.CreateLogger<LoggingConfigurationService>(),
