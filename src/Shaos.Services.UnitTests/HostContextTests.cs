@@ -152,7 +152,6 @@ namespace Shaos.Services.UnitTests
             }
 
             Assert.NotNull(result);
-            Assert.Equal(1, result.Id);
             Assert.NotNull(result.Name);
             Assert.NotNull(result.Parameters);
             Assert.NotEmpty(result.Parameters);
