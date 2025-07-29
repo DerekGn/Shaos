@@ -35,18 +35,15 @@ namespace Shaos.Sdk.Devices
         /// <summary>
         /// Create an instance of a <see cref="Device"/>
         /// </summary>
-        /// <param name="id">The identifier</param>
         /// <param name="name">The device name</param>
         /// <param name="parameters">The set of <see cref="BaseParameter"/> instances for this <see cref="Device"/></param>
         /// <param name="batteryLevel">The optional battery level if the <see cref="Device"/> instance is battery powered</param>
         /// <param name="signalLevel">The optional signal level if the <see cref="Device"/> is wireless</param>
-        public Device(int id,
-                      string name,
+        public Device(string name,
                       IList<BaseParameter> parameters,
                       uint? batteryLevel,
                       int? signalLevel)
         {
-            Id = id;
             Name = name;
             BatteryLevel = batteryLevel != null ? new BatteryLevel(this, (uint)batteryLevel) : null;
             SignalLevel = signalLevel != null ? new SignalLevel(this, (int)signalLevel) : null;
@@ -73,7 +70,7 @@ namespace Shaos.Sdk.Devices
         /// <summary>
         /// The device identifier
         /// </summary>
-        public int Id { get; }
+        public int Id { get; internal set; }
 
         /// <summary>
         /// The device name

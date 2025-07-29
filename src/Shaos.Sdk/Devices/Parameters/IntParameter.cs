@@ -34,16 +34,14 @@ namespace Shaos.Sdk.Devices.Parameters
         /// <summary>
         /// Create an instance of a <see cref="IntParameter"/>
         /// </summary>
-        /// <param name="id">The identifier of the parameter</param>
         /// <param name="value">The value of the parameter</param>
         /// <param name="name">The name of the parameter</param>
         /// <param name="units">The units of this parameter</param>
         /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        public IntParameter(int id,
-                            int value,
-                              string? name,
-                              string? units,
-                              ParameterType? parameterType) : base(id, name, units, parameterType)
+        public IntParameter(int value,
+                            string? name,
+                            string? units,
+                            ParameterType? parameterType) : base(name, units, parameterType)
         {
             Value = value;
         }

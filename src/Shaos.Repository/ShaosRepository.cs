@@ -37,17 +37,17 @@ namespace Shaos.Repository
     /// <summary>
     /// The repository implementation
     /// </summary>
-    public class PlugInRepository : IPlugInRepository
+    public class ShaosRepository : IRepository
     {
         private readonly ShaosDbContext _context;
-        private readonly ILogger<PlugInRepository> _logger;
+        private readonly ILogger<ShaosRepository> _logger;
 
         /// <summary>
-        /// Create an instance of the <see cref="PlugInRepository"/>
+        /// Create an instance of the <see cref="ShaosRepository"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{T}"/> instance</param>
         /// <param name="context">The <see cref="ShaosDbContext"/></param>
-        public PlugInRepository(ILogger<PlugInRepository> logger,
+        public ShaosRepository(ILogger<ShaosRepository> logger,
                                ShaosDbContext context)
         {
             _logger = logger;

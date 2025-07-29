@@ -24,7 +24,6 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using Shaos.Repository.Exceptions;
 using Shaos.Sdk;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
@@ -73,14 +72,12 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.Devices)
                 .Returns(plugInDevices);
 
-            var parameter = new FloatParameter(1,
-                                               1.0f,
+            var parameter = new FloatParameter(1.0f,
                                                "volts",
                                                "v",
                                                ParameterType.Voltage);
 
-            var device = new Device(1,
-                                    "name",
+            var device = new Device("name",
                                     [parameter],
                                     100,
                                     0);
@@ -93,14 +90,12 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public void TestRestoreInstanceNotLoaded()
         {
-            var parameter = new FloatParameter(1,
-                                               1.0f,
+            var parameter = new FloatParameter(1.0f,
                                                "volts",
                                                "v",
                                                ParameterType.Voltage);
 
-            var device = new Device(1,
-                                    "name",
+            var device = new Device("name",
                                     [parameter],
                                     100,
                                     0);

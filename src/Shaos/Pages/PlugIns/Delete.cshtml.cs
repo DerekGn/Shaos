@@ -34,10 +34,10 @@ namespace Shaos.Pages.PlugIns
     public class DeleteModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IPlugInRepository _repository;
+        private readonly IRepository _repository;
 
         public DeleteModel(
-            IPlugInRepository repository,
+            IRepository repository,
             IPlugInService plugInService)
         {
             ArgumentNullException.ThrowIfNull(repository);

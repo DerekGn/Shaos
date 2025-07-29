@@ -49,11 +49,11 @@ namespace Shaos.Services.UnitTests
     public class HostContextTests : BaseTests
     {
         private readonly HostContext _hostContext;
-        private readonly Mock<IPlugInRepository> _mockRepository;
+        private readonly Mock<IRepository> _mockRepository;
 
         public HostContextTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
-            _mockRepository = new Mock<IPlugInRepository>();
+            _mockRepository = new Mock<IRepository>();
             _hostContext = new HostContext(LoggerFactory!.CreateLogger<HostContext>(), _mockRepository.Object, 10);
         }
 
@@ -65,8 +65,7 @@ namespace Shaos.Services.UnitTests
                                                      It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ModelDevice());
 
-            var result = await _hostContext.CreateDeviceParameterAsync(1, new SdkFloatParameter(1,
-                                                                                                3.0f,
+            var result = await _hostContext.CreateDeviceParameterAsync(1, new SdkFloatParameter(3.0f,
                                                                                                 "name",
                                                                                                 "units",
                                                                                                 ParameterType.Current));
@@ -172,14 +171,14 @@ namespace Shaos.Services.UnitTests
         private static SdkDevice CreateDevice()
         {
             List<BaseParameter> parameters = [
-                new BoolParameter(1,true,"name","units",ParameterType.Pressure),
-                new FloatParameter(1,2.0f,"name","units",ParameterType.Pressure),
-                new IntParameter(1,-3,"name","units",ParameterType.Pressure),
-                new StringParameter(1,"value","name","units",ParameterType.Pressure),
-                new UIntParameter(1,4,"name","units",ParameterType.Pressure)
+                new BoolParameter(true,"name","units",ParameterType.Pressure),
+                new FloatParameter(2.0f,"name","units",ParameterType.Pressure),
+                new IntParameter(-3,"name","units",ParameterType.Pressure),
+                new StringParameter("value","name","units",ParameterType.Pressure),
+                new UIntParameter(4,"name","units",ParameterType.Pressure)
                 ];
 
-            return new SdkDevice(1, "name", parameters, 1, -2);
+            return new SdkDevice("name", parameters, 1, -2);
         }
     }
 }

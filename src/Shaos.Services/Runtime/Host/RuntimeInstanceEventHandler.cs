@@ -2,8 +2,12 @@
 using Shaos.Repository;
 using Shaos.Sdk;
 using Shaos.Sdk.Devices;
+using Shaos.Services.Extensions;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+
+using ModelDevice = Shaos.Repository.Models.Devices.Device;
+using SdkDevice = Shaos.Sdk.Devices.Device;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -13,18 +17,18 @@ namespace Shaos.Services.Runtime.Host
     public class RuntimeInstanceEventHandler : IRuntimeInstanceEventHandler
     {
         private readonly ILogger<RuntimeInstanceEventHandler> _logger;
-        private readonly IPlugInRepository _plugInRepository;
+        private readonly IRepository _repository;
 
         /// <summary>
         /// Create an instance of a <see cref="IRuntimeInstanceEventHandler"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
-        /// <param name="plugInRepository">The <see cref="IPlugInRepository"/></param>
+        /// <param name="repository">The <see cref="IRepository"/></param>
         public RuntimeInstanceEventHandler(ILogger<RuntimeInstanceEventHandler> logger,
-                                           IPlugInRepository plugInRepository)
+                                           IRepository repository)
         {
             _logger = logger;
-            _plugInRepository = plugInRepository;
+            _repository = repository;
         }
 
         /// <inheritdoc/>
@@ -34,7 +38,7 @@ namespace Shaos.Services.Runtime.Host
 
             AttachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.CollectionChanged += Devices_CollectionChanged;
+            plugIn.Devices.CollectionChanged += DevicesCollectionChanged;
         }
 
         /// <inheritdoc/>
@@ -44,39 +48,101 @@ namespace Shaos.Services.Runtime.Host
 
             DetachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.CollectionChanged -= Devices_CollectionChanged;
+            plugIn.Devices.CollectionChanged -= DevicesCollectionChanged;
         }
 
-        private void AttachPlugInDevice(ObservableCollection<Device> devices)
+        private void AttachPlugInDevice(ObservableCollection<SdkDevice> devices)
         {
             foreach (var device in devices)
             {
-                device.Parameters.CollectionChanged += Parameters_CollectionChanged;
+                device.Parameters.CollectionChanged += ParametersCollectionChanged;
 
-                device.DeviceChanged += Device_DeviceChanged;
+                device.DeviceChanged += DeviceChanged;
             }
         }
 
-        private void DetachPlugInDevice(ObservableCollection<Device> devices)
+        private void DetachPlugInDevice(ObservableCollection<SdkDevice> devices)
         {
             foreach (var device in devices)
             {
-                device.Parameters.CollectionChanged -= Parameters_CollectionChanged;
+                device.Parameters.CollectionChanged -= ParametersCollectionChanged;
 
-                device.DeviceChanged += Device_DeviceChanged;
+                device.DeviceChanged += DeviceChanged;
             }
         }
 
-        private void Device_DeviceChanged(object? sender, DeviceChangedEventArgs e)
+        private void DeviceChanged(object? sender,
+                                   DeviceChangedEventArgs e)
         {
+            if (sender != null)
+            {
+            }
         }
 
-        private void Devices_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void DevicesCollectionChanged(object? sender,
+                                              NotifyCollectionChangedEventArgs e)
         {
+            if (sender != null)
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        if(e.NewItems != null)
+                        {
+                            foreach (SdkDevice device in e.NewItems)
+                            {
+                                _repository.AddAsync(device.ToModel());
+
+                                device.Id = device.Id;
+                            }
+                        }
+
+                        break;
+
+                    case NotifyCollectionChangedAction.Remove:
+                        break;
+
+                    case NotifyCollectionChangedAction.Replace:
+                        break;
+
+                    case NotifyCollectionChangedAction.Move:
+                        break;
+
+                    case NotifyCollectionChangedAction.Reset:
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
 
-        private void Parameters_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void ParametersCollectionChanged(object? sender,
+                                                 NotifyCollectionChangedEventArgs e)
         {
+            if (sender != null)
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        break;
+
+                    case NotifyCollectionChangedAction.Remove:
+                        break;
+
+                    case NotifyCollectionChangedAction.Replace:
+                        break;
+
+                    case NotifyCollectionChangedAction.Move:
+                        break;
+
+                    case NotifyCollectionChangedAction.Reset:
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
     }
 }

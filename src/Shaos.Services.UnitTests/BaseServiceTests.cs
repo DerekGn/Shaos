@@ -32,11 +32,11 @@ namespace Shaos.Services.UnitTests
 {
     public abstract class BaseServiceTests : BaseTests
     {
-        protected readonly Mock<IPlugInRepository> MockRepository;
+        protected readonly Mock<IRepository> MockRepository;
 
         protected BaseServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
-            MockRepository = new Mock<IPlugInRepository>();
+            MockRepository = new Mock<IRepository>();
         }
 
         protected void SetupPlugInInstanceGetByIdAsync()

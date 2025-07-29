@@ -42,16 +42,16 @@ namespace Shaos.Services
     {
         private readonly ILogger<HostContext> _logger;
         private readonly int _instanceIdentifier;
-        private readonly IPlugInRepository _repository;
+        private readonly IRepository _repository;
 
         /// <summary>
         /// Create an instance of a <see cref="HostContext"/>
         /// </summary>
         /// <param name="logger">A <see cref="ILogger{T}"/> instance</param>
-        /// <param name="repository">The <see cref="IPlugInRepository"/> instance</param>
+        /// <param name="repository">The <see cref="IRepository"/> instance</param>
         /// <param name="instanceIdentifier"></param>
         public HostContext(ILogger<HostContext> logger,
-                           IPlugInRepository repository,
+                           IRepository repository,
                            int instanceIdentifier)
         {
             _logger = logger;

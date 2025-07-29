@@ -48,11 +48,10 @@ namespace Shaos.Services.Extensions
 
         public static SdkDevice ToSdk(this ModelDevice device)
         {
-            return new Device(device.Id,
-                                 device.Name,
-                                 device.Parameters.ToSdk(),
-                                 device.BatteryLevel,
-                                 device.SignalLevel);
+            return new Device(device.Name,
+                              device.Parameters.ToSdk(),
+                              device.BatteryLevel,
+                              device.SignalLevel);
         }
 
         public static IEnumerable<SdkDevice> ToSdk(this IList<ModelDevice> modelDevices)

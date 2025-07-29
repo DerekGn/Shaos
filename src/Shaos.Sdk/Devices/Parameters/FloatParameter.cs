@@ -34,16 +34,14 @@ namespace Shaos.Sdk.Devices.Parameters
         /// <summary>
         /// Create an instance of a <see cref="FloatParameter"/>
         /// </summary>
-        /// <param name="id">The identifier of the parameter</param>
         /// <param name="value">The value of the parameter</param>
         /// <param name="name">The name of the parameter</param>
         /// <param name="units">The units of this parameter</param>
         /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        public FloatParameter(int id,
-                              float value,
+        public FloatParameter(float value,
                               string? name,
                               string? units,
-                              ParameterType? parameterType) : base(id, name, units, parameterType)
+                              ParameterType? parameterType) : base(name, units, parameterType)
         {
             Value = value;
         }
