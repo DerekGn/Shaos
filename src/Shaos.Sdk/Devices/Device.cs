@@ -22,8 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices.Parameters;
-using System.Collections.ObjectModel;
 
 namespace Shaos.Sdk.Devices
 {
@@ -83,7 +83,7 @@ namespace Shaos.Sdk.Devices
         /// <summary>
         /// The set of <see cref="Device"/> <see cref="BaseParameter"/>
         /// </summary>
-        public ObservableCollection<BaseParameter> Parameters { get; } = [];
+        public ObservableList<BaseParameter> Parameters { get; } = [];
 
         /// <summary>
         /// The <see cref="SignalLevel"/> for this device

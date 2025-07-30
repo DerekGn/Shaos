@@ -32,6 +32,7 @@ using Shaos.Testing.Shared.Extensions;
 using System.Linq.Expressions;
 using Xunit;
 using Xunit.Abstractions;
+using Shaos.Sdk.Exceptions;
 
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
 using SdkDevice = Shaos.Sdk.Devices.Device;
@@ -42,7 +43,6 @@ using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParamete
 using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
 using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
 using SdkFloatParameter = Shaos.Sdk.Devices.Parameters.FloatParameter;
-using Shaos.Sdk.Exceptions;
 
 namespace Shaos.Services.UnitTests
 {
@@ -54,25 +54,9 @@ namespace Shaos.Services.UnitTests
         public HostContextTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _mockRepository = new Mock<IRepository>();
-            _hostContext = new HostContext(LoggerFactory!.CreateLogger<HostContext>(), _mockRepository.Object, 10);
-        }
-
-        [Fact]
-        public async Task TestCreateDeviceParameterAsync()
-        {
-            _mockRepository
-                .Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelDevice, bool>>?>(),
-                                                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelDevice());
-
-            var result = await _hostContext.CreateDeviceParameterAsync(1, new SdkFloatParameter(3.0f,
-                                                                                                "name",
-                                                                                                "units",
-                                                                                                ParameterType.Current));
-
-            Assert.NotNull(result);
-            Assert.NotNull(result.Parameters);
-            Assert.Single(result.Parameters);
+            _hostContext = new HostContext(LoggerFactory!.CreateLogger<HostContext>(),
+                                           _mockRepository.Object,
+                                           10);
         }
 
         [Fact]
@@ -99,6 +83,24 @@ namespace Shaos.Services.UnitTests
 
             Assert.NotNull(exception);
             Assert.Equal(10, exception.Id);
+        }
+
+        [Fact]
+        public async Task TestCreateDeviceParameterAsync()
+        {
+            _mockRepository
+                .Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelDevice, bool>>?>(),
+                                                     It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ModelDevice());
+
+            var result = await _hostContext.CreateDeviceParameterAsync(1, new SdkFloatParameter(3.0f,
+                                                                                                "name",
+                                                                                                "units",
+                                                                                                ParameterType.Current));
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.Parameters);
+            Assert.Single(result.Parameters);
         }
 
         [Fact]

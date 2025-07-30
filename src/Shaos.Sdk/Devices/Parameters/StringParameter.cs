@@ -27,50 +27,17 @@ namespace Shaos.Sdk.Devices.Parameters
     /// <summary>
     /// Represents a <see cref="string"/> parameter
     /// </summary>
-    public class StringParameter : BaseParameter
+    /// <remarks>
+    /// Create an instance of a <see cref="StringParameter"/>
+    /// </remarks>
+    /// <param name="value">The value of the parameter</param>
+    /// <param name="name">The name of the parameter</param>
+    /// <param name="units">The units of this parameter</param>
+    /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
+    public class StringParameter(string value,
+                           string? name,
+                           string? units,
+                           ParameterType? parameterType) : BaseParameter<string>(value, name, units, parameterType)
     {
-        private string _value;
-
-        /// <summary>
-        /// Create an instance of a <see cref="StringParameter"/>
-        /// </summary>
-        /// <param name="value">The value of the parameter</param>
-        /// <param name="name">The name of the parameter</param>
-        /// <param name="units">The units of this parameter</param>
-        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        public StringParameter(string value,
-                               string? name,
-                               string? units,
-                               ParameterType? parameterType) : base(name, units, parameterType)
-        {
-            _value = value;
-        }
-
-        /// <summary>
-        /// Raised when the value of the parameter changes
-        /// </summary>
-        public event EventHandler<ParameterValueChangedEventArgs<string>>? ValueChanged;
-
-        /// <summary>
-        /// The current <see cref="StringParameter"/> value
-        /// </summary>
-        public string Value
-        {
-            get => _value;
-            set
-            {
-                _value = value;
-                OnValueChanged(new ParameterValueChangedEventArgs<string>() { Value = _value });
-            }
-        }
-
-        /// <summary>
-        /// Raise the value changed event to subscribed listeners
-        /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<string> e)
-        {
-            ValueChanged?.Invoke(this, e);
-        }
     }
 }

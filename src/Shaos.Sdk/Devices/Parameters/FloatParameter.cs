@@ -27,50 +27,17 @@ namespace Shaos.Sdk.Devices.Parameters
     /// <summary>
     /// Represents a <see cref="float"/> parameter
     /// </summary>
-    public class FloatParameter : BaseParameter
+    /// <remarks>
+    /// Create an instance of a <see cref="FloatParameter"/>
+    /// </remarks>
+    /// <param name="value">The value of the parameter</param>
+    /// <param name="name">The name of the parameter</param>
+    /// <param name="units">The units of this parameter</param>
+    /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
+    public class FloatParameter(float value,
+                          string? name,
+                          string? units,
+                          ParameterType? parameterType) : BaseParameter<float>(value, name, units, parameterType)
     {
-        private float _value;
-
-        /// <summary>
-        /// Create an instance of a <see cref="FloatParameter"/>
-        /// </summary>
-        /// <param name="value">The value of the parameter</param>
-        /// <param name="name">The name of the parameter</param>
-        /// <param name="units">The units of this parameter</param>
-        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        public FloatParameter(float value,
-                              string? name,
-                              string? units,
-                              ParameterType? parameterType) : base(name, units, parameterType)
-        {
-            Value = value;
-        }
-
-        /// <summary>
-        /// Raised when the value of the parameter changes
-        /// </summary>
-        public event EventHandler<ParameterValueChangedEventArgs<float>>? ValueChanged;
-
-        /// <summary>
-        /// The current <see cref="FloatParameter"/> value
-        /// </summary>
-        public float Value
-        {
-            get => _value;
-            set
-            {
-                _value = value;
-                OnValueChanged(new ParameterValueChangedEventArgs<float>() { Value = _value });
-            }
-        }
-
-        /// <summary>
-        /// Raise the value changed event to subscribed listeners
-        /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<float> e)
-        {
-            ValueChanged?.Invoke(this, e);
-        }
     }
 }

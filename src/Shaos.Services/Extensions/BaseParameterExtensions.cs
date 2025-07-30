@@ -23,14 +23,17 @@
 */
 
 using Shaos.Repository.Models.Devices.Parameters;
+using Shaos.Sdk.Collections.Generic;
+using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
+using SdkBaseParameter = Shaos.Sdk.Devices.Parameters.BaseParameter;
 
 namespace Shaos.Services.Extensions
 {
     internal static class ParameterExtensions
     {
-        public static IList<BaseParameter> ToModel(this IList<Sdk.Devices.Parameters.BaseParameter> parameters)
+        public static IList<ModelBaseParameter> ToModel(this ObservableList<SdkBaseParameter> parameters)
         {
-            List<BaseParameter>? result = null;
+            List<ModelBaseParameter>? result = null;
 
             if (parameters != null)
             {
@@ -45,9 +48,9 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        public static BaseParameter? ToModel(this Sdk.Devices.Parameters.BaseParameter parameter)
+        public static ModelBaseParameter? ToModel(this SdkBaseParameter parameter)
         {
-            BaseParameter? result = null;
+            ModelBaseParameter? result = null;
 
             if (parameter != null)
             {
@@ -57,7 +60,7 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        public static IList<Sdk.Devices.Parameters.BaseParameter> ToSdk(this IList<BaseParameter> parameters)
+        public static IList<SdkBaseParameter> ToSdk(this IList<ModelBaseParameter> parameters)
         {
             List<Sdk.Devices.Parameters.BaseParameter>? result = null;
 
@@ -73,10 +76,10 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        private static Sdk.Devices.Parameters.BaseParameter Convert(BaseParameter parameter)
+        private static SdkBaseParameter Convert(ModelBaseParameter parameter)
         {
             var type = parameter.GetType();
-            Sdk.Devices.Parameters.BaseParameter? result = null;
+            SdkBaseParameter? result = null;
 
             switch (type)
             {
@@ -124,10 +127,10 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        private static BaseParameter Convert(Sdk.Devices.Parameters.BaseParameter parameter)
+        private static ModelBaseParameter Convert(SdkBaseParameter parameter)
         {
             var type = parameter.GetType();
-            BaseParameter? result = null;
+            ModelBaseParameter? result = null;
 
             switch (type)
             {

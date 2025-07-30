@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Sdk;
+using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Services.Extensions;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-
-using ModelDevice = Shaos.Repository.Models.Devices.Device;
 using SdkDevice = Shaos.Sdk.Devices.Device;
 
 namespace Shaos.Services.Runtime.Host
@@ -38,7 +37,7 @@ namespace Shaos.Services.Runtime.Host
 
             AttachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.CollectionChanged += DevicesCollectionChanged;
+            plugIn.Devices.ListChanged += DevicesListChanged;
         }
 
         /// <inheritdoc/>
@@ -48,24 +47,24 @@ namespace Shaos.Services.Runtime.Host
 
             DetachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.CollectionChanged -= DevicesCollectionChanged;
+            plugIn.Devices.ListChanged -= DevicesListChanged;
         }
 
-        private void AttachPlugInDevice(ObservableCollection<SdkDevice> devices)
+        private void AttachPlugInDevice(ObservableList<SdkDevice> devices)
         {
             foreach (var device in devices)
             {
-                device.Parameters.CollectionChanged += ParametersCollectionChanged;
+                device.Parameters.ListChanged += ParametersListChanged;
 
                 device.DeviceChanged += DeviceChanged;
             }
         }
 
-        private void DetachPlugInDevice(ObservableCollection<SdkDevice> devices)
+        private void DetachPlugInDevice(ObservableList<SdkDevice> devices)
         {
             foreach (var device in devices)
             {
-                device.Parameters.CollectionChanged -= ParametersCollectionChanged;
+                device.Parameters.ListChanged -= ParametersListChanged;
 
                 device.DeviceChanged += DeviceChanged;
             }
@@ -79,68 +78,95 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private void DevicesCollectionChanged(object? sender,
-                                              NotifyCollectionChangedEventArgs e)
+        private async Task DevicesListChanged(object sender, ListChangedEventArgs<SdkDevice> e)
         {
             if (sender != null)
             {
                 switch (e.Action)
                 {
-                    case NotifyCollectionChangedAction.Add:
-                        if(e.NewItems != null)
-                        {
-                            foreach (SdkDevice device in e.NewItems)
-                            {
-                                _repository.AddAsync(device.ToModel());
-
-                                device.Id = device.Id;
-                            }
-                        }
-
+                    case ListChangedAction.Add:
                         break;
-
-                    case NotifyCollectionChangedAction.Remove:
+                    case ListChangedAction.Reset:
                         break;
-
-                    case NotifyCollectionChangedAction.Replace:
+                    case ListChangedAction.Remove:
                         break;
+                        //case NotifyCollectionChangedAction.Add:
+                        //    if (e.NewItems != null)
+                        //    {
+                        //        foreach (SdkDevice device in e.NewItems)
+                        //        {
+                        //            var modelDevice = device.ToModel();
 
-                    case NotifyCollectionChangedAction.Move:
-                        break;
+                        //            await _repository.AddAsync(modelDevice);
 
-                    case NotifyCollectionChangedAction.Reset:
-                        break;
+                        //            await _repository.SaveChangesAsync();
 
-                    default:
-                        break;
+                        //            device.Id = modelDevice.Id;
+                        //        }
+                        //    }
+
+                        //    break;
+
+                        //case NotifyCollectionChangedAction.Remove:
+                        //    break;
+
+                        //case NotifyCollectionChangedAction.Replace:
+                        //    break;
+
+                        //case NotifyCollectionChangedAction.Move:
+                        //    break;
+
+                        //case NotifyCollectionChangedAction.Reset:
+                        //    break;
+
+                        //default:
+                        //    break;
                 }
             }
         }
 
-        private void ParametersCollectionChanged(object? sender,
-                                                 NotifyCollectionChangedEventArgs e)
+        private async Task ParametersListChanged(object sender, ListChangedEventArgs<Sdk.Devices.Parameters.BaseParameter> e)
         {
             if (sender != null)
             {
                 switch (e.Action)
                 {
-                    case NotifyCollectionChangedAction.Add:
+                    case ListChangedAction.Add:
                         break;
+                    case ListChangedAction.Reset:
+                        break;
+                    case ListChangedAction.Remove:
+                        break;
+                        //case NotifyCollectionChangedAction.Add:
+                        //    if (e.NewItems != null)
+                        //    {
+                        //        foreach (SdkDevice device in e.NewItems)
+                        //        {
+                        //            var modelDevice = device.ToModel();
 
-                    case NotifyCollectionChangedAction.Remove:
-                        break;
+                        //            await _repository.AddAsync(modelDevice);
 
-                    case NotifyCollectionChangedAction.Replace:
-                        break;
+                        //            await _repository.SaveChangesAsync();
 
-                    case NotifyCollectionChangedAction.Move:
-                        break;
+                        //            device.Id = modelDevice.Id;
+                        //        }
+                        //    }
+                        //    break;
 
-                    case NotifyCollectionChangedAction.Reset:
-                        break;
+                        //case NotifyCollectionChangedAction.Remove:
+                        //    break;
 
-                    default:
-                        break;
+                        //case NotifyCollectionChangedAction.Replace:
+                        //    break;
+
+                        //case NotifyCollectionChangedAction.Move:
+                        //    break;
+
+                        //case NotifyCollectionChangedAction.Reset:
+                        //    break;
+
+                        //default:
+                        //    break;
                 }
             }
         }

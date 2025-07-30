@@ -22,25 +22,35 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk.Collections.Generic;
-using Shaos.Sdk.Devices;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Shaos.Sdk;
+using Shaos.Services.Runtime.Host;
+using Xunit;
+using Xunit.Abstractions;
 
-namespace Shaos.Sdk
+namespace Shaos.Services.UnitTests.Runtime.Host
 {
-    /// <summary>
-    /// Defines the interface for a PlugIn
-    /// </summary>
-    public interface IPlugIn : IDisposable
+    public class RuntimeInstanceEventHandlerTests : BaseServiceTests
     {
-        /// <summary>
-        /// The entry point of the<see cref="IPlugIn"/> instance
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the <see cref="IPlugIn"/> method execution</param>
-        Task ExecuteAsync(CancellationToken cancellationToken);
+        private readonly Mock<IPlugIn> _mockPlugIn;
+        private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
 
-        /// <summary>
-        /// The collection of <see cref="Device"/> instances a <see cref="IPlugIn"/> instance manages
-        /// </summary>
-        ObservableList<Device> Devices { get; }
+        public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+
+            _mockPlugIn = new Mock<IPlugIn>();
+
+            _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory!.CreateLogger<RuntimeInstanceEventHandler>(),
+                                                                           MockRepository.Object);
+        }
+
+        [Fact]
+        public void TestAttach()
+        {
+            //_mockPlugIn.Setup(_ => _.Devices)
+
+            _runtimeInstanceEventHandler.Attach(_mockPlugIn.Object);
+        }
     }
 }

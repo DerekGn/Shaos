@@ -27,50 +27,17 @@ namespace Shaos.Sdk.Devices.Parameters
     /// <summary>
     /// Represents a <see cref="bool"/> parameter
     /// </summary>
-    public class BoolParameter : BaseParameter
+    /// <remarks>
+    /// Create an instance of a <see cref="BoolParameter"/>
+    /// </remarks>
+    /// <param name="value">The value of the parameter</param>
+    /// <param name="name">The name of the parameter</param>
+    /// <param name="units">The units of this parameter</param>
+    /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
+    public class BoolParameter(bool value,
+                         string? name,
+                         string? units,
+                         ParameterType? parameterType) : BaseParameter<bool>(value, name, units, parameterType)
     {
-        private bool _value;
-
-        /// <summary>
-        /// Create an instance of a <see cref="BoolParameter"/>
-        /// </summary>
-        /// <param name="value">The value of the parameter</param>
-        /// <param name="name">The name of the parameter</param>
-        /// <param name="units">The units of this parameter</param>
-        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        public BoolParameter(bool value,
-                             string? name,
-                             string? units,
-                             ParameterType? parameterType) : base(name, units, parameterType)
-        {
-            Value = value;
-        }
-
-        /// <summary>
-        /// Raised when the value of the parameter changes
-        /// </summary>
-        public event EventHandler<ParameterValueChangedEventArgs<bool>>? ValueChanged;
-
-        /// <summary>
-        /// The current <see cref="BoolParameter"/> value
-        /// </summary>
-        public bool Value
-        {
-            get => _value;
-            set
-            {
-                _value = value;
-                OnValueChanged(new ParameterValueChangedEventArgs<bool>() { Value = _value });
-            }
-        }
-
-        /// <summary>
-        /// Raise the value changed event to subscribed listeners
-        /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<bool> e)
-        {
-            ValueChanged?.Invoke(this, e);
-        }
     }
 }

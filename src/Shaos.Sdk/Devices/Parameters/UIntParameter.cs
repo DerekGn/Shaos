@@ -27,50 +27,17 @@ namespace Shaos.Sdk.Devices.Parameters
     /// <summary>
     /// Represents a <see cref="uint"/> parameter
     /// </summary>
-    public class UIntParameter : BaseParameter
+    /// <remarks>
+    /// Create an instance of a <see cref="UIntParameter"/>
+    /// </remarks>
+    /// <param name="value">The value of the parameter</param>
+    /// <param name="name">The name of the parameter</param>
+    /// <param name="units">The units of this parameter</param>
+    /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
+    public class UIntParameter(uint value,
+                         string? name,
+                         string? units,
+                         ParameterType? parameterType) : BaseParameter<uint>(value, name, units, parameterType)
     {
-        private uint _value;
-
-        /// <summary>
-        /// Create an instance of a <see cref="UIntParameter"/>
-        /// </summary>
-        /// <param name="value">The value of the parameter</param>
-        /// <param name="name">The name of the parameter</param>
-        /// <param name="units">The units of this parameter</param>
-        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        public UIntParameter(uint value,
-                             string? name,
-                             string? units,
-                             ParameterType? parameterType) : base(name, units, parameterType)
-        {
-            Value = value;
-        }
-
-        /// <summary>
-        /// Raised when the value of the parameter changes
-        /// </summary>
-        public event EventHandler<ParameterValueChangedEventArgs<uint>>? ValueChanged;
-
-        /// <summary>
-        /// The current <see cref="FloatParameter"/> value
-        /// </summary>
-        public uint Value
-        {
-            get => _value;
-            set
-            {
-                _value = value;
-                OnValueChanged(new ParameterValueChangedEventArgs<uint>() { Value = _value });
-            }
-        }
-
-        /// <summary>
-        /// Raise the value changed event to subscribed listeners
-        /// </summary>
-        /// <param name="e">The <see cref="ParameterValueChangedEventArgs{T}"/></param>
-        protected virtual void OnValueChanged(ParameterValueChangedEventArgs<uint> e)
-        {
-            ValueChanged?.Invoke(this, e);
-        }
     }
 }

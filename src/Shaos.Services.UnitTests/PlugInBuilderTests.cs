@@ -25,11 +25,11 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Sdk;
+using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Exceptions;
 using Shaos.Services.UnitTests.Fixtures;
-using System.Collections.ObjectModel;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -66,7 +66,7 @@ namespace Shaos.Services.UnitTests
         {
             _builder.PlugIn = _plugIn.Object;
 
-            var plugInDevices = new ObservableCollection<Device>();
+            var plugInDevices = new ObservableList<Device>();
 
             _plugIn
                 .Setup(_ => _.Devices)

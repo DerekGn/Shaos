@@ -27,41 +27,35 @@ namespace Shaos.Sdk.Devices.Parameters
     /// <summary>
     /// A device <see cref="BaseParameter"/>
     /// </summary>
-    public abstract class BaseParameter
+    /// <remarks>
+    /// Create an instance of a <see cref="BaseParameter"/>
+    /// </remarks>
+    /// <param name="name">The name of the parameter</param>
+    /// <param name="units">The units of this parameter</param>
+    /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
+    public abstract class BaseParameter(string? name,
+                            string? units,
+                            ParameterType? parameterType)
     {
-        /// <summary>
-        /// Create an instance of a <see cref="BaseParameter"/>
-        /// </summary>
-        /// <param name="name">The name of the parameter</param>
-        /// <param name="units">The units of this parameter</param>
-        /// <param name="parameterType">The <see cref="ParameterType"/> of this parameter</param>
-        protected BaseParameter(string? name,
-                                string? units,
-                                ParameterType? parameterType)
-        {
-            Name = name;
-            Units = units;
-            ParameterType = parameterType;
-        }
 
         /// <summary>
-        /// The <see cref="BaseParameter"/> identifier
+        /// The <see cref="BaseParameter{T}"/> identifier
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// The <see cref="BaseParameter"/> name
+        /// The <see cref="BaseParameter{T}"/> name
         /// </summary>
-        public string? Name { get; }
+        public string? Name { get; } = name;
 
         /// <summary>
         /// The <see cref="ParameterType"/>
         /// </summary>
-        public ParameterType? ParameterType { get; }
+        public ParameterType? ParameterType { get; } = parameterType;
 
         /// <summary>
-        /// The <see cref="BaseParameter"/> units
+        /// The <see cref="BaseParameter{T}"/> units
         /// </summary>
-        public string? Units { get; }
+        public string? Units { get; } = units;
     }
 }
