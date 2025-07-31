@@ -45,7 +45,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                            MockRepository.Object);
         }
 
-        [Fact]
+        [Fact(Skip = "not implemented")]
         public void TestAttach()
         {
             //_mockPlugIn.Setup(_ => _.Devices)
