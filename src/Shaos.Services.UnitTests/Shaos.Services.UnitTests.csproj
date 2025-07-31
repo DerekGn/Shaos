@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.6.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.*" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.*" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.*" />
@@ -30,7 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj" />
         <ProjectReference Include="..\Shaos.Testing.Shared\Shaos.Testing.Shared.csproj" />
         <ProjectReference Include="..\Shaos.Services\Shaos.Services.csproj" />
         <ProjectReference Include="..\Shaos.Test.PlugIn\Shaos.Test.PlugIn.csproj" />
