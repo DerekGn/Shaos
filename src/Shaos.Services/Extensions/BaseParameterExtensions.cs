@@ -31,7 +31,7 @@ namespace Shaos.Services.Extensions
 {
     internal static class ParameterExtensions
     {
-        public static IList<ModelBaseParameter> ToModel(this ObservableList<SdkBaseParameter> parameters)
+        public static IList<ModelBaseParameter> ToModel(this IObservableList<SdkBaseParameter> parameters)
         {
             List<ModelBaseParameter>? result = null;
 
