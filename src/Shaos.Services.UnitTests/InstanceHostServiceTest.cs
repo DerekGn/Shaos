@@ -326,6 +326,26 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public void TestStopInstance()
+        {
+            var mockPlugin = new Mock<IPlugIn>();
+
+            var instance = new RuntimeInstance(10, 1, "name", "assembly");
+
+            instance.LoadContext(mockPlugin.Object);
+
+            _mockInstanceHost
+                .Setup(_ => _.Instances)
+                .Returns([instance]);
+
+            _instanceHostService.StopInstance(10);
+
+            _mockInstanceEventHandler.Verify(_ => _.Detach(It.IsAny<IPlugIn>()));
+            _mockInstanceHost
+                .Verify(_ => _.StopInstance(It.IsAny<int>()));
+        }
+
+        [Fact]
         public async Task TestUpdateInstanceConfigurationAsync()
         {
             List<KeyValuePair<string, string>> collection =
@@ -340,6 +360,8 @@ namespace Shaos.Services.UnitTests
             SetupConfigurationLoad();
 
             await _instanceHostService.UpdateInstanceConfigurationAsync(1, collection);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Fact]

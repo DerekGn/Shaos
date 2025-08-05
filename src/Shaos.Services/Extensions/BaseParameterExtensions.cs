@@ -25,13 +25,13 @@
 using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk.Collections.Generic;
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
-using SdkBaseParameter = Shaos.Sdk.Devices.Parameters.BaseParameter;
+using SdkIBaseParameter = Shaos.Sdk.Devices.Parameters.IBaseParameter;
 
 namespace Shaos.Services.Extensions
 {
     internal static class ParameterExtensions
     {
-        public static IList<ModelBaseParameter> ToModel(this IObservableList<SdkBaseParameter> parameters)
+        public static IList<ModelBaseParameter> ToModel(this IObservableList<SdkIBaseParameter> parameters)
         {
             List<ModelBaseParameter>? result = null;
 
@@ -48,7 +48,7 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        public static ModelBaseParameter? ToModel(this SdkBaseParameter parameter)
+        public static ModelBaseParameter? ToModel(this SdkIBaseParameter parameter)
         {
             ModelBaseParameter? result = null;
 
@@ -60,9 +60,9 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        public static IList<SdkBaseParameter> ToSdk(this IList<ModelBaseParameter> parameters)
+        public static IList<SdkIBaseParameter> ToSdk(this IList<ModelBaseParameter> parameters)
         {
-            List<Sdk.Devices.Parameters.BaseParameter>? result = null;
+            List<SdkIBaseParameter>? result = null;
 
             if (parameters != null)
             {
@@ -76,10 +76,10 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        private static SdkBaseParameter Convert(ModelBaseParameter parameter)
+        private static SdkIBaseParameter Convert(ModelBaseParameter parameter)
         {
             var type = parameter.GetType();
-            SdkBaseParameter? result = null;
+            SdkIBaseParameter? result = null;
 
             switch (type)
             {
@@ -119,15 +119,12 @@ namespace Shaos.Services.Extensions
                     break;
             }
 
-            if (result != null)
-            {
-                result.Id = parameter.Id;
-            }
+            result?.SetId(parameter.Id);
 
             return result!;
         }
 
-        private static ModelBaseParameter Convert(SdkBaseParameter parameter)
+        private static ModelBaseParameter Convert(SdkIBaseParameter parameter)
         {
             var type = parameter.GetType();
             ModelBaseParameter? result = null;

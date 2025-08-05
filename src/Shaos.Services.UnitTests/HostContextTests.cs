@@ -171,7 +171,7 @@ namespace Shaos.Services.UnitTests
 
         private static SdkDevice CreateDevice()
         {
-            List<BaseParameter> parameters = [
+            List<IBaseParameter> parameters = [
                 new BoolParameter(true,"name","units",ParameterType.Pressure),
                 new FloatParameter(2.0f,"name","units",ParameterType.Pressure),
                 new IntParameter(-3,"name","units",ParameterType.Pressure),

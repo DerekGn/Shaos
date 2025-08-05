@@ -6,7 +6,7 @@ using Shaos.Sdk.Devices;
 using Shaos.Services.Extensions;
 
 using SdkDevice = Shaos.Sdk.Devices.Device;
-using SdkBaseParameter = Shaos.Sdk.Devices.Parameters.BaseParameter;
+using SdkIBaseParameter = Shaos.Sdk.Devices.Parameters.IBaseParameter;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -60,7 +60,7 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task CreateDeviceParametersAsync(IList<SdkBaseParameter> items)
+        private async Task CreateDeviceParametersAsync(IList<SdkIBaseParameter> items)
         {
             foreach (var item in items)
             {
@@ -82,11 +82,11 @@ namespace Shaos.Services.Runtime.Host
 
                 await _repository.SaveChangesAsync();
 
-                device.Id = modelDevice.Id;
+                device.SetId(modelDevice.Id);
             }
         }
 
-        private async Task DeleteDeviceParametersAsync(IList<SdkBaseParameter> items)
+        private async Task DeleteDeviceParametersAsync(IList<SdkIBaseParameter> items)
         {
         }
 
@@ -144,7 +144,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         private async Task ParametersListChanged(object sender,
-                                                 ListChangedEventArgs<SdkBaseParameter> e)
+                                                 ListChangedEventArgs<SdkIBaseParameter> e)
         {
             if (sender != null)
             {
