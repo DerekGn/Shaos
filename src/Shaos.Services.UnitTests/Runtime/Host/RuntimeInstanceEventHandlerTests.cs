@@ -79,6 +79,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         private void SetupCommonMocks()
         {
+            _mockObservableListParameters
+                .Setup(_ => _.GetEnumerator())
+                .Returns(new List<IBaseParameter>() { new BoolParameter(false, "name", "units", ParameterType.Iaq) }.GetEnumerator());
+
             _mockDevice
                 .Setup(_ => _.Parameters)
                 .Returns(_mockObservableListParameters.Object);
