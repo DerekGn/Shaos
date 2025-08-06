@@ -38,12 +38,12 @@ namespace Shaos.Services.Runtime.Host
         /// Attach a <see cref="IPlugIn"/> instance to the event handler
         /// </summary>
         /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
-        void Attach(IPlugIn? plugIn);
+        void Attach(IPlugIn plugIn);
 
         /// <summary>
         /// Detach a <see cref="IPlugIn"/> instance from the event handler
         /// </summary>
         /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
-        void Detach(IPlugIn? plugIn);
+        void Detach(IPlugIn plugIn);
     }
 }

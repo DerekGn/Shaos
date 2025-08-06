@@ -27,32 +27,61 @@ using Moq;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
+using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Runtime.Host;
 using Xunit;
 using Xunit.Abstractions;
-
 
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeInstanceEventHandlerTests : BaseServiceTests
     {
+        private readonly Mock<IDevice> _mockDevice;
+        private readonly Mock<IObservableList<IDevice>> _mockObservableListDevices;
+        private readonly Mock<IChildObservableList<IBaseParameter, IDevice>> _mockObservableListParameters;
         private readonly Mock<IPlugIn> _mockPlugIn;
-        private readonly Mock<IObservableList<Device>> _mockObservableListDevices;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
 
         public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+            _mockDevice = new Mock<IDevice>();
+            _mockObservableListDevices = new Mock<IObservableList<IDevice>>();
+            _mockObservableListParameters = new Mock<IChildObservableList<IBaseParameter, IDevice>>();
             _mockPlugIn = new Mock<IPlugIn>();
-            _mockObservableListDevices = new Mock<IObservableList<Device>>();
 
-            _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory!.CreateLogger<RuntimeInstanceEventHandler>(),
+            _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory.CreateLogger<RuntimeInstanceEventHandler>(),
                                                                            MockRepository.Object);
         }
 
         [Fact]
         public void TestAttach()
         {
-            var device = new Device("name", [], 100, 0);
+            SetupCommonMocks();
+
+            _runtimeInstanceEventHandler.Attach(_mockPlugIn.Object);
+
+            _mockDevice.VerifyAdd(_ => _.DeviceChanged += It.IsAny<AsyncEventHandler<DeviceChangedEventArgs>>());
+            _mockObservableListDevices.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
+            _mockObservableListParameters.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<IBaseParameter>>>());
+        }
+
+        [Fact]
+        public void TestDetach()
+        {
+            SetupCommonMocks();
+
+            _runtimeInstanceEventHandler.Detach(_mockPlugIn.Object);
+
+            _mockDevice.VerifyRemove(_ => _.DeviceChanged -= It.IsAny<AsyncEventHandler<DeviceChangedEventArgs>>());
+            _mockObservableListDevices.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
+            _mockObservableListParameters.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IBaseParameter>>>());
+        }
+
+        private void SetupCommonMocks()
+        {
+            _mockDevice
+                .Setup(_ => _.Parameters)
+                .Returns(_mockObservableListParameters.Object);
 
             _mockPlugIn
                 .Setup(_ => _.Devices)
@@ -60,11 +89,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _mockObservableListDevices
                 .Setup(_ => _.GetEnumerator())
-                .Returns(new List<Device>() { device }.GetEnumerator());
-
-            _runtimeInstanceEventHandler.Attach(_mockPlugIn.Object);
-
-            _mockObservableListDevices.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<Device>>>());
+                .Returns(new List<IDevice>() { _mockDevice.Object }.GetEnumerator());
         }
     }
 }

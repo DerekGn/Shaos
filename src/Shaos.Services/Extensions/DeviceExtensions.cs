@@ -31,7 +31,7 @@ namespace Shaos.Services.Extensions
 {
     internal static class DeviceExtensions
     {
-        public static ModelDevice ToModel(this SdkDevice device)
+        public static ModelDevice ToModel(this IDevice device)
         {
             var modelDevice = new ModelDevice()
             {
@@ -48,10 +48,14 @@ namespace Shaos.Services.Extensions
 
         public static SdkDevice ToSdk(this ModelDevice device)
         {
-            return new Device(device.Name,
-                              device.Parameters.ToSdk(),
-                              device.BatteryLevel,
-                              device.SignalLevel);
+            var sdkDevice = new Device(device.Name,
+                                       device.Parameters.ToSdk(),
+                                       device.BatteryLevel,
+                                       device.SignalLevel);
+
+            sdkDevice.SetId(device.Id);
+
+            return sdkDevice;
         }
 
         public static IEnumerable<SdkDevice> ToSdk(this IList<ModelDevice> modelDevices)

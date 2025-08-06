@@ -1,12 +1,42 @@
-﻿using Microsoft.Extensions.Logging;
+﻿/*
+* MIT License
+*
+* Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
+using Microsoft.Extensions.Logging;
 using Shaos.Repository;
+using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
+using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Extensions;
 
-using SdkDevice = Shaos.Sdk.Devices.Device;
-using SdkIBaseParameter = Shaos.Sdk.Devices.Parameters.IBaseParameter;
+using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
+using ModelDevice = Shaos.Repository.Models.Devices.Device;
+using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
+using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
+using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
+using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -21,7 +51,7 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// Create an instance of a <see cref="IRuntimeInstanceEventHandler"/>
         /// </summary>
-        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="logger">The <see cref="ILogger{T}"/> instance</param>
         /// <param name="repository">The <see cref="IRepository"/></param>
         public RuntimeInstanceEventHandler(ILogger<RuntimeInstanceEventHandler> logger,
                                            IRepository repository)
@@ -31,13 +61,13 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public void Attach(IPlugIn? plugIn)
+        public void Attach(IPlugIn plugIn)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
 
             AttachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.ListChanged += DevicesListChanged;
+            plugIn.Devices.ListChanged += DevicesListChangedAsync;
         }
 
         /// <inheritdoc/>
@@ -47,20 +77,63 @@ namespace Shaos.Services.Runtime.Host
 
             DetachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.ListChanged -= DevicesListChanged;
+            plugIn.Devices.ListChanged -= DevicesListChangedAsync;
         }
 
-        private void AttachPlugInDevice(IObservableList<SdkDevice> devices)
+        private void AttacheDevice(IDevice device)
+        {
+            device.DeviceChanged += DeviceChangedAsync;
+        }
+
+        private void AttachParameter(IBaseParameter parameter)
+        {
+            var type = parameter.GetType();
+
+            switch (type)
+            {
+                case Type _ when type == typeof(BoolParameter):
+                    ((BoolParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(FloatParameter):
+                    ((FloatParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(IntParameter):
+                    ((IntParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(StringParameter):
+                    ((StringParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(UIntParameter):
+                    ((UIntParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                    break;
+            }
+        }
+
+        private void AttachParameters(IChildObservableList<IBaseParameter, IDevice> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                AttachParameter(parameter);
+            }
+        }
+
+        private void AttachPlugInDevice(IObservableList<IDevice> devices)
         {
             foreach (var device in devices)
             {
                 device.Parameters.ListChanged += ParametersListChanged;
 
-                device.DeviceChanged += DeviceChanged;
+                AttachParameters(device.Parameters);
+
+                AttacheDevice(device);
             }
         }
 
-        private async Task CreateDeviceParametersAsync(IList<SdkIBaseParameter> items)
+        private async Task CreateDeviceParametersAsync(IList<IBaseParameter> items)
         {
             foreach (var item in items)
             {
@@ -72,9 +145,9 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task CreateDevicesAsync(IList<SdkDevice> devices)
+        private async Task CreateDevicesAsync(IList<IDevice> devices)
         {
-            foreach (SdkDevice device in devices)
+            foreach (IDevice device in devices)
             {
                 var modelDevice = device.ToModel();
 
@@ -86,34 +159,121 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task DeleteDeviceParametersAsync(IList<SdkIBaseParameter> items)
+        private async Task DeleteDeviceParametersAsync(IList<IBaseParameter> parameters)
         {
+            foreach (var parameter in parameters)
+            {
+                _logger.LogInformation("Deleting Parameter Id: [{Id}] Name: [{Name}]",
+                                       parameter.Id,
+                                       parameter.Name);
+
+                await _repository.DeleteAsync<ModelDevice>(parameter.Id);
+            }
+
+            if (parameters.Count > 0)
+            {
+                await _repository.SaveChangesAsync();
+            }
         }
 
-        private async Task DeleteDevicesAsync(IList<SdkDevice> items)
+        private async Task DeleteDevicesAsync(IList<IDevice> devices)
         {
+            foreach (var device in devices)
+            {
+                _logger.LogInformation("Deleting Device Id: [{Id}] Name: [{Name}]",
+                                       device.Id,
+                                       device.Name);
+
+                await _repository.DeleteAsync<ModelDevice>(device.Id);
+            }
+
+            if (devices.Count > 0)
+            {
+                await _repository.SaveChangesAsync();
+            }
         }
 
-        private void DetachPlugInDevice(IObservableList<SdkDevice> devices)
+        private void DetachParameter(IBaseParameter parameter)
+        {
+            var type = parameter.GetType();
+
+            switch (type)
+            {
+                case Type _ when type == typeof(BoolParameter):
+                    ((BoolParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(FloatParameter):
+                    ((FloatParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(IntParameter):
+                    ((IntParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(StringParameter):
+                    ((StringParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                    break;
+
+                case Type _ when type == typeof(UIntParameter):
+                    ((UIntParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                    break;
+            }
+        }
+
+        private void DetachParameters(IChildObservableList<IBaseParameter, IDevice> parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                DetachParameter(parameter);
+            }
+        }
+
+        private void DetachPlugInDevice(IObservableList<IDevice> devices)
         {
             foreach (var device in devices)
             {
                 device.Parameters.ListChanged -= ParametersListChanged;
 
-                device.DeviceChanged += DeviceChanged;
+                DetachParameters(device.Parameters);
+
+                DetatchDevice(device);
             }
         }
 
-        private void DeviceChanged(object? sender,
-                                   DeviceChangedEventArgs e)
+        private void DetatchDevice(IDevice device)
+        {
+            device.DeviceChanged -= DeviceChangedAsync;
+        }
+
+        private async Task DeviceChangedAsync(object? sender,
+                                              DeviceChangedEventArgs e)
         {
             if (sender != null)
             {
+                if (sender is IDevice sdkDevice)
+                {
+                    var modelDevice = await _repository.GetByIdAsync<ModelDevice>(sdkDevice.Id);
+
+                    if (modelDevice != null)
+                    {
+#warning save new value in list
+                        modelDevice.BatteryLevel = sdkDevice.BatteryLevel?.Level;
+                        modelDevice.SignalLevel = sdkDevice.SignalLevel?.Level;
+
+#warning TODO send event?
+                        await _repository.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError("Unable to resolve Device for [{Id}]", sdkDevice.Id);
+                    }
+                }
             }
         }
 
-        private async Task DevicesListChanged(object sender,
-                                              ListChangedEventArgs<SdkDevice> e)
+        private async Task DevicesListChangedAsync(object sender,
+                                                   ListChangedEventArgs<IDevice> e)
         {
             if (sender != null)
             {
@@ -144,7 +304,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         private async Task ParametersListChanged(object sender,
-                                                 ListChangedEventArgs<SdkIBaseParameter> e)
+                                                 ListChangedEventArgs<IBaseParameter> e)
         {
             if (sender != null)
             {
@@ -170,6 +330,74 @@ namespace Shaos.Services.Runtime.Host
                             await DeleteDeviceParametersAsync(e.Items);
                         }
                         break;
+                }
+            }
+        }
+
+        private async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<uint> e)
+        {
+            await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        private async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<string> e)
+        {
+            await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        private async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<int> e)
+        {
+            await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        private async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<float> e)
+        {
+            await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        private async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<bool> e)
+        {
+            await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        private async Task SaveParameterChangeAsync<T>(object sender,
+                                                       Action<T> operation) where T : BaseEntity
+        {
+            if (sender != null)
+            {
+                if (sender is IBaseParameter parameter)
+                {
+                    var modelParameter = await _repository.GetByIdAsync<T>(parameter.Id, false);
+
+                    if (modelParameter != null)
+                    {
+                        operation(modelParameter);
+
+                        await _repository.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]", typeof(T).Name, parameter.Id);
+                    }
                 }
             }
         }

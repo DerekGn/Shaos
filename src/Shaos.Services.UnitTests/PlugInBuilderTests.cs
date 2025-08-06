@@ -66,7 +66,7 @@ namespace Shaos.Services.UnitTests
         {
             _builder.PlugIn = _plugIn.Object;
 
-            var plugInDevices = new ObservableList<Device>();
+            var plugInDevices = new ObservableList<IDevice>();
 
             _plugIn
                 .Setup(_ => _.Devices)
