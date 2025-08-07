@@ -67,7 +67,7 @@ namespace Shaos.Services.Runtime.Host
 
             AttachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.ListChanged += DevicesListChangedAsync;
+            AttachDevicesListChange(plugIn.Devices);
         }
 
         /// <inheritdoc/>
@@ -77,7 +77,17 @@ namespace Shaos.Services.Runtime.Host
 
             DetachPlugInDevice(plugIn.Devices);
 
-            plugIn.Devices.ListChanged -= DevicesListChangedAsync;
+            DetachDevicesListChange(plugIn.Devices);
+        }
+
+        internal void AttachDevicesListChange(IObservableList<IDevice> devices)
+        {
+            devices.ListChanged += DevicesListChangedAsync;
+        }
+
+        internal void DetachDevicesListChange(IObservableList<IDevice> devices)
+        {
+            devices.ListChanged -= DevicesListChangedAsync;
         }
 
         private void AttacheDevice(IDevice device)
@@ -125,7 +135,7 @@ namespace Shaos.Services.Runtime.Host
         {
             foreach (var device in devices)
             {
-                device.Parameters.ListChanged += ParametersListChanged;
+                device.Parameters.ListChanged += ParametersListChangedAsync;
 
                 AttachParameters(device.Parameters);
 
@@ -140,9 +150,9 @@ namespace Shaos.Services.Runtime.Host
                 var modelParameter = item.ToModel();
 
                 await _repository.AddAsync(modelParameter!);
-
-                await _repository.SaveChangesAsync();
             }
+
+            await _repository.SaveChangesAsync();
         }
 
         private async Task CreateDevicesAsync(IList<IDevice> devices)
@@ -153,10 +163,10 @@ namespace Shaos.Services.Runtime.Host
 
                 await _repository.AddAsync(modelDevice);
 
-                await _repository.SaveChangesAsync();
-
                 device.SetId(modelDevice.Id);
             }
+
+            await _repository.SaveChangesAsync();
         }
 
         private async Task DeleteDeviceParametersAsync(IList<IBaseParameter> parameters)
@@ -233,7 +243,7 @@ namespace Shaos.Services.Runtime.Host
         {
             foreach (var device in devices)
             {
-                device.Parameters.ListChanged -= ParametersListChanged;
+                device.Parameters.ListChanged -= ParametersListChangedAsync;
 
                 DetachParameters(device.Parameters);
 
@@ -303,8 +313,8 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task ParametersListChanged(object sender,
-                                                 ListChangedEventArgs<IBaseParameter> e)
+        private async Task ParametersListChangedAsync(object sender,
+                                                      ListChangedEventArgs<IBaseParameter> e)
         {
             if (sender != null)
             {

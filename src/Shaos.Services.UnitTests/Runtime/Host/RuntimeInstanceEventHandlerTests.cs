@@ -32,10 +32,13 @@ using Shaos.Services.Runtime.Host;
 using Xunit;
 using Xunit.Abstractions;
 
+using ModelDevice = Shaos.Repository.Models.Devices.Device;
+
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeInstanceEventHandlerTests : BaseServiceTests
     {
+        private readonly List<IBaseParameter> _baseParameters;
         private readonly Mock<IDevice> _mockDevice;
         private readonly Mock<IObservableList<IDevice>> _mockObservableListDevices;
         private readonly Mock<IChildObservableList<IBaseParameter, IDevice>> _mockObservableListParameters;
@@ -48,6 +51,15 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockObservableListDevices = new Mock<IObservableList<IDevice>>();
             _mockObservableListParameters = new Mock<IChildObservableList<IBaseParameter, IDevice>>();
             _mockPlugIn = new Mock<IPlugIn>();
+
+            _baseParameters = new List<IBaseParameter>()
+            {
+                new BoolParameter(false, "name", "units", ParameterType.Iaq),
+                new FloatParameter(1.0f, "name", "units", ParameterType.Iaq),
+                new IntParameter(1, "name", "units", ParameterType.Iaq),
+                new StringParameter("value", "name", "units", ParameterType.Iaq),
+                new UIntParameter(2, "name", "units", ParameterType.Iaq)
+            };
 
             _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory.CreateLogger<RuntimeInstanceEventHandler>(),
                                                                            MockRepository.Object);
@@ -77,11 +89,51 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockObservableListParameters.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IBaseParameter>>>());
         }
 
+        [Fact]
+        public void TestDevicesListChangedDeviceAdded()
+        {
+            _runtimeInstanceEventHandler
+                .AttachDevicesListChange(_mockObservableListDevices.Object);
+
+            _mockObservableListDevices
+                .Raise(_ => _.ListChanged += null,
+                       _mockObservableListDevices.Object,
+                       new ListChangedEventArgs<IDevice>(ListChangedAction.Add, [new Device("name", [], 0, 0)]));
+
+            MockRepository
+                .Verify(_ => _.AddAsync(It.IsAny<ModelDevice>(),
+                                        It.IsAny<CancellationToken>()));
+
+            MockRepository
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(ListChangedAction.Reset)]
+        [InlineData(ListChangedAction.Remove)]
+        public void TestDevicesListChangedDeviceDelete(ListChangedAction action)
+        {
+            _runtimeInstanceEventHandler
+                .AttachDevicesListChange(_mockObservableListDevices.Object);
+
+            _mockObservableListDevices
+                .Raise(_ => _.ListChanged += null,
+                       _mockObservableListDevices.Object,
+                       new ListChangedEventArgs<IDevice>(action, [new Device("name", [], 0, 0)]));
+
+            MockRepository
+                .Verify(_ => _.DeleteAsync<ModelDevice>(It.IsAny<int>(),
+                                                        It.IsAny<CancellationToken>()));
+
+            MockRepository
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
         private void SetupCommonMocks()
         {
             _mockObservableListParameters
                 .Setup(_ => _.GetEnumerator())
-                .Returns(new List<IBaseParameter>() { new BoolParameter(false, "name", "units", ParameterType.Iaq) }.GetEnumerator());
+                .Returns(_baseParameters.GetEnumerator());
 
             _mockDevice
                 .Setup(_ => _.Parameters)
