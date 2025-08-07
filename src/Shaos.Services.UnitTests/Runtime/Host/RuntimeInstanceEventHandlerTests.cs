@@ -147,5 +147,24 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Setup(_ => _.GetEnumerator())
                 .Returns(new List<IDevice>() { _mockDevice.Object }.GetEnumerator());
         }
+
+        [Fact]
+        public void TestParametersListChangedParameterAdded()
+        {
+            _runtimeInstanceEventHandler
+                .AttachDevicesListChange(_mockObservableListDevices.Object);
+
+            _mockObservableListDevices
+                .Raise(_ => _.ListChanged += null,
+                       _mockObservableListDevices.Object,
+                       new ListChangedEventArgs<IDevice>(ListChangedAction.Add, [new Device("name", [], 0, 0)]));
+
+            MockRepository
+                .Verify(_ => _.AddAsync(It.IsAny<ModelDevice>(),
+                                        It.IsAny<CancellationToken>()));
+
+            MockRepository
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }
