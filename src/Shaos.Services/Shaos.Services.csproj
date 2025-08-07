@@ -17,7 +17,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="9.*" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="Shaos.Sdk" Version="0.7.1-beta" />
+    <PackageReference Include="Shaos.Sdk" Version="0.7.2-beta" />
   </ItemGroup>
 
   <ItemGroup>

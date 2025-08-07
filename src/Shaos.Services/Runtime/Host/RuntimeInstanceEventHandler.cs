@@ -31,6 +31,7 @@ using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Extensions;
 
+using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
 using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
 using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
@@ -97,33 +98,27 @@ namespace Shaos.Services.Runtime.Host
 
         private void AttachParameter(IBaseParameter parameter)
         {
-            var type = parameter.GetType();
-
-            switch (type)
+            switch(parameter)
             {
-                case Type _ when type == typeof(BoolParameter):
-                    ((BoolParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                case IBaseParameter<bool> _:
+                    ((IBaseParameter<bool>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(FloatParameter):
-                    ((FloatParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                case IBaseParameter<float> _:
+                    ((IBaseParameter<float>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(IntParameter):
-                    ((IntParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                case IBaseParameter<int> _:
+                    ((IBaseParameter<int>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(StringParameter):
-                    ((StringParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                case IBaseParameter<string> _:
+                    ((IBaseParameter<string>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(UIntParameter):
-                    ((UIntParameter)parameter).ValueChanged += ParameterValueChangedAsync;
+                case IBaseParameter<uint> _:
+                    ((IBaseParameter<uint>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
             }
         }
 
-        private void AttachParameters(IChildObservableList<IBaseParameter, IDevice> parameters)
+        private void AttachParameters(List<IBaseParameter> parameters)
         {
             foreach (var parameter in parameters)
             {
@@ -137,7 +132,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 AttachParametersListChanged(device.Parameters);
 
-                AttachParameters(device.Parameters);
+                AttachParameters(device.Parameters.ToList());
 
                 AttachDevice(device);
             }
@@ -177,7 +172,7 @@ namespace Shaos.Services.Runtime.Host
                                        parameter.Id,
                                        parameter.Name);
 
-                await _repository.DeleteAsync<ModelDevice>(parameter.Id);
+                await _repository.DeleteAsync<ModelBaseParameter>(parameter.Id);
             }
 
             if (parameters.Count > 0)
@@ -210,33 +205,27 @@ namespace Shaos.Services.Runtime.Host
 
         private void DetachParameter(IBaseParameter parameter)
         {
-            var type = parameter.GetType();
-
-            switch (type)
+            switch (parameter)
             {
-                case Type _ when type == typeof(BoolParameter):
-                    ((BoolParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                case IBaseParameter<bool> _:
+                    ((IBaseParameter<bool>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(FloatParameter):
-                    ((FloatParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                case IBaseParameter<float> _:
+                    ((IBaseParameter<float>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(IntParameter):
-                    ((IntParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                case IBaseParameter<int> _:
+                    ((IBaseParameter<int>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(StringParameter):
-                    ((StringParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                case IBaseParameter<string> _:
+                    ((IBaseParameter<string>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
-
-                case Type _ when type == typeof(UIntParameter):
-                    ((UIntParameter)parameter).ValueChanged -= ParameterValueChangedAsync;
+                case IBaseParameter<uint> _:
+                    ((IBaseParameter<uint>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
             }
         }
 
-        private void DetachParameters(IChildObservableList<IBaseParameter, IDevice> parameters)
+        private void DetachParameters(IList<IBaseParameter> parameters)
         {
             foreach (var parameter in parameters)
             {
@@ -250,7 +239,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 device.Parameters.ListChanged -= ParametersListChangedAsync;
 
-                DetachParameters(device.Parameters);
+                DetachParameters(device.Parameters.ToList());
 
                 DetatchDevice(device);
             }
@@ -329,12 +318,16 @@ namespace Shaos.Services.Runtime.Host
                         if (e.Items != null)
                         {
                             await CreateDeviceParametersAsync(e.Items);
+
+                            AttachParameters([.. e.Items]);
                         }
                         break;
 
                     case ListChangedAction.Reset:
                         if (e.Items != null)
                         {
+                            DetachParameters(e.Items);
+
                             await DeleteDeviceParametersAsync(e.Items);
                         }
                         break;
@@ -342,6 +335,8 @@ namespace Shaos.Services.Runtime.Host
                     case ListChangedAction.Remove:
                         if (e.Items != null)
                         {
+                            DetachParameters(e.Items);
+
                             await DeleteDeviceParametersAsync(e.Items);
                         }
                         break;
