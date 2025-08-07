@@ -85,11 +85,6 @@ namespace Shaos.Services.Runtime.Host
             devices.ListChanged += DevicesListChangedAsync;
         }
 
-        internal void DetachDevicesListChange(IObservableList<IDevice> devices)
-        {
-            devices.ListChanged -= DevicesListChangedAsync;
-        }
-
         private void AttacheDevice(IDevice device)
         {
             device.DeviceChanged += DeviceChangedAsync;
@@ -123,7 +118,7 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private void AttachParameters(IChildObservableList<IBaseParameter, IDevice> parameters)
+        private void AttachParametersListChange(IChildObservableList<IBaseParameter, IDevice> parameters)
         {
             foreach (var parameter in parameters)
             {
@@ -137,7 +132,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 device.Parameters.ListChanged += ParametersListChangedAsync;
 
-                AttachParameters(device.Parameters);
+                AttachParametersListChange(device.Parameters);
 
                 AttacheDevice(device);
             }
@@ -201,6 +196,11 @@ namespace Shaos.Services.Runtime.Host
             {
                 await _repository.SaveChangesAsync();
             }
+        }
+
+        private void DetachDevicesListChange(IObservableList<IDevice> devices)
+        {
+            devices.ListChanged -= DevicesListChangedAsync;
         }
 
         private void DetachParameter(IBaseParameter parameter)
