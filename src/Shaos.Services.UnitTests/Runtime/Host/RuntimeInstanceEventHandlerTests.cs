@@ -31,9 +31,13 @@ using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Runtime.Host;
 using Xunit;
 using Xunit.Abstractions;
-
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
+using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
+using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
+using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
+using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
+using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
 
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
@@ -192,6 +196,106 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                It.IsAny<CancellationToken>()), Times.Exactly(5));
             MockRepository
                 .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public void TestParameterValueChangedBoolAsync()
+        {
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<ModelBoolParameter>(It.IsAny<int>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ModelBoolParameter());
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<bool>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<bool>>()
+                .RaiseAsync(_ => _.ValueChanged += null,
+                            _mockBaseParameters[0].As<IBaseParameter<bool>>().Object,
+                            new ParameterValueChangedEventArgs<bool>() { Value = true });
+        }
+
+        [Fact]
+        public void TestParameterValueChangedFloatAsync()
+        {
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<ModelFloatParameter>(It.IsAny<int>(),
+                                                                It.IsAny<bool>(),
+                                                                It.IsAny<List<string>>(),
+                                                                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ModelFloatParameter());
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<float>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<float>>()
+                .RaiseAsync(_ => _.ValueChanged += null,
+                            _mockBaseParameters[0].As<IBaseParameter<float>>().Object,
+                            new ParameterValueChangedEventArgs<float>() { Value = 1.0f });
+        }
+
+        [Fact]
+        public void TestParameterValueChangedIntAsync()
+        {
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<ModelIntParameter>(It.IsAny<int>(),
+                                                              It.IsAny<bool>(),
+                                                              It.IsAny<List<string>>(),
+                                                              It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ModelIntParameter());
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<int>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<int>>()
+                .RaiseAsync(_ => _.ValueChanged += null,
+                            _mockBaseParameters[0].As<IBaseParameter<int>>().Object,
+                            new ParameterValueChangedEventArgs<int>() { Value = 1 });
+        }
+
+        [Fact]
+        public void TestParameterValueChangedStringAsync()
+        {
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<ModelStringParameter>(It.IsAny<int>(),
+                                                                 It.IsAny<bool>(),
+                                                                 It.IsAny<List<string>>(),
+                                                                 It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ModelStringParameter());
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<string>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<string>>()
+                .RaiseAsync(_ => _.ValueChanged += null,
+                            _mockBaseParameters[0].As<IBaseParameter<string>>().Object,
+                            new ParameterValueChangedEventArgs<string>() { Value = "" });
+        }
+
+        [Fact]
+        public void TestParameterValueChangedUIntAsync()
+        {
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<ModelUIntParameter>(It.IsAny<int>(),
+                                                                 It.IsAny<bool>(),
+                                                                 It.IsAny<List<string>>(),
+                                                                 It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ModelUIntParameter());
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<uint>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
+
+            _mockBaseParameters[0]
+                .As<IBaseParameter<uint>>()
+                .RaiseAsync(_ => _.ValueChanged += null,
+                            _mockBaseParameters[0].As<IBaseParameter<uint>>().Object,
+                            new ParameterValueChangedEventArgs<uint>() { Value = 10 });
         }
 
         private void SetupCommonMocks()

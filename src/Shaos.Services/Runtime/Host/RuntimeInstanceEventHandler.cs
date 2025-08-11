@@ -91,6 +91,51 @@ namespace Shaos.Services.Runtime.Host
             parameters.ListChanged += ParametersListChangedAsync;
         }
 
+        internal async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<uint> e)
+        {
+            await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        internal async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<string> e)
+        {
+            await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        internal async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<int> e)
+        {
+            await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        internal async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<float> e)
+        {
+            await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
+        internal async Task ParameterValueChangedAsync(object sender,
+                                                      ParameterValueChangedEventArgs<bool> e)
+        {
+            await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
+            {
+                parameter.Value = e.Value;
+            });
+        }
+
         private void AttachDevice(IDevice device)
         {
             device.DeviceChanged += DeviceChangedAsync;
@@ -98,20 +143,24 @@ namespace Shaos.Services.Runtime.Host
 
         private void AttachParameter(IBaseParameter parameter)
         {
-            switch(parameter)
+            switch (parameter)
             {
                 case IBaseParameter<bool> _:
                     ((IBaseParameter<bool>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<float> _:
                     ((IBaseParameter<float>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<int> _:
                     ((IBaseParameter<int>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<string> _:
                     ((IBaseParameter<string>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<uint> _:
                     ((IBaseParameter<uint>)parameter).ValueChanged += ParameterValueChangedAsync;
                     break;
@@ -210,15 +259,19 @@ namespace Shaos.Services.Runtime.Host
                 case IBaseParameter<bool> _:
                     ((IBaseParameter<bool>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<float> _:
                     ((IBaseParameter<float>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<int> _:
                     ((IBaseParameter<int>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<string> _:
                     ((IBaseParameter<string>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
+
                 case IBaseParameter<uint> _:
                     ((IBaseParameter<uint>)parameter).ValueChanged -= ParameterValueChangedAsync;
                     break;
@@ -342,51 +395,6 @@ namespace Shaos.Services.Runtime.Host
                         break;
                 }
             }
-        }
-
-        private async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<uint> e)
-        {
-            await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
-            {
-                parameter.Value = e.Value;
-            });
-        }
-
-        private async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<string> e)
-        {
-            await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
-            {
-                parameter.Value = e.Value;
-            });
-        }
-
-        private async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<int> e)
-        {
-            await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
-            {
-                parameter.Value = e.Value;
-            });
-        }
-
-        private async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<float> e)
-        {
-            await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
-            {
-                parameter.Value = e.Value;
-            });
-        }
-
-        private async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<bool> e)
-        {
-            await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
-            {
-                parameter.Value = e.Value;
-            });
         }
 
         private async Task SaveParameterChangeAsync<T>(object sender,
