@@ -81,6 +81,12 @@ namespace Shaos.Services.Runtime.Host
             DetachDevicesListChange(plugIn.Devices);
         }
 
+        internal void AttachDevice(IDevice device)
+        {
+            device.SignalLevelChanged += DeviceSignalLevelChanged;
+            device.BatteryLevelChanged += DeviceBatteryLevelChanged;
+        }
+
         internal void AttachDevicesListChange(IObservableList<IDevice> devices)
         {
             devices.ListChanged += DevicesListChangedAsync;
@@ -91,8 +97,14 @@ namespace Shaos.Services.Runtime.Host
             parameters.ListChanged += ParametersListChangedAsync;
         }
 
+        internal void DetatchDevice(IDevice device)
+        {
+            device.SignalLevelChanged -= DeviceSignalLevelChanged;
+            device.BatteryLevelChanged -= DeviceBatteryLevelChanged;
+        }
+
         internal async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<uint> e)
+                                                              ParameterValueChangedEventArgs<uint> e)
         {
             await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
             {
@@ -134,11 +146,6 @@ namespace Shaos.Services.Runtime.Host
             {
                 parameter.Value = e.Value;
             });
-        }
-
-        private void AttachDevice(IDevice device)
-        {
-            device.DeviceChanged += DeviceChangedAsync;
         }
 
         private void AttachParameter(IBaseParameter parameter)
@@ -298,34 +305,27 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private void DetatchDevice(IDevice device)
-        {
-            device.DeviceChanged -= DeviceChangedAsync;
-        }
-
-        private async Task DeviceChangedAsync(object? sender,
-                                              DeviceChangedEventArgs e)
+        private async Task DeviceBatteryLevelChanged(object sender,
+                                                     BatteryLevelChangedEventArgs e)
         {
             if (sender != null)
             {
-                if (sender is IDevice sdkDevice)
+                await UpdateDeviceAsync(sender as IDevice, (device) =>
                 {
-                    var modelDevice = await _repository.GetByIdAsync<ModelDevice>(sdkDevice.Id);
+                    device.UpdateBatteryLevel(e.BatteryLevel, e.TimeStamp);
+                });
+            }
+        }
 
-                    if (modelDevice != null)
-                    {
-#warning save new value in list
-                        modelDevice.BatteryLevel = sdkDevice.BatteryLevel?.Level;
-                        modelDevice.SignalLevel = sdkDevice.SignalLevel?.Level;
-
-#warning TODO send event?
-                        await _repository.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        _logger.LogError("Unable to resolve Device for [{Id}]", sdkDevice.Id);
-                    }
-                }
+        private async Task DeviceSignalLevelChanged(object sender,
+                                                    SignalLevelChangedEventArgs e)
+        {
+            if (sender != null)
+            {
+                await UpdateDeviceAsync(sender as IDevice, (device) =>
+                {
+                    device.UpdateSignalLevel(e.SignalLevel, e.TimeStamp);
+                });
             }
         }
 
@@ -416,6 +416,25 @@ namespace Shaos.Services.Runtime.Host
                     {
                         _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]", typeof(T).Name, parameter.Id);
                     }
+                }
+            }
+        }
+
+        private async Task UpdateDeviceAsync(IDevice? device, Action<ModelDevice> updateOperation)
+        {
+            if (device != null)
+            {
+                var modelDevice = await _repository.GetByIdAsync<ModelDevice>(device.Id, false);
+
+                if (modelDevice != null)
+                {
+                    updateOperation(modelDevice);
+
+                    await _repository.SaveChangesAsync();
+                }
+                else
+                {
+                    _logger.LogError("Unable to resolve Device for [{Id}]", device.Id);
                 }
             }
         }

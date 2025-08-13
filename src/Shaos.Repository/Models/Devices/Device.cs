@@ -37,6 +37,11 @@ namespace Shaos.Repository.Models.Devices
         public uint? BatteryLevel { get; set; }
 
         /// <summary>
+        /// The set of <see cref="DeviceBatteryUpdate"/>
+        /// </summary>
+        public List<DeviceBatteryUpdate> BatteryUpdates { get; set; } = [];
+
+        /// <summary>
         /// The <see cref="Device"/> instance name
         /// </summary>
         public string Name { get; set; } = string.Empty;
@@ -60,5 +65,44 @@ namespace Shaos.Repository.Models.Devices
         /// The <see cref="Device"/> last signal level
         /// </summary>
         public int? SignalLevel { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="DeviceSignalUpdate"/>
+        /// </summary>
+        public List<DeviceSignalUpdate> SignalUpdates { get; set; } = [];
+
+        /// <summary>
+        /// Update the device battery level
+        /// </summary>
+        /// <param name="batteryLevel">The updated device battery level</param>
+        /// <param name="timeStamp">The timestamp of the update</param>
+        public void UpdateBatteryLevel(uint batteryLevel,
+                                       DateTime timeStamp)
+        {
+            BatteryLevel = batteryLevel;
+
+            BatteryUpdates.Add(new DeviceBatteryUpdate()
+            {
+                BatteryLevel = batteryLevel,
+                TimeStamp = timeStamp
+            });
+        }
+
+        /// <summary>
+        /// Update the device signal level
+        /// </summary>
+        /// <param name="signalLevel">The updated device signal level</param>
+        /// <param name="timeStamp">The timestamp of the update</param>
+        public void UpdateSignalLevel(int signalLevel,
+                                      DateTime timeStamp)
+        {
+            SignalLevel = signalLevel;
+
+            SignalUpdates.Add(new DeviceSignalUpdate()
+            {
+                SignalLevel = signalLevel,
+                TimeStamp = timeStamp
+            });
+        }
     }
 }

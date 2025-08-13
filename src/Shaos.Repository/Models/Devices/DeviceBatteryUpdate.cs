@@ -22,31 +22,16 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models.Devices;
-
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Repository.Models.Devices
 {
     /// <summary>
-    /// The <see cref="Device"/> EF configuration
+    /// A device battery update
     /// </summary>
-    public class DeviceEntityTypeConfiguration : IEntityTypeConfiguration<Device>
+    public class DeviceBatteryUpdate : DeviceUpdate
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<Device> builder)
-        {
-            builder
-                .HasKey(_ => _.Id);
-
-            builder
-                .Property(_ => _.Name)
-                .HasMaxLength(64)
-                .IsRequired();
-
-            builder
-                .HasOne(_ => _.PlugInInstance)
-                .WithMany(_ => _.Devices);
-        }
+        /// <summary>
+        /// The battery level
+        /// </summary>
+        public uint BatteryLevel { get; set; }
     }
 }
