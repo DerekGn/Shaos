@@ -141,6 +141,31 @@ namespace Shaos.Repository.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "DeviceUpdate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
+                    BatteryLevel = table.Column<uint>(type: "INTEGER", nullable: true),
+                    SignalLevel = table.Column<int>(type: "INTEGER", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeviceUpdate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeviceUpdate_Device_DeviceId",
+                        column: x => x.DeviceId,
+                        principalTable: "Device",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_BaseParameter_DeviceId",
                 table: "BaseParameter",
@@ -150,6 +175,11 @@ namespace Shaos.Repository.Migrations
                 name: "IX_Device_PlugInInstanceId",
                 table: "Device",
                 column: "PlugInInstanceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeviceUpdate_DeviceId",
+                table: "DeviceUpdate",
+                column: "DeviceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LogLevelSwitches_Name",
@@ -180,6 +210,9 @@ namespace Shaos.Repository.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BaseParameter");
+
+            migrationBuilder.DropTable(
+                name: "DeviceUpdate");
 
             migrationBuilder.DropTable(
                 name: "LogLevelSwitches");

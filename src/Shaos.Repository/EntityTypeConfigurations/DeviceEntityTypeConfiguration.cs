@@ -47,6 +47,14 @@ namespace Shaos.Repository.EntityTypeConfigurations
             builder
                 .HasOne(_ => _.PlugInInstance)
                 .WithMany(_ => _.Devices);
+
+            builder
+                .HasMany(_ => _.SignalUpdates)
+                .WithOne(_ => _.Device);
+
+            builder
+                .HasMany(_ => _.BatteryUpdates)
+                .WithOne(_ => _.Device);
         }
     }
 }

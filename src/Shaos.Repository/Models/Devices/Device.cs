@@ -23,6 +23,7 @@
 */
 
 using Shaos.Repository.Models.Devices.Parameters;
+using Shaos.Sdk.Devices;
 
 namespace Shaos.Repository.Models.Devices
 {
@@ -84,6 +85,8 @@ namespace Shaos.Repository.Models.Devices
             BatteryUpdates.Add(new DeviceBatteryUpdate()
             {
                 BatteryLevel = batteryLevel,
+                Device = this,
+                DeviceId = this.Id,
                 TimeStamp = timeStamp
             });
         }
@@ -100,6 +103,8 @@ namespace Shaos.Repository.Models.Devices
 
             SignalUpdates.Add(new DeviceSignalUpdate()
             {
+                Device = this,
+                DeviceId = this.Id,
                 SignalLevel = signalLevel,
                 TimeStamp = timeStamp
             });

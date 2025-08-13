@@ -27,11 +27,21 @@ namespace Shaos.Repository.Models.Devices
     /// <summary>
     /// A device update base update
     /// </summary>
-    public abstract class DeviceUpdate
+    public abstract class DeviceUpdate : BaseEntity
     {
         /// <summary>
         /// The update time stamp
         /// </summary>
         public DateTime TimeStamp { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="Device"/>
+        /// </summary>
+        public required Device Device { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="Device"/> identifier
+        /// </summary>
+        public required int DeviceId { get; set; }
     }
 }

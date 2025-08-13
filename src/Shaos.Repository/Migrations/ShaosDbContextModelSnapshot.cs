@@ -15,9 +15,74 @@ namespace Shaos.Repository.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.17");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.19");
 
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.BaseParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<uint?>("BatteryLevel")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("PlugInInstanceId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("SignalLevel")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlugInInstanceId");
+
+                    b.ToTable("Device");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.DeviceUpdate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeviceUpdate");
+
+                    b.HasDiscriminator().HasValue("DeviceUpdate");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BaseParameter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,39 +122,6 @@ namespace Shaos.Repository.Migrations
                     b.HasDiscriminator().HasValue("BaseParameter");
 
                     b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<uint?>("BatteryLevel")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("PlugInInstanceId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("SignalLevel")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlugInInstanceId");
-
-                    b.ToTable("Device");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.LogLevelSwitch", b =>
@@ -190,19 +222,43 @@ namespace Shaos.Repository.Migrations
                     b.ToTable("PlugInInstances");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.BooleanParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.DeviceBatteryUpdate", b =>
                 {
-                    b.HasBaseType("Shaos.Repository.Models.Devices.BaseParameter");
+                    b.HasBaseType("Shaos.Repository.Models.Devices.DeviceUpdate");
+
+                    b.Property<uint>("BatteryLevel")
+                        .HasColumnType("INTEGER");
+
+                    b.HasIndex("DeviceId");
+
+                    b.HasDiscriminator().HasValue("DeviceBatteryUpdate");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.DeviceSignalUpdate", b =>
+                {
+                    b.HasBaseType("Shaos.Repository.Models.Devices.DeviceUpdate");
+
+                    b.Property<int>("SignalLevel")
+                        .HasColumnType("INTEGER");
+
+                    b.HasIndex("DeviceId");
+
+                    b.HasDiscriminator().HasValue("DeviceSignalUpdate");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BoolParameter", b =>
+                {
+                    b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
                     b.Property<bool>("Value")
                         .HasColumnType("INTEGER");
 
-                    b.HasDiscriminator().HasValue("BooleanParameter");
+                    b.HasDiscriminator().HasValue("BoolParameter");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.FloatParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.FloatParameter", b =>
                 {
-                    b.HasBaseType("Shaos.Repository.Models.Devices.BaseParameter");
+                    b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
                     b.Property<float>("Value")
                         .HasColumnType("REAL");
@@ -216,9 +272,9 @@ namespace Shaos.Repository.Migrations
                     b.HasDiscriminator().HasValue("FloatParameter");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.IntParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.IntParameter", b =>
                 {
-                    b.HasBaseType("Shaos.Repository.Models.Devices.BaseParameter");
+                    b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
                     b.Property<int>("Value")
                         .HasColumnType("INTEGER");
@@ -232,9 +288,9 @@ namespace Shaos.Repository.Migrations
                     b.HasDiscriminator().HasValue("IntParameter");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.StringParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.StringParameter", b =>
                 {
-                    b.HasBaseType("Shaos.Repository.Models.Devices.BaseParameter");
+                    b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -250,9 +306,9 @@ namespace Shaos.Repository.Migrations
                     b.HasDiscriminator().HasValue("StringParameter");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.UIntParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.UIntParameter", b =>
                 {
-                    b.HasBaseType("Shaos.Repository.Models.Devices.BaseParameter");
+                    b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
                     b.Property<uint>("Value")
                         .HasColumnType("INTEGER");
@@ -266,15 +322,6 @@ namespace Shaos.Repository.Migrations
                     b.HasDiscriminator().HasValue("UIntParameter");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.Devices.BaseParameter", b =>
-                {
-                    b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
-                        .WithMany("Parameters")
-                        .HasForeignKey("DeviceId");
-
-                    b.Navigation("Device");
-                });
-
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.PlugInInstance", "PlugInInstance")
@@ -282,6 +329,15 @@ namespace Shaos.Repository.Migrations
                         .HasForeignKey("PlugInInstanceId");
 
                     b.Navigation("PlugInInstance");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BaseParameter", b =>
+                {
+                    b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
+                        .WithMany("Parameters")
+                        .HasForeignKey("DeviceId");
+
+                    b.Navigation("Device");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
@@ -332,9 +388,35 @@ namespace Shaos.Repository.Migrations
                     b.Navigation("PlugIn");
                 });
 
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.DeviceBatteryUpdate", b =>
+                {
+                    b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
+                        .WithMany("BatteryUpdates")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.DeviceSignalUpdate", b =>
+                {
+                    b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
+                        .WithMany("SignalUpdates")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+                });
+
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
                 {
+                    b.Navigation("BatteryUpdates");
+
                     b.Navigation("Parameters");
+
+                    b.Navigation("SignalUpdates");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
