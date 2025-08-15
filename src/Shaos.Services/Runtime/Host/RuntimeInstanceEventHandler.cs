@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
@@ -47,18 +48,18 @@ namespace Shaos.Services.Runtime.Host
     public class RuntimeInstanceEventHandler : IRuntimeInstanceEventHandler
     {
         private readonly ILogger<RuntimeInstanceEventHandler> _logger;
-        private readonly IRepository _repository;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         /// <summary>
         /// Create an instance of a <see cref="IRuntimeInstanceEventHandler"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{T}"/> instance</param>
-        /// <param name="repository">The <see cref="IRepository"/></param>
+        /// <param name="serviceScopeFactory"></param>
         public RuntimeInstanceEventHandler(ILogger<RuntimeInstanceEventHandler> logger,
-                                           IRepository repository)
+                                           IServiceScopeFactory serviceScopeFactory)
         {
             _logger = logger;
-            _repository = repository;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <inheritdoc/>
@@ -196,62 +197,68 @@ namespace Shaos.Services.Runtime.Host
 
         private async Task CreateDeviceParametersAsync(IList<IBaseParameter> items)
         {
-            foreach (var item in items)
+            await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelParameter = item.ToModel();
+                foreach (var item in items)
+                {
+                    var modelParameter = item.ToModel();
 
-                await _repository.AddAsync(modelParameter!);
-            }
+                    await repository.AddAsync(modelParameter!);
+                }
 
-            await _repository.SaveChangesAsync();
+                await repository.SaveChangesAsync();
+            });
         }
 
         private async Task CreateDevicesAsync(IList<IDevice> devices)
         {
-            foreach (IDevice device in devices)
+            await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelDevice = device.ToModel();
+                foreach (IDevice device in devices)
+                {
+                    var modelDevice = device.ToModel();
 
-                await _repository.AddAsync(modelDevice);
+                    await repository.AddAsync(modelDevice);
 
-                device.SetId(modelDevice.Id);
-            }
+                    device.SetId(modelDevice.Id);
+                }
 
-            await _repository.SaveChangesAsync();
+                await repository.SaveChangesAsync();
+            });
         }
 
         private async Task DeleteDeviceParametersAsync(IList<IBaseParameter> parameters)
         {
-            foreach (var parameter in parameters)
+            await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                _logger.LogInformation("Deleting Parameter Id: [{Id}] Name: [{Name}]",
-                                       parameter.Id,
-                                       parameter.Name);
+                foreach (var parameter in parameters)
+                {
+                    _logger.LogInformation("Deleting Parameter Id: [{Id}] Name: [{Name}]",
+                                           parameter.Id,
+                                           parameter.Name);
 
-                await _repository.DeleteAsync<ModelBaseParameter>(parameter.Id);
-            }
+                    await repository.DeleteAsync<ModelBaseParameter>(parameter.Id);
+                }
 
-            if (parameters.Count > 0)
-            {
-                await _repository.SaveChangesAsync();
-            }
+                    await repository.SaveChangesAsync();
+            });
         }
 
         private async Task DeleteDevicesAsync(IList<IDevice> devices)
         {
-            foreach (var device in devices)
+            await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                _logger.LogInformation("Deleting Device Id: [{Id}] Name: [{Name}]",
-                                       device.Id,
-                                       device.Name);
+                foreach (var device in devices)
+                {
+                    _logger.LogInformation("Deleting Device Id: [{Id}] Name: [{Name}]",
+                                           device.Id,
+                                           device.Name);
 
-                await _repository.DeleteAsync<ModelDevice>(device.Id);
-            }
+                    await repository.DeleteAsync<ModelDevice>(device.Id);
+                }
 
-            if (devices.Count > 0)
-            {
-                await _repository.SaveChangesAsync();
-            }
+                await repository.SaveChangesAsync();
+            });
         }
 
         private void DetachDevicesListChange(IObservableList<IDevice> devices)
@@ -360,6 +367,14 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
+        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
+        {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
+
+            await operation(repository);
+        }
+
         private async Task ParametersListChangedAsync(object sender,
                                                       ListChangedEventArgs<IBaseParameter> e)
         {
@@ -404,18 +419,21 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (sender is IBaseParameter parameter)
                 {
-                    var modelParameter = await _repository.GetByIdAsync<T>(parameter.Id, false);
-
-                    if (modelParameter != null)
+                    await ExecuteRepositoryOperationAsync(async (repository) =>
                     {
-                        operation(modelParameter);
+                        var modelParameter = await repository.GetByIdAsync<T>(parameter.Id, false);
 
-                        await _repository.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]", typeof(T).Name, parameter.Id);
-                    }
+                        if (modelParameter != null)
+                        {
+                            operation(modelParameter);
+
+                            await repository.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]", typeof(T).Name, parameter.Id);
+                        }
+                    });
                 }
             }
         }
@@ -424,18 +442,21 @@ namespace Shaos.Services.Runtime.Host
         {
             if (device != null)
             {
-                var modelDevice = await _repository.GetByIdAsync<ModelDevice>(device.Id, false);
-
-                if (modelDevice != null)
+                await ExecuteRepositoryOperationAsync(async (repository) =>
                 {
-                    updateOperation(modelDevice);
+                    var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id, false);
 
-                    await _repository.SaveChangesAsync();
-                }
-                else
-                {
-                    _logger.LogError("Unable to resolve Device for [{Id}]", device.Id);
-                }
+                    if (modelDevice != null)
+                    {
+                        updateOperation(modelDevice);
+
+                        await repository.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError("Unable to resolve Device for [{Id}]", device.Id);
+                    }
+                });
             }
         }
     }

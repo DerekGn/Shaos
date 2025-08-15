@@ -22,8 +22,10 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Repository;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
@@ -46,10 +48,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
     public class RuntimeInstanceEventHandlerTests : BaseServiceTests
     {
         private readonly List<Mock<IBaseParameter>> _mockBaseParameters;
+        private readonly Mock<IChildObservableList<IBaseParameter, IDevice>> _mockObservableListParameters;
         private readonly Mock<IDevice> _mockDevice;
         private readonly Mock<IObservableList<IDevice>> _mockObservableListDevices;
-        private readonly Mock<IChildObservableList<IBaseParameter, IDevice>> _mockObservableListParameters;
         private readonly Mock<IPlugIn> _mockPlugIn;
+        private readonly Mock<IServiceProvider> _mockServiceProvider;
+        private readonly Mock<IServiceScope> _mockServiceScope;
+        private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
 
         public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
@@ -58,6 +63,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockObservableListDevices = new Mock<IObservableList<IDevice>>();
             _mockObservableListParameters = new Mock<IChildObservableList<IBaseParameter, IDevice>>();
             _mockPlugIn = new Mock<IPlugIn>();
+            _mockServiceProvider = new Mock<IServiceProvider>();
+            _mockServiceScope = new Mock<IServiceScope>();
+            _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
 
             _mockBaseParameters =
             [
@@ -69,7 +77,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ];
 
             _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory.CreateLogger<RuntimeInstanceEventHandler>(),
-                                                                           MockRepository.Object);
+                                                                           _mockServiceScopeFactory.Object);
         }
 
         [Fact]
@@ -95,6 +103,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestBatteryLevelChanged()
         {
             var modelDevice = new ModelDevice();
+
+            SetupServiceScopeFactory();
 
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
@@ -138,6 +148,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestDevicesListChangedDeviceAdded()
         {
+            SetupServiceScopeFactory();
+
             _runtimeInstanceEventHandler
                 .AttachDevicesListChange(_mockObservableListDevices.Object);
 
@@ -159,6 +171,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [InlineData(ListChangedAction.Remove)]
         public void TestDevicesListChangedDeviceDelete(ListChangedAction action)
         {
+            SetupServiceScopeFactory();
+
             _runtimeInstanceEventHandler
                 .AttachDevicesListChange(_mockObservableListDevices.Object);
 
@@ -178,6 +192,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParametersListChangedParameterAdded()
         {
+            SetupServiceScopeFactory();
+
             _runtimeInstanceEventHandler
                 .AttachParametersListChanged(_mockObservableListParameters.Object);
 
@@ -205,6 +221,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [InlineData(ListChangedAction.Remove)]
         public void TestParametersListChangedParameterDeleted(ListChangedAction action)
         {
+            SetupServiceScopeFactory();
+
             _runtimeInstanceEventHandler
                 .AttachParametersListChanged(_mockObservableListParameters.Object);
 
@@ -330,6 +348,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestSignalLevelChanged()
         {
+            SetupServiceScopeFactory();
+
             var modelDevice = new ModelDevice();
 
             MockRepository
@@ -377,6 +397,21 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockObservableListDevices
                 .Setup(_ => _.GetEnumerator())
                 .Returns(new List<IDevice>() { _mockDevice.Object }.GetEnumerator());
+        }
+
+        private void SetupServiceScopeFactory()
+        {
+            _mockServiceScopeFactory
+                .Setup(_ => _.CreateScope())
+                .Returns(_mockServiceScope.Object);
+
+            _mockServiceScope
+                .Setup(_ => _.ServiceProvider)
+                .Returns(_mockServiceProvider.Object);
+
+            _mockServiceProvider
+                .Setup(_ => _.GetService(typeof(IRepository)))
+                .Returns(MockRepository.Object);
         }
     }
 }

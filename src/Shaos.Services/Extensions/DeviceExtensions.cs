@@ -57,13 +57,5 @@ namespace Shaos.Services.Extensions
 
             return sdkDevice;
         }
-
-        public static IEnumerable<SdkDevice> ToSdk(this IList<ModelDevice> modelDevices)
-        {
-            foreach (var modelDevice in modelDevices)
-            {
-                yield return ToSdk(modelDevice);
-            }
-        }
     }
 }

@@ -22,35 +22,20 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
 using Shaos.Sdk;
-using Shaos.Sdk.Devices;
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// The <see cref="IPlugIn"/> builder
+    /// An exception that is thrown when the <see cref="IPlugInBuilder"/> cannot construct a <see cref="IPlugIn"/> instance
     /// </summary>
-    public interface IPlugInBuilder
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInBuilderException"/>
+    /// </remarks>
+    /// <param name="message">An associated message</param>
+    [ExcludeFromCodeCoverage]
+    public class PlugInBuilderException(string message) : Exception(message)
     {
-        /// <summary>
-        /// The <see cref="PlugIn"/> instance that the builder has created
-        /// </summary>
-        IPlugIn? PlugIn { get; }
-
-        /// <summary>
-        /// Load an <see cref="IPlugIn"/> instance from the <paramref name="assembly"/>
-        /// </summary>
-        /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="PlugIn"/></param>
-        /// <param name="configuration">The json configuration setting parameters</param>
-        void Load(Assembly assembly,
-                  string? configuration);
-
-        /// <summary>
-        /// Restore the <see cref="IPlugIn"/> from the <see cref="PlugInInstance"/>
-        /// </summary>
-        /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to restore</param>
-        void Restore(PlugInInstance plugInInstance);
     }
 }

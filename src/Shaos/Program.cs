@@ -154,7 +154,6 @@ namespace Shaos
             });
 
             // Application defined services
-            builder.Services.AddScoped<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
             builder.Services.AddScoped<IInstanceHostService, InstanceHostService>();
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
@@ -164,10 +163,11 @@ namespace Shaos
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
+            builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
+            builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 

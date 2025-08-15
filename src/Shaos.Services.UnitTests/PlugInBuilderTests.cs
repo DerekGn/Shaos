@@ -24,12 +24,15 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Exceptions;
 using Shaos.Services.UnitTests.Fixtures;
+using Shaos.Test.PlugIn;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -64,43 +67,55 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public void TestRestore()
         {
-            _builder.PlugIn = _plugIn.Object;
+            PlugInInstance plugInInstance = SetupPlugInInstance();
 
-            var plugInDevices = new ObservableList<IDevice>();
+            _builder.PlugIn = new TestPlugIn(LoggerFactory.CreateLogger<TestPlugIn>(),
+                                             new TestPlugInConfiguration());
+            
+            _builder.Restore(plugInInstance);
 
-            _plugIn
-                .Setup(_ => _.Devices)
-                .Returns(plugInDevices);
+            var plugIn = _builder.PlugIn;
 
-            var parameter = new FloatParameter(1.0f,
-                                               "volts",
-                                               "v",
-                                               ParameterType.Voltage);
-
-            var device = new Device("name",
-                                    [parameter],
-                                    100,
-                                    0);
-
-            _builder.Restore([device]);
-
-            Assert.Single(plugInDevices);
+            Assert.Single(plugIn.Devices);
+            Assert.Equal(plugInInstance.Id, plugIn.Id);
         }
 
         [Fact]
         public void TestRestoreInstanceNotLoaded()
         {
-            var parameter = new FloatParameter(1.0f,
-                                               "volts",
-                                               "v",
-                                               ParameterType.Voltage);
+            PlugInInstance plugInInstance = SetupPlugInInstance();
 
-            var device = new Device("name",
-                                    [parameter],
-                                    100,
-                                    0);
+            Assert.Throws<PlugInInstanceNotLoadedException>(() => _builder.Restore(plugInInstance));
+        }
 
-            Assert.Throws<PlugInInstanceNotLoadedException>(() => _builder.Restore([device]));
+        private static PlugInInstance SetupPlugInInstance()
+        {
+            var parameter = new Repository.Models.Devices.Parameters.FloatParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = 100
+            };
+
+            var device = new Repository.Models.Devices.Device()
+            {
+                BatteryLevel = 100,
+                Id = 2,
+                Name = "name",
+                SignalLevel = -10
+            };
+
+            device.Parameters.Add(parameter);
+
+            var plugInInstance = new PlugInInstance()
+            {
+                Id = 3
+            };
+            plugInInstance.Devices.Add(device);
+
+            return plugInInstance;
         }
     }
 }

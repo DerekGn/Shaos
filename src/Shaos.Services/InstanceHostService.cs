@@ -240,13 +240,13 @@ namespace Shaos.Services
         {
             RuntimeInstanceLoadContext loadContext = _instanceHost.GetInstanceLoadContext(plugIn.Id);
 
-            var scope = _serviceScopeFactory.CreateScope();
+            using var scope = _serviceScopeFactory.CreateScope();
             var plugInBuilder = scope.ServiceProvider.GetRequiredService<IPlugInBuilder>();
 
             plugInBuilder!.Load(loadContext.Assembly!,
                                 configuration);
 
-            plugInBuilder.Restore(plugInInstance.Devices.ToSdk());
+            plugInBuilder.Restore(plugInInstance);
 
             var runtimeInstance = plugInBuilder.PlugIn;
 

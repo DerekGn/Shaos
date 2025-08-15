@@ -23,8 +23,8 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Repository.Models;
 using Shaos.Sdk;
-using Shaos.Sdk.Devices;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Extensions;
 using Shaos.Services.Json;
@@ -83,19 +83,30 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public void Restore(IEnumerable<Device> devices)
+        public void Restore(PlugInInstance plugInInstance)
         {
-            ArgumentNullException.ThrowIfNull(devices);
+            ArgumentNullException.ThrowIfNull(plugInInstance);
 
-            if(_plugin == null)
+            if (_plugin == null)
             {
                 throw new PlugInInstanceNotLoadedException();
             }
 
-            foreach (var device in devices)
+            foreach (var device in plugInInstance.Devices)
             {
-                _plugin.Devices.Add(device);
+                _plugin.Devices.Add(device.ToSdk());
             }
+
+            AssignPlugInIdentifier(plugInInstance.Id);
+        }
+
+        private void AssignPlugInIdentifier(int id)
+        {
+            var baseType = _plugin!.GetType().BaseType ?? throw new PlugInBuilderException("IPlugIn instance has no base type");
+            var propertyInfo = baseType.GetProperty(nameof(IPlugIn.Id)) ?? throw new PlugInBuilderException("IPlugIn instance base type has no Id property setter");
+            var setMethod = propertyInfo.GetSetMethod(true) ?? throw new PlugInBuilderException("IPlugIn instance Id property has no setter");
+
+            setMethod.Invoke(_plugin, [id]);
         }
 
         private List<object> GetConstructorParameters(Type plugInType)
