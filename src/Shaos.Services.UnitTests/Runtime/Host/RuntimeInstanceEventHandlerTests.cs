@@ -47,6 +47,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeInstanceEventHandlerTests : BaseServiceTests
     {
+        private const string Name = "name";
+        private const string Units = "units";
+
         private readonly List<Mock<IBaseParameter>> _mockBaseParameters;
         private readonly Mock<IChildObservableList<IPlugIn, IDevice>> _mockChildObservableListDevices;
         private readonly Mock<IDevice> _mockDevice;
@@ -160,7 +163,16 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
                        _mockChildObservableListDevices.Object,
-                       new ListChangedEventArgs<IDevice>(ListChangedAction.Add, [new SdkDevice("name", [], 0, 0)]));
+                       new ListChangedEventArgs<IDevice>(ListChangedAction.Add, [
+                           new SdkDevice(Name, 
+                           [
+                               new BoolParameter(true, Name, Units, ParameterType.Iaq),
+                               new FloatParameter(0.2f, Name, Units, ParameterType.Iaq),
+                               new IntParameter(-18, Name, Units, ParameterType.Iaq),
+                               new StringParameter("string", Name, Units, ParameterType.Iaq),
+                               new UIntParameter(7218, Name, Units, ParameterType.Iaq)
+                           ], 0, 0)
+                           ]));
 
             MockRepository
                 .Verify(_ => _.AddAsync(It.IsAny<ModelDevice>(),
@@ -185,7 +197,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
                        _mockChildObservableListDevices.Object,
-                       new ListChangedEventArgs<IDevice>(action, [new SdkDevice("name", [], 0, 0)]));
+                       new ListChangedEventArgs<IDevice>(action, [new SdkDevice(Name, [], 0, 0)]));
 
             MockRepository
                 .Verify(_ => _.DeleteAsync<ModelDevice>(It.IsAny<int>(),
@@ -218,11 +230,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockObservableListParameters.Object,
                        new ListChangedEventArgs<IBaseParameter>(ListChangedAction.Add,
                        [
-                           new BoolParameter(true, "name", "units", ParameterType.Iaq),
-                           new FloatParameter(1.0f, "name", "units", ParameterType.Iaq),
-                           new IntParameter(1, "name", "units", ParameterType.Iaq),
-                           new StringParameter("string", "name", "units", ParameterType.Iaq),
-                           new UIntParameter(1, "name", "units", ParameterType.Iaq)
+                           new BoolParameter(true, Name, Units, ParameterType.Iaq),
+                           new FloatParameter(1.0f, Name, Units, ParameterType.Iaq),
+                           new IntParameter(1, Name, Units, ParameterType.Iaq),
+                           new StringParameter("string", Name, Units, ParameterType.Iaq),
+                           new UIntParameter(1, Name, Units, ParameterType.Iaq)
                        ]));
 
             MockRepository
