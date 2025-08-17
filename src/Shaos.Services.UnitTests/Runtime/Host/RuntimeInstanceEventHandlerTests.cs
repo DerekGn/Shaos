@@ -266,6 +266,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedBoolAsync()
         {
+            SetupServiceScopeFactory();
+
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelBoolParameter>(It.IsAny<int>(),
                                                                It.IsAny<bool>(),
@@ -286,6 +288,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedFloatAsync()
         {
+            SetupServiceScopeFactory();
+
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelFloatParameter>(It.IsAny<int>(),
                                                                 It.IsAny<bool>(),
@@ -306,6 +310,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedIntAsync()
         {
+            SetupServiceScopeFactory();
+
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelIntParameter>(It.IsAny<int>(),
                                                               It.IsAny<bool>(),
@@ -326,6 +332,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedStringAsync()
         {
+            SetupServiceScopeFactory();
+
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelStringParameter>(It.IsAny<int>(),
                                                                  It.IsAny<bool>(),
@@ -346,6 +354,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedUIntAsync()
         {
+            SetupServiceScopeFactory();
+
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelUIntParameter>(It.IsAny<int>(),
                                                                  It.IsAny<bool>(),

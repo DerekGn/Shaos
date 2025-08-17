@@ -90,15 +90,6 @@ namespace Shaos.Services.UnitTests
 
         private static PlugInInstance SetupPlugInInstance()
         {
-            var parameter = new Repository.Models.Devices.Parameters.FloatParameter()
-            {
-                Id = 1,
-                Name = "name",
-                ParameterType = ParameterType.Voltage,
-                Units = "units",
-                Value = 100
-            };
-
             var device = new Repository.Models.Devices.Device()
             {
                 BatteryLevel = 100,
@@ -107,12 +98,56 @@ namespace Shaos.Services.UnitTests
                 SignalLevel = -10
             };
 
-            device.Parameters.Add(parameter);
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.BoolParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = true
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.FloatParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = 100
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.IntParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = -10
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.StringParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = "string"
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.UIntParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = 7896
+            });
 
             var plugInInstance = new PlugInInstance()
             {
                 Id = 3
             };
+
             plugInInstance.Devices.Add(device);
 
             return plugInInstance;
