@@ -93,7 +93,7 @@ namespace Shaos.Services.Runtime.Host
             devices.ListChanged += DevicesListChangedAsync;
         }
 
-        internal void AttachParametersListChanged(IChildObservableList<IBaseParameter, IDevice> parameters)
+        internal void AttachParametersListChanged(IChildObservableList<IDevice, IBaseParameter> parameters)
         {
             parameters.ListChanged += ParametersListChangedAsync;
         }
@@ -195,13 +195,17 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task CreateDeviceParametersAsync(IList<IBaseParameter> items)
+        private async Task CreateDeviceParametersAsync(IChildObservableList<IDevice, IBaseParameter> deviceParameters,
+                                                       IList<IBaseParameter> items)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
+                var modelDevice = await repository.GetByIdAsync<ModelDevice>(deviceParameters.Parent.Id);
+
                 foreach (var item in items)
                 {
                     var modelParameter = item.ToModel();
+                    modelParameter!.DeviceId = modelDevice!.Id;
 
                     await repository.AddAsync(modelParameter!);
                 }
@@ -210,13 +214,16 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
-        private async Task CreateDevicesAsync(IList<IDevice> devices)
+        private async Task CreateDevicesAsync(IChildObservableList<IPlugIn, IDevice> plugInDeviceList, IList<IDevice> devices)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
+                var plugInInstance = repository.GetByIdAsync<PlugInInstance>(plugInDeviceList.Parent.Id);
+
                 foreach (IDevice device in devices)
                 {
                     var modelDevice = device.ToModel();
+                    modelDevice.PlugInInstanceId = plugInInstance.Id;
 
                     await repository.AddAsync(modelDevice);
 
@@ -346,7 +353,7 @@ namespace Shaos.Services.Runtime.Host
                     case ListChangedAction.Add:
                         if (e.Items != null)
                         {
-                            await CreateDevicesAsync(e.Items);
+                            await CreateDevicesAsync(sender as IChildObservableList<IPlugIn, IDevice>, e.Items);
                         }
                         break;
 
@@ -385,7 +392,8 @@ namespace Shaos.Services.Runtime.Host
                     case ListChangedAction.Add:
                         if (e.Items != null)
                         {
-                            await CreateDeviceParametersAsync(e.Items);
+                            await CreateDeviceParametersAsync(sender as IChildObservableList<IDevice, IBaseParameter>,
+                                                              e.Items);
 
                             AttachParameters([.. e.Items]);
                         }

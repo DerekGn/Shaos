@@ -48,9 +48,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
     public class RuntimeInstanceEventHandlerTests : BaseServiceTests
     {
         private readonly List<Mock<IBaseParameter>> _mockBaseParameters;
-        private readonly Mock<IChildObservableList<IBaseParameter, IDevice>> _mockObservableListParameters;
+        private readonly Mock<IChildObservableList<IPlugIn, IDevice>> _mockChildObservableListDevices;
         private readonly Mock<IDevice> _mockDevice;
-        private readonly Mock<IObservableList<IDevice>> _mockObservableListDevices;
+        private readonly Mock<IChildObservableList<IDevice, IBaseParameter>> _mockObservableListParameters;
         private readonly Mock<IPlugIn> _mockPlugIn;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
@@ -60,8 +60,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _mockDevice = new Mock<IDevice>();
-            _mockObservableListDevices = new Mock<IObservableList<IDevice>>();
-            _mockObservableListParameters = new Mock<IChildObservableList<IBaseParameter, IDevice>>();
+            _mockChildObservableListDevices = new Mock<IChildObservableList<IPlugIn, IDevice>>();
+            _mockObservableListParameters = new Mock<IChildObservableList<IDevice, IBaseParameter>>();
             _mockPlugIn = new Mock<IPlugIn>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockServiceScope = new Mock<IServiceScope>();
@@ -89,7 +89,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _mockDevice.VerifyAdd(_ => _.BatteryLevelChanged += It.IsAny<AsyncEventHandler<BatteryLevelChangedEventArgs>>());
             _mockDevice.VerifyAdd(_ => _.SignalLevelChanged += It.IsAny<AsyncEventHandler<SignalLevelChangedEventArgs>>());
-            _mockObservableListDevices.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
+            _mockChildObservableListDevices.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
             _mockObservableListParameters.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<IBaseParameter>>>());
 
             _mockBaseParameters[0].As<IBaseParameter<bool>>().VerifyAdd(_ => _.ValueChanged += It.IsAny<AsyncEventHandler<ParameterValueChangedEventArgs<bool>>>());
@@ -135,7 +135,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _mockDevice.VerifyRemove(_ => _.BatteryLevelChanged -= It.IsAny<AsyncEventHandler<BatteryLevelChangedEventArgs>>());
             _mockDevice.VerifyRemove(_ => _.SignalLevelChanged -= It.IsAny<AsyncEventHandler<SignalLevelChangedEventArgs>>());
-            _mockObservableListDevices.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
+            _mockChildObservableListDevices.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
             _mockObservableListParameters.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IBaseParameter>>>());
 
             _mockBaseParameters[0].As<IBaseParameter<bool>>().VerifyRemove(_ => _.ValueChanged -= It.IsAny<AsyncEventHandler<ParameterValueChangedEventArgs<bool>>>());
@@ -151,11 +151,19 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SetupServiceScopeFactory();
 
             _runtimeInstanceEventHandler
-                .AttachDevicesListChange(_mockObservableListDevices.Object);
+                .AttachDevicesListChange(_mockChildObservableListDevices.Object);
 
-            _mockObservableListDevices
+            _mockPlugIn
+                .Setup(_ => _.Id)
+                .Returns(10);
+
+            _mockChildObservableListDevices
+                .Setup(_ => _.Parent)
+                .Returns(_mockPlugIn.Object);
+
+            _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
-                       _mockObservableListDevices.Object,
+                       _mockChildObservableListDevices.Object,
                        new ListChangedEventArgs<IDevice>(ListChangedAction.Add, [new SdkDevice("name", [], 0, 0)]));
 
             MockRepository
@@ -174,11 +182,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SetupServiceScopeFactory();
 
             _runtimeInstanceEventHandler
-                .AttachDevicesListChange(_mockObservableListDevices.Object);
+                .AttachDevicesListChange(_mockChildObservableListDevices.Object);
 
-            _mockObservableListDevices
+            _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
-                       _mockObservableListDevices.Object,
+                       _mockChildObservableListDevices.Object,
                        new ListChangedEventArgs<IDevice>(action, [new SdkDevice("name", [], 0, 0)]));
 
             MockRepository
@@ -194,6 +202,20 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
+            _mockDevice
+               .Setup(_ => _.Id)
+               .Returns(10);
+
+            _mockObservableListParameters
+                .Setup(_ => _.Parent)
+                .Returns(_mockDevice.Object);
+
+            MockRepository.Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
+                                                                  It.IsAny<bool>(),
+                                                                  It.IsAny<List<string>>(),
+                                                                  It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ModelDevice() { Id = 10});
+
             _runtimeInstanceEventHandler
                 .AttachParametersListChanged(_mockObservableListParameters.Object);
 
@@ -202,11 +224,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockObservableListParameters.Object,
                        new ListChangedEventArgs<IBaseParameter>(ListChangedAction.Add,
                        [
-                            _mockBaseParameters[0].As<IBaseParameter<bool>>().Object,
-                            _mockBaseParameters[1].As<IBaseParameter<float>>().Object,
-                            _mockBaseParameters[2].As<IBaseParameter<int>>().Object,
-                            _mockBaseParameters[3].As<IBaseParameter<string>>().Object,
-                            _mockBaseParameters[4].As<IBaseParameter<uint>>().Object
+                           new BoolParameter(true, "name", "units", ParameterType.Iaq),
+                           new FloatParameter(1.0f, "name", "units", ParameterType.Iaq),
+                           new IntParameter(1, "name", "units", ParameterType.Iaq),
+                           new StringParameter("string", "name", "units", ParameterType.Iaq),
+                           new UIntParameter(1, "name", "units", ParameterType.Iaq)
                        ]));
 
             MockRepository
@@ -392,9 +414,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _mockPlugIn
                 .Setup(_ => _.Devices)
-                .Returns(_mockObservableListDevices.Object);
+                .Returns(_mockChildObservableListDevices.Object);
 
-            _mockObservableListDevices
+            _mockChildObservableListDevices
                 .Setup(_ => _.GetEnumerator())
                 .Returns(new List<IDevice>() { _mockDevice.Object }.GetEnumerator());
         }
