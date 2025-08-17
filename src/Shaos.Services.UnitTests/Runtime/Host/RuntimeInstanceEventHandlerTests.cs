@@ -104,6 +104,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             var modelDevice = new ModelDevice();
 
+            SetupCommonMocks();
+
             SetupServiceScopeFactory();
 
             MockRepository
@@ -150,16 +152,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
+            SetupCommonMocks();
+
             _runtimeInstanceEventHandler
                 .AttachDevicesListChange(_mockChildObservableListDevices.Object);
-
-            _mockPlugIn
-                .Setup(_ => _.Id)
-                .Returns(10);
-
-            _mockChildObservableListDevices
-                .Setup(_ => _.Parent)
-                .Returns(_mockPlugIn.Object);
 
             _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
@@ -179,6 +175,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [InlineData(ListChangedAction.Remove)]
         public void TestDevicesListChangedDeviceDelete(ListChangedAction action)
         {
+            SetupCommonMocks();
+
             SetupServiceScopeFactory();
 
             _runtimeInstanceEventHandler
@@ -202,10 +200,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
-            _mockDevice
-               .Setup(_ => _.Id)
-               .Returns(10);
-
             _mockObservableListParameters
                 .Setup(_ => _.Parent)
                 .Returns(_mockDevice.Object);
@@ -214,7 +208,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                   It.IsAny<bool>(),
                                                                   It.IsAny<List<string>>(),
                                                                   It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelDevice() { Id = 10});
+                .ReturnsAsync(new ModelDevice() { Id = 10 });
 
             _runtimeInstanceEventHandler
                 .AttachParametersListChanged(_mockObservableListParameters.Object);
@@ -243,6 +237,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [InlineData(ListChangedAction.Remove)]
         public void TestParametersListChangedParameterDeleted(ListChangedAction action)
         {
+            SetupCommonMocks();
+
             SetupServiceScopeFactory();
 
             _runtimeInstanceEventHandler
@@ -375,11 +371,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             var modelDevice = new ModelDevice();
 
             MockRepository
-            .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
-                                                    It.IsAny<bool>(),
-                                                    It.IsAny<List<string>>(),
-                                                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(modelDevice);
+                .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
+                                                        It.IsAny<bool>(),
+                                                        It.IsAny<List<string>>(),
+                                                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(modelDevice);
 
             _runtimeInstanceEventHandler.AttachDevice(_mockDevice.Object);
 
@@ -396,6 +392,34 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         private void SetupCommonMocks()
         {
+            _mockPlugIn
+                .Setup(_ => _.Id)
+                .Returns(10);
+
+            _mockPlugIn
+                .Setup(_ => _.Devices)
+                .Returns(_mockChildObservableListDevices.Object);
+
+            _mockChildObservableListDevices
+                .Setup(_ => _.Parent)
+                .Returns(_mockPlugIn.Object);
+
+            _mockChildObservableListDevices
+                .Setup(_ => _.GetEnumerator())
+                .Returns(new List<IDevice>() { _mockDevice.Object }.GetEnumerator());
+
+            _mockDevice
+               .Setup(_ => _.Id)
+               .Returns(100);
+
+            _mockDevice
+               .Setup(_ => _.Name)
+               .Returns("Name");
+
+            _mockDevice
+                .Setup(_ => _.Parameters)
+                .Returns(_mockObservableListParameters.Object);
+
             _mockObservableListParameters
                 .Setup(_ => _.GetEnumerator())
                 .Returns(
@@ -408,17 +432,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                     _mockBaseParameters[4].As<IBaseParameter<uint>>().Object
                 }.GetEnumerator());
 
-            _mockDevice
-                .Setup(_ => _.Parameters)
-                .Returns(_mockObservableListParameters.Object);
-
-            _mockPlugIn
-                .Setup(_ => _.Devices)
-                .Returns(_mockChildObservableListDevices.Object);
-
-            _mockChildObservableListDevices
-                .Setup(_ => _.GetEnumerator())
-                .Returns(new List<IDevice>() { _mockDevice.Object }.GetEnumerator());
+            _mockObservableListParameters.
+                Setup(_ => _.Parent)
+                .Returns(_mockDevice.Object);
         }
 
         private void SetupServiceScopeFactory()

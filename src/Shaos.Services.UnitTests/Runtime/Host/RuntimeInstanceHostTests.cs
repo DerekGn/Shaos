@@ -316,8 +316,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             return _autoResetEvent.WaitOne(TimeSpan.FromMilliseconds(1000));
         }
 
-        private async Task WaitTaskAsync(
-            CancellationToken cancellationToken)
+        private async Task WaitTaskAsync(CancellationToken cancellationToken)
         {
             do
             {

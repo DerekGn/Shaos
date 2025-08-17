@@ -26,6 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
@@ -84,22 +85,46 @@ namespace Shaos.Services.Runtime.Host
 
         internal void AttachDevice(IDevice device)
         {
+            _logger.LogDebug("Attaching device signal level and battery level event handler for Device: [{Id}] Name: [{Name}]",
+                             device.Id,
+                             device.Name);
+
             device.SignalLevelChanged += DeviceSignalLevelChanged;
             device.BatteryLevelChanged += DeviceBatteryLevelChanged;
         }
 
-        internal void AttachDevicesListChange(IObservableList<IDevice> devices)
+        internal void AttachDevicesListChange(IChildObservableList<IPlugIn, IDevice> devices)
         {
+            _logger.LogDebug("Attaching device list event handler for PlugIn Id: [{Id}]",
+                             devices.Parent.Id);
+
             devices.ListChanged += DevicesListChangedAsync;
         }
 
         internal void AttachParametersListChanged(IChildObservableList<IDevice, IBaseParameter> parameters)
         {
+            _logger.LogDebug("Attaching parameter list event handler for PlugIn Id: [{Id}] Name: [{Name}]",
+                             parameters.Parent.Id,
+                             parameters.Parent.Name);
+
             parameters.ListChanged += ParametersListChangedAsync;
+        }
+
+        internal void DetachParametersListChanged(IChildObservableList<IDevice, IBaseParameter> parameters)
+        {
+            _logger.LogDebug("Detaching parameter list event handler for PlugIn Id: [{Id}] Name: [{Name}]",
+                             parameters.Parent.Id,
+                             parameters.Parent.Name);
+
+            parameters.ListChanged -= ParametersListChangedAsync;
         }
 
         internal void DetatchDevice(IDevice device)
         {
+            _logger.LogDebug("Detaching device signal level and battery level event handler for Device: [{Id}] Name: [{Name}]",
+                             device.Id,
+                             device.Name);
+
             device.SignalLevelChanged -= DeviceSignalLevelChanged;
             device.BatteryLevelChanged -= DeviceBatteryLevelChanged;
         }
@@ -151,6 +176,10 @@ namespace Shaos.Services.Runtime.Host
 
         private void AttachParameter(IBaseParameter parameter)
         {
+            _logger.LogDebug("Attaching event handler for parameter Id: [{Id}] Name: [{Name}]",
+                             parameter.Id,
+                             parameter.Name);
+
             switch (parameter)
             {
                 case IBaseParameter<bool> _:
@@ -247,7 +276,7 @@ namespace Shaos.Services.Runtime.Host
                     await repository.DeleteAsync<ModelBaseParameter>(parameter.Id);
                 }
 
-                    await repository.SaveChangesAsync();
+                await repository.SaveChangesAsync();
             });
         }
 
@@ -275,6 +304,10 @@ namespace Shaos.Services.Runtime.Host
 
         private void DetachParameter(IBaseParameter parameter)
         {
+            _logger.LogDebug("Detaching parameter event handler for parameter Id: [{Id}] Name: [{Name}]",
+                             parameter.Id,
+                             parameter.Name);
+
             switch (parameter)
             {
                 case IBaseParameter<bool> _:
@@ -311,7 +344,7 @@ namespace Shaos.Services.Runtime.Host
         {
             foreach (var device in devices)
             {
-                device.Parameters.ListChanged -= ParametersListChangedAsync;
+                DetachParametersListChanged(device.Parameters);
 
                 DetachParameters(device.Parameters.ToList());
 
