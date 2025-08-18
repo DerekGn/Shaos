@@ -37,7 +37,7 @@ namespace Shaos.Repository
     /// <summary>
     /// The repository implementation
     /// </summary>
-    public class ShaosRepository : IShaosRepository
+    public class ShaosRepository : IRepository
     {
         private readonly ShaosDbContext _context;
         private readonly ILogger<ShaosRepository> _logger;
@@ -50,11 +50,17 @@ namespace Shaos.Repository
         public ShaosRepository(ILogger<ShaosRepository> logger,
                                ShaosDbContext context)
         {
-            ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(context);
-
             _logger = logger;
             _context = context;
+        }
+
+        /// <inheritdoc/>
+        public async Task AddAsync<T>(T entity,
+                                      CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            await _context
+                .Set<T>()
+                .AddAsync(entity, cancellationToken);
         }
 
         /// <inheritdoc/>

@@ -26,18 +26,17 @@ using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Services;
 using Shaos.Services.Exceptions;
-using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Pages.Instances
 {
-    public class IndexModel : PaginatedModel<Instance>
+    public class IndexModel : PaginatedModel<RuntimeInstance>
     {
         private readonly IConfiguration _configuration;
-        private readonly IInstanceHost _instanceHost;
+        private readonly IRuntimeInstanceHost _instanceHost;
         private readonly IInstanceHostService _instanceHostService;
 
-        public IndexModel(IInstanceHost instanceHost,
+        public IndexModel(IRuntimeInstanceHost instanceHost,
                           IConfiguration configuration,
                           IInstanceHostService instanceHostService)
         {
@@ -60,8 +59,8 @@ namespace Shaos.Pages.Instances
         {
             CurrentSort = sortOrder;
             NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            IdSort = sortOrder == nameof(Instance.Id) ? "id_desc" : nameof(Instance.Id);
-            StateSort = sortOrder == nameof(Instance.State) ? "state_desc" : nameof(Instance.State);
+            IdSort = sortOrder == nameof(RuntimeInstance.Id) ? "id_desc" : nameof(RuntimeInstance.Id);
+            StateSort = sortOrder == nameof(RuntimeInstance.State) ? "state_desc" : nameof(RuntimeInstance.State);
 
             if (searchString != null)
             {
@@ -87,7 +86,7 @@ namespace Shaos.Pages.Instances
                     queryable = queryable.OrderByDescending(_ => _.Name);
                     break;
 
-                case nameof(Instance.Name):
+                case nameof(RuntimeInstance.Name):
                     queryable = queryable.OrderBy(_ => _.Name);
                     break;
 
@@ -95,7 +94,7 @@ namespace Shaos.Pages.Instances
                     queryable = queryable.OrderByDescending(_ => _.Id);
                     break;
 
-                case nameof(Instance.Id):
+                case nameof(RuntimeInstance.Id):
                     queryable = queryable.OrderBy(_ => _.Id);
                     break;
 
@@ -103,7 +102,7 @@ namespace Shaos.Pages.Instances
                     queryable = queryable.OrderByDescending(_ => _.State);
                     break;
 
-                case nameof(Instance.State):
+                case nameof(RuntimeInstance.State):
                     queryable = queryable.OrderBy(_ => _.State);
                     break;
 
@@ -111,7 +110,7 @@ namespace Shaos.Pages.Instances
                     break;
             }
 
-            List = PaginatedList<Instance>
+            List = PaginatedList<RuntimeInstance>
                 .Create(
                     queryable, pageIndex ?? 1,
                     _configuration.GetValue("PageSize", 5));
@@ -128,7 +127,7 @@ namespace Shaos.Pages.Instances
             {
                 ModelState.AddModelError(string.Empty, $"Instance [{id}] not configured.");
             }
-            
+
             return RedirectToPage();
         }
 

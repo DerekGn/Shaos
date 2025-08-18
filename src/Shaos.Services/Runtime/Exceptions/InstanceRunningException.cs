@@ -28,7 +28,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Runtime.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="Instance"/> is in the <see cref="InstanceState.Running"/>
+    /// An exception that is thrown when a <see cref="RuntimeInstance"/> is in the <see cref="RuntimeInstanceState.Running"/>
     /// </summary>
     /// <remarks>
     /// Create an instance of a <see cref="InstanceRunningException"/>

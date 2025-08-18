@@ -22,24 +22,16 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Shaos.Services.Exceptions
+namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// Thrown when a <see cref="PlugInInstance"/> configuration can not be loaded
+    /// Represents a string
     /// </summary>
-    /// <remarks>
-    /// Create an instance of a <see cref="ConfigurationNotLoadedException"/>
-    /// </remarks>
-    /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
-    [ExcludeFromCodeCoverage]
-    public class ConfigurationNotLoadedException(int id) : Exception
+    public class StringParameter : BaseParameter
     {
         /// <summary>
-        /// The identifier of the <see cref="PlugIn"/> instance
+        /// The current value
         /// </summary>
-        public int Id { get; } = id;
+        public string? Value { get; set; }
     }
 }

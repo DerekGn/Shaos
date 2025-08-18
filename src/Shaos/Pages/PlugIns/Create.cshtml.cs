@@ -32,9 +32,9 @@ namespace Shaos.Pages.PlugIns
 {
     public class CreateModel : PageModel
     {
-        private readonly IShaosRepository _repository;
+        private readonly IRepository _repository;
 
-        public CreateModel(IShaosRepository repository)
+        public CreateModel(IRepository repository)
         {
             ArgumentNullException.ThrowIfNull(repository);
 

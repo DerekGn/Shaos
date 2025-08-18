@@ -23,8 +23,16 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Shaos.Services.Runtime.Host;
+using Moq;
+using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
+using Shaos.Sdk;
+using Shaos.Sdk.Collections.Generic;
+using Shaos.Sdk.Devices;
+using Shaos.Sdk.Devices.Parameters;
+using Shaos.Services.Exceptions;
 using Shaos.Services.UnitTests.Fixtures;
+using Shaos.Test.PlugIn;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,10 +41,13 @@ namespace Shaos.Services.UnitTests
     public class PlugInBuilderTests : PlugInBuilderBaseTests
     {
         private readonly PlugInBuilder _builder;
+        private readonly Mock<IPlugIn> _plugIn;
 
         public PlugInBuilderTests(ITestOutputHelper output,
                                   TestFixture fixture) : base(output, fixture)
         {
+            _plugIn = new Mock<IPlugIn>();
+
             _builder = new PlugInBuilder(LoggerFactory!,
                                          LoggerFactory!.CreateLogger<PlugInBuilder>());
         }
@@ -47,12 +58,99 @@ namespace Shaos.Services.UnitTests
             var context = _unloadingWeakReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            var instanceConfiguration = new InstanceConfiguration(true, "{\"Delay\": \"00:00:00\"}");
-
             _builder.Load(assembly,
-                          instanceConfiguration);
+                          "{\"Delay\": \"00:00:00\"}");
 
             Assert.NotNull(_builder.PlugIn);
+        }
+
+        [Fact]
+        public void TestRestore()
+        {
+            PlugInInstance plugInInstance = SetupPlugInInstance();
+
+            _builder.PlugIn = new TestPlugIn(LoggerFactory.CreateLogger<TestPlugIn>(),
+                                             new TestPlugInConfiguration());
+            
+            _builder.Restore(plugInInstance);
+
+            var plugIn = _builder.PlugIn;
+
+            Assert.Single(plugIn.Devices);
+            Assert.Equal(plugInInstance.Id, plugIn.Id);
+        }
+
+        [Fact]
+        public void TestRestoreInstanceNotLoaded()
+        {
+            PlugInInstance plugInInstance = SetupPlugInInstance();
+
+            Assert.Throws<PlugInInstanceNotLoadedException>(() => _builder.Restore(plugInInstance));
+        }
+
+        private static PlugInInstance SetupPlugInInstance()
+        {
+            var device = new Repository.Models.Devices.Device()
+            {
+                BatteryLevel = 100,
+                Id = 2,
+                Name = "name",
+                SignalLevel = -10
+            };
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.BoolParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = true
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.FloatParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = 100
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.IntParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = -10
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.StringParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = "string"
+            });
+
+            device.Parameters.Add(new Repository.Models.Devices.Parameters.UIntParameter()
+            {
+                Id = 1,
+                Name = "name",
+                ParameterType = ParameterType.Voltage,
+                Units = "units",
+                Value = 7896
+            });
+
+            var plugInInstance = new PlugInInstance()
+            {
+                Id = 3
+            };
+
+            plugInInstance.Devices.Add(device);
+
+            return plugInInstance;
         }
     }
 }

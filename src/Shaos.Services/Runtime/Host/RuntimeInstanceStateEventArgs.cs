@@ -22,37 +22,33 @@
 * SOFTWARE.
 */
 
-using Moq;
-using Shaos.Services.Runtime;
-using Shaos.Services.Runtime.Host;
-using Xunit;
-
-namespace Shaos.Services.UnitTests.Runtime.Host
+namespace Shaos.Services.Runtime.Host
 {
-    public class InstanceLoadContextTests
+    /// <summary>
+    /// An event that represents an <see cref="RuntimeInstance"/> state change
+    /// </summary>
+    public class RuntimeInstanceStateEventArgs : EventArgs
     {
-        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
-        private InstanceLoadContext _instanceLoadContext;
-
-        public InstanceLoadContextTests()
+        /// <summary>
+        /// Create an instance of a <see cref="RuntimeInstanceStateEventArgs"/>
+        /// </summary>
+        /// <param name="id">The <see cref="RuntimeInstance"/> who's state changed</param>
+        /// <param name="state">The new state of the <see cref="RuntimeInstance"/></param>
+        public RuntimeInstanceStateEventArgs(int id,
+                                             RuntimeInstanceState state)
         {
-            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+            Id = id;
+            State = state;
         }
 
-        [Fact]
-        public void TestDispose()
-        {
-            _mockRuntimeAssemblyLoadContext
-                .Setup(_ => _.LoadFromAssemblyPath(It.IsAny<string>()))
-                .Returns(new Object().GetType().Assembly);
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> identifier
+        /// </summary>
+        public int Id { get; init; }
 
-            _instanceLoadContext = new InstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
-
-            Assert.NotNull(_instanceLoadContext.Assembly);
-
-            _instanceLoadContext.Dispose();
-
-            Assert.Null(_instanceLoadContext.Assembly);
-        }
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> state change
+        /// </summary>
+        public RuntimeInstanceState State { get; init; }
     }
 }

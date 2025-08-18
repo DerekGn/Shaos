@@ -35,7 +35,8 @@ namespace Shaos.Test.PlugIn.Invalid
         {
         }
 
-        public Task ExecuteAsync(CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

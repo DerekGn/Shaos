@@ -25,6 +25,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Shaos.Services.Runtime.Host;
 using Shaos.Sdk;
+using Shaos.Sdk.Exceptions;
 
 namespace Shaos.Services.Runtime.Exceptions
 {
@@ -35,7 +36,7 @@ namespace Shaos.Services.Runtime.Exceptions
     public class PlugInInstanceTypeNotCreatedException(int id) : Exception
     {
         /// <summary>
-        /// The identifier of the <see cref="Instance"/>
+        /// The identifier of the <see cref="RuntimeInstance"/>
         /// </summary>
         public int Id { get; } = id;
     }

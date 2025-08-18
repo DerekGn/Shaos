@@ -14,10 +14,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Shaos.Sdk\Shaos.Sdk.csproj">
-            <Private>false</Private>
+        <PackageReference Include="Shaos.Sdk" Version="0.7.6-beta">
             <ExcludeAssets>runtime</ExcludeAssets>
-        </ProjectReference>
+        </PackageReference>
     </ItemGroup>
 
     <Target Name="ZipOutput" AfterTargets="Build">

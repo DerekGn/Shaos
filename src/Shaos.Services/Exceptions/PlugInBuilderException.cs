@@ -22,16 +22,20 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk
+using Shaos.Sdk;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// The PlugIn configuration attribute
+    /// An exception that is thrown when the <see cref="IPlugInBuilder"/> cannot construct a <see cref="IPlugIn"/> instance
     /// </summary>
     /// <remarks>
-    /// Applied to a class that is a <see cref="IPlugIn"/> instance configuration
+    /// Create an instance of a <see cref="PlugInBuilderException"/>
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class PlugInConfigurationClassAttribute : Attribute
+    /// <param name="message">An associated message</param>
+    [ExcludeFromCodeCoverage]
+    public class PlugInBuilderException(string message) : Exception(message)
     {
     }
 }

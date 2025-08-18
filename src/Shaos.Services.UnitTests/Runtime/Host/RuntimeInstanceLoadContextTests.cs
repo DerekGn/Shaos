@@ -22,17 +22,37 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Sdk
+using Moq;
+using Shaos.Services.Runtime;
+using Shaos.Services.Runtime.Host;
+using Xunit;
+
+namespace Shaos.Services.UnitTests.Runtime.Host
 {
-    /// <summary>
-    /// Defines the interface for a PlugIn
-    /// </summary>
-    public interface IPlugIn : IDisposable
+    public class RuntimeInstanceLoadContextTests
     {
-        /// <summary>
-        /// The entry point of the<see cref="IPlugIn"/> instance
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the <see cref="IPlugIn"/> method execution</param>
-        Task ExecuteAsync(CancellationToken cancellationToken);
+        private readonly Mock<IRuntimeAssemblyLoadContext> _mockRuntimeAssemblyLoadContext;
+        private RuntimeInstanceLoadContext? _instanceLoadContext;
+
+        public RuntimeInstanceLoadContextTests()
+        {
+            _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
+        }
+
+        [Fact]
+        public void TestDispose()
+        {
+            _mockRuntimeAssemblyLoadContext
+                .Setup(_ => _.LoadFromAssemblyPath(It.IsAny<string>()))
+                .Returns(new Object().GetType().Assembly);
+
+            _instanceLoadContext = new RuntimeInstanceLoadContext(_mockRuntimeAssemblyLoadContext.Object);
+
+            Assert.NotNull(_instanceLoadContext.Assembly);
+
+            _instanceLoadContext.Dispose();
+
+            Assert.Null(_instanceLoadContext.Assembly);
+        }
     }
 }

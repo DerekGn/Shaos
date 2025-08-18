@@ -25,20 +25,20 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
+using Shaos.Sdk.Devices;
+using Shaos.Sdk.Devices.Parameters;
 
 [assembly: ExcludeFromCodeCoverage]
 
 namespace Shaos.Test.PlugIn
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugIn : PlugInBase, IPlugIn
+    public class TestPlugIn : PlugInBase
     {
-        private readonly ILogger<TestPlugIn> _logger;
         private readonly TestPlugInConfiguration _configuration;
-        
-        public TestPlugIn(
-            ILogger<TestPlugIn> logger,
-            TestPlugInConfiguration configuration)
+        private readonly ILogger<TestPlugIn> _logger;
+        public TestPlugIn(ILogger<TestPlugIn> logger,
+                          TestPlugInConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(configuration);
@@ -47,17 +47,34 @@ namespace Shaos.Test.PlugIn
             _configuration = configuration;
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Starting [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
+
+            await CreateDevicesAsync();
 
             do
             {
                 await Task.Delay(_configuration.Delay, cancellationToken);
                 _logger.LogInformation("Executing [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
+                Devices.First().SignalLevel!.Level = 1;
+                Devices.First().BatteryLevel!.Level = 10;
             } while (!cancellationToken.IsCancellationRequested);
 
             _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
+        }
+
+        private async Task CreateDevicesAsync()
+        {
+            if(!Devices.Any(_ => _.Name == "TestDevice"))
+            {
+                List<IBaseParameter> baseParameters =
+                [
+                    new IntParameter(0, "Test Parameter", "Units", ParameterType.Frequency)
+                ];
+
+                await Devices.AddAsync(new Device("TestDevice", baseParameters, 100, -1));
+            }
         }
     }
 }

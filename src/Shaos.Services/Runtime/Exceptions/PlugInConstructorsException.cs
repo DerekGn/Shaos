@@ -23,6 +23,7 @@
 */
 
 using Shaos.Sdk;
+using Shaos.Sdk.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Services.Runtime.Exceptions

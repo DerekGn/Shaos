@@ -22,21 +22,38 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-using Shaos.Services.Runtime.Host;
-
-namespace Shaos.Services.Runtime.Exceptions
+namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="Instance"/> that has no configuration
+    /// The execution state of a <see cref="RuntimeInstance"/>
     /// </summary>
-    /// <param name="id">The identifier of the <see cref="Instance"/></param>
-    [ExcludeFromCodeCoverage]
-    public class InstanceNotConfiguredException(int id) : Exception
+    public enum RuntimeInstanceState
     {
         /// <summary>
-        /// The identifier of the <see cref="Instance"/>
+        /// The initial <see cref="RuntimeInstance"/> state
         /// </summary>
-        public int Id { get; } = id;
+        None,
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> is starting
+        /// </summary>
+        Starting,
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> is running
+        /// </summary>
+        Running,
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> is complete.
+        /// </summary>
+        /// <remarks>
+        /// This is the result of the <see cref="RuntimeInstance"/> self terminating or <see cref="RuntimeInstance"/> being stopped.
+        /// </remarks>
+        Complete,
+        /// <summary>
+        /// The <see cref="RuntimeInstance"/> is faulted
+        /// </summary>
+        /// <remarks>
+        /// This is the result of the <see cref="RuntimeInstance"/> self terminating due to an exception.
+        /// </remarks>
+        Faulted
     }
 }

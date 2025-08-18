@@ -31,14 +31,14 @@ namespace Shaos.Testing.Shared
     public abstract class BaseRuntimeServiceTests : BaseTests
     {
         private readonly AutoResetEvent _autoResetEvent;
-        private InstanceState _waitingState;
+        private RuntimeInstanceState _waitingState;
 
         protected BaseRuntimeServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
             _autoResetEvent = new AutoResetEvent(false);
         }
 
-        protected internal static void SetupPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
+        protected internal static void SetUpPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
         {
             plugIn = new PlugIn()
             {
@@ -46,12 +46,6 @@ namespace Shaos.Testing.Shared
                 Name = "plugin",
                 Description = "description"
             };
-
-#warning TODO
-            //plugIn.Package = new Package()
-            //{
-            //    AssemblyFile = BaseTestFixture.AssemblyFileName
-            //};
 
             plugInInstance = new PlugInInstance()
             {
@@ -61,7 +55,7 @@ namespace Shaos.Testing.Shared
             };
         }
 
-        protected internal void RuntimeServiceInstanceStateChanged(object? sender, InstanceStateEventArgs e)
+        protected internal void RuntimeServiceInstanceStateChanged(object? sender, RuntimeInstanceStateEventArgs e)
         {
             if (e.State == _waitingState)
             {
@@ -69,7 +63,7 @@ namespace Shaos.Testing.Shared
             }
         }
 
-        protected internal void SetupStateWait(InstanceState state)
+        protected internal void SetUpStateWait(RuntimeInstanceState state)
         {
             _autoResetEvent.Reset();
 

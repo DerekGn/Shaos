@@ -29,18 +29,18 @@ using Xunit;
 
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
-    public class InstanceExecutionContextTests
+    public class RuntimeExecutionContextTests
     {
-        private readonly InstanceExecutionContext _instanceExecutionContext;
+        private readonly RuntimeExecutionContext _instanceExecutionContext;
         private readonly Mock<IPlugIn> _mockPlugIn;
         private bool _executed;
         private bool _completed;
 
-        public InstanceExecutionContextTests()
+        public RuntimeExecutionContextTests()
         {
             _mockPlugIn = new Mock<IPlugIn>();
 
-            _instanceExecutionContext = new InstanceExecutionContext(_mockPlugIn.Object);
+            _instanceExecutionContext = new RuntimeExecutionContext(_mockPlugIn.Object);
         }
 
         [Fact]

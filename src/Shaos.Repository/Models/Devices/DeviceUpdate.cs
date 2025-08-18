@@ -22,29 +22,26 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models;
-
-namespace Shaos.Services.Runtime.Host
+namespace Shaos.Repository.Models.Devices
 {
     /// <summary>
-    /// The runtime configuration options
+    /// A device update base update
     /// </summary>
-    public class InstanceHostOptions
+    public abstract class DeviceUpdate : BaseEntity
     {
         /// <summary>
-        /// The maximum number of <see cref="Instance"/> that can be executed in parallel
+        /// The update time stamp
         /// </summary>
-        /// <remarks>
-        /// Defaults to 50
-        /// </remarks>
-        public int MaxExecutingInstances { get; init; } = 50;
+        public DateTime TimeStamp { get; set; }
 
         /// <summary>
-        /// The wait time for a <see cref="PlugIn"/> stop request
+        /// The parent <see cref="Device"/>
         /// </summary>
-        /// <remarks>
-        /// Defaults to 1 second
-        /// </remarks>
-        public TimeSpan TaskStopTimeout { get; init; } = TimeSpan.FromSeconds(1);
+        public required Device Device { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="Device"/> identifier
+        /// </summary>
+        public required int DeviceId { get; set; }
     }
 }

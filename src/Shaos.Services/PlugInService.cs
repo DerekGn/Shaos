@@ -42,24 +42,24 @@ namespace Shaos.Services
         private const string PlugInNamePostFix = ".PlugIn.dll";
 
         private readonly IFileStoreService _fileStoreService;
-        private readonly IInstanceHost _instanceHost;
+        private readonly IRuntimeInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
         private readonly IPlugInTypeValidator _plugInTypeValidator;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
-        private readonly IShaosRepository _repository;
+        private readonly IRepository _repository;
 
         /// <summary>
         /// Create an instance of a <see cref="PlugInService"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/></param>
-        /// <param name="instanceHost">The <see cref="IInstanceHost"/> instance</param>
-        /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
+        /// <param name="instanceHost">The <see cref="IRuntimeInstanceHost"/> instance</param>
+        /// <param name="repository">The <see cref="IRepository"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="plugInTypeValidator">The <see cref="IPlugInTypeValidator"/> instance</param>
         /// <param name="plugInConfigurationBuilder"></param>
         public PlugInService(ILogger<PlugInService> logger,
-                             IInstanceHost instanceHost,
-                             IShaosRepository repository,
+                             IRuntimeInstanceHost instanceHost,
+                             IRepository repository,
                              IFileStoreService fileStoreService,
                              IPlugInTypeValidator plugInTypeValidator,
                              IPlugInConfigurationBuilder plugInConfigurationBuilder)
@@ -95,7 +95,7 @@ namespace Shaos.Services
                                                  plugIn.Id,
                                                  plugInInstance.Name,
                                                  _fileStoreService.GetAssemblyPath(plugIn.Id, package.AssemblyFile),
-                                                 new InstanceConfiguration(package!.HasConfiguration));
+                                                 package.HasConfiguration);
                 }
                 else
                 {
@@ -145,7 +145,7 @@ namespace Shaos.Services
 
             if (instance != null)
             {
-                if (instance.State == InstanceState.Running)
+                if (instance.State == RuntimeInstanceState.Running)
                 {
                     _logger.LogWarning("Instance [{Id}] Running", id);
 
@@ -214,7 +214,7 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                if (VerifyPlugState(plugIn, InstanceState.Running, out var ids))
+                if (VerifyPlugState(plugIn, RuntimeInstanceState.Running, out var ids))
                 {
                     _logger.LogError("Found running PlugIn Instances Id: [{Id}]", string.Join(",", ids));
 
@@ -265,7 +265,7 @@ namespace Shaos.Services
                 {
                     var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
 
-                    if (instance != null && instance.State == InstanceState.Running)
+                    if (instance != null && instance.State == RuntimeInstanceState.Running)
                     {
                         _logger.LogDebug("Found running instance [{Id}]", plugInInstanceId);
                         plugInInstanceId = id;
@@ -352,7 +352,7 @@ namespace Shaos.Services
         }
 
         private bool VerifyPlugState(PlugIn plugIn,
-                                     InstanceState state,
+                                     RuntimeInstanceState state,
                                      out List<int> runningInstanceIds)
         {
             runningInstanceIds = [.. _instanceHost.Instances

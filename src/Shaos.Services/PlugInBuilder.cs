@@ -23,9 +23,11 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Repository.Models;
 using Shaos.Sdk;
+using Shaos.Services.Exceptions;
+using Shaos.Services.Extensions;
 using Shaos.Services.Json;
-using Shaos.Services.Runtime.Host;
 using System.Reflection;
 
 namespace Shaos.Services
@@ -53,28 +55,58 @@ namespace Shaos.Services
 
                 return plugin;
             }
+            internal set => _plugin = value;
         }
 
         /// <inheritdoc/>
         public void Load(Assembly assembly,
-                         InstanceConfiguration instanceConfiguration)
+                         string? configuration)
         {
             ArgumentNullException.ThrowIfNull(assembly);
 
             var plugInType = ResolvePlugInType(assembly);
 
-            _logger.LogDebug("Resolved PlugIn: [{Name}] from Assembly: [{Assembly}]", plugInType.Name, assembly.FullName);
+            _logger.LogDebug("Resolved PlugIn: [{Name}] from Assembly: [{Assembly}]",
+                             plugInType.Name,
+                             assembly.FullName);
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
-            object? configuration = LoadConfiguration(assembly, instanceConfiguration);
+            object? configurationInstance = LoadConfiguration(assembly, configuration);
 
-            if (configuration != null)
+            if (configurationInstance != null)
             {
-                constructorParameters.Add(configuration);
+                constructorParameters.Add(configurationInstance);
             }
 
             _plugin = Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
+        }
+
+        /// <inheritdoc/>
+        public void Restore(PlugInInstance plugInInstance)
+        {
+            ArgumentNullException.ThrowIfNull(plugInInstance);
+
+            if (_plugin == null)
+            {
+                throw new PlugInInstanceNotLoadedException();
+            }
+
+            foreach (var device in plugInInstance.Devices)
+            {
+                _plugin.Devices.Add(device.ToSdk());
+            }
+
+            AssignPlugInIdentifier(plugInInstance.Id);
+        }
+
+        private void AssignPlugInIdentifier(int id)
+        {
+            var baseType = _plugin!.GetType().BaseType ?? throw new PlugInBuilderException("IPlugIn instance has no base type");
+            var propertyInfo = baseType.GetProperty(nameof(IPlugIn.Id)) ?? throw new PlugInBuilderException("IPlugIn instance base type has no Id property setter");
+            var setMethod = propertyInfo.GetSetMethod(true) ?? throw new PlugInBuilderException("IPlugIn instance Id property has no setter");
+
+            setMethod.Invoke(_plugin, [id]);
         }
 
         private List<object> GetConstructorParameters(Type plugInType)
@@ -112,22 +144,17 @@ namespace Shaos.Services
         }
 
         private object? LoadConfiguration(Assembly assembly,
-                                          InstanceConfiguration instanceConfiguration)
+                                          string? configuration)
         {
-            object? configuration = null;
+            object? configurationInstance = CreateConfigurationInternal(assembly);
 
-            if (instanceConfiguration.RequiresConfiguration)
+            if (!configuration!.IsEmptyOrWhiteSpace())
             {
-                configuration = CreateConfigurationInternal(assembly);
-
-                if (instanceConfiguration.IsConfigured)
-                {
-                    configuration = Utf8JsonSerializer.Deserialize(instanceConfiguration.Configuration!,
-                                                                   configuration!.GetType());
-                }
+                configurationInstance = Utf8JsonSerializer.Deserialize(configuration!,
+                                                                       configurationInstance!.GetType());
             }
 
-            return configuration;
+            return configurationInstance;
         }
     }
 }

@@ -22,38 +22,16 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Runtime.Host
+namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// The execution state of a <see cref="Instance"/>
+    /// Represents a boolean parameter
     /// </summary>
-    public enum InstanceState
+    public class BoolParameter : BaseParameter
     {
         /// <summary>
-        /// The initial <see cref="Instance"/> state
+        /// The boolean value
         /// </summary>
-        None,
-        /// <summary>
-        /// The <see cref="Instance"/> is starting
-        /// </summary>
-        Starting,
-        /// <summary>
-        /// The <see cref="Instance"/> is running
-        /// </summary>
-        Running,
-        /// <summary>
-        /// The <see cref="Instance"/> is complete.
-        /// </summary>
-        /// <remarks>
-        /// This is the result of the <see cref="Instance"/> self terminating or <see cref="Instance"/> being stopped.
-        /// </remarks>
-        Complete,
-        /// <summary>
-        /// The <see cref="Instance"/> is faulted
-        /// </summary>
-        /// <remarks>
-        /// This is the result of the <see cref="Instance"/> self terminating due to an exception.
-        /// </remarks>
-        Faulted
+        public bool Value { get; set; }
     }
 }

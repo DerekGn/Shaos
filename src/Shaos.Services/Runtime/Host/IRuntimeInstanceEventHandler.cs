@@ -22,33 +22,28 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
+
 namespace Shaos.Services.Runtime.Host
 {
     /// <summary>
-    /// An event that represents an <see cref="Instance"/> state change
+    /// A runtime instance event handler.
     /// </summary>
-    public class InstanceStateEventArgs : EventArgs
+    /// <remarks>
+    /// A centralised event handler for <see cref="IPlugIn"/> events
+    /// </remarks>
+    public interface IRuntimeInstanceEventHandler
     {
         /// <summary>
-        /// Create an instance of a <see cref="InstanceStateEventArgs"/>
+        /// Attach a <see cref="IPlugIn"/> instance to the event handler
         /// </summary>
-        /// <param name="id">The <see cref="Instance"/> who's state changed</param>
-        /// <param name="state">The new state of the <see cref="Instance"/></param>
-        public InstanceStateEventArgs(int id,
-                                      InstanceState state)
-        {
-            Id = id;
-            State = state;
-        }
+        /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
+        void Attach(IPlugIn plugIn);
 
         /// <summary>
-        /// The <see cref="Instance"/> identifier
+        /// Detach a <see cref="IPlugIn"/> instance from the event handler
         /// </summary>
-        public int Id { get; init; }
-
-        /// <summary>
-        /// The <see cref="Instance"/> state change
-        /// </summary>
-        public InstanceState State { get; init; }
+        /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
+        void Detach(IPlugIn plugIn);
     }
 }

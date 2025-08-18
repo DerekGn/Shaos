@@ -29,7 +29,7 @@ using Shaos.Repository.Models;
 namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// The <see cref="LogLevelSwitch"/> configuration
+    /// The <see cref="LogLevelSwitch"/> EF configuration
     /// </summary>
     public class LogLevelSwitchEntityTypeConfiguration : IEntityTypeConfiguration<LogLevelSwitch>
     {
