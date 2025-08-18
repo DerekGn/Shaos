@@ -133,6 +133,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
             {
+                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                 parameter.Id,
+                                 parameter.Name,
+                                 parameter.Value);
+
                 parameter.Value = e.Value;
             });
         }
@@ -142,6 +147,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
             {
+                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                 parameter.Id,
+                                 parameter.Name,
+                                 parameter.Value);
+
                 parameter.Value = e.Value;
             });
         }
@@ -151,6 +161,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
             {
+                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                 parameter.Id,
+                                 parameter.Name,
+                                 parameter.Value);
+
                 parameter.Value = e.Value;
             });
         }
@@ -160,6 +175,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
             {
+                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                 parameter.Id,
+                                 parameter.Name,
+                                 parameter.Value);
+
                 parameter.Value = e.Value;
             });
         }
@@ -169,6 +189,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
             {
+                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                 parameter.Id,
+                                 parameter.Name,
+                                 parameter.Value);
+
                 parameter.Value = e.Value;
             });
         }
