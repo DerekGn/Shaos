@@ -85,7 +85,7 @@ namespace Shaos.Services.Runtime.Factories
                                   .ToList();
 
             var configurationType = (from parameterType in parameterTypes
-                                     where parameterType.GetCustomAttributes<PlugInConfigurationAttribute>().Any()
+                                     where parameterType.GetCustomAttributes<PlugInConfigurationClassAttribute>().Any()
                                      select parameterType)
                                           .FirstOrDefault();
 

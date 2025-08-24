@@ -167,7 +167,7 @@ namespace Shaos.Services.Runtime.Validation
 
             var lastConstructorParameterType = parameterTypes.Except([loggerType]).FirstOrDefault();
 
-            if (lastConstructorParameterType != null && !lastConstructorParameterType!.IsClass && lastConstructorParameterType.GetCustomAttributes<PlugInConfigurationAttribute>() != null)
+            if (lastConstructorParameterType != null && !lastConstructorParameterType!.IsClass && lastConstructorParameterType.GetCustomAttributes<PlugInConfigurationClassAttribute>() != null)
             {
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{lastConstructorParameterType}]");
             }
@@ -182,11 +182,11 @@ namespace Shaos.Services.Runtime.Validation
                                                 out string? name,
                                                 out string? description)
         {
-            var attribute = Attribute.GetCustomAttribute(plugInType, typeof(PlugInAttribute));
+            var attribute = Attribute.GetCustomAttribute(plugInType, typeof(PlugInDescriptionAttribute));
 
             if (attribute != null)
             {
-                var plugInAttribute = attribute as PlugInAttribute;
+                var plugInAttribute = attribute as PlugInDescriptionAttribute;
                 name = plugInAttribute!.Name;
                 description = plugInAttribute!.Description;
             }

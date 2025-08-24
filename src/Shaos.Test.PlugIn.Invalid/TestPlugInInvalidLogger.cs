@@ -29,7 +29,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugInInvalidLogger : PlugInBase, IPlugIn
+    public class TestPlugInInvalidLogger : PlugInBase
     {
 #pragma warning disable S6672 // Generic logger injection should match enclosing type
         public TestPlugInInvalidLogger(ILogger<TestPlugIn> logger)
@@ -38,7 +38,7 @@ namespace Shaos.Test.PlugIn.Invalid
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();

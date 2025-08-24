@@ -29,14 +29,14 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugInValidLoggerWithInvalid : PlugInBase, IPlugIn
+    public class TestPlugInValidLoggerWithInvalid : PlugInBase
     {
         public TestPlugInValidLoggerWithInvalid(ILogger<TestPlugInValidLoggerWithInvalid> logger, int i)
         {
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             throw new NotImplementedException();

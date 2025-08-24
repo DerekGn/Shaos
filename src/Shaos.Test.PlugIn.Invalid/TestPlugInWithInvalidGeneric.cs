@@ -29,13 +29,13 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    public class TestPlugInWithInvalidGeneric : PlugInBase, IPlugIn
+    public class TestPlugInWithInvalidGeneric : PlugInBase
     {
         public TestPlugInWithInvalidGeneric(IOptions<TestOption> options)
         {
         }
 
-        public Task ExecuteAsync(CancellationToken cancellationToken)
+        public override Task ExecuteAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

@@ -28,7 +28,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Shaos.Test.PlugIn
 {
-    [PlugInConfiguration]
+    [PlugInConfigurationClass]
     [ExcludeFromCodeCoverage]
     public class TestPlugInConfiguration
     {
