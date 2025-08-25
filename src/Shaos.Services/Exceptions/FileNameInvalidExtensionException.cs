@@ -27,7 +27,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// Throw when a file name has an invalid extension
+    /// Thrown when a file name has an invalid extension
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class FileNameInvalidExtensionException : Exception
