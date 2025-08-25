@@ -23,6 +23,7 @@
 */
 
 using Microsoft.AspNetCore.Http;
+using Shaos.Services.Exceptions;
 
 namespace Shaos.Services.Validation
 {
@@ -35,28 +36,28 @@ namespace Shaos.Services.Validation
         private readonly string[] permittedExtensions = { ".zip" };
 
         /// <inheritdoc/>
-        public FileValidationResult ValidateFile(IFormFile formFile)
+        public void ValidateFile(IFormFile formFile)
         {
-            FileValidationResult result = FileValidationResult.Success;
-
-            if (string.IsNullOrEmpty(formFile.FileName))
+            if (string.IsNullOrWhiteSpace(formFile.ContentType))
             {
-                result = FileValidationResult.FileNameEmpty;
+                throw new FileContentInvalidException(formFile.FileName, formFile.ContentType, formFile.Length);
             }
             else if (!formFile.ContentType.Equals(ContentType, StringComparison.CurrentCultureIgnoreCase))
             {
-                result = FileValidationResult.InvalidContentType;
-            }
-            else if (!ValidFileName(formFile.FileName))
-            {
-                result = FileValidationResult.InvalidFileName;
+                throw new FileContentInvalidException(formFile.FileName, formFile.ContentType, formFile.Length);
             }
             else if (formFile.Length == 0)
             {
-                result = FileValidationResult.InvalidFileLength;
+                throw new FileLengthInvalidException(formFile.FileName, formFile.ContentType, formFile.Length);
             }
-
-            return result;
+            else if (string.IsNullOrEmpty(formFile.FileName))
+            {
+                throw new FileNameEmptyException();
+            }
+            else if (!ValidFileName(formFile.FileName))
+            {
+                throw new FileNameInvalidExtensionException(formFile.FileName, formFile.ContentType, formFile.Length);
+            }
         }
 
         private bool ValidFileName(string fileName)

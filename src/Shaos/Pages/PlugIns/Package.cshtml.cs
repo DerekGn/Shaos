@@ -36,22 +36,24 @@ namespace Shaos.Pages.PlugIns
 {
     public class PackageModel : PageModel
     {
-        private readonly IZipFileValidationService _codeFileValidationService;
+        private readonly ILogger<PackageModel> _logger;
         private readonly IPlugInService _plugInService;
         private readonly IRepository _repository;
+        private readonly IZipFileValidationService _zipFileValidationService;
 
-        public PackageModel(
-            IRepository repository,
-            IPlugInService plugInService,
-            IZipFileValidationService codeFileValidationService)
+        public PackageModel(ILogger<PackageModel> logger,
+                            IRepository repository,
+                            IPlugInService plugInService,
+                            IZipFileValidationService zipFileValidationService)
         {
             ArgumentNullException.ThrowIfNull(repository);
             ArgumentNullException.ThrowIfNull(plugInService);
-            ArgumentNullException.ThrowIfNull(codeFileValidationService);
+            ArgumentNullException.ThrowIfNull(zipFileValidationService);
 
+            _logger = logger;
             _repository = repository;
             _plugInService = plugInService;
-            _codeFileValidationService = codeFileValidationService;
+            _zipFileValidationService = zipFileValidationService;
         }
 
         [BindProperty]
@@ -89,16 +91,43 @@ namespace Shaos.Pages.PlugIns
                 return Page();
             }
 
-            string? validation = ValidatePackageFile(PackageFile);
-            
-            if (validation != null)
+            try
             {
-                ModelState.AddModelError(string.Empty, validation);
+                _zipFileValidationService.ValidateFile(PackageFile);
+            }
+            catch (FileContentInvalidException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid content type: [{ex.ContentType}]");
+            }
+            catch (FileLengthInvalidException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid file length: [{ex.FileLength}]");
+            }
+            catch (FileNameEmptyException)
+            {
+                ModelState.AddModelError(string.Empty, "The file name is empty");
+            }
+            catch (FileNameInvalidExtensionException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has an invalid extension.");
+            }
+            catch (NoValidPlugInAssemblyFoundException)
+            {
+                ModelState.AddModelError(string.Empty, $"No valid assembly file found [{PackageFile.FileName}]");
+            }
+            catch (PlugInTypeNotFoundException)
+            {
+                ModelState.AddModelError(string.Empty, $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]");
+            }
+            catch (PlugInTypesFoundException)
+            {
+                ModelState.AddModelError(string.Empty, $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{PackageFile.FileName}]");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Exception occurred check the logs");
 
-                return RedirectToPage(new
-                {
-                    id = PlugIn!.Id
-                });
+                _logger.LogWarning(ex, "A exception occurred");
             }
 
             string? packageValidation = await ValidatePackageAsync(cancellationToken);
@@ -135,49 +164,16 @@ namespace Shaos.Pages.PlugIns
             {
                 result = $"No valid assembly file found [{PackageFile.FileName}]";
             }
-            catch(PlugInTypeNotFoundException)
+            catch (PlugInTypeNotFoundException)
             {
                 result = $"No valid [{nameof(IPlugIn)}] implementation found in package file [{PackageFile.FileName}]";
             }
-            catch(PlugInTypesFoundException)
+            catch (PlugInTypesFoundException)
             {
                 result = $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{PackageFile.FileName}]";
             }
 
             return result;
-        }
-
-        private string? ValidatePackageFile(IFormFile formFile)
-        {
-            var validationResult = _codeFileValidationService.ValidateFile(formFile);
-            string? validation = null;
-
-            switch (validationResult)
-            {
-                case FileValidationResult.Success:
-                    break;
-
-                case FileValidationResult.FileNameEmpty:
-                    validation = "File name is empty";
-                    break;
-
-                case FileValidationResult.InvalidContentType:
-                    validation = $"File: [{formFile.FileName}] invalid content type";
-                    break;
-
-                case FileValidationResult.InvalidFileName:
-                    validation = $"File: [{formFile.Name}] has invalid length";
-                    break;
-
-                case FileValidationResult.InvalidFileLength:
-                    validation = $"File: [{formFile.Name}] has invalid type";
-                    break;
-
-                default:
-                    break;
-            }
-
-            return validation;
         }
     }
 }

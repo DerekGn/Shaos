@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Shaos.Sdk" Version="0.7.6-beta">
+        <PackageReference Include="Shaos.Sdk" Version="0.7.7-beta">
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
