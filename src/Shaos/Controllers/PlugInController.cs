@@ -417,7 +417,7 @@ namespace Shaos.Controllers
             }
             catch (FileNameInvalidExtensionException)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid file extension");
             }
             catch (Exception exception)
             {
