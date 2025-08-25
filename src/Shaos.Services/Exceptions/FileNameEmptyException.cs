@@ -22,24 +22,15 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Http;
-using Shaos.Services.Exceptions;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services.Validation
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// A zip file validation service interface
+    /// Thrown when a file contains an empty name
     /// </summary>
-    public interface IZipFileValidationService
+    [ExcludeFromCodeCoverage]
+    public class FileNameEmptyException : Exception
     {
-        /// <summary>
-        /// Validate a <see cref="IFormFile"/> instance
-        /// </summary>
-        /// <param name="formFile">The <see cref="IFormFile"/> to validate</param>
-        /// <exception cref="FileContentInvalidException">Thrown when the file content type is invalid</exception>
-        /// <exception cref="FileLengthInvalidException">Thrown when the file length is invalid</exception>
-        /// <exception cref="FileNameEmptyException">Thrown when the file name is empty</exception>
-        /// <exception cref="FileNameInvalidExtensionException">Thrown when the file extension is invalid</exception>
-        void ValidateFile(IFormFile formFile);
     }
 }

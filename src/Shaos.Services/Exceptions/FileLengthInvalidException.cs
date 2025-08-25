@@ -22,32 +22,44 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Validation
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// The file validation result
+    /// Thrown when a file has an invalid length
     /// </summary>
-    public enum FileValidationResult
+    [ExcludeFromCodeCoverage]
+    public class FileLengthInvalidException : Exception
     {
+        /// <param name="fileName">The file name</param>
+        /// <param name="contentType">The content</param>
+        /// <param name="fileLength">The file length</param>
+        public FileLengthInvalidException(string fileName,
+                                          string contentType,
+                                          long fileLength)
+        {
+            ArgumentNullException.ThrowIfNull(fileName);
+            ArgumentNullException.ThrowIfNull(contentType);
+
+            FileName = fileName;
+            ContentType = contentType;
+            FileLength = fileLength;
+        }
+
         /// <summary>
-        /// Indicates that the validation is successful
+        /// The file content
         /// </summary>
-        Success,
+        public string ContentType { get; }
+
         /// <summary>
-        /// Indicates that the filename is empty
+        /// The file length
         /// </summary>
-        FileNameEmpty,
+        public long FileLength { get; }
+
         /// <summary>
-        /// Indicates that the file content is invalid
+        /// The file name
         /// </summary>
-        InvalidContentType,
-        /// <summary>
-        /// Indicates that the file name is invalid
-        /// </summary>
-        InvalidFileName,
-        /// <summary>
-        /// Indicates that the file content length is invalid
-        /// </summary>
-        InvalidFileLength,
+        public string FileName { get; }
     }
 }
