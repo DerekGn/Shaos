@@ -44,7 +44,8 @@ namespace Shaos.Services.Runtime.Validation
         /// <exception cref="FileNotFoundException">Thrown if <paramref name="assemblyFile"/> does not exist</exception>
         /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the <paramref name="assemblyFile"/></exception>
         /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the <paramref name="assemblyFile"/></exception>
-        /// <returns>A <see cref="PlugInTypeInformation"/> which contains information about a <see cref="IPlugIn"/> instance</returns>
-        PlugInTypeInformation Validate(string assemblyFile);
+        /// <exception cref="PlugInDescriptionAttributeNotFoundException">Thrown when no <see cref="PlugInDescriptionAttribute"/> is found on <see cref="IPlugIn"/></exception>
+        /// <returns>A <see cref="PlugInInformation"/> which contains information about a <see cref="IPlugIn"/> instance</returns>
+        PlugInInformation Validate(string assemblyFile);
     }
 }

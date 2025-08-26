@@ -29,6 +29,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
+    [PlugInDescription("Name", "Description")]
     public class TestPlugInWithInvalidGeneric : PlugInBase, IPlugIn
     {
         public TestPlugInWithInvalidGeneric(IOptions<TestOption> options)

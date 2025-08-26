@@ -281,7 +281,7 @@ namespace Shaos.Services
         private async Task CreateOrUpdatePlugInPackageAsync(PlugIn plugIn,
                                                             string packagFileName,
                                                             string assemblyFileName,
-                                                            PlugInTypeInformation plugInTypeInformation,
+                                                            PlugInInformation plugInInformation,
                                                             CancellationToken cancellationToken)
         {
             if (plugIn.Package == null)
@@ -289,15 +289,15 @@ namespace Shaos.Services
                 _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
                     plugIn.Id,
                     assemblyFileName,
-                    plugInTypeInformation.AssemblyVersion);
+                    plugInInformation.AssemblyVersion);
 
                 var package = new Package()
                 {
                     AssemblyFile = assemblyFileName,
-                    AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString(),
+                    AssemblyVersion = plugInInformation.AssemblyVersion.ToString(),
                     FileName = packagFileName,
-                    HasConfiguration = plugInTypeInformation.HasConfiguration,
-                    HasLogger = plugInTypeInformation.HasLogger
+                    HasConfiguration = plugInInformation.HasConfiguration,
+                    HasLogger = plugInInformation.HasLogger
                 };
 
                 await _repository.CreatePackageAsync(plugIn,
@@ -309,13 +309,13 @@ namespace Shaos.Services
                 _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
                     plugIn.Id,
                     assemblyFileName,
-                    plugInTypeInformation.AssemblyVersion.ToString());
+                    plugInInformation.AssemblyVersion.ToString());
 
                 plugIn.Package.AssemblyFile = assemblyFileName;
-                plugIn.Package.AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString();
+                plugIn.Package.AssemblyVersion = plugInInformation.AssemblyVersion.ToString();
                 plugIn.Package.FileName = packagFileName;
-                plugIn.Package.HasConfiguration = plugInTypeInformation.HasConfiguration;
-                plugIn.Package.HasLogger = plugInTypeInformation.HasLogger;
+                plugIn.Package.HasConfiguration = plugInInformation.HasConfiguration;
+                plugIn.Package.HasLogger = plugInInformation.HasLogger;
 
                 await _repository.SaveChangesAsync(cancellationToken);
             }

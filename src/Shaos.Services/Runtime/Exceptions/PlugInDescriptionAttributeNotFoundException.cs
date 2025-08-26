@@ -22,27 +22,16 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Test.PlugIn.Invalid
+namespace Shaos.Services.Runtime.Exceptions
 {
+    /// <summary>
+    /// Thrown when a <see cref="PlugInDescriptionAttribute"/> was not found on <see cref="IPlugIn"/> instance
+    /// </summary>
     [ExcludeFromCodeCoverage]
-    [PlugInDescription("Name", "Description")]
-    public class TestPlugInInvalidLogger : PlugInBase, IPlugIn
+    public class PlugInDescriptionAttributeNotFoundException : Exception
     {
-#pragma warning disable S6672 // Generic logger injection should match enclosing type
-        public TestPlugInInvalidLogger(ILogger<TestPlugIn> logger)
-#pragma warning restore S6672 // Generic logger injection should match enclosing type
-        {
-        }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public override async Task ExecuteAsync(CancellationToken cancellationToken)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            throw new NotImplementedException();
-        }
     }
 }
