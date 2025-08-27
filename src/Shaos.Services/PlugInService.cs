@@ -169,6 +169,46 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public async Task<PackageInformation> ExtractPackageInformationAsync(string packageFileName,
+                                                                       Stream packageFileStream,
+                                                                       CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentNullException.ThrowIfNull(packageFileStream);
+
+            _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+
+            var subFolder = Guid.NewGuid().ToString();
+
+            await _fileStoreService.WritePackageAsync(packageFileName,
+                                                      packageFileStream,
+                                                      cancellationToken);
+
+            var extractedPath = _fileStoreService.ExtractPackage(subFolder, packageFileName, out var files);
+
+            var plugInFile = files
+                .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+
+            if (plugInFile == null)
+            {
+                _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
+                    PlugInNamePostFix,
+                    packageFileName);
+
+                throw new NoValidPlugInAssemblyFoundException(
+                    $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+            }
+
+            var pluginInformation = _plugInTypeValidator.Validate(plugInFile);
+
+            return new PackageInformation()
+            {
+                PackagePath = packageFileName,
+                PlugInInformation = pluginInformation
+            };
+        }
+
+        /// <inheritdoc/>
         public async Task<object> LoadPlugInInstanceConfigurationAsync(int id,
                                                                        CancellationToken cancellationToken = default)
         {

@@ -48,12 +48,36 @@ namespace Shaos.Services.IO
                                            string packageFileName);
 
         /// <summary>
+        /// Extract a <see cref="PlugIn"/> package
+        /// </summary>
+        /// <param name="folder">The folder to extract the package</param>
+        /// <param name="packageFileName">The package file name</param>
+        /// <param name="files">The list of extracted files</param>
+        /// <returns>The fully qualified path to the extracted files</returns>
+        string ExtractPackage(string folder,
+                              string packageFileName,
+                              out IEnumerable<string> files);
+
+        /// <summary>
         /// Gets the <see cref="PlugIn"/> assembly file
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
         /// <param name="assemblyFileName">The assembly file name</param>
         /// <returns>The path to the <see cref="PlugIn"/> assembly file</returns>
         string GetAssemblyPath(int id, string assemblyFileName);
+
+        /// <summary>
+        /// Write a <see cref="Package"/> zip file to the file stream
+        /// </summary>
+        /// <param name="packageFileName">The package filename to write too</param>
+        /// <param name="packageFileStream">The stream to be written</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <remarks>
+        /// Writes <see cref="Package"/> file to a temporary location
+        /// </remarks>
+        Task WritePackageAsync(string packageFileName,
+                               Stream packageFileStream,
+                               CancellationToken cancellationToken = default);
 
         /// <summary>
         /// </summary>

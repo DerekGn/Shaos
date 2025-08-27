@@ -43,9 +43,8 @@ namespace Shaos.Services.IO
         /// <param name="logger"></param>
         /// <param name="options"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public FileStoreService(
-            ILogger<FileStoreService> logger,
-            IOptions<FileStoreOptions> options)
+        public FileStoreService(ILogger<FileStoreService> logger,
+                                IOptions<FileStoreOptions> options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -92,9 +91,72 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
+        public string ExtractPackage(string folder,
+                                     string packageFileName,
+                                     out IEnumerable<string> files)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(folder);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+
+            var sourcePath = _options.Value.PackagesPath;
+            var targetPath = Path.Combine(_options.Value.BinariesPath, folder);
+
+            sourcePath = Path.Combine(sourcePath, packageFileName);
+
+            _logger.LogInformation("Extracting package: [{SourcePath}] to [{TargetPath}]",
+                sourcePath,
+                targetPath);
+
+            ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
+
+            files = Directory.EnumerateFiles(targetPath);
+
+            return targetPath;
+        }
+
+        /// <inheritdoc/>
         public string GetAssemblyPath(int id, string assemblyFileName)
         {
             return Path.Combine(Path.Combine(_options.Value.BinariesPath, id.ToString()), assemblyFileName);
+        }
+
+        /// <inheritdoc/>
+        public async Task WritePackageAsync(string packageFileName,
+                                            Stream packageFileStream,
+                                            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(packageFileStream);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+
+            if (_options.Value.PackagesPath.CreateDirectory())
+            {
+                _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
+            }
+
+            var packageFilePath = _options.Value.PackagesPath;
+
+            if (Directory.Exists(packageFilePath))
+            {
+                _logger.LogInformation("Emptying package directory [{Folder}]", packageFilePath);
+
+                packageFilePath.EmptyDirectory();
+            }
+            else
+            {
+                _logger.LogInformation("Creating package directory [{Folder}]", packageFilePath);
+
+                packageFilePath.CreateDirectory();
+            }
+
+            packageFilePath = Path.Combine(packageFilePath, packageFileName);
+
+            _logger.LogInformation("Writing Package File: [{PackageFile}]", packageFilePath);
+
+            using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
+
+            await packageFileStream.CopyToAsync(outputStream, cancellationToken);
+
+            await packageFileStream.FlushAsync(cancellationToken);
         }
 
         /// <inheritdoc/>

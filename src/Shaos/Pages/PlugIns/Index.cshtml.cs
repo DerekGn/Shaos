@@ -101,11 +101,10 @@ namespace Shaos.Pages.PlugIns
                                                      includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)]);
 
             List = await PaginatedList<PlugIn>
-                .CreateAsync(
-                    queryable,
-                    pageIndex ?? 1,
-                    _configuration.GetValue("PageSize", 5),
-                    cancellationToken);
+                .CreateAsync(queryable,
+                             pageIndex ?? 1,
+                             _configuration.GetValue("PageSize", 5),
+                             cancellationToken);
         }
     }
 }

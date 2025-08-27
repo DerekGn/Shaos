@@ -1,0 +1,100 @@
+﻿@page
+@model Shaos.Pages.PlugIns.UploadModel
+
+@{
+    ViewData["Title"] = "Upload";
+}
+
+<h1>Package</h1>
+
+<h4>PlugIn</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <dl class="row">
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.Name)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.Name)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.Description)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.Description)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.AssemblyFile)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.AssemblyFile)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.AssemblyVersion)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.AssemblyVersion)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.TypeName)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.TypeName)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.HasConfiguration)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.HasConfiguration)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.HasLogger)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.HasLogger)
+            </dd>
+        </dl>
+        <h4>Package File</h4>
+        <hr />
+        <form method="post" enctype="multipart/form-data">
+            <div class="row">
+                <input accept=".zip,application/x-zip-compressed" asp-for="PackageFile" type="file" />
+            </div>
+            <hr />
+            <div class="row">
+                <button type="submit" class="btn btn-sm btn-success" asp-page-handler="Upload">
+                    <span>
+                        <svg bootstrap-icon="CloudArrowUp" width="18" height="18" aria-label="Upload"></svg>
+                    </span>
+                    Upload
+                </button>
+            </div>
+        </form>
+        <hr />
+        <div class="row">
+            <div class="col-sm-6">
+                <form method="post">
+                    <button type="submit" class="btn btn-sm btn-success" asp-page-handler="Save">
+                        <span>
+                            <svg bootstrap-icon="Floppy" width="18" height="18" aria-label="Save"></svg>
+                        </span>
+                        Save
+                    </button>
+                </form>
+            </div>
+            <div class="col-sm-6">
+                <form method="post">
+                    <button type="submit" class="btn btn-sm btn-primary" asp-page-handler="Cancel">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
