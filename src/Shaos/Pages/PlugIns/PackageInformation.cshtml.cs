@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Extensions;
 using Shaos.Services;
 
 namespace Shaos.Pages.PlugIns
@@ -21,7 +22,7 @@ namespace Shaos.Pages.PlugIns
 
         public void OnGet()
         {
-            if(String.IsNullOrWhiteSpace(FileName))
+            if (string.IsNullOrWhiteSpace(FileName))
             {
                 ModelState.AddModelError(string.Empty, "The package file name is empty");
             }
@@ -29,6 +30,24 @@ namespace Shaos.Pages.PlugIns
             {
                 PackageInformation = _plugInService.ExtractPackageInformation(FileName);
             }
+        }
+
+        public IActionResult OnPostCancel(string fileName)
+        {
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                PackageInformation = _plugInService.ExtractPackageInformation(fileName.SanitizeFileName());
+
+                _plugInService.DeletePlugInPackage(PackageInformation.PackagePath,
+                                                   PackageInformation.ExtractedPath);
+            }
+
+            return RedirectToPage("./Index");
+        }
+
+        public void OnPostSave()
+        {
+            //_logger.LogInformation("Save");
         }
     }
 }

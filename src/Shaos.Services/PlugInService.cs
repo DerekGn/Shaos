@@ -169,53 +169,26 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task<PackageInformation> ExtractPackageInformationAsync(string packageFileName,
-                                                                             Stream packageFileStream,
-                                                                             CancellationToken cancellationToken = default)
+        public void DeletePlugInPackage(string? packagePath,
+                                        string? extractedPath)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
-            ArgumentNullException.ThrowIfNull(packageFileStream);
-
-            _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
-
-            var subFolder = Guid.NewGuid().ToString();
-
-            await _fileStoreService.WritePackageAsync(packageFileName,
-                                                      packageFileStream,
-                                                      cancellationToken);
-
-            var extractedPath = _fileStoreService.ExtractPackage(subFolder, packageFileName, out var files);
-
-            var plugInFile = files
-                .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
-
-            if (plugInFile == null)
+            if(!string.IsNullOrWhiteSpace(packagePath))
             {
-                _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
-                    PlugInNamePostFix,
-                    packageFileName);
-
-                throw new NoValidPlugInAssemblyFoundException(
-                    $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+                _fileStoreService.DeletePackage(packagePath);
             }
 
-            var pluginInformation = _plugInTypeValidator.Validate(plugInFile);
-
-            return new PackageInformation()
+            if (!string.IsNullOrWhiteSpace(extractedPath))
             {
-                PackagePath = packageFileName,
-                PlugInInformation = pluginInformation
-            };
+                _fileStoreService.DeleteExtractedPackage(extractedPath);
+            }
         }
 
         /// <inheritdoc/>
         public PackageInformation ExtractPackageInformation(string packageFileName)
         {
-            var subFolder = Guid.NewGuid().ToString();
-
-            var extractedPath = _fileStoreService.ExtractPackage(subFolder,
-                                                                 packageFileName,
-                                                                 out var files);
+            _fileStoreService.ExtractPackage(packageFileName,
+                                             out var extractedPath,
+                                             out var files);
 
             var plugInFile = files
                .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));

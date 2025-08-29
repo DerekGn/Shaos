@@ -38,16 +38,28 @@ namespace Shaos.Services.IO
         private readonly IOptions<FileStoreOptions> _options;
 
         /// <summary>
-        /// 
+        /// Create an instance of a <see cref="IFileStoreService"/>
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="options"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="logger">The <see cref="ILogger{FileStoreService}"/> instance</param>
+        /// <param name="options">The <see cref="IOptions{FileStoreOptions}"/> instance</param>
         public FileStoreService(ILogger<FileStoreService> logger,
                                 IOptions<FileStoreOptions> options)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _logger = logger;
+            _options = options;
+        }
+
+        /// <inheritdoc/>
+        public void DeleteExtractedPackage(string extractedPath)
+        {
+            var extractedPackagePath = Path.Combine(_options.Value.BinariesPath, extractedPath);
+
+            if (Directory.Exists(extractedPackagePath))
+            {
+                _logger.LogInformation("Deleting folder [{Path}]", extractedPackagePath);
+
+                Directory.Delete(extractedPackagePath, true);
+            }
         }
 
         /// <inheritdoc/>
@@ -63,6 +75,17 @@ namespace Shaos.Services.IO
                 _logger.LogInformation("Deleting file [{Path}]", filePath);
 
                 File.Delete(filePath);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void DeletePackage(string packageFile)
+        {
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath, packageFile);
+
+            if (File.Exists(packageFilePath))
+            {
+                File.Delete(packageFilePath);
             }
         }
 
@@ -91,27 +114,25 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public string ExtractPackage(string folder,
-                                     string packageFileName,
-                                     out IEnumerable<string> files)
+        public void ExtractPackage(string packageFileName,
+                                   out string extractedPath,
+                                   out IEnumerable<string> files)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(folder);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
 
+            extractedPath = Guid.NewGuid().ToString();
             var sourcePath = _options.Value.PackagesPath;
-            var targetPath = Path.Combine(_options.Value.BinariesPath, folder);
+            var targetPath = Path.Combine(_options.Value.BinariesPath, extractedPath);
 
             sourcePath = Path.Combine(sourcePath, packageFileName);
 
             _logger.LogInformation("Extracting package: [{SourcePath}] to [{TargetPath}]",
-                sourcePath,
-                targetPath);
+                                   sourcePath,
+                                   targetPath);
 
             ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
 
             files = Directory.EnumerateFiles(targetPath);
-
-            return targetPath;
         }
 
         /// <inheritdoc/>

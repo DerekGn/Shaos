@@ -23,6 +23,7 @@
 */
 
 using Shaos.Repository.Models;
+using Shaos.Sdk;
 
 namespace Shaos.Services.IO
 {
@@ -31,6 +32,8 @@ namespace Shaos.Services.IO
     /// </summary>
     public interface IFileStoreService
     {
+        void DeleteExtractedPackage(string extractedPath);
+
         /// <summary>
         /// Delete a <see cref="PlugIn"/> package from the file store
         /// </summary>
@@ -38,6 +41,12 @@ namespace Shaos.Services.IO
         /// <param name="packageFileName">The package file name</param>
         void DeletePackage(int id,
                            string packageFileName);
+
+        /// <summary>
+        /// Delete a <see cref="IPlugIn"/> package from the file store
+        /// </summary>
+        /// <param name="packagePath">The path to the package</param>
+        void DeletePackage(string packagePath);
 
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
@@ -50,13 +59,12 @@ namespace Shaos.Services.IO
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
         /// </summary>
-        /// <param name="folder">The folder to extract the package</param>
         /// <param name="packageFileName">The package file name</param>
+        /// <param name="extractedPath">The folder the package is extracted</param>
         /// <param name="files">The list of extracted files</param>
-        /// <returns>The fully qualified path to the extracted files</returns>
-        string ExtractPackage(string folder,
-                              string packageFileName,
-                              out IEnumerable<string> files);
+        void ExtractPackage(string packageFileName,
+                            out string extractedPath,
+                            out IEnumerable<string> files);
 
         /// <summary>
         /// Gets the <see cref="PlugIn"/> assembly file
