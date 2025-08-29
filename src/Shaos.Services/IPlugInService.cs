@@ -80,6 +80,17 @@ namespace Shaos.Services
         Task<PackageInformation> ExtractPackageInformationAsync(string packageFileName,
                                                                 Stream packageFileStream,
                                                                 CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Extract <see cref="PackageInformation"/> from an uploaded package
+        /// </summary>
+        /// <param name="packageFileName">The package file name</param>
+        /// <returns>The <see cref="PlugInInformation"/></returns>
+        /// <exception cref="NoValidPlugInAssemblyFoundException">Throw if no valid PlugIn assembly file was found</exception>
+        /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the package</exception>
+        /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
+        PackageInformation ExtractPackageInformation(string packageFileName);
+
         /// <summary>
         /// Load a <see cref="PlugInInstance"/> configuration
         /// </summary>

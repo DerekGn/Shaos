@@ -28,7 +28,8 @@ namespace Shaos.Services
 {
     public class PackageInformation
     {
-        public string? PackagePath { get; set; }
-        public PlugInInformation? PlugInInformation { get; set; }
+        public string ExtractedPath { get; init; }
+        public string? PackagePath { get; init; }
+        public PlugInInformation? PlugInInformation { get; init; }
     }
 }

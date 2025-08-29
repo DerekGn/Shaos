@@ -44,8 +44,8 @@ namespace Shaos.Services
         private readonly IFileStoreService _fileStoreService;
         private readonly IRuntimeInstanceHost _instanceHost;
         private readonly ILogger<PlugInService> _logger;
-        private readonly IPlugInTypeValidator _plugInTypeValidator;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
+        private readonly IPlugInTypeValidator _plugInTypeValidator;
         private readonly IRepository _repository;
 
         /// <summary>
@@ -170,8 +170,8 @@ namespace Shaos.Services
 
         /// <inheritdoc/>
         public async Task<PackageInformation> ExtractPackageInformationAsync(string packageFileName,
-                                                                       Stream packageFileStream,
-                                                                       CancellationToken cancellationToken = default)
+                                                                             Stream packageFileStream,
+                                                                             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
             ArgumentNullException.ThrowIfNull(packageFileStream);
@@ -204,6 +204,38 @@ namespace Shaos.Services
             return new PackageInformation()
             {
                 PackagePath = packageFileName,
+                PlugInInformation = pluginInformation
+            };
+        }
+
+        /// <inheritdoc/>
+        public PackageInformation ExtractPackageInformation(string packageFileName)
+        {
+            var subFolder = Guid.NewGuid().ToString();
+
+            var extractedPath = _fileStoreService.ExtractPackage(subFolder,
+                                                                 packageFileName,
+                                                                 out var files);
+
+            var plugInFile = files
+               .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+
+            if (plugInFile == null)
+            {
+                _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
+                    PlugInNamePostFix,
+                    packageFileName);
+
+                throw new NoValidPlugInAssemblyFoundException(
+                    $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+            }
+
+            var pluginInformation = _plugInTypeValidator.Validate(plugInFile);
+
+            return new PackageInformation()
+            {
+                PackagePath = packageFileName,
+                ExtractedPath = extractedPath,
                 PlugInInformation = pluginInformation
             };
         }

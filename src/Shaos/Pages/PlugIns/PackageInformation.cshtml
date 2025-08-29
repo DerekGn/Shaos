@@ -1,0 +1,92 @@
+﻿@page
+@model Shaos.Pages.PlugIns.PackageInformationModel
+
+@{
+    ViewData["Title"] = "PlugIn Package Information";
+}
+
+<h1>PlugIn Package Information</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <dl class="row">
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.Name)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.Name)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.Description)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.Description)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.AssemblyFile)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.AssemblyFile)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.AssemblyVersion)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.AssemblyVersion)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.TypeName)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.TypeName)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.HasConfiguration)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.HasConfiguration)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PlugInInformation!.HasLogger)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PackageInformation!.PlugInInformation!.HasLogger)
+            </dd>
+        </dl>
+        <hr />
+        <dl>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.ExtractedPath)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PackageInformation!.ExtractedPath)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageInformation!.PackagePath)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PackageInformation!.PackagePath)
+            </dd>
+        </dl>
+        <div class="row">
+            <div class="col-sm-6">
+                <form method="post">
+                    <button type="submit" class="btn btn-sm btn-success" asp-page-handler="Save">
+                        <span>
+                            <svg bootstrap-icon="Floppy" width="18" height="18" aria-label="Save"></svg>
+                        </span>
+                        Save
+                    </button>
+                </form>
+            </div>
+            <div class="col-sm-6">
+                <form method="post">
+                    <button type="submit" class="btn btn-sm btn-primary" asp-page-handler="Cancel">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
