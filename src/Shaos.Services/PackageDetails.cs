@@ -22,14 +22,31 @@
 * SOFTWARE.
 */
 
-
 namespace Shaos.Services
 {
+    /// <summary>
+    /// Package details
+    /// </summary>
     public class PackageDetails
     {
-        public string FileName { get; init; }
+        /// <summary>
+        /// The package file name
+        /// </summary>
+        public required string FileName { get; init; }
+
+        /// <summary>
+        /// The set of files extracted from the package
+        /// </summary>
         public IEnumerable<string>? Files { get; init; }
-        public string PlugInDirectory { get; init; }
-        public string PlugInFileName { get; init; }
+
+        /// <summary>
+        /// The PlugIn directory
+        /// </summary>
+        public required string PlugInDirectory { get; init; }
+
+        /// <summary>
+        /// The PlugIn assembly file name
+        /// </summary>
+        public required string PlugInAssemblyFileName { get; init; }
     }
 }

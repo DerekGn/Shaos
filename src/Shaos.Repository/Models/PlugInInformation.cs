@@ -23,7 +23,6 @@
 */
 
 using Shaos.Sdk;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -37,13 +36,11 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The fully qualified path to the PlugIn assembly
         /// </summary>
-        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public string AssemblyFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// The version of the <see cref="PlugInInformation"/>
         /// </summary>
-        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public string AssemblyVersion { get; set; } = string.Empty;
 
         /// <summary>
@@ -52,21 +49,18 @@ namespace Shaos.Repository.Models
         public string Directory { get; set; } = string.Empty;
 
         /// <summary>
-        /// The file name of the <see cref="PlugInInformation"/>
+        /// The file name of the PlugIn package
         /// </summary>
-        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
-        public string FileName { get; set; } = string.Empty;
+        public string PackageFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// Indicates if the <see cref="PlugInInformation"/> <see cref="IPlugIn"/> has a configuration constructor argument
         /// </summary>
-        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public bool HasConfiguration { get; set; }
 
         /// <summary>
         /// Indicates if the <see cref="PlugInInformation"/> <see cref="IPlugIn"/> has a logger constructor argument
         /// </summary>
-        [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public bool HasLogger { get; set; }
 
         /// <summary>
@@ -88,9 +82,9 @@ namespace Shaos.Repository.Models
             stringBuilder.Append($"{nameof(AssemblyFileName)}: {AssemblyFileName} ");
             stringBuilder.Append($"{nameof(AssemblyVersion)}: {AssemblyVersion} ");
             stringBuilder.Append($"{nameof(Directory)}: {Directory} ");
-            stringBuilder.Append($"{nameof(FileName)}: {FileName} ");
             stringBuilder.Append($"{nameof(HasConfiguration)}: {HasConfiguration} ");
             stringBuilder.Append($"{nameof(HasLogger)}: {HasLogger}");
+            stringBuilder.Append($"{nameof(PackageFileName)}: {PackageFileName}");
 
             return stringBuilder.ToString();
         }

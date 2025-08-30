@@ -73,8 +73,9 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task CreatePlugInAsync(string? plugInDirectory,
-                                            string? plugInAssemblyFilename,
+        public async Task CreatePlugInAsync(string packageFilename,
+                                            string plugInDirectory,
+                                            string plugInAssemblyFilename,
                                             CancellationToken cancellationToken = default)
         {
             var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFilename));
@@ -89,16 +90,14 @@ namespace Shaos.Services
             {
                 AssemblyFileName = plugInTypeInformation.AssemblyFile,
                 AssemblyVersion = plugInTypeInformation.AssemblyVersion,
-                FileName = plugInAssemblyFilename,
+                Directory = plugInDirectory,
                 HasConfiguration = plugInTypeInformation.HasConfiguration,
                 HasLogger = plugInTypeInformation.HasLogger,
-                Directory = plugInDirectory,
+                PackageFileName = packageFilename,
                 PlugIn = plugIn
             };
 
-            await _repository.AddAsync(plugIn, cancellationToken);
-
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _repository.CreatePlugInAsync(plugIn, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -149,13 +148,8 @@ namespace Shaos.Services
 
                     await _repository.DeleteAsync<PlugIn>(id, cancellationToken);
 
-                    await _repository.SaveChangesAsync(cancellationToken);
-
-                    // Delete code and compiled assembly files
-                    if (plugIn.PlugInInformation != null)
-                    {
-                        _fileStoreService.DeletePlugInFiles(plugIn.PlugInInformation.Directory);
-                    }
+                    _fileStoreService.DeletePlugDirectory(plugIn.PlugInInformation!.Directory);
+                    _fileStoreService.DeletePackage(plugIn.PlugInInformation!.PackageFileName);
                 }
                 else
                 {
@@ -169,8 +163,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public void DeletePlugInFiles(string? packagePath,
-                                      string? plugInDirectory)
+        public void DeletePlugInFiles(string packagePath,
+                                      string plugInDirectory)
         {
             if (!string.IsNullOrWhiteSpace(packagePath))
             {
@@ -179,7 +173,7 @@ namespace Shaos.Services
 
             if (!string.IsNullOrWhiteSpace(plugInDirectory))
             {
-                _fileStoreService.DeletePlugInFiles(plugInDirectory);
+                _fileStoreService.DeletePlugDirectory(plugInDirectory);
             }
         }
 
@@ -217,8 +211,8 @@ namespace Shaos.Services
         public PackageDetails ExtractPackage(string packageFileName)
         {
             _fileStoreService.ExtractPackage(packageFileName,
-                                            out var plugInDirectory,
-                                            out var files);
+                                             out var plugInDirectory,
+                                             out var files);
 
             var plugInFile = files?.FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase))!;
 
@@ -237,7 +231,7 @@ namespace Shaos.Services
                 FileName = packageFileName,
                 Files = files,
                 PlugInDirectory = plugInDirectory,
-                PlugInFileName = Path.GetFileName(plugInFile)
+                PlugInAssemblyFileName = Path.GetFileName(plugInFile)
             };
         }
 
@@ -375,7 +369,7 @@ namespace Shaos.Services
                 {
                     AssemblyFileName = assemblyFileName,
                     AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString(),
-                    FileName = packagFileName,
+                    PackageFileName = packagFileName,
                     HasConfiguration = plugInTypeInformation.HasConfiguration,
                     HasLogger = plugInTypeInformation.HasLogger
                 };
@@ -393,7 +387,7 @@ namespace Shaos.Services
 
                 plugIn.PlugInInformation.AssemblyFileName = assemblyFileName;
                 plugIn.PlugInInformation.AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString();
-                plugIn.PlugInInformation.FileName = packagFileName;
+                plugIn.PlugInInformation.PackageFileName = packagFileName;
                 plugIn.PlugInInformation.HasConfiguration = plugInTypeInformation.HasConfiguration;
                 plugIn.PlugInInformation.HasLogger = plugInTypeInformation.HasLogger;
 

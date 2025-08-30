@@ -31,8 +31,13 @@ namespace Shaos.Services.Runtime.Validation
     /// </summary>
     public class PlugInTypeInformation
     {
+        /// <summary>
+        /// Create default empty <see cref="PlugInTypeInformation"/>
+        /// </summary>
         public PlugInTypeInformation()
         {
+            Description = string.Empty;
+            Name = string.Empty;
         }
 
         /// <summary>

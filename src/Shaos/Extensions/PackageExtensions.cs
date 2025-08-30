@@ -34,7 +34,7 @@ namespace Shaos.Extensions
             return new PackageApi()
             {
                 AssemblyFile = package.AssemblyFileName,
-                FilePath = package.FileName,
+                FilePath = package.PackageFileName,
                 Version = package.AssemblyVersion
             };
         }

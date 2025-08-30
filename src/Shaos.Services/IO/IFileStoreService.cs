@@ -42,7 +42,7 @@ namespace Shaos.Services.IO
         /// Delete the PlugIn files
         /// </summary>
         /// <param name="plugInDirectory">The directory where the PlugIn files are located</param>
-        void DeletePlugInFiles(string plugInDirectory);
+        void DeletePlugDirectory(string plugInDirectory);
 
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
@@ -72,13 +72,13 @@ namespace Shaos.Services.IO
                                string plugInAssemblyFileName);
 
         /// <summary>
-        /// Write a <see cref="Package"/> zip file to the file stream
+        /// Write a packag zip file to the file stream
         /// </summary>
         /// <param name="packageFileName">The package filename to write too</param>
         /// <param name="packageFileStream">The stream to be written</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <remarks>
-        /// Writes <see cref="Package"/> file to a temporary location
+        /// Writes package file to a location on the file store
         /// </remarks>
         Task WritePackageAsync(string packageFileName,
                                Stream packageFileStream,

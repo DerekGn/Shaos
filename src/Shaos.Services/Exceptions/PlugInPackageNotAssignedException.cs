@@ -28,7 +28,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="PlugIn"/> has no <see cref="Package"/> assigned
+    /// An exception that is thrown when a <see cref="PlugIn"/> has no <see cref="PlugInInformation"/> assigned
     /// </summary>
     /// <remarks>
     /// Create an instance of a <see cref="PlugInPackageNotAssignedException"/>

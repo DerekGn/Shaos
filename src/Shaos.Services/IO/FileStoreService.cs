@@ -50,7 +50,7 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeletePlugInFiles(string extractedPath)
+        public void DeletePlugDirectory(string extractedPath)
         {
             var extractedPackagePath = Path.Combine(_options.Value.BinariesPath, extractedPath);
 

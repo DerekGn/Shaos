@@ -82,7 +82,7 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @(item.PlugInInformation != null ? item.PlugInInformation.FileName : "Unassigned")
+                    @(item.PlugInInformation != null ? item.PlugInInformation.PackageFileName : "Unassigned")
                 </td>
                 <td>
                     @(item.PlugInInformation != null ? item.PlugInInformation.AssemblyVersion : "Unassigned")

@@ -55,7 +55,7 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .IsRequired();
 
             builder
-                .Property(_ => _.FileName)
+                .Property(_ => _.PackageFileName)
                 .HasMaxLength(ModelConstants.MaxFileNameLength)
                 .IsRequired();
 

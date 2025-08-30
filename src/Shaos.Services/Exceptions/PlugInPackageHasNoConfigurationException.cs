@@ -28,7 +28,7 @@ using Shaos.Repository.Models;
 namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="PlugIn"/> contains a <see cref="Package"/> that has no configuration
+    /// An exception that is thrown when a <see cref="PlugIn"/> contains a <see cref="PlugInInformation"/> that has no configuration
     /// </summary>
     /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
     [ExcludeFromCodeCoverage]

@@ -205,16 +205,16 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("HasConfiguration")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("HasLogger")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("PackageFileName")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PlugInId")
                         .HasColumnType("INTEGER");

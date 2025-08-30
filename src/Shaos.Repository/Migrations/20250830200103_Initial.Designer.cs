@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250830182515_Initial")]
+    [Migration("20250830200103_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -208,16 +208,16 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("HasConfiguration")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("HasLogger")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("PackageFileName")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PlugInId")
                         .HasColumnType("INTEGER");

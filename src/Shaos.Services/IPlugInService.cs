@@ -37,14 +37,16 @@ namespace Shaos.Services
     public interface IPlugInService
     {
         /// <summary>
-        /// 
+        /// Create a PlugIn instance
         /// </summary>
+        /// <param name="packageFilename"></param>
         /// <param name="plugInDirectory"></param>
         /// <param name="plugInAssemblyFilename"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task CreatePlugInAsync(string? plugInDirectory,
-                               string? plugInAssemblyFilename,
-                               CancellationToken cancellationToken);
+        Task CreatePlugInAsync(string packageFilename,
+                               string plugInDirectory,
+                               string plugInAssemblyFilename,
+                               CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create an instance of a <see cref="PlugIn"/>
@@ -69,6 +71,14 @@ namespace Shaos.Services
                                CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete the PlugIn files
+        /// </summary>
+        /// <param name="packageFileName">The package zip file name</param>
+        /// <param name="plugInDirectory">The PlugIn directory</param>
+        void DeletePlugInFiles(string packageFileName,
+                               string plugInDirectory);
+
+        /// <summary>
         /// Delete a <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
@@ -76,15 +86,6 @@ namespace Shaos.Services
         /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInInstanceAsync(int id,
                                        CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="packagePath"></param>
-        /// <param name="plugInDirectory"></param>
-        void DeletePlugInFiles(string? packagePath,
-                               string? plugInDirectory);
-
         /// <summary>
         /// Extract the files from the package file
         /// </summary>
@@ -94,12 +95,13 @@ namespace Shaos.Services
         PackageDetails ExtractPackage(string packageFileName);
 
         /// <summary>
-        /// 
+        /// Get the <see cref="PlugInTypeInformation"/> from 
         /// </summary>
-        /// <param name="plugInDirectory"></param>
-        /// <param name="plugInAssemblyFileName"></param>
+        /// <param name="plugInDirectory">The PlugIn directory</param>
+        /// <param name="plugInAssemblyFileName">The PlugIn assembly file name</param>
         /// <returns></returns>
-        PlugInTypeInformation GetPlugInTypeInformation(string plugInDirectory, string plugInAssemblyFileName);
+        PlugInTypeInformation GetPlugInTypeInformation(string plugInDirectory,
+                                                       string plugInAssemblyFileName);
 
         /// <summary>
         /// Load a <see cref="PlugInInstance"/> configuration
