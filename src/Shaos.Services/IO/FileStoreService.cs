@@ -142,6 +142,12 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
+        public string GetAssemblyPath(string extractPath, string assemblyFileName)
+        {
+            return Path.Combine(Path.Combine(_options.Value.BinariesPath, extractPath), assemblyFileName);
+        }
+
+        /// <inheritdoc/>
         public async Task WritePackageAsync(string packageFileName,
                                             Stream packageFileStream,
                                             CancellationToken cancellationToken = default)

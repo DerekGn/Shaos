@@ -73,6 +73,32 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public async Task CreatePlugInAsync(string? plugInFile,
+                                            string? extractedPath,
+                                            CancellationToken cancellationToken = default)
+        {
+            var packageInformation = GetPackageInformation(extractedPath, plugInFile);
+
+            var plugIn = new PlugIn()
+            {
+                Description = packageInformation.Description,
+                Name = packageInformation.Name,
+            };
+
+            plugIn.Package = new Package()
+            {
+                AssemblyFile = packageInformation.AssemblyFile,
+                AssemblyVersion = packageInformation.AssemblyVersion,
+                HasConfiguration = packageInformation.HasConfiguration,
+                HasLogger = packageInformation.HasLogger
+            };
+
+            await _repository.AddAsync(plugIn);
+
+            await _repository.SaveChangesAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(int id,
                                                          PlugInInstance plugInInstance,
                                                          CancellationToken cancellationToken = default)
@@ -118,14 +144,15 @@ namespace Shaos.Services
                 {
                     RemoveInstancesFromHost(plugIn);
 
+                    await _repository.DeleteAsync<PlugIn>(id, cancellationToken);
+
+                    await _repository.SaveChangesAsync(cancellationToken);
+
                     // Delete code and compiled assembly files
                     if (plugIn.Package != null)
                     {
                         _fileStoreService.DeletePackage(id, plugIn.Package.FileName);
                     }
-
-                    await _repository.DeleteAsync<PlugInInstance>(id,
-                                                                  cancellationToken);
                 }
                 else
                 {
@@ -134,6 +161,7 @@ namespace Shaos.Services
                     throw new PlugInInstanceRunningException(plugInInstanceId, $"PlugIn [{id}] still running");
                 }
             },
+            false,
             cancellationToken: cancellationToken);
         }
 
@@ -172,7 +200,7 @@ namespace Shaos.Services
         public void DeletePlugInPackage(string? packagePath,
                                         string? extractedPath)
         {
-            if(!string.IsNullOrWhiteSpace(packagePath))
+            if (!string.IsNullOrWhiteSpace(packagePath))
             {
                 _fileStoreService.DeletePackage(packagePath);
             }
@@ -184,33 +212,37 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public PackageInformation ExtractPackageInformation(string packageFileName)
+        public PackageDetails ExtractPackage(string packageFileName)
         {
             _fileStoreService.ExtractPackage(packageFileName,
-                                             out var extractedPath,
-                                             out var files);
+                                            out var extractedPath,
+                                            out var files);
 
-            var plugInFile = files
-               .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+            var plugInFile = files?.FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase))!;
 
             if (plugInFile == null)
             {
                 _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
-                    PlugInNamePostFix,
-                    packageFileName);
+                                 PlugInNamePostFix,
+                                 packageFileName);
 
                 throw new NoValidPlugInAssemblyFoundException(
                     $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
             }
 
-            var pluginInformation = _plugInTypeValidator.Validate(plugInFile);
-
-            return new PackageInformation()
+            return new PackageDetails()
             {
-                PackagePath = packageFileName,
+                FileName = packageFileName,
                 ExtractedPath = extractedPath,
-                PlugInInformation = pluginInformation
+                PlugInFile = Path.GetFileName(plugInFile),
+                Files = files
             };
+        }
+
+        /// <inheritdoc/>
+        public PlugInInformation? GetPackageInformation(string extractedPath, string plugInFile)
+        {
+            return _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(extractedPath, plugInFile));
         }
 
         /// <inheritdoc/>

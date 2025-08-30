@@ -36,6 +36,8 @@ namespace Shaos.Services
     /// </summary>
     public interface IPlugInService
     {
+        Task CreatePlugInAsync(string? plugInFile, string? extractedPath, CancellationToken cancellationToken);
+
         /// <summary>
         /// Create an instance of a <see cref="PlugIn"/>
         /// </summary>
@@ -75,14 +77,20 @@ namespace Shaos.Services
         void DeletePlugInPackage(string? packagePath, string? extractedPath);
 
         /// <summary>
-        /// Extract <see cref="PackageInformation"/> from an uploaded package
+        /// Extract the files from the package file
         /// </summary>
         /// <param name="packageFileName">The package file name</param>
-        /// <returns>The <see cref="PlugInInformation"/></returns>
         /// <exception cref="NoValidPlugInAssemblyFoundException">Throw if no valid PlugIn assembly file was found</exception>
-        /// <exception cref="PlugInTypeNotFoundException">Thrown if no <see cref="IPlugIn"/> derived types where found in the package</exception>
-        /// <exception cref="PlugInTypesFoundException">Thrown if multiple <see cref="IPlugIn"/> derived types where found in the unzipped package file</exception>
-        PackageInformation ExtractPackageInformation(string packageFileName);
+        /// <returns>The <see cref="PackageDetails"/></returns>
+        PackageDetails ExtractPackage(string packageFileName);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="extractedPath"></param>
+        /// <param name="plugInFile"></param>
+        /// <returns></returns>
+        PlugInInformation? GetPackageInformation(string extractedPath, string plugInFile);
 
         /// <summary>
         /// Load a <see cref="PlugInInstance"/> configuration

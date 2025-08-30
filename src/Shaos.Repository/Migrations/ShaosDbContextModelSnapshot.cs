@@ -383,7 +383,8 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasOne("Shaos.Repository.Models.PlugIn", "PlugIn")
                         .WithMany("Instances")
-                        .HasForeignKey("PlugInId");
+                        .HasForeignKey("PlugInId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("PlugIn");
                 });

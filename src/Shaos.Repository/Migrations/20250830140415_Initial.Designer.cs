@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250813072619_Initial")]
+    [Migration("20250830140415_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -386,7 +386,8 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasOne("Shaos.Repository.Models.PlugIn", "PlugIn")
                         .WithMany("Instances")
-                        .HasForeignKey("PlugInId");
+                        .HasForeignKey("PlugInId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("PlugIn");
                 });

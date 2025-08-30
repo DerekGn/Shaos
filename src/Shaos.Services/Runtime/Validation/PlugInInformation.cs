@@ -31,6 +31,10 @@ namespace Shaos.Services.Runtime.Validation
     /// </summary>
     public class PlugInInformation
     {
+        public PlugInInformation()
+        {
+        }
+
         /// <summary>
         /// Create an instance of a <see cref="PlugInInformation"/>
         /// </summary>

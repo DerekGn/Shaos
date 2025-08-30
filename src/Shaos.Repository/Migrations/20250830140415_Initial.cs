@@ -86,7 +86,8 @@ namespace Shaos.Repository.Migrations
                         name: "FK_PlugInInstances_PlugIns_PlugInId",
                         column: x => x.PlugInId,
                         principalTable: "PlugIns",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

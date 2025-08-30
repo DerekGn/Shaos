@@ -75,6 +75,14 @@ namespace Shaos.Services.IO
         string GetAssemblyPath(int id, string assemblyFileName);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="extractPath"></param>
+        /// <param name="assemblyFileName"></param>
+        /// <returns></returns>
+        string GetAssemblyPath(string extractPath, string assemblyFileName);
+
+        /// <summary>
         /// Write a <see cref="Package"/> zip file to the file stream
         /// </summary>
         /// <param name="packageFileName">The package filename to write too</param>
