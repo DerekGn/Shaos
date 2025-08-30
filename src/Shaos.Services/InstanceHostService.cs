@@ -84,7 +84,7 @@ namespace Shaos.Services
             var plugInInstance = await LoadPlugInInstanceAsync(id,
                                                                cancellationToken: cancellationToken);
 
-            var package = plugInInstance!.PlugIn!.Package;
+            var package = plugInInstance!.PlugIn!.PlugInInformation;
 
             if (!package!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
             {
@@ -113,9 +113,9 @@ namespace Shaos.Services
                                                                cancellationToken: cancellationToken);
 
             var plugIn = plugInInstance.PlugIn!;
-            var package = plugIn.Package!;
+            var package = plugIn.PlugInInformation!;
 
-            if (plugIn.Package == null)
+            if (plugIn.PlugInInformation == null)
             {
                 _logger.LogWarning("PlugInInstance package not assigned. Id: [{Id}]", id);
 
@@ -138,26 +138,26 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public async Task StartInstancesAsync(CancellationToken cancellationToken = default)
         {
-            var plugIns = _repository.GetEnumerableAsync<PlugIn>(_ => _.Package != null,
+            var plugIns = _repository.GetEnumerableAsync<PlugIn>(_ => _.PlugInInformation != null,
                                                                  includeProperties: [
-                                                                     nameof(Package),
                                                                      nameof(PlugIn.Instances),
+                                                                     nameof(PlugInInformation),
                                                                      $"{nameof(PlugIn.Instances)}.{nameof(PlugInInstance.Devices)}",
                                                                      $"{nameof(PlugIn.Instances)}.{nameof(PlugInInstance.Devices)}.{nameof(Device.Parameters)}"],
                                                                  cancellationToken: cancellationToken);
 
             await foreach (var plugIn in plugIns)
             {
-                var package = plugIn.Package!;
+                var plugInInformation = plugIn.PlugInInformation!;
 
-                if (package != null)
+                if (plugInInformation != null)
                 {
                     foreach (var plugInInstance in plugIn.Instances)
                     {
                         RuntimeInstance instance = CreateRuntimeInstance(plugIn,
-                                                                         package,
+                                                                         plugInInformation,
                                                                          plugInInstance,
-                                                                         package.HasConfiguration);
+                                                                         plugInInformation.HasConfiguration);
 
                         var runtimeInstance = CreatePlugInInstance(plugIn,
                                                                    plugInInstance,
@@ -172,7 +172,7 @@ namespace Shaos.Services
                             continue;
                         }
 
-                        if (package.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
+                        if (plugInInformation.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
                         {
                             _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not configured",
                                                nameof(plugInInstance),
@@ -260,17 +260,17 @@ namespace Shaos.Services
         }
 
         private RuntimeInstance CreateRuntimeInstance(PlugIn plugIn,
-                                                      Package package,
+                                                      PlugInInformation plugInInformation,
                                                       PlugInInstance plugInInstance,
                                                       bool configurable)
         {
-            var assemblyFilePath = _fileStoreService.GetAssemblyPath(plugIn.Id,
-                                                                     package!.AssemblyFile);
+            var plugInAssemblyFilePath = _fileStoreService.GetAssemblyPath(plugInInformation.Directory,
+                                                                           plugInInformation!.AssemblyFileName);
 
             RuntimeInstance instance = _instanceHost.CreateInstance(plugInInstance.Id,
                                                                     plugIn.Id,
                                                                     plugInInstance.Name,
-                                                                    assemblyFilePath,
+                                                                    plugInAssemblyFilePath,
                                                                     configurable);
             return instance;
         }
@@ -283,8 +283,8 @@ namespace Shaos.Services
                                                                   withNoTracking,
                                                                   includeProperties: [
                                                                       nameof(PlugIn),
-                                                                      $"{nameof(PlugIn)}.{nameof(Package)}",
                                                                       $"{nameof(PlugInInstance.Devices)}",
+                                                                      $"{nameof(PlugIn)}.{nameof(PlugInInformation)}",
                                                                       $"{nameof(PlugInInstance.Devices)}.{nameof(Device.Parameters)}"],
                                                                   cancellationToken: cancellationToken);
 

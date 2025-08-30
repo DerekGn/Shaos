@@ -29,14 +29,14 @@ namespace Shaos.Services.Runtime.Validation
     /// <summary>
     /// Represents <see cref="IPlugIn"/> type information
     /// </summary>
-    public class PlugInInformation
+    public class PlugInTypeInformation
     {
-        public PlugInInformation()
+        public PlugInTypeInformation()
         {
         }
 
         /// <summary>
-        /// Create an instance of a <see cref="PlugInInformation"/>
+        /// Create an instance of a <see cref="PlugInTypeInformation"/>
         /// </summary>
         /// <param name="name">The <see cref="IPlugIn"/> name from the <see cref="PlugInDescriptionAttribute"/></param>
         /// <param name="typeName">The <see cref="IPlugIn"/> derived type name</param>
@@ -45,13 +45,13 @@ namespace Shaos.Services.Runtime.Validation
         /// <param name="hasConfiguration">Indicates if the <see cref="IPlugIn"/> derived type has configuration</param>
         /// <param name="assemblyFile">The assembly file</param>
         /// <param name="assemblyVersion">The assembly version</param>
-        public PlugInInformation(string name,
-                                 string typeName,
-                                 string description,
-                                 bool hasLogger,
-                                 bool hasConfiguration,
-                                 string assemblyFile,
-                                 string assemblyVersion)
+        public PlugInTypeInformation(string name,
+                                     string typeName,
+                                     string description,
+                                     bool hasLogger,
+                                     bool hasConfiguration,
+                                     string assemblyFile,
+                                     string assemblyVersion)
         {
             Name = name;
             TypeName = typeName;

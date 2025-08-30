@@ -73,27 +73,30 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task CreatePlugInAsync(string? plugInFile,
-                                            string? extractedPath,
+        public async Task CreatePlugInAsync(string? plugInDirectory,
+                                            string? plugInAssemblyFilename,
                                             CancellationToken cancellationToken = default)
         {
-            var packageInformation = GetPackageInformation(extractedPath, plugInFile);
+            var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFilename));
 
             var plugIn = new PlugIn()
             {
-                Description = packageInformation.Description,
-                Name = packageInformation.Name,
+                Description = plugInTypeInformation.Description,
+                Name = plugInTypeInformation.Name,
             };
 
-            plugIn.Package = new Package()
+            plugIn.PlugInInformation = new PlugInInformation()
             {
-                AssemblyFile = packageInformation.AssemblyFile,
-                AssemblyVersion = packageInformation.AssemblyVersion,
-                HasConfiguration = packageInformation.HasConfiguration,
-                HasLogger = packageInformation.HasLogger
+                AssemblyFileName = plugInTypeInformation.AssemblyFile,
+                AssemblyVersion = plugInTypeInformation.AssemblyVersion,
+                FileName = plugInAssemblyFilename,
+                HasConfiguration = plugInTypeInformation.HasConfiguration,
+                HasLogger = plugInTypeInformation.HasLogger,
+                Directory = plugInDirectory,
+                PlugIn = plugIn
             };
 
-            await _repository.AddAsync(plugIn);
+            await _repository.AddAsync(plugIn, cancellationToken);
 
             await _repository.SaveChangesAsync(cancellationToken);
         }
@@ -109,9 +112,9 @@ namespace Shaos.Services
             {
                 _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
 
-                if (plugIn.Package != null)
+                if (plugIn.PlugInInformation != null)
                 {
-                    var package = plugIn.Package;
+                    var package = plugIn.PlugInInformation;
 
                     result = await _repository.CreatePlugInInstanceAsync(plugIn,
                                                                          plugInInstance,
@@ -120,7 +123,7 @@ namespace Shaos.Services
                     _instanceHost.CreateInstance(plugInInstance.Id,
                                                  plugIn.Id,
                                                  plugInInstance.Name,
-                                                 _fileStoreService.GetAssemblyPath(plugIn.Id, package.AssemblyFile),
+                                                 _fileStoreService.GetAssemblyPath(package.Directory, package.AssemblyFileName),
                                                  package.HasConfiguration);
                 }
                 else
@@ -149,9 +152,9 @@ namespace Shaos.Services
                     await _repository.SaveChangesAsync(cancellationToken);
 
                     // Delete code and compiled assembly files
-                    if (plugIn.Package != null)
+                    if (plugIn.PlugInInformation != null)
                     {
-                        _fileStoreService.DeletePackage(id, plugIn.Package.FileName);
+                        _fileStoreService.DeletePlugInFiles(plugIn.PlugInInformation.Directory);
                     }
                 }
                 else
@@ -163,6 +166,21 @@ namespace Shaos.Services
             },
             false,
             cancellationToken: cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public void DeletePlugInFiles(string? packagePath,
+                                      string? plugInDirectory)
+        {
+            if (!string.IsNullOrWhiteSpace(packagePath))
+            {
+                _fileStoreService.DeletePackage(packagePath);
+            }
+
+            if (!string.IsNullOrWhiteSpace(plugInDirectory))
+            {
+                _fileStoreService.DeletePlugInFiles(plugInDirectory);
+            }
         }
 
         /// <inheritdoc/>
@@ -195,27 +213,11 @@ namespace Shaos.Services
                 _logger.LogWarning("Instance [{Id}] not found", id);
             }
         }
-
-        /// <inheritdoc/>
-        public void DeletePlugInPackage(string? packagePath,
-                                        string? extractedPath)
-        {
-            if (!string.IsNullOrWhiteSpace(packagePath))
-            {
-                _fileStoreService.DeletePackage(packagePath);
-            }
-
-            if (!string.IsNullOrWhiteSpace(extractedPath))
-            {
-                _fileStoreService.DeleteExtractedPackage(extractedPath);
-            }
-        }
-
         /// <inheritdoc/>
         public PackageDetails ExtractPackage(string packageFileName)
         {
             _fileStoreService.ExtractPackage(packageFileName,
-                                            out var extractedPath,
+                                            out var plugInDirectory,
                                             out var files);
 
             var plugInFile = files?.FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase))!;
@@ -233,16 +235,17 @@ namespace Shaos.Services
             return new PackageDetails()
             {
                 FileName = packageFileName,
-                ExtractedPath = extractedPath,
-                PlugInFile = Path.GetFileName(plugInFile),
-                Files = files
+                Files = files,
+                PlugInDirectory = plugInDirectory,
+                PlugInFileName = Path.GetFileName(plugInFile)
             };
         }
 
         /// <inheritdoc/>
-        public PlugInInformation? GetPackageInformation(string extractedPath, string plugInFile)
+        public PlugInTypeInformation GetPlugInTypeInformation(string plugInDirectory,
+                                                              string plugInAssemblyFileName)
         {
-            return _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(extractedPath, plugInFile));
+            return _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFileName));
         }
 
         /// <inheritdoc/>
@@ -250,18 +253,18 @@ namespace Shaos.Services
                                                                        CancellationToken cancellationToken = default)
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
-                                                                                includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(Package)}"],
+                                                                                includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(PlugInInformation)}"],
                                                                                 cancellationToken: cancellationToken) ?? throw new NotFoundException(id);
 
-            var package = (plugInInstance.PlugIn?.Package) ?? throw new PlugInPackageNotAssignedException(id);
+            var plugInInformation = (plugInInstance.PlugIn?.PlugInInformation) ?? throw new PlugInPackageNotAssignedException(id);
 
-            if (!package.HasConfiguration)
+            if (!plugInInformation.HasConfiguration)
             {
                 throw new PlugInPackageHasNoConfigurationException(plugInInstance.PlugIn.Id);
             }
 
-            return _plugInConfigurationBuilder.LoadConfiguration(plugInInstance.PlugIn.Id,
-                                                                 package.AssemblyFile,
+            return _plugInConfigurationBuilder.LoadConfiguration(plugInInformation.Directory,
+                                                                 plugInInformation.AssemblyFileName,
                                                                  plugInInstance.Configuration)!;
         }
 
@@ -319,11 +322,11 @@ namespace Shaos.Services
                         $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
                 }
 
-                await CreateOrUpdatePlugInPackageAsync(plugIn,
-                                                       packageFileName,
-                                                       Path.GetFileName(plugInFile),
-                                                       _plugInTypeValidator.Validate(plugInFile),
-                                                       cancellationToken);
+                await CreateOrUpdatePlugInInformationAsync(plugIn,
+                                                           packageFileName,
+                                                           Path.GetFileName(plugInFile),
+                                                           _plugInTypeValidator.Validate(plugInFile),
+                                                           cancellationToken);
             },
             false,
             cancellationToken);
@@ -355,44 +358,44 @@ namespace Shaos.Services
             return result;
         }
 
-        private async Task CreateOrUpdatePlugInPackageAsync(PlugIn plugIn,
-                                                            string packagFileName,
-                                                            string assemblyFileName,
-                                                            PlugInInformation plugInInformation,
-                                                            CancellationToken cancellationToken)
+        private async Task CreateOrUpdatePlugInInformationAsync(PlugIn plugIn,
+                                                                string packagFileName,
+                                                                string assemblyFileName,
+                                                                PlugInTypeInformation plugInTypeInformation,
+                                                                CancellationToken cancellationToken)
         {
-            if (plugIn.Package == null)
+            if (plugIn.PlugInInformation == null)
             {
                 _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
                     plugIn.Id,
                     assemblyFileName,
-                    plugInInformation.AssemblyVersion);
+                    plugInTypeInformation.AssemblyVersion);
 
-                var package = new Package()
+                var plugInInformation = new PlugInInformation()
                 {
-                    AssemblyFile = assemblyFileName,
-                    AssemblyVersion = plugInInformation.AssemblyVersion.ToString(),
+                    AssemblyFileName = assemblyFileName,
+                    AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString(),
                     FileName = packagFileName,
-                    HasConfiguration = plugInInformation.HasConfiguration,
-                    HasLogger = plugInInformation.HasLogger
+                    HasConfiguration = plugInTypeInformation.HasConfiguration,
+                    HasLogger = plugInTypeInformation.HasLogger
                 };
 
-                await _repository.CreatePackageAsync(plugIn,
-                                                     package,
-                                                     cancellationToken);
+                await _repository.CreatePlugInInformationAsync(plugIn,
+                                                               plugInInformation,
+                                                               cancellationToken);
             }
             else
             {
                 _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
-                    plugIn.Id,
-                    assemblyFileName,
-                    plugInInformation.AssemblyVersion.ToString());
+                                       plugIn.Id,
+                                       assemblyFileName,
+                                       plugInTypeInformation.AssemblyVersion.ToString());
 
-                plugIn.Package.AssemblyFile = assemblyFileName;
-                plugIn.Package.AssemblyVersion = plugInInformation.AssemblyVersion.ToString();
-                plugIn.Package.FileName = packagFileName;
-                plugIn.Package.HasConfiguration = plugInInformation.HasConfiguration;
-                plugIn.Package.HasLogger = plugInInformation.HasLogger;
+                plugIn.PlugInInformation.AssemblyFileName = assemblyFileName;
+                plugIn.PlugInInformation.AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString();
+                plugIn.PlugInInformation.FileName = packagFileName;
+                plugIn.PlugInInformation.HasConfiguration = plugInTypeInformation.HasConfiguration;
+                plugIn.PlugInInformation.HasLogger = plugInTypeInformation.HasLogger;
 
                 await _repository.SaveChangesAsync(cancellationToken);
             }
@@ -406,7 +409,8 @@ namespace Shaos.Services
         {
             var plugIn = await _repository.GetByIdAsync<PlugIn>(id,
                                                                 withNoTracking,
-                                                                cancellationToken: cancellationToken);
+                                                                [nameof(PlugIn.PlugInInformation)],
+                                                                cancellationToken);
 
             if (plugIn != null)
             {

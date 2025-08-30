@@ -56,7 +56,7 @@ namespace Shaos.Services.Runtime.Validation
         }
 
         /// <inheritdoc/>
-        public PlugInInformation Validate(string assemblyFile)
+        public PlugInTypeInformation Validate(string assemblyFile)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(assemblyFile);
 
@@ -196,7 +196,7 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        private PlugInInformation ValidatePlugInAssembly(string assemblyFile,
+        private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile,
                                                          out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
         {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
@@ -230,7 +230,7 @@ namespace Shaos.Services.Runtime.Validation
                                    out var hasLogger,
                                    out var hasConfiguration);
 
-                return new PlugInInformation(name,
+                return new PlugInTypeInformation(name,
                                              plugInType.Name,
                                              description,
                                              hasLogger,

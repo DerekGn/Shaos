@@ -98,7 +98,7 @@ namespace Shaos.Pages.PlugIns
 
             var queryable = _repository.GetQueryable(filter,
                                                      orderBy,
-                                                     includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)]);
+                                                     includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.PlugInInformation)]);
 
             List = await PaginatedList<PlugIn>
                 .CreateAsync(queryable,

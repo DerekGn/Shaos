@@ -28,7 +28,7 @@ namespace Shaos.Pages.PlugIns
         public string? PlugInFile { get; set; }
 
         [BindProperty]
-        public PlugInInformation? PlugInInformation { get; set; }
+        public PlugInTypeInformation? PlugInTypeInformation { get; set; }
 
         public void OnGet()
         {
@@ -40,10 +40,10 @@ namespace Shaos.Pages.PlugIns
             {
                 PackageDetails = _plugInService.ExtractPackage(FileName);
 
-                PlugInInformation = _plugInService.GetPackageInformation(PackageDetails.ExtractedPath,
-                                                                         PackageDetails.PlugInFile);
+                PlugInTypeInformation = _plugInService.GetPlugInTypeInformation(PackageDetails.PlugInDirectory,
+                                                                                PackageDetails.PlugInFileName);
 
-                PlugInFile = PackageDetails.PlugInFile;
+                PlugInFile = PackageDetails.PlugInFileName;
             }
         }
 
@@ -55,24 +55,24 @@ namespace Shaos.Pages.PlugIns
                 _fileStoreService.DeletePackage(fileName);
             }
 
-            if(!string.IsNullOrWhiteSpace(extractedPath))
+            if (!string.IsNullOrWhiteSpace(extractedPath))
             {
-                _fileStoreService.DeleteExtractedPackage(extractedPath);
+                _fileStoreService.DeletePlugInFiles(extractedPath);
             }
 
             return RedirectToPage("./Index");
         }
 
         public async Task<IActionResult> OnPostSaveAsync(string? plugInFile,
-                                                         string? extractedPath,
+                                                         string? PlugInDirectory,
                                                          CancellationToken cancellationToken = default)
         {
-            PlugInInformation = _plugInService.GetPackageInformation(extractedPath!,
-                                                                     plugInFile!);
+            PlugInTypeInformation = _plugInService.GetPlugInTypeInformation(PlugInDirectory!,
+                                                                            plugInFile!);
 
 #warning Handle duplicate name
-            await _plugInService.CreatePlugInAsync(plugInFile,
-                                                   extractedPath,
+            await _plugInService.CreatePlugInAsync(PlugInDirectory,
+                                                   plugInFile,
                                                    cancellationToken);
 
             return RedirectToPage("./Index");

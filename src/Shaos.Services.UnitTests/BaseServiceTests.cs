@@ -45,7 +45,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
                     HasConfiguration = true
                 }

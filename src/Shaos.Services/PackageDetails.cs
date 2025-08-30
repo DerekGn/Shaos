@@ -27,9 +27,9 @@ namespace Shaos.Services
 {
     public class PackageDetails
     {
-        public string ExtractedPath { get; init; }
-        public IEnumerable<string>? Files { get; init; }
         public string FileName { get; init; }
-        public string PlugInFile { get; init; }
+        public IEnumerable<string>? Files { get; init; }
+        public string PlugInDirectory { get; init; }
+        public string PlugInFileName { get; init; }
     }
 }

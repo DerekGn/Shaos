@@ -57,7 +57,7 @@ namespace Shaos.Pages.PlugIns
         }
 
         [BindProperty]
-        public Package? Package { get; set; } = default!;
+        public PlugInInformation? PlugInInformation { get; set; } = default!;
 
         [BindProperty]
         public IFormFile PackageFile { get; set; } = default!;
@@ -78,7 +78,7 @@ namespace Shaos.Pages.PlugIns
             else
             {
                 PlugIn = plugin;
-                Package = plugin.Package;
+                PlugInInformation = plugin.PlugInInformation;
             }
 
             return Page();

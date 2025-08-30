@@ -30,39 +30,54 @@ using System.Text;
 namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// A <see cref="Package"/> for a <see cref="PlugIn"/>
+    /// A <see cref="PlugInInformation"/> for a <see cref="PlugIn"/>
     /// </summary>
-    public class Package
+    public class PlugInInformation : BaseEntity
     {
         /// <summary>
         /// The fully qualified path to the PlugIn assembly
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
-        public string AssemblyFile { get; set; } = string.Empty;
+        public string AssemblyFileName { get; set; } = string.Empty;
 
         /// <summary>
-        /// The version of the <see cref="Package"/>
+        /// The version of the <see cref="PlugInInformation"/>
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public string AssemblyVersion { get; set; } = string.Empty;
 
         /// <summary>
-        /// The file name of the <see cref="Package"/>
+        /// The folder where the PlugIn was extracted too.
+        /// </summary>
+        public string Directory { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The file name of the <see cref="PlugInInformation"/>
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public string FileName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Indicates if the <see cref="Package"/> <see cref="IPlugIn"/> has a configuration constructor argument
+        /// Indicates if the <see cref="PlugInInformation"/> <see cref="IPlugIn"/> has a configuration constructor argument
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public bool HasConfiguration { get; set; }
 
         /// <summary>
-        /// Indicates if the <see cref="Package"/> <see cref="IPlugIn"/> has a logger constructor argument
+        /// Indicates if the <see cref="PlugInInformation"/> <see cref="IPlugIn"/> has a logger constructor argument
         /// </summary>
         [DisplayFormat(NullDisplayText = "No Package Uploaded")]
         public bool HasLogger { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="IPlugIn"/>
+        /// </summary>
+        public PlugIn PlugIn { get; set; } = null!;
+
+        /// <summary>
+        /// The parent <see cref="PlugIn"/> identifier
+        /// </summary>
+        public int PlugInId { get; set; }
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
@@ -70,10 +85,11 @@ namespace Shaos.Repository.Models
         {
             StringBuilder stringBuilder = new StringBuilder();
 
-            stringBuilder.Append($"{nameof(AssemblyFile)}: {AssemblyFile} ");
-            stringBuilder.Append($"{nameof(AssemblyVersion)}: {AssemblyVersion}");
-            stringBuilder.Append($"{nameof(FileName)}: {FileName}");
-            stringBuilder.Append($"{nameof(HasConfiguration)}: {HasConfiguration}");
+            stringBuilder.Append($"{nameof(AssemblyFileName)}: {AssemblyFileName} ");
+            stringBuilder.Append($"{nameof(AssemblyVersion)}: {AssemblyVersion} ");
+            stringBuilder.Append($"{nameof(Directory)}: {Directory} ");
+            stringBuilder.Append($"{nameof(FileName)}: {FileName} ");
+            stringBuilder.Append($"{nameof(HasConfiguration)}: {HasConfiguration} ");
             stringBuilder.Append($"{nameof(HasLogger)}: {HasLogger}");
 
             return stringBuilder.ToString();

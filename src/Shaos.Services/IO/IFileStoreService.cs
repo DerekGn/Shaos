@@ -32,21 +32,17 @@ namespace Shaos.Services.IO
     /// </summary>
     public interface IFileStoreService
     {
-        void DeleteExtractedPackage(string extractedPath);
-
-        /// <summary>
-        /// Delete a <see cref="PlugIn"/> package from the file store
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="packageFileName">The package file name</param>
-        void DeletePackage(int id,
-                           string packageFileName);
-
         /// <summary>
         /// Delete a <see cref="IPlugIn"/> package from the file store
         /// </summary>
         /// <param name="packagePath">The path to the package</param>
         void DeletePackage(string packagePath);
+
+        /// <summary>
+        /// Delete the PlugIn files
+        /// </summary>
+        /// <param name="plugInDirectory">The directory where the PlugIn files are located</param>
+        void DeletePlugInFiles(string plugInDirectory);
 
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
@@ -67,20 +63,13 @@ namespace Shaos.Services.IO
                             out IEnumerable<string> files);
 
         /// <summary>
-        /// Gets the <see cref="PlugIn"/> assembly file
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="assemblyFileName">The assembly file name</param>
-        /// <returns>The path to the <see cref="PlugIn"/> assembly file</returns>
-        string GetAssemblyPath(int id, string assemblyFileName);
-
-        /// <summary>
         /// 
         /// </summary>
-        /// <param name="extractPath"></param>
-        /// <param name="assemblyFileName"></param>
+        /// <param name="plugInDirectory"></param>
+        /// <param name="plugInAssemblyFileName"></param>
         /// <returns></returns>
-        string GetAssemblyPath(string extractPath, string assemblyFileName);
+        string GetAssemblyPath(string plugInDirectory,
+                               string plugInAssemblyFileName);
 
         /// <summary>
         /// Write a <see cref="Package"/> zip file to the file stream

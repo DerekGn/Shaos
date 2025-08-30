@@ -182,6 +182,54 @@ namespace Shaos.Repository.Migrations
                     b.ToTable("PlugIns");
                 });
 
+            modelBuilder.Entity("Shaos.Repository.Models.PlugInInformation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AssemblyFileName")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AssemblyVersion")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Directory")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("HasConfiguration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasLogger")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PlugInId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlugInId")
+                        .IsUnique();
+
+                    b.ToTable("PlugInInformations");
+                });
+
             modelBuilder.Entity("Shaos.Repository.Models.PlugInInstance", b =>
                 {
                     b.Property<int>("Id")
@@ -340,51 +388,22 @@ namespace Shaos.Repository.Migrations
                     b.Navigation("Device");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.PlugInInformation", b =>
                 {
-                    b.OwnsOne("Shaos.Repository.Models.Package", "Package", b1 =>
-                        {
-                            b1.Property<int>("PlugInId")
-                                .HasColumnType("INTEGER");
+                    b.HasOne("Shaos.Repository.Models.PlugIn", "PlugIn")
+                        .WithOne("PlugInInformation")
+                        .HasForeignKey("Shaos.Repository.Models.PlugInInformation", "PlugInId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                            b1.Property<string>("AssemblyFile")
-                                .IsRequired()
-                                .HasMaxLength(40)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("AssemblyVersion")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("FileName")
-                                .IsRequired()
-                                .HasMaxLength(40)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<bool>("HasConfiguration")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<bool>("HasLogger")
-                                .HasColumnType("INTEGER");
-
-                            b1.HasKey("PlugInId");
-
-                            b1.ToTable("Packages");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PlugInId");
-                        });
-
-                    b.Navigation("Package");
+                    b.Navigation("PlugIn");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugInInstance", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.PlugIn", "PlugIn")
                         .WithMany("Instances")
-                        .HasForeignKey("PlugInId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PlugInId");
 
                     b.Navigation("PlugIn");
                 });
@@ -423,6 +442,8 @@ namespace Shaos.Repository.Migrations
             modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
                 {
                     b.Navigation("Instances");
+
+                    b.Navigation("PlugInInformation");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugInInstance", b =>

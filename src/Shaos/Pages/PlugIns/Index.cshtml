@@ -70,7 +70,7 @@
     <tbody>
         @foreach (var item in Model.List)
         {
-            var instancesDisabled = item.Package == null ? "disabled" : "";
+            var instancesDisabled = item.PlugInInformation == null ? "disabled" : "";
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Id)
@@ -82,10 +82,10 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @(item.Package != null ? item.Package.FileName : "Unassigned")
+                    @(item.PlugInInformation != null ? item.PlugInInformation.FileName : "Unassigned")
                 </td>
                 <td>
-                    @(item.Package != null ? item.Package.AssemblyVersion : "Unassigned")
+                    @(item.PlugInInformation != null ? item.PlugInInformation.AssemblyVersion : "Unassigned")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Instances.Count)

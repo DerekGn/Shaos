@@ -23,7 +23,7 @@
 */
 
 using PackageApi = Shaos.Api.Model.v1.Package;
-using PlugInModel = Shaos.Repository.Models.Package;
+using PlugInModel = Shaos.Repository.Models.PlugInInformation;
 
 namespace Shaos.Extensions
 {
@@ -33,7 +33,7 @@ namespace Shaos.Extensions
         {
             return new PackageApi()
             {
-                AssemblyFile = package.AssemblyFile,
+                AssemblyFile = package.AssemblyFileName,
                 FilePath = package.FileName,
                 Version = package.AssemblyVersion
             };

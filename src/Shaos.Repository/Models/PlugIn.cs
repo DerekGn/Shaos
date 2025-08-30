@@ -45,8 +45,8 @@ namespace Shaos.Repository.Models
         public required string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// The set of <see cref="Package"/> associated with this <see cref="PlugIn"/>
+        /// The set of <see cref="PlugInInformation"/> associated with this <see cref="PlugIn"/>
         /// </summary>
-        public Package? Package { get; set; }
+        public PlugInInformation? PlugInInformation { get; set; }
     }
 }

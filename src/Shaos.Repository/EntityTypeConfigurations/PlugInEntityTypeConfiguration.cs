@@ -45,7 +45,7 @@ namespace Shaos.Repository.EntityTypeConfigurations
 
             builder
                 .Property(_ => _.Name)
-                .HasMaxLength(ModelConstants.MaxNameLength)
+                .HasMaxLength(ModelConstants.MaxFileNameLength)
                 .IsRequired();
 
             builder
@@ -54,16 +54,9 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .IsRequired();
 
             builder
-                .OwnsOne(
-                    _ => _.Package,
-                    _ =>
-                    {
-                        _.Property(_ => _.AssemblyFile).HasMaxLength(ModelConstants.MaxFilePathLength).IsRequired();
-                        _.Property(_ => _.FileName).HasMaxLength(ModelConstants.MaxNameLength).IsRequired();
-                        _.Property(_ => _.HasConfiguration).IsRequired();
-                        _.Property(_ => _.HasLogger).IsRequired();
-                        _.Property(_ => _.AssemblyVersion).HasMaxLength(ModelConstants.MaxVersionLength).IsRequired();
-                    });
+                .HasOne(_ => _.PlugInInformation)
+                .WithOne(_ => _.PlugIn)
+                .IsRequired();
 
             builder
                .HasMany(_ => _.Instances)

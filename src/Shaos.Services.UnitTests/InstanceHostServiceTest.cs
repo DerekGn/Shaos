@@ -107,7 +107,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
             };
 
             SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
@@ -129,7 +129,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
             };
 
             _mockInstanceHost
@@ -203,9 +203,9 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
-                    AssemblyFile = "AssemblyFile",
+                    AssemblyFileName = "AssemblyFile",
                     HasConfiguration = true
                 }
             };
@@ -232,9 +232,9 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
-                    AssemblyFile = "AssemblyFile",
+                    AssemblyFileName = "AssemblyFile",
                     HasConfiguration = true
                 }
             };
@@ -260,9 +260,9 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
-                    AssemblyFile = "AssemblyFile",
+                    AssemblyFileName = "AssemblyFile",
                     HasConfiguration = true
                 }
             };
@@ -287,7 +287,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
                     HasConfiguration = true
                 }
@@ -439,7 +439,7 @@ namespace Shaos.Services.UnitTests
                 .Returns(plugIns.ToAsyncEnumerable());
 
             _mockFileStoreService
-                .Setup(_ => _.GetAssemblyPath(It.IsAny<int>(),
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<string>(),
                                               It.IsAny<string>()))
                 .Returns("AssemblyFile");
 
@@ -464,7 +464,7 @@ namespace Shaos.Services.UnitTests
                     Times.Once);
 
             _mockFileStoreService
-                .Verify(_ => _.GetAssemblyPath(It.IsAny<int>(),
+                .Verify(_ => _.GetAssemblyPath(It.IsAny<string>(),
                                                It.IsAny<string>()),
                                                Times.Once);
 

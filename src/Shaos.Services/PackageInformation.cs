@@ -30,6 +30,6 @@ namespace Shaos.Services
     {
         public string ExtractedPath { get; init; }
         public string? PackagePath { get; init; }
-        public PlugInInformation? PlugInInformation { get; init; }
+        public PlugInTypeInformation? PlugInInformation { get; init; }
     }
 }

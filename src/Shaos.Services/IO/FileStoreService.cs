@@ -30,7 +30,7 @@ using System.IO.Compression;
 namespace Shaos.Services.IO
 {
     /// <summary>
-    /// 
+    /// A file store service that abstracts file store operations
     /// </summary>
     public class FileStoreService : IFileStoreService
     {
@@ -50,7 +50,7 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeleteExtractedPackage(string extractedPath)
+        public void DeletePlugInFiles(string extractedPath)
         {
             var extractedPackagePath = Path.Combine(_options.Value.BinariesPath, extractedPath);
 
@@ -59,22 +59,6 @@ namespace Shaos.Services.IO
                 _logger.LogInformation("Deleting folder [{Path}]", extractedPackagePath);
 
                 Directory.Delete(extractedPackagePath, true);
-            }
-        }
-
-        /// <inheritdoc/>
-        public void DeletePackage(int id,
-                                  string packageFileName)
-        {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-
-            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), packageFileName);
-
-            if (File.Exists(filePath))
-            {
-                _logger.LogInformation("Deleting file [{Path}]", filePath);
-
-                File.Delete(filePath);
             }
         }
 
@@ -136,15 +120,13 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public string GetAssemblyPath(int id, string assemblyFileName)
+        public string GetAssemblyPath(string plugInDirectory,
+                                      string plugInAssemblyFileName)
         {
-            return Path.Combine(Path.Combine(_options.Value.BinariesPath, id.ToString()), assemblyFileName);
-        }
+            ArgumentNullException.ThrowIfNull(plugInDirectory);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
 
-        /// <inheritdoc/>
-        public string GetAssemblyPath(string extractPath, string assemblyFileName)
-        {
-            return Path.Combine(Path.Combine(_options.Value.BinariesPath, extractPath), assemblyFileName);
+            return Path.Combine(Path.Combine(_options.Value.BinariesPath, plugInDirectory), plugInAssemblyFileName);
         }
 
         /// <inheritdoc/>
