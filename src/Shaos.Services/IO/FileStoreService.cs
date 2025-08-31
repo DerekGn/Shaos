@@ -50,19 +50,6 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeletePlugDirectory(string extractedPath)
-        {
-            var extractedPackagePath = Path.Combine(_options.Value.BinariesPath, extractedPath);
-
-            if (Directory.Exists(extractedPackagePath))
-            {
-                _logger.LogInformation("Deleting folder [{Path}]", extractedPackagePath);
-
-                Directory.Delete(extractedPackagePath, true);
-            }
-        }
-
-        /// <inheritdoc/>
         public void DeletePackage(string packageFile)
         {
             var packageFilePath = Path.Combine(_options.Value.PackagesPath, packageFile);
@@ -73,6 +60,18 @@ namespace Shaos.Services.IO
             }
         }
 
+        /// <inheritdoc/>
+        public void DeletePlugDirectory(string plugInDirectory)
+        {
+            var extractedPackagePath = Path.Combine(_options.Value.BinariesPath, plugInDirectory);
+
+            if (Directory.Exists(extractedPackagePath))
+            {
+                _logger.LogInformation("Deleting folder [{Path}]", extractedPackagePath);
+
+                Directory.Delete(extractedPackagePath, true);
+            }
+        }
         /// <inheritdoc/>
         public IEnumerable<string> ExtractPackage(int id,
                                                   string packageFileName)

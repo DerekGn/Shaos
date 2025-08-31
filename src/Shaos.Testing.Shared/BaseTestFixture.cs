@@ -36,8 +36,8 @@ namespace Shaos.Testing.Shared
                 .GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location);
 
-            PlugInId = 1;
-            PlugInIdInvalid = 10;
+            PlugInId = new Guid("C785FBF7-9DF9-4D81-B5CF-541F4D17E26C");
+            PlugInIdInvalid = new Guid("1388EF99-6DE6-4D53-AE06-E6392C54D66A");
 
             PackageName = packageName;
             PackageNameInvalid = string.Concat(PackageName, ".Invalid");
@@ -53,29 +53,20 @@ namespace Shaos.Testing.Shared
             BinariesDirectory = Path.Combine(BaseTestDirectory, "binaries");
             BinariesDirectory.CreateDirectory();
 
-            var packageDirectory = Path.Combine(PackageDirectory, PlugInId.ToString());
-            packageDirectory.CreateDirectory();
+            PackageFilePath = Path.Combine(PackageDirectory, PackageFile);
+            PackageFileInvalidPath = Path.Combine(PackageDirectory, PackageFileInvalid);
 
-            PackageFilePath = Path.Combine(packageDirectory, PackageFile);
+            CopyPackageFile(PackageName,
+                            PackageFile,
+                            testProjectName,
+                            assemblyDirectory,
+                            PackageDirectory);
 
-            var invalidPackageDirectory = Path.Combine(PackageDirectory, PlugInIdInvalid.ToString());
-            invalidPackageDirectory.CreateDirectory();
-
-            PackageFileInvalidPath = Path.Combine(invalidPackageDirectory, PackageFileInvalid);
-
-            CopyPackageFile(
-                PackageName,
-                PackageFile,
-                testProjectName,
-                assemblyDirectory,
-                packageDirectory);
-
-            CopyPackageFile(
-                PackageNameInvalid,
-                PackageFileInvalid,
-                testProjectName,
-                assemblyDirectory,
-                invalidPackageDirectory);
+            CopyPackageFile(PackageNameInvalid,
+                            PackageFileInvalid,
+                            testProjectName,
+                            assemblyDirectory,
+                            PackageDirectory);
 
             AssemblyFileName = String.Concat(PackageName, ".dll");
 
@@ -111,8 +102,8 @@ namespace Shaos.Testing.Shared
         public string PackageNameInvalid { get; }
         public string PlugInDirectory { get; }
         public string PlugInDirectoryInvalid { get; }
-        public int PlugInId { get; }
-        public int PlugInIdInvalid { get; }
+        public Guid PlugInId { get; }
+        public Guid PlugInIdInvalid { get; }
 
         public virtual void Dispose()
         {

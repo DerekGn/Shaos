@@ -148,8 +148,10 @@ namespace Shaos.Services
 
                     await _repository.DeleteAsync<PlugIn>(id, cancellationToken);
 
-                    _fileStoreService.DeletePlugDirectory(plugIn.PlugInInformation!.Directory);
-                    _fileStoreService.DeletePackage(plugIn.PlugInInformation!.PackageFileName);
+                    var plugInInformation = plugIn.PlugInInformation!;
+
+                    _fileStoreService.DeletePlugDirectory(plugInInformation.Directory);
+                    _fileStoreService.DeletePackage(plugInInformation.PackageFileName);
                 }
                 else
                 {

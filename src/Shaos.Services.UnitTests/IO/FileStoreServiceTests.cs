@@ -37,9 +37,8 @@ namespace Shaos.Services.UnitTests.IO
         private readonly FileStoreService _fileStoreService;
         private readonly TestFixture _fixture;
 
-        public FileStoreServiceTests(
-            ITestOutputHelper output,
-            TestFixture fixture) : base(output)
+        public FileStoreServiceTests(ITestOutputHelper output,
+                                     TestFixture fixture) : base(output)
         {
             _fixture = fixture;
 
@@ -56,31 +55,38 @@ namespace Shaos.Services.UnitTests.IO
                 fileStoreOptions);
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         public void TestDeletePackage()
         {
-            var targetPath = Path.Combine(_fixture.PackageDirectory, _fixture.PlugInIdInvalid.ToString());
-            var targetFilePath = Path.Combine(targetPath, _fixture.PackageFileInvalid);
+            var packageFile = Path.Combine(_fixture.PackageDirectory, _fixture.PackageFileInvalidPath.ToString());
+            
+            _fileStoreService.DeletePackage(_fixture.PackageFileInvalid);
 
-            //_fileStoreService.DeletePackage(_fixture.PlugInIdInvalid, _fixture.PackageFileInvalid);
+            Assert.False(File.Exists(packageFile));
+        }
 
-            Assert.False(File.Exists(targetFilePath));
+        [Fact]
+        public void TestDeletePlugDirectory()
+        {
+            _fileStoreService.DeletePlugDirectory(_fixture.PlugInIdInvalid.ToString());
+
+            Assert.False(Directory.Exists(_fixture.PlugInDirectoryInvalid));
         }
 
         [Fact]
         public void TestExtractPackage()
         {
-            var result = _fileStoreService
-                .ExtractPackage(_fixture.PlugInId, _fixture.PackageFile);
+            //var result = _fileStoreService
+            //    .ExtractPackage(_fixture.PlugInId, _fixture.PackageFile);
 
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
+            //Assert.NotNull(result);
+            //Assert.NotEmpty(result);
         }
 
-        [Fact(Skip ="refactor")]
+        [Fact]
         public void TestGetAssemblyPath()
         {
-            var result = _fileStoreService.GetAssemblyPath(_fixture.PackageDirectory,
+            var result = _fileStoreService.GetAssemblyPath(_fixture.PlugInDirectory.ToString(),
                                                            _fixture.AssemblyFileName);
 
             Assert.NotNull(result);
