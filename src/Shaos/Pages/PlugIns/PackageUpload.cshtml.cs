@@ -21,13 +21,10 @@ namespace Shaos.Pages.PlugIns
             _zipFileValidationService = zipFileValidationService;
         }
 
-        [TempData]
-        public string? FileName { get; set; }
-
         [BindProperty]
         public IFormFile PackageFile { get; set; } = default!;
 
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnPostAsync(int id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -37,9 +34,9 @@ namespace Shaos.Pages.PlugIns
                                                           PackageFile.OpenReadStream(),
                                                           cancellationToken);
 
-                FileName = PackageFile.FileName;
-
-                return RedirectToPage("./PackageInformation");
+                return id == 0 ?
+                    RedirectToPage("./CreatePackageInformation", new { PackageFile.FileName }) :
+                    RedirectToPage("./UpdatedPackageInformation", new { id, PackageFile.FileName });
             }
             catch (FileContentInvalidException ex)
             {

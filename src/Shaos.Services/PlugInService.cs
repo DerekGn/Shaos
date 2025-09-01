@@ -73,12 +73,12 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task CreatePlugInAsync(string packageFilename,
+        public async Task CreatePlugInAsync(string packageFileName,
                                             string plugInDirectory,
-                                            string plugInAssemblyFilename,
+                                            string plugInAssemblyFileName,
                                             CancellationToken cancellationToken = default)
         {
-            var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFilename));
+            var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFileName));
 
             var plugIn = new PlugIn()
             {
@@ -93,7 +93,7 @@ namespace Shaos.Services
                 Directory = plugInDirectory,
                 HasConfiguration = plugInTypeInformation.HasConfiguration,
                 HasLogger = plugInTypeInformation.HasLogger,
-                PackageFileName = packageFilename,
+                PackageFileName = packageFileName,
                 PlugIn = plugIn
             };
 
@@ -278,6 +278,15 @@ namespace Shaos.Services
             await _repository.SaveChangesAsync(cancellationToken);
 
             return plugInInstance;
+        }
+
+        /// <inheritdoc/>
+        public async Task UpdatePlugInPackageAsync(int id,
+                                                   string packageFileName,
+                                                   string plugInDirectory,
+                                                   string plugInAssemblyFile,
+                                                   CancellationToken cancellationToken)
+        {
         }
 
         /// <inheritdoc/>

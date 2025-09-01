@@ -39,13 +39,13 @@ namespace Shaos.Services
         /// <summary>
         /// Create a PlugIn instance
         /// </summary>
-        /// <param name="packageFilename"></param>
+        /// <param name="packageFileName"></param>
         /// <param name="plugInDirectory"></param>
-        /// <param name="plugInAssemblyFilename"></param>
+        /// <param name="plugInAssemblyFileName"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task CreatePlugInAsync(string packageFilename,
+        Task CreatePlugInAsync(string packageFileName,
                                string plugInDirectory,
-                               string plugInAssemblyFilename,
+                               string plugInAssemblyFileName,
                                CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -123,6 +123,21 @@ namespace Shaos.Services
         Task<PlugInInstance?> SetPlugInInstanceEnableAsync(int id,
                                                            bool enable,
                                                            CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="packageFileName"></param>
+        /// <param name="plugInDirectory"></param>
+        /// <param name="plugInAssemblyFile"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task UpdatePlugInPackageAsync(int id,
+                                      string packageFileName,
+                                      string plugInDirectory,
+                                      string plugInAssemblyFile,
+                                      CancellationToken cancellationToken);
 
         /// <summary>
         /// Upload the package binaries for a <see cref="PlugIn"/>

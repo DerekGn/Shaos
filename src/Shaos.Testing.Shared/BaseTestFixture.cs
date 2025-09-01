@@ -110,12 +110,11 @@ namespace Shaos.Testing.Shared
             BaseTestDirectory.DeleteDirectory();
         }
 
-        private static void CopyPackageFile(
-            string packageName,
-            string packageFileName,
-            string testProjectName,
-            string assemblyDirectory,
-            string targetPackageDirectory)
+        private static void CopyPackageFile(string packageName,
+                                            string packageFileName,
+                                            string testProjectName,
+                                            string assemblyDirectory,
+                                            string targetPackageDirectory)
         {
             var sourcePackageDirectory = assemblyDirectory!.Replace(testProjectName, packageName).Replace("net8.0", string.Empty);
             var sourcePackageFilePath = Path.Combine(sourcePackageDirectory, packageFileName);
