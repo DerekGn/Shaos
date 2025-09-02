@@ -24,7 +24,6 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using Shaos.Repository;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
@@ -40,9 +39,8 @@ namespace Shaos.Services.UnitTests
 {
     public class PlugInServiceTests : BaseServiceTests
     {
-        private const string InstanceName = "Test";
         private const string AssemblyPath = "AssemblyPath";
-
+        private const string InstanceName = "Test";
         private readonly Mock<IFileStoreService> _mockFileStoreService;
         private readonly Mock<IRuntimeInstanceHost> _mockInstanceHost;
         private readonly Mock<IPlugInConfigurationBuilder> _mockPlugConfigurationBuilder;
@@ -62,6 +60,23 @@ namespace Shaos.Services.UnitTests
                                                _mockFileStoreService.Object,
                                                _mockPlugInTypeValidator.Object,
                                                _mockPlugConfigurationBuilder.Object);
+        }
+
+        [Fact]
+        public async Task TestCreatePlugInAsync()
+        {
+            _mockFileStoreService
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<string>(),
+                                              It.IsAny<string>()))
+                .Returns("path");
+
+            _mockPlugInTypeValidator
+                .Setup(_ => _.Validate(It.IsAny<string>()))
+                .Returns(new PlugInTypeInformation());
+
+            await _plugInService.CreatePlugInAsync("", "", "");
+
+            MockRepository.Verify(_ => _.CreatePlugInAsync(It.IsAny<PlugIn>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact(Skip = "Refactor")]
@@ -508,7 +523,7 @@ namespace Shaos.Services.UnitTests
                                                            It.IsAny<Stream>(),
                                                            It.IsAny<CancellationToken>()),
                     Times.Once);
-            
+
             VerifySaveAsync();
         }
 

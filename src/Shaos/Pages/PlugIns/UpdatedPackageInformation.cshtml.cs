@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Shaos.Repository.Exceptions;
 using Shaos.Services;
+using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 
 namespace Shaos.Pages.PlugIns
@@ -11,21 +13,34 @@ namespace Shaos.Pages.PlugIns
         {
         }
 
-        [FromRoute]
-        public int Id { get; set; }
-
-        public async Task<IActionResult> OnPostSaveAsync(string packageFileName,
+        public async Task<IActionResult> OnPostSaveAsync(int id,
+                                                         string packageFileName,
                                                          string plugInDirectory,
                                                          string plugInAssemblyFile,
                                                          CancellationToken cancellationToken = default)
         {
-            await PlugInService.UpdatePlugInPackageAsync(Id,
-                                                         packageFileName,
-                                                         plugInDirectory,
-                                                         plugInAssemblyFile,
-                                                         cancellationToken);
+            try
+            {
+                await PlugInService.UpdatePlugInPackageAsync(id,
+                                                             packageFileName,
+                                                             plugInDirectory,
+                                                             plugInAssemblyFile,
+                                                             cancellationToken);
 
-            return RedirectToPage("./Index");
+                return RedirectToPage("./Index");
+            }
+            catch (NameExistsException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"PlugIn Name: [{ex.Name}] already exists");
+
+                return Page();
+            }
+            catch (PlugInInstancesRunningException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"There are running PlugIn Instances [{string.Join(",", ex.Ids)}]");
+            }
+
+            return Page();
         }
     }
 }

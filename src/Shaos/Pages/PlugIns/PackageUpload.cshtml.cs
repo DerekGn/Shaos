@@ -36,7 +36,7 @@ namespace Shaos.Pages.PlugIns
 
                 return id == 0 ?
                     RedirectToPage("./CreatePackageInformation", new { PackageFile.FileName }) :
-                    RedirectToPage("./UpdatedPackageInformation", new { id, PackageFile.FileName });
+                    RedirectToPage("./UpdatedPackageInformation", new { Id = id, PackageFile.FileName });
             }
             catch (FileContentInvalidException ex)
             {
