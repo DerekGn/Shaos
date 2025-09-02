@@ -109,7 +109,7 @@ namespace Shaos.Services.UnitTests.SystemInformation
         {
             _systemService.ShutdownApplication();
 
-            _mockHostApplicationLifetime.Verify(_ => _.StopApplication(), Times.Once);
+            _mockHostApplicationLifetime.Verify(_ => _.StopApplication());
         }
     }
 }

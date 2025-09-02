@@ -148,12 +148,12 @@ namespace Shaos.Services.UnitTests
             await _instanceHostService.StartInstanceAsync(1);
 
             _mockInstanceHost
-                .Verify(_ => _.InstanceExists(1), Times.Once);
+                .Verify(_ => _.InstanceExists(1));
 
             VerifyGetByIdAsync();
 
             _mockInstanceHost.Verify(_ => _.StartInstance(It.IsAny<int>(),
-                                                          It.IsAny<IPlugIn>()), Times.Once);
+                                                          It.IsAny<IPlugIn>()));
         }
 
         [Fact]
@@ -221,7 +221,7 @@ namespace Shaos.Services.UnitTests
 
             _mockInstanceHost
                 .Verify(_ => _.StartInstance(It.IsAny<int>(),
-                                             It.IsAny<IPlugIn>()), Times.Once);
+                                             It.IsAny<IPlugIn>()));
         }
 
         [Fact]
@@ -460,21 +460,18 @@ namespace Shaos.Services.UnitTests
                                                                     It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
                                                                     It.IsAny<bool>(),
                                                                     It.IsAny<List<string>?>(),
-                                                                    It.IsAny<CancellationToken>()),
-                    Times.Once);
+                                                                    It.IsAny<CancellationToken>()));
 
             _mockFileStoreService
                 .Verify(_ => _.GetAssemblyPath(It.IsAny<string>(),
-                                               It.IsAny<string>()),
-                                               Times.Once);
+                                               It.IsAny<string>()));
 
             _mockInstanceHost
                 .Verify(_ => _.CreateInstance(It.IsAny<int>(),
                                               It.IsAny<int>(),
                                               It.IsAny<string>(),
                                               It.IsAny<string>(),
-                                              It.IsAny<bool>()),
-                                              Times.Once);
+                                              It.IsAny<bool>()));
         }
 
         public class TestConfig

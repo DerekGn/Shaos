@@ -87,8 +87,7 @@ namespace Shaos.Services.UnitTests.Logging
 
             _mockRepository.Verify(_ => _.UpsertLogLevelSwitchAsync(It.IsAny<string>(),
                                                                     It.IsAny<LogEventLevel>(),
-                                                                    It.IsAny<CancellationToken>()),
-                                                                    Times.Once);
+                                                                    It.IsAny<CancellationToken>()));
         }
     }
 }

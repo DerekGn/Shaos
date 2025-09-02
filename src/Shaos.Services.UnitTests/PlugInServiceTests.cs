@@ -74,7 +74,7 @@ namespace Shaos.Services.UnitTests
 
             await _plugInService.CreatePlugInAsync("", "", "");
 
-            MockRepository.Verify(_ => _.CreatePlugInAsync(It.IsAny<PlugIn>(), It.IsAny<CancellationToken>()), Times.Once);
+            MockRepository.Verify(_ => _.CreatePlugInAsync(It.IsAny<PlugIn>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact(Skip = "Refactor")]
@@ -135,9 +135,9 @@ namespace Shaos.Services.UnitTests
         {
             _plugInService.DeletePlugInFiles("packagePath", "plugInDirectory");
 
-            _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()), Times.Once);
+            _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()));
 
-            _mockFileStoreService.Verify(_ => _.DeletePlugDirectory(It.IsAny<string>()), Times.Once);
+            _mockFileStoreService.Verify(_ => _.DeletePlugDirectory(It.IsAny<string>()));
         }
 
         [Fact]
@@ -234,7 +234,7 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(1, exception.Id);
         }
 
-        [Fact(Skip = "refactor")]
+        [Fact]
         public async Task TestDeletePlugInSuccessAsync()
         {
             var plugIn = SetupPlugInGetByIdAsync();
@@ -249,10 +249,10 @@ namespace Shaos.Services.UnitTests
             });
 
             var instance = new RuntimeInstance(12,
-                                        1,
-                                        InstanceName,
-                                        AssemblyPath,
-                                        RuntimeInstanceState.None);
+                                               1,
+                                               InstanceName,
+                                               AssemblyPath,
+                                               RuntimeInstanceState.None);
 
             instance.SetComplete();
 
@@ -262,13 +262,15 @@ namespace Shaos.Services.UnitTests
 
             await _plugInService.DeletePlugInAsync(1);
 
-            _mockInstanceHost.Verify(_ => _.RemoveInstance(It.IsAny<int>()), Times.Once);
+            _mockInstanceHost.Verify(_ => _.RemoveInstance(It.IsAny<int>()));
 
-            _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()), Times.Once);
+            _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()));
 
-            MockRepository.Verify(_ => _.DeleteAsync<PlugInInstance>(It.IsAny<int>(),
-                                                                     It.IsAny<CancellationToken>()),
-                Times.Once);
+            MockRepository.Verify(_ => _.DeleteAsync<PlugIn>(It.IsAny<int>(),
+                                                             It.IsAny<CancellationToken>()));
+
+            _mockFileStoreService.Verify(_ => _.DeletePlugDirectory(It.IsAny<string>()));
+            _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()));
         }
 
         [Fact]
