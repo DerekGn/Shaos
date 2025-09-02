@@ -46,6 +46,7 @@ namespace Shaos.Services.Runtime.Validation
         /// <param name="name">The <see cref="IPlugIn"/> name from the <see cref="PlugInDescriptionAttribute"/></param>
         /// <param name="typeName">The <see cref="IPlugIn"/> derived type name</param>
         /// <param name="description">The <see cref="IPlugIn"/> description from the <see cref="PlugInDescriptionAttribute"/></param>
+        /// <param name="directory">The plugin files directory</param>
         /// <param name="hasLogger">Indicates if the <see cref="IPlugIn"/> derived type has a logger</param>
         /// <param name="hasConfiguration">Indicates if the <see cref="IPlugIn"/> derived type has configuration</param>
         /// <param name="assemblyFile">The assembly file</param>
@@ -53,6 +54,7 @@ namespace Shaos.Services.Runtime.Validation
         public PlugInTypeInformation(string name,
                                      string typeName,
                                      string description,
+                                     string directory,
                                      bool hasLogger,
                                      bool hasConfiguration,
                                      string assemblyFile,
@@ -61,16 +63,17 @@ namespace Shaos.Services.Runtime.Validation
             Name = name;
             TypeName = typeName;
             Description = description;
+            Directory = directory;
             HasLogger = hasLogger;
             HasConfiguration = hasConfiguration;
-            AssemblyFile = assemblyFile;
+            AssemblyFileName = assemblyFile;
             AssemblyVersion = assemblyVersion;
         }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> assembly file
         /// </summary>
-        public string AssemblyFile { get; } = string.Empty;
+        public string AssemblyFileName { get; } = string.Empty;
 
         /// <summary>
         /// The <see cref="IPlugIn"/> derived type assembly version
@@ -81,6 +84,11 @@ namespace Shaos.Services.Runtime.Validation
         /// The <see cref="IPlugIn"/> description from the <see cref="PlugInDescriptionAttribute"/>
         /// </summary>
         public string Description { get; }
+
+        /// <summary>
+        /// The plugin directory
+        /// </summary>
+        public string Directory { get; } = string.Empty;
 
         /// <summary>
         /// Indicates if the <see cref="IPlugIn"/> derived type has a configuration type

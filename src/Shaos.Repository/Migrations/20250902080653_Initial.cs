@@ -52,10 +52,11 @@ namespace Shaos.Repository.Migrations
                     AssemblyFileName = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     AssemblyVersion = table.Column<string>(type: "TEXT", nullable: false),
                     Directory = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
-                    PackageFileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     HasConfiguration = table.Column<bool>(type: "INTEGER", nullable: false),
                     HasLogger = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PackageFileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     PlugInId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TypeName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },

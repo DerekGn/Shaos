@@ -58,5 +58,10 @@ namespace Shaos.Repository.Models
         /// The maximum directory field length
         /// </summary>
         public const int MaxDirectoryLength = 32;
+
+        /// <summary>
+        /// Max type name field length
+        /// </summary>
+        public const int MaxTypeNameLength = 100;
     }
 }

@@ -123,21 +123,21 @@ namespace Shaos.Services
         Task<PlugInInstance?> SetPlugInInstanceEnableAsync(int id,
                                                            bool enable,
                                                            CancellationToken cancellationToken = default);
-        
+
         /// <summary>
-        /// 
+        /// Update a plugin package
         /// </summary>
         /// <param name="id"></param>
         /// <param name="packageFileName"></param>
         /// <param name="plugInDirectory"></param>
-        /// <param name="plugInAssemblyFile"></param>
+        /// <param name="plugInAssemblyFileName"></param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <exception cref="PlugInInstancesRunningException">Thrown if a plugin instance is still running</exception> 
         Task UpdatePlugInPackageAsync(int id,
                                       string packageFileName,
                                       string plugInDirectory,
-                                      string plugInAssemblyFile,
-                                      CancellationToken cancellationToken);
+                                      string plugInAssemblyFileName,
+                                      CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Upload the package binaries for a <see cref="PlugIn"/>

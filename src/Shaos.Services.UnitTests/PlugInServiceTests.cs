@@ -439,6 +439,7 @@ namespace Shaos.Services.UnitTests
                 .Returns(new PlugInTypeInformation("name",
                                                    "typename",
                                                    "description",
+                                                   "directory",
                                                    true,
                                                    true,
                                                    "assemblyfile",
@@ -489,7 +490,14 @@ namespace Shaos.Services.UnitTests
 
             _mockPlugInTypeValidator
                .Setup(_ => _.Validate(It.IsAny<string>()))
-               .Returns(new PlugInTypeInformation("name", "typename", "description", true, true, "assemblyfile", "1.0.0"));
+               .Returns(new PlugInTypeInformation("name",
+                                                  "typename",
+                                                  "description",
+                                                  "directory",
+                                                  true,
+                                                  true,
+                                                  "assemblyfile",
+                                                  "1.0.0"));
 
             await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);

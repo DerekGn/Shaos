@@ -160,7 +160,7 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
             var plugInInformation = _pluginTypeValidator.Validate(_fixture.AssemblyFilePath);
 
             Assert.NotNull(plugInInformation);
-            Assert.Equal("Shaos.Test.PlugIn.dll", plugInInformation.AssemblyFile);
+            Assert.Equal("Shaos.Test.PlugIn.dll", plugInInformation.AssemblyFileName);
             Assert.Equal("1.0.0.0", plugInInformation.AssemblyVersion);
             Assert.Equal("Description", plugInInformation.Description);
             Assert.True(plugInInformation.HasConfiguration);

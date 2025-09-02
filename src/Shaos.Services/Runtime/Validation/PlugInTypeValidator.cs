@@ -69,7 +69,8 @@ namespace Shaos.Services.Runtime.Validation
 
             try
             {
-                return ValidatePlugInAssembly(assemblyFile, out unloadingWeakReference);
+                return ValidatePlugInAssembly(assemblyFile,
+                                              out unloadingWeakReference);
             }
             finally
             {
@@ -197,7 +198,7 @@ namespace Shaos.Services.Runtime.Validation
         }
 
         private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile,
-                                                         out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
+                                                             out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
         {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
@@ -231,12 +232,13 @@ namespace Shaos.Services.Runtime.Validation
                                    out var hasConfiguration);
 
                 return new PlugInTypeInformation(name,
-                                             plugInType.Name,
-                                             description,
-                                             hasLogger,
-                                             hasConfiguration,
-                                             Path.GetFileName(assemblyFile),
-                                             assembly.GetName().Version!.ToString());
+                                                 plugInType.Name,
+                                                 description,
+                                                 Path.GetDirectoryName(assemblyFile)!,
+                                                 hasLogger,
+                                                 hasConfiguration,
+                                                 Path.GetFileName(assemblyFile),
+                                                 assembly.GetName().Version!.ToString());
             }
             finally
             {

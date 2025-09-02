@@ -31,6 +31,7 @@ using Shaos.Services.IO;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
 using System.Diagnostics;
+using System.IO;
 
 namespace Shaos.Services
 {
@@ -88,7 +89,7 @@ namespace Shaos.Services
 
             plugIn.PlugInInformation = new PlugInInformation()
             {
-                AssemblyFileName = plugInTypeInformation.AssemblyFile,
+                AssemblyFileName = plugInTypeInformation.AssemblyFileName,
                 AssemblyVersion = plugInTypeInformation.AssemblyVersion,
                 Directory = plugInDirectory,
                 HasConfiguration = plugInTypeInformation.HasConfiguration,
@@ -209,6 +210,7 @@ namespace Shaos.Services
                 _logger.LogWarning("Instance [{Id}] not found", id);
             }
         }
+
         /// <inheritdoc/>
         public PackageDetails ExtractPackage(string packageFileName)
         {
@@ -284,9 +286,47 @@ namespace Shaos.Services
         public async Task UpdatePlugInPackageAsync(int id,
                                                    string packageFileName,
                                                    string plugInDirectory,
-                                                   string plugInAssemblyFile,
-                                                   CancellationToken cancellationToken)
+                                                   string plugInAssemblyFileName,
+                                                   CancellationToken cancellationToken = default)
         {
+            ArgumentOutOfRangeException.ThrowIfLessThan(id, 0);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInDirectory);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
+
+            await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
+            {
+                if (VerifyPlugState(plugIn, RuntimeInstanceState.Running, out var ids))
+                {
+                    _logger.LogError("Found running PlugIn Instances Id: [{Id}]", string.Join(",", ids));
+
+                    throw new PlugInInstancesRunningException(ids, "Instances are Running");
+                }
+
+                var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory,
+                                                                                                            plugInAssemblyFileName));
+
+                if (PlugInPackageChanged(plugIn, plugInDirectory, plugInTypeInformation))
+                {
+                    plugIn.Description = plugInTypeInformation.Description;
+                    plugIn.Name = plugInTypeInformation.Name;
+
+                    plugIn.PlugInInformation.AssemblyFileName = plugInAssemblyFileName;
+                    plugIn.PlugInInformation.AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString();
+                    plugIn.PlugInInformation.Directory = plugInDirectory;
+                    plugIn.PlugInInformation.PackageFileName = packageFileName;
+                    plugIn.PlugInInformation.HasConfiguration = plugInTypeInformation.HasConfiguration;
+                    plugIn.PlugInInformation.HasLogger = plugInTypeInformation.HasLogger;
+
+                    await _repository.SaveChangesAsync(cancellationToken);
+                }
+                else
+                {
+                    _logger.LogInformation("PlugIn [{Id}] Name: [{Name}] package not changed", plugIn.Id, plugIn.Name);
+                }
+            },
+            false,
+            cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -426,6 +466,24 @@ namespace Shaos.Services
                 _logger.LogWarning("PlugIn: [{Id}] not found", id);
                 throw new NotFoundException(id, $"PlugIn: [{id}] not found");
             }
+        }
+
+        private static bool PlugInPackageChanged(PlugIn plugIn,
+                                                 string plugInDirectory,
+                                                 PlugInTypeInformation plugInTypeInformation)
+        {
+            bool result = false;
+
+            result = result && plugIn.Description == plugInTypeInformation.Description;
+            result = result && plugIn.Name == plugInTypeInformation.Name;
+            result = result && plugIn.PlugInInformation!.AssemblyFileName == plugInTypeInformation.AssemblyFileName;
+            result = result && plugIn.PlugInInformation!.AssemblyVersion == plugInTypeInformation.AssemblyVersion;
+            result = result && plugIn.PlugInInformation!.Directory == plugInTypeInformation.Directory;
+            result = result && plugIn.PlugInInformation!.HasConfiguration == plugInTypeInformation.HasConfiguration;
+            result = result && plugIn.PlugInInformation!.HasLogger == plugInTypeInformation.HasLogger;
+            result = result && plugIn.PlugInInformation!.TypeName == plugInTypeInformation.TypeName;
+
+            return !result;
         }
 
         private void RemoveInstancesFromHost(PlugIn plugIn)

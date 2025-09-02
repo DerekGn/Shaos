@@ -219,6 +219,11 @@ namespace Shaos.Repository.Migrations
                     b.Property<int>("PlugInId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("TEXT");
 

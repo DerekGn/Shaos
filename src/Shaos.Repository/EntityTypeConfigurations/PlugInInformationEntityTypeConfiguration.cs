@@ -66,6 +66,11 @@ namespace Shaos.Repository.EntityTypeConfigurations
             builder
                 .Property(_ => _.HasLogger)
                 .IsRequired();
+
+            builder
+                .Property(_ => _.TypeName)
+                .HasMaxLength(ModelConstants.MaxTypeNameLength)
+                .IsRequired();
         }
     }
 }
