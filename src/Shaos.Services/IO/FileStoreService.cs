@@ -72,6 +72,7 @@ namespace Shaos.Services.IO
                 Directory.Delete(extractedPackagePath, true);
             }
         }
+
         /// <inheritdoc/>
         public IEnumerable<string> ExtractPackage(int id,
                                                   string packageFileName)

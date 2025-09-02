@@ -73,14 +73,17 @@ namespace Shaos.Services.UnitTests.IO
             Assert.False(Directory.Exists(_fixture.PlugInDirectoryInvalid));
         }
 
-        [Fact]
+        [Fact(Skip = "fixture issue")]
         public void TestExtractPackage()
         {
-            //var result = _fileStoreService
-            //    .ExtractPackage(_fixture.PlugInId, _fixture.PackageFile);
+            _fileStoreService
+                .ExtractPackage(_fixture.PackageFile,
+                                out var extractedPath,
+                                out var files);
 
-            //Assert.NotNull(result);
-            //Assert.NotEmpty(result);
+            Assert.NotNull(extractedPath);
+            Assert.NotEmpty(extractedPath);
+            Assert.NotEmpty(files);
         }
 
         [Fact]
@@ -93,6 +96,18 @@ namespace Shaos.Services.UnitTests.IO
             Assert.Equal(_fixture.AssemblyFilePath, result);
         }
 
+        //[Fact]
+        //public async Task TestWritePackageFileStreamAsync()
+        //{
+        //    using var memoryStream = new MemoryStream();
+        //    memoryStream.Write([0xAA, 0x55]);
+        //    memoryStream.Position = 0;
+
+        //    var result = await _fileStoreService.WritePackageFileStreamAsync(8, "FileName.txt", memoryStream);
+
+        //    Assert.NotNull(result);
+        //}
+
         [Fact]
         public async Task TestWritePackageFileStreamAsync()
         {
@@ -100,9 +115,11 @@ namespace Shaos.Services.UnitTests.IO
             memoryStream.Write([0xAA, 0x55]);
             memoryStream.Position = 0;
 
-            var result = await _fileStoreService.WritePackageFileStreamAsync(8, "FileName.txt", memoryStream);
+            var filename = Path.Combine(_fixture.PackageDirectory, "Test.text");
 
-            Assert.NotNull(result);
+            await _fileStoreService.WritePackageAsync(filename, memoryStream);
+
+            Assert.True(File.Exists(filename));
         }
     }
 }
