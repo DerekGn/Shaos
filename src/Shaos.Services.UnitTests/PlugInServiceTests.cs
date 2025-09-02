@@ -133,6 +133,16 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public void TestDeletePlugInFiles()
+        {
+            _plugInService.DeletePlugInFiles("packagePath", "plugInDirectory");
+
+            _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()), Times.Once);
+
+            _mockFileStoreService.Verify(_ => _.DeletePlugDirectory(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
         public async Task TestDeletePlugInInstanceNotExistAsync()
         {
             _mockInstanceHost
@@ -144,6 +154,25 @@ namespace Shaos.Services.UnitTests
             MockRepository.Verify(_ => _.DeleteAsync<PlugInInstance>(It.IsAny<int>(),
                                                                       It.IsAny<CancellationToken>()),
                                                                       Times.Never);
+        }
+
+        [Fact]
+        public void TestExtractPackage()
+        {
+            var packageFile = "packageFile";
+            var files = new List<string> { "test.PlugIn.dll" }.AsEnumerable();
+
+            _mockFileStoreService.Setup(_ => _.ExtractPackage(It.IsAny<string>(), out packageFile, out files));
+
+            var packageDetails = _plugInService.ExtractPackage("packagefilename");
+
+            Assert.NotNull(packageDetails);
+
+            Assert.NotEmpty(packageDetails.FileName);
+            Assert.NotNull(packageDetails.Files);
+            Assert.NotEmpty(packageDetails.Files);
+            Assert.NotEmpty(packageDetails.PlugInAssemblyFileName);
+            Assert.NotEmpty(packageDetails.PlugInDirectory);
         }
 
         [Fact]
@@ -526,7 +555,6 @@ namespace Shaos.Services.UnitTests
 
             VerifySaveAsync();
         }
-
         private PlugIn SetupPlugInGetAsync()
         {
             var plugIn = new PlugIn()
