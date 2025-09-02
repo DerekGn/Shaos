@@ -291,6 +291,20 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public void TestExtractPackageNoPlugIn()
+        {
+            var packageFile = "packageFile";
+            var files = new List<string> { }.AsEnumerable();
+
+            _mockFileStoreService.Setup(_ => _.ExtractPackage(It.IsAny<string>(), out packageFile, out files));
+
+            var exception = Assert.Throws<NoValidPlugInAssemblyFoundException>(() => _plugInService.ExtractPackage("packagefilename"));
+
+            Assert.NotNull(exception);
+            Assert.Equal("No assembly file ending with [.PlugIn.dll] was found in the package [packagefilename] files", exception.Message);
+        }
+
+        [Fact]
         public async Task TestLoadPlugInInstanceConfigurationOkAsync()
         {
             SetupPlugInInstanceGetByIdAsync();
