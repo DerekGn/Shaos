@@ -70,9 +70,7 @@ namespace Shaos.Services.UnitTests
                                               It.IsAny<string>()))
                 .Returns("path");
 
-            _mockPlugInTypeValidator
-                .Setup(_ => _.Validate(It.IsAny<string>()))
-                .Returns(new PlugInTypeInformation());
+            SetupPlugInTypeValidator();
 
             await _plugInService.CreatePlugInAsync("", "", "");
 
@@ -154,25 +152,6 @@ namespace Shaos.Services.UnitTests
             MockRepository.Verify(_ => _.DeleteAsync<PlugInInstance>(It.IsAny<int>(),
                                                                       It.IsAny<CancellationToken>()),
                                                                       Times.Never);
-        }
-
-        [Fact]
-        public void TestExtractPackage()
-        {
-            var packageFile = "packageFile";
-            var files = new List<string> { "test.PlugIn.dll" }.AsEnumerable();
-
-            _mockFileStoreService.Setup(_ => _.ExtractPackage(It.IsAny<string>(), out packageFile, out files));
-
-            var packageDetails = _plugInService.ExtractPackage("packagefilename");
-
-            Assert.NotNull(packageDetails);
-
-            Assert.NotEmpty(packageDetails.FileName);
-            Assert.NotNull(packageDetails.Files);
-            Assert.NotEmpty(packageDetails.Files);
-            Assert.NotEmpty(packageDetails.PlugInAssemblyFileName);
-            Assert.NotEmpty(packageDetails.PlugInDirectory);
         }
 
         [Fact]
@@ -293,6 +272,25 @@ namespace Shaos.Services.UnitTests
         }
 
         [Fact]
+        public void TestExtractPackage()
+        {
+            var packageFile = "packageFile";
+            var files = new List<string> { "test.PlugIn.dll" }.AsEnumerable();
+
+            _mockFileStoreService.Setup(_ => _.ExtractPackage(It.IsAny<string>(), out packageFile, out files));
+
+            var packageDetails = _plugInService.ExtractPackage("packagefilename");
+
+            Assert.NotNull(packageDetails);
+
+            Assert.NotEmpty(packageDetails.FileName);
+            Assert.NotNull(packageDetails.Files);
+            Assert.NotEmpty(packageDetails.Files);
+            Assert.NotEmpty(packageDetails.PlugInAssemblyFileName);
+            Assert.NotEmpty(packageDetails.PlugInDirectory);
+        }
+
+        [Fact]
         public async Task TestLoadPlugInInstanceConfigurationOkAsync()
         {
             SetupPlugInInstanceGetByIdAsync();
@@ -368,6 +366,23 @@ namespace Shaos.Services.UnitTests
 
             Assert.NotNull(result);
             Assert.Equal(state, result.Enabled);
+
+            VerifySaveAsync();
+        }
+
+        [Fact]
+        public async Task TestUpdatePlugInPackageAsync()
+        {
+            SetupPlugInGetByIdAsync();
+
+            SetupRunningInstances();
+
+            SetupPlugInTypeValidator();
+
+            await _plugInService.UpdatePlugInPackageAsync(1,
+                                                          "packageFileName",
+                                                          "plugin directory",
+                                                          "assemblyFilename");
 
             VerifySaveAsync();
         }
@@ -478,16 +493,7 @@ namespace Shaos.Services.UnitTests
                                              It.IsAny<string>()))
                 .Returns([".PlugIn.dll"]);
 
-            _mockPlugInTypeValidator
-                .Setup(_ => _.Validate(It.IsAny<string>()))
-                .Returns(new PlugInTypeInformation("name",
-                                                   "typename",
-                                                   "description",
-                                                   "directory",
-                                                   true,
-                                                   true,
-                                                   "assemblyfile",
-                                                   "1.0.0"));
+            SetupPlugInTypeValidator();
 
             await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
@@ -532,16 +538,7 @@ namespace Shaos.Services.UnitTests
                                              It.IsAny<string>()))
                 .Returns([".PlugIn.dll"]);
 
-            _mockPlugInTypeValidator
-               .Setup(_ => _.Validate(It.IsAny<string>()))
-               .Returns(new PlugInTypeInformation("name",
-                                                  "typename",
-                                                  "description",
-                                                  "directory",
-                                                  true,
-                                                  true,
-                                                  "assemblyfile",
-                                                  "1.0.0"));
+            SetupPlugInTypeValidator();
 
             await _plugInService
                 .UploadPlugInPackageAsync(1, "filename", stream);
@@ -555,6 +552,7 @@ namespace Shaos.Services.UnitTests
 
             VerifySaveAsync();
         }
+
         private PlugIn SetupPlugInGetAsync()
         {
             var plugIn = new PlugIn()
@@ -598,13 +596,27 @@ namespace Shaos.Services.UnitTests
             return plugIn;
         }
 
+        private void SetupPlugInTypeValidator()
+        {
+            _mockPlugInTypeValidator
+                           .Setup(_ => _.Validate(It.IsAny<string>()))
+                           .Returns(new PlugInTypeInformation("name",
+                                                              "typename",
+                                                              "description",
+                                                              "directory",
+                                                              true,
+                                                              true,
+                                                              "assemblyfile",
+                                                              "1.0.0"));
+        }
+
         private RuntimeInstance SetupRunningInstances()
         {
             var instance = new RuntimeInstance(1,
-                                        1,
-                                        InstanceName,
-                                        AssemblyPath,
-                                        RuntimeInstanceState.None);
+                                               1,
+                                               InstanceName,
+                                               AssemblyPath,
+                                               RuntimeInstanceState.None);
 
             _mockInstanceHost
                .Setup(_ => _.Instances)
