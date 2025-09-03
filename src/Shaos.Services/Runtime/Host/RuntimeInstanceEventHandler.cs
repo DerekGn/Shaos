@@ -255,15 +255,22 @@ namespace Shaos.Services.Runtime.Host
             {
                 var modelDevice = await repository.GetByIdAsync<ModelDevice>(deviceParameters.Parent.Id);
 
-                foreach (var item in items)
+                if(modelDevice != null)
                 {
-                    var modelParameter = item.ToModel();
-                    modelParameter!.DeviceId = modelDevice!.Id;
+                    foreach (var item in items)
+                    {
+                        var modelParameter = item.ToModel();
+                        modelParameter.DeviceId = modelDevice.Id;
 
-                    await repository.AddAsync(modelParameter!);
+                        await repository.AddAsync(modelParameter!);
+                    }
+
+                    await repository.SaveChangesAsync();
                 }
-
-                await repository.SaveChangesAsync();
+                else
+                {
+                    _logger.LogError("Unable to resolve Device for Id: [{Id}]", deviceParameters.Parent.Id);
+                }
             });
         }
 
@@ -271,19 +278,26 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var plugInInstance = repository.GetByIdAsync<PlugInInstance>(plugInDeviceList.Parent.Id);
+                var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(plugInDeviceList.Parent.Id);
 
-                foreach (IDevice device in devices)
+                if(plugInInstance!= null)
                 {
-                    var modelDevice = device.ToModel();
-                    modelDevice.PlugInInstanceId = plugInInstance.Id;
+                    foreach (IDevice device in devices)
+                    {
+                        var modelDevice = device.ToModel();
+                        modelDevice.PlugInInstanceId = plugInInstance.Id;
 
-                    await repository.AddAsync(modelDevice);
+                        await repository.AddAsync(modelDevice);
 
-                    device.SetId(modelDevice.Id);
+                        device.SetId(modelDevice.Id);
+                    }
+
+                    await repository.SaveChangesAsync();
                 }
-
-                await repository.SaveChangesAsync();
+                else
+                {
+                    _logger.LogError("Unable to resolve PlugIn for Id: [{Id}]", plugInDeviceList.Parent.Id);
+                }
             });
         }
 

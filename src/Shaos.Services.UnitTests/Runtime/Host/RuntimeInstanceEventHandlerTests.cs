@@ -26,6 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository;
+using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
@@ -153,9 +154,18 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestDevicesListChangedDeviceAdded()
         {
+            var plugInInstance = new PlugInInstance();
+
             SetupServiceScopeFactory();
 
             SetupCommonMocks();
+
+            MockRepository
+               .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                       It.IsAny<bool>(),
+                                                       It.IsAny<List<string>>(),
+                                                       It.IsAny<CancellationToken>()))
+               .ReturnsAsync(plugInInstance);
 
             _runtimeInstanceEventHandler
                 .AttachDevicesListChange(_mockChildObservableListDevices.Object);
