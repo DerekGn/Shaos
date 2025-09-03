@@ -198,6 +198,15 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
+        private void AttachDeviceAndParameters(IDevice device)
+        {
+            AttachParametersListChanged(device.Parameters);
+
+            AttachParameters([.. device.Parameters]);
+
+            AttachDevice(device);
+        }
+
         private void AttachParameter(IBaseParameter parameter)
         {
             _logger.LogDebug("Attaching event handler for parameter Id: [{Id}] Name: [{Name}]",
@@ -240,11 +249,7 @@ namespace Shaos.Services.Runtime.Host
         {
             foreach (var device in devices)
             {
-                AttachParametersListChanged(device.Parameters);
-
-                AttachParameters(device.Parameters.ToList());
-
-                AttachDevice(device);
+                AttachDeviceAndParameters(device);
             }
         }
 
@@ -255,7 +260,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 var modelDevice = await repository.GetByIdAsync<ModelDevice>(deviceParameters.Parent.Id);
 
-                if(modelDevice != null)
+                if (modelDevice != null)
                 {
                     foreach (var parameter in parameters)
                     {
@@ -268,6 +273,8 @@ namespace Shaos.Services.Runtime.Host
                         await repository.SaveChangesAsync();
 
                         parameter.SetId(modelParameter.Id);
+
+                        AttachParameter(parameter);
                     }
                 }
                 else
@@ -283,7 +290,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(plugInDeviceList.Parent.Id);
 
-                if(plugInInstance!= null)
+                if (plugInInstance != null)
                 {
                     foreach (IDevice device in devices)
                     {
@@ -295,6 +302,8 @@ namespace Shaos.Services.Runtime.Host
                         await repository.SaveChangesAsync();
 
                         device.SetId(modelDevice.Id);
+
+                        AttachDeviceAndParameters(device);
                     }
                 }
                 else
