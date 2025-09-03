@@ -242,6 +242,9 @@ namespace Shaos.Services
         public PlugInTypeInformation GetPlugInTypeInformation(string plugInDirectory,
                                                               string plugInAssemblyFileName)
         {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInDirectory);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
+
             return _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFileName));
         }
 
