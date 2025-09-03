@@ -52,15 +52,15 @@ namespace Shaos.Repository
                                CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
-        /// Create a new <see cref="Package"/> instance
+        /// Create a new <see cref="PlugInInformation"/> instance
         /// </summary>
-        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="Package"/></param>
-        /// <param name="package">The <see cref="Package"/> instance to associate the <see cref="PlugIn"/></param>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="PlugInInformation"/></param>
+        /// <param name="plugInInformation">The <see cref="PlugInInformation"/> instance to associate the <see cref="PlugIn"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="Package"/> identifier</returns>
-        Task<int> CreatePackageAsync(PlugIn plugIn,
-                                     Package package,
-                                     CancellationToken cancellationToken = default);
+        /// <returns>The <see cref="PlugInInformation"/> identifier</returns>
+        Task<int> CreatePlugInInformationAsync(PlugIn plugIn,
+                                               PlugInInformation plugInInformation,
+                                               CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new <see cref="PlugIn"/> instance

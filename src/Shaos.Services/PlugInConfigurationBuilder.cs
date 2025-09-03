@@ -67,9 +67,11 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public object? LoadConfiguration(int id, string assemblyFile, string? configuration = null)
+        public object? LoadConfiguration(string extractedFolder,
+                                         string assemblyFile,
+                                         string? configuration = null)
         {
-            var assemblyPath = _fileStoreService.GetAssemblyPath(id,
+            var assemblyPath = _fileStoreService.GetAssemblyPath(extractedFolder,
                                                                  assemblyFile);
 
             IRuntimeAssemblyLoadContext? context = null;

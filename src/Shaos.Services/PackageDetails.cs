@@ -22,27 +22,31 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.Logging;
-using Shaos.Sdk;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Shaos.Test.PlugIn.Invalid
+namespace Shaos.Services
 {
-    [ExcludeFromCodeCoverage]
-    [PlugInDescription("Name", "Description")]
-    public class TestPlugInInvalidLogger : PlugInBase, IPlugIn
+    /// <summary>
+    /// Package details
+    /// </summary>
+    public class PackageDetails
     {
-#pragma warning disable S6672 // Generic logger injection should match enclosing type
-        public TestPlugInInvalidLogger(ILogger<TestPlugIn> logger)
-#pragma warning restore S6672 // Generic logger injection should match enclosing type
-        {
-        }
+        /// <summary>
+        /// The package file name
+        /// </summary>
+        public required string FileName { get; init; }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public override async Task ExecuteAsync(CancellationToken cancellationToken)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// The set of files extracted from the package
+        /// </summary>
+        public IEnumerable<string>? Files { get; init; }
+
+        /// <summary>
+        /// The PlugIn directory
+        /// </summary>
+        public required string PlugInDirectory { get; init; }
+
+        /// <summary>
+        /// The PlugIn assembly file name
+        /// </summary>
+        public required string PlugInAssemblyFileName { get; init; }
     }
 }

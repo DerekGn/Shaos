@@ -1,0 +1,90 @@
+﻿@page "{id:int}"
+@model Shaos.Pages.PlugIns.UpdatedPackageInformationModel
+
+@{
+    ViewData["Title"] = "PlugIn Package Information";
+}
+
+
+<h1>PlugIn Package Information</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <dl class="row">
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PlugInTypeInformation!.Name)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PlugInTypeInformation!.Name)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PlugInTypeInformation!.Description)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PlugInTypeInformation!.Description)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PlugInTypeInformation!.AssemblyFileName)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PlugInTypeInformation!.AssemblyFileName)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PlugInTypeInformation!.AssemblyVersion)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PlugInTypeInformation!.AssemblyVersion)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PlugInTypeInformation!.TypeName)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PlugInTypeInformation!.TypeName)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PlugInTypeInformation!.HasConfiguration)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PlugInTypeInformation!.HasConfiguration)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PlugInTypeInformation!.HasLogger)
+            </dt>
+            <dd class="col-sm-6">
+                @Html.DisplayFor(model => model.PlugInTypeInformation!.HasLogger)
+            </dd>
+        </dl>
+        <hr />
+        <dl>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageDetails!.PlugInDirectory)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PackageDetails!.PlugInDirectory)
+            </dd>
+            <dt class="col-sm-6">
+                @Html.DisplayNameFor(model => model.PackageDetails!.FileName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PackageDetails!.FileName)
+            </dd>
+        </dl>
+        <div class="row">
+            <div class="col-sm-6">
+                <form method="post">
+                    <button type="submit" class="btn btn-sm btn-success" asp-page-handler="Save" asp-route-id="@RouteData.Values["id"]" asp-route-packageFilename="@Model.PackageDetails!.FileName" asp-route-plugInAssemblyFile="@Model.PackageDetails!.PlugInAssemblyFileName" asp-route-plugInDirectory="@Model.PackageDetails!.PlugInDirectory">
+                        <svg bootstrap-icon="Floppy" width="18" height="18" aria-label="Save"></svg>
+                    </button>
+                </form>
+            </div>
+            <div class="col-sm-6">
+                <form method="post">
+                    <button type="submit" class="btn btn-sm btn-primary" asp-page-handler="Cancel" asp-route-packageFilename="@Model.PackageDetails!.FileName" asp-route-plugInDirectory="@Model.PackageDetails!.PlugInDirectory">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

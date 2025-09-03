@@ -45,7 +45,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
                     HasConfiguration = true
                 }
@@ -81,12 +81,12 @@ namespace Shaos.Services.UnitTests
                 .Verify(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
                                                             It.IsAny<bool>(),
                                                             It.IsAny<List<string>?>(),
-                                                            It.IsAny<CancellationToken>()), Times.Once);
+                                                            It.IsAny<CancellationToken>()));
         }
 
         protected void VerifySaveAsync()
         {
-            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
     }
 }

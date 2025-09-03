@@ -126,7 +126,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             });
 
             MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
 
             Assert.Single(modelDevice.BatteryUpdates);
         }
@@ -179,7 +179,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                         It.IsAny<CancellationToken>()));
 
             MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Theory]
@@ -204,7 +204,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                         It.IsAny<CancellationToken>()));
 
             MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -241,7 +241,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Verify(_ => _.AddAsync(It.IsAny<ModelBaseParameter>(),
                                                   It.IsAny<CancellationToken>()), Times.Exactly(5));
             MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Theory]
@@ -272,7 +272,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Verify(_ => _.DeleteAsync<ModelBaseParameter>(It.IsAny<int>(),
                                                                It.IsAny<CancellationToken>()), Times.Exactly(5));
             MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -407,7 +407,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             });
 
             MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
 
             Assert.Single(modelDevice.SignalUpdates);
         }

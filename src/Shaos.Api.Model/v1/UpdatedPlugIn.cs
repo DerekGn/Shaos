@@ -36,7 +36,7 @@ namespace Shaos.Api.Model.v1
         /// The name of this <see cref="PlugIn"/>
         /// </summary>
         [Required]
-        [StringLength(ModelConstants.MaxNameLength)]
+        [StringLength(ModelConstants.MaxFileNameLength)]
         public required string Name { get; init; }
 
         /// <summary>

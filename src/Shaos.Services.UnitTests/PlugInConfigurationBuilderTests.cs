@@ -55,7 +55,7 @@ namespace Shaos.Services.UnitTests
         public void TestLoadConfiguration()
         {
             _mockFileStoreService
-                .Setup(_ => _.GetAssemblyPath(It.IsAny<int>(),
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<string>(),
                                               It.IsAny<string>()))
                 .Returns("AssemblyPath");
 
@@ -67,7 +67,7 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.LoadFromAssemblyPath(It.IsAny<string>()))
                 .Returns(typeof(TestPlugIn).Assembly);
 
-            var result = _plugInConfigurationBuiilder.LoadConfiguration(1,
+            var result = _plugInConfigurationBuiilder.LoadConfiguration("plugInFolder",
                                                                         "AssemblyFile",
                                                                         "{\"Delay\":\"0:0:5\"}");
 

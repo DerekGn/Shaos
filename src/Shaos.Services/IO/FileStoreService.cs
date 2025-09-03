@@ -30,7 +30,7 @@ using System.IO.Compression;
 namespace Shaos.Services.IO
 {
     /// <summary>
-    /// 
+    /// A file store service that abstracts file store operations
     /// </summary>
     public class FileStoreService : IFileStoreService
     {
@@ -38,32 +38,38 @@ namespace Shaos.Services.IO
         private readonly IOptions<FileStoreOptions> _options;
 
         /// <summary>
-        /// 
+        /// Create an instance of a <see cref="IFileStoreService"/>
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="options"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public FileStoreService(
-            ILogger<FileStoreService> logger,
-            IOptions<FileStoreOptions> options)
+        /// <param name="logger">The <see cref="ILogger{FileStoreService}"/> instance</param>
+        /// <param name="options">The <see cref="IOptions{FileStoreOptions}"/> instance</param>
+        public FileStoreService(ILogger<FileStoreService> logger,
+                                IOptions<FileStoreOptions> options)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _logger = logger;
+            _options = options;
         }
 
         /// <inheritdoc/>
-        public void DeletePackage(int id,
-                                  string packageFileName)
+        public void DeletePackage(string packageFile)
         {
-            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath, packageFile);
 
-            var filePath = Path.Combine(Path.Combine(_options.Value.PackagesPath, id.ToString()), packageFileName);
-
-            if (File.Exists(filePath))
+            if (File.Exists(packageFilePath))
             {
-                _logger.LogInformation("Deleting file [{Path}]", filePath);
+                File.Delete(packageFilePath);
+            }
+        }
 
-                File.Delete(filePath);
+        /// <inheritdoc/>
+        public void DeletePlugDirectory(string plugInDirectory)
+        {
+            var extractedPackagePath = Path.Combine(_options.Value.BinariesPath, plugInDirectory);
+
+            if (Directory.Exists(extractedPackagePath))
+            {
+                _logger.LogInformation("Deleting folder [{Path}]", extractedPackagePath);
+
+                Directory.Delete(extractedPackagePath, true);
             }
         }
 
@@ -92,9 +98,74 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public string GetAssemblyPath(int id, string assemblyFileName)
+        public void ExtractPackage(string packageFileName,
+                                   out string extractedPath,
+                                   out IEnumerable<string> files)
         {
-            return Path.Combine(Path.Combine(_options.Value.BinariesPath, id.ToString()), assemblyFileName);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+
+            extractedPath = Guid.NewGuid().ToString();
+            var sourcePath = _options.Value.PackagesPath;
+            var targetPath = Path.Combine(_options.Value.BinariesPath, extractedPath);
+
+            sourcePath = Path.Combine(sourcePath, packageFileName);
+
+            _logger.LogInformation("Extracting package: [{SourcePath}] to [{TargetPath}]",
+                                   sourcePath,
+                                   targetPath);
+
+            ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
+
+            files = Directory.EnumerateFiles(targetPath);
+        }
+
+        /// <inheritdoc/>
+        public string GetAssemblyPath(string plugInDirectory,
+                                      string plugInAssemblyFileName)
+        {
+            ArgumentNullException.ThrowIfNull(plugInDirectory);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
+
+            return Path.Combine(Path.Combine(_options.Value.BinariesPath, plugInDirectory), plugInAssemblyFileName);
+        }
+
+        /// <inheritdoc/>
+        public async Task WritePackageAsync(string packageFileName,
+                                            Stream packageFileStream,
+                                            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(packageFileStream);
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+
+            if (_options.Value.PackagesPath.CreateDirectory())
+            {
+                _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
+            }
+
+            var packageFilePath = _options.Value.PackagesPath;
+
+            if (Directory.Exists(packageFilePath))
+            {
+                _logger.LogInformation("Emptying package directory [{Folder}]", packageFilePath);
+
+                packageFilePath.EmptyDirectory();
+            }
+            else
+            {
+                _logger.LogInformation("Creating package directory [{Folder}]", packageFilePath);
+
+                packageFilePath.CreateDirectory();
+            }
+
+            packageFilePath = Path.Combine(packageFilePath, packageFileName);
+
+            _logger.LogInformation("Writing Package File: [{PackageFile}]", packageFilePath);
+
+            using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
+
+            await packageFileStream.CopyToAsync(outputStream, cancellationToken);
+
+            await packageFileStream.FlushAsync(cancellationToken);
         }
 
         /// <inheritdoc/>

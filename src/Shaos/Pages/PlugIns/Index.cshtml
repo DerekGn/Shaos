@@ -8,11 +8,11 @@
 <h1>PlugIns</h1>
 
 <p>
-    <a asp-page="Create" title="Create a PlugIn" class="btn btn-sm btn-primary">
+    <a asp-page="PackageUpload" title="PlugIn Package Upload" class="btn btn-sm btn-primary">
         <span>
-            <svg bootstrap-icon="Plugin" width="24" height="24" aria-label="PlugIn"></svg>
+            <svg bootstrap-icon="Upload" width="24" height="24" aria-label="Upload"></svg>
         </span>
-        Create
+        PlugIn Package Upload
     </a>
 </p>
 
@@ -70,7 +70,7 @@
     <tbody>
         @foreach (var item in Model.List)
         {
-            var instancesDisabled = item.Package == null ? "disabled" : "";
+            var instancesDisabled = item.PlugInInformation == null ? "disabled" : "";
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Id)
@@ -82,10 +82,10 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @(item.Package != null ? item.Package.FileName : "Unassigned")
+                    @(item.PlugInInformation != null ? item.PlugInInformation.PackageFileName : "Unassigned")
                 </td>
                 <td>
-                    @(item.Package != null ? item.Package.AssemblyVersion : "Unassigned")
+                    @(item.PlugInInformation != null ? item.PlugInInformation.AssemblyVersion : "Unassigned")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Instances.Count)
@@ -97,17 +97,12 @@
                     @Html.DisplayFor(modelItem => item.UpdatedDate)
                 </td>
                 <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Edit PlugIn">
-                        <span>
-                            <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Edit"></svg>
-                        </span>
-                    </a>
                     <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Delete PlugIn">
                         <span>
                             <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
                         </span>
                     </a>
-                    <a asp-page="./Package" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="PlugIn Package">
+                    <a asp-page="./PackageUpload" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="PlugIn Package">
                         <span>
                             <svg bootstrap-icon="BoxFill" width="24" height="24" aria-label="Package"></svg>
                         </span>

@@ -23,6 +23,7 @@
 */
 
 using Shaos.Repository.Models;
+using Shaos.Sdk;
 
 namespace Shaos.Services.IO
 {
@@ -32,12 +33,16 @@ namespace Shaos.Services.IO
     public interface IFileStoreService
     {
         /// <summary>
-        /// Delete a <see cref="PlugIn"/> package from the file store
+        /// Delete a <see cref="IPlugIn"/> package from the file store
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="packageFileName">The package file name</param>
-        void DeletePackage(int id,
-                           string packageFileName);
+        /// <param name="packagePath">The path to the package</param>
+        void DeletePackage(string packagePath);
+
+        /// <summary>
+        /// Delete the PlugIn files
+        /// </summary>
+        /// <param name="plugInDirectory">The directory where the PlugIn files are located</param>
+        void DeletePlugDirectory(string plugInDirectory);
 
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
@@ -48,12 +53,36 @@ namespace Shaos.Services.IO
                                            string packageFileName);
 
         /// <summary>
-        /// Gets the <see cref="PlugIn"/> assembly file
+        /// Extract a <see cref="PlugIn"/> package
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-        /// <param name="assemblyFileName">The assembly file name</param>
-        /// <returns>The path to the <see cref="PlugIn"/> assembly file</returns>
-        string GetAssemblyPath(int id, string assemblyFileName);
+        /// <param name="packageFileName">The package file name</param>
+        /// <param name="extractedPath">The folder the package is extracted</param>
+        /// <param name="files">The list of extracted files</param>
+        void ExtractPackage(string packageFileName,
+                            out string extractedPath,
+                            out IEnumerable<string> files);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="plugInDirectory"></param>
+        /// <param name="plugInAssemblyFileName"></param>
+        /// <returns></returns>
+        string GetAssemblyPath(string plugInDirectory,
+                               string plugInAssemblyFileName);
+
+        /// <summary>
+        /// Write a packag zip file to the file stream
+        /// </summary>
+        /// <param name="packageFileName">The package filename to write too</param>
+        /// <param name="packageFileStream">The stream to be written</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <remarks>
+        /// Writes package file to a location on the file store
+        /// </remarks>
+        Task WritePackageAsync(string packageFileName,
+                               Stream packageFileStream,
+                               CancellationToken cancellationToken = default);
 
         /// <summary>
         /// </summary>

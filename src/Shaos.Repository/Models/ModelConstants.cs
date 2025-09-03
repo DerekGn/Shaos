@@ -40,18 +40,28 @@ namespace Shaos.Repository.Models
         public const int MaxDescriptionLength = 100;
 
         /// <summary>
-        /// The maximum file path length
+        /// The maximum assembly file name length
         /// </summary>
-        public const int MaxFilePathLength = 40;
+        public const int MaxAssemblyFileNameLength = 40;
 
         /// <summary>
-        /// The maximum name field length
+        /// The maximum file name field length
         /// </summary>
-        public const int MaxNameLength = 40;
+        public const int MaxFileNameLength = 40;
 
         /// <summary>
-        /// The maximum version field length
+        /// The maximum assembly version field length
         /// </summary>
-        public const int MaxVersionLength = 10;
+        public const int MaxAssemblyVersionLength = 10;
+
+        /// <summary>
+        /// The maximum directory field length
+        /// </summary>
+        public const int MaxDirectoryLength = 32;
+
+        /// <summary>
+        /// Max type name field length
+        /// </summary>
+        public const int MaxTypeNameLength = 100;
     }
 }

@@ -1,0 +1,30 @@
+﻿@page
+@model Shaos.Pages.PlugIns.PackageUploadModel
+
+@{
+    ViewData["Title"] = "PlugIn Package Upload";
+}
+
+<h1>PlugIn Package Upload</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <input accept=".zip,application/x-zip-compressed" asp-for="PackageFile" type="file" />
+            </div>
+            <hr />
+            <div class="form-group">
+                <button type="submit" class="btn btn-sm btn-success">
+                    <span>
+                        <svg bootstrap-icon="CloudArrowUp" width="18" height="18" aria-label="Save"></svg>
+                    </span>
+                </button>
+                <a asp-page="./Index" class="btn btn-sm btn-primary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

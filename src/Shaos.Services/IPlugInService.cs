@@ -27,6 +27,7 @@ using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Validation;
 
 namespace Shaos.Services
 {
@@ -35,6 +36,18 @@ namespace Shaos.Services
     /// </summary>
     public interface IPlugInService
     {
+        /// <summary>
+        /// Create a PlugIn instance
+        /// </summary>
+        /// <param name="packageFileName"></param>
+        /// <param name="plugInDirectory"></param>
+        /// <param name="plugInAssemblyFileName"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task CreatePlugInAsync(string packageFileName,
+                               string plugInDirectory,
+                               string plugInAssemblyFileName,
+                               CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Create an instance of a <see cref="PlugIn"/>
         /// </summary>
@@ -58,6 +71,14 @@ namespace Shaos.Services
                                CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Delete the PlugIn files
+        /// </summary>
+        /// <param name="packageFileName">The package zip file name</param>
+        /// <param name="plugInDirectory">The PlugIn directory</param>
+        void DeletePlugInFiles(string packageFileName,
+                               string plugInDirectory);
+
+        /// <summary>
         /// Delete a <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
@@ -65,6 +86,22 @@ namespace Shaos.Services
         /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInInstanceAsync(int id,
                                        CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Extract the files from the package file
+        /// </summary>
+        /// <param name="packageFileName">The package file name</param>
+        /// <exception cref="NoValidPlugInAssemblyFoundException">Throw if no valid PlugIn assembly file was found</exception>
+        /// <returns>The <see cref="PackageDetails"/></returns>
+        PackageDetails ExtractPackage(string packageFileName);
+
+        /// <summary>
+        /// Get the <see cref="PlugInTypeInformation"/> from 
+        /// </summary>
+        /// <param name="plugInDirectory">The PlugIn directory</param>
+        /// <param name="plugInAssemblyFileName">The PlugIn assembly file name</param>
+        /// <returns></returns>
+        PlugInTypeInformation GetPlugInTypeInformation(string plugInDirectory,
+                                                       string plugInAssemblyFileName);
 
         /// <summary>
         /// Load a <see cref="PlugInInstance"/> configuration
@@ -86,6 +123,21 @@ namespace Shaos.Services
         Task<PlugInInstance?> SetPlugInInstanceEnableAsync(int id,
                                                            bool enable,
                                                            CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update a plugin package
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="packageFileName"></param>
+        /// <param name="plugInDirectory"></param>
+        /// <param name="plugInAssemblyFileName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="PlugInInstancesRunningException">Thrown if a plugin instance is still running</exception> 
+        Task UpdatePlugInPackageAsync(int id,
+                                      string packageFileName,
+                                      string plugInDirectory,
+                                      string plugInAssemblyFileName,
+                                      CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Upload the package binaries for a <see cref="PlugIn"/>

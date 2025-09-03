@@ -33,6 +33,7 @@ using Shaos.Sdk.Devices.Parameters;
 namespace Shaos.Test.PlugIn
 {
     [ExcludeFromCodeCoverage]
+    [PlugInDescription("Name", "Description")]
     public class TestPlugIn : PlugInBase
     {
         private readonly TestPlugInConfiguration _configuration;

@@ -331,10 +331,9 @@ namespace Shaos.Controllers
             Summary = "Upload a Package for a PlugIn",
             Description = "Upload a Package file for a PlugIn. A Package is a zip file that contains the executables and content for a PlugIn",
             OperationId = "UploadPlugInPackage")]
-        public async Task<ActionResult> UploadPlugInPackageAsync(
-            [FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-            IFormFile formFile,
-            CancellationToken cancellationToken)
+        public async Task<ActionResult> UploadPlugInPackageAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+                                                                 IFormFile formFile,
+                                                                 CancellationToken cancellationToken)
         {
             if (ValidateFormFile(formFile, out var problemDetails))
             {

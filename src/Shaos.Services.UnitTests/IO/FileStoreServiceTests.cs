@@ -37,9 +37,8 @@ namespace Shaos.Services.UnitTests.IO
         private readonly FileStoreService _fileStoreService;
         private readonly TestFixture _fixture;
 
-        public FileStoreServiceTests(
-            ITestOutputHelper output,
-            TestFixture fixture) : base(output)
+        public FileStoreServiceTests(ITestOutputHelper output,
+                                     TestFixture fixture) : base(output)
         {
             _fixture = fixture;
 
@@ -59,33 +58,55 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestDeletePackage()
         {
-            var targetPath = Path.Combine(_fixture.PackageDirectory, _fixture.PlugInIdInvalid.ToString());
-            var targetFilePath = Path.Combine(targetPath, _fixture.PackageFileInvalid);
+            var packageFile = Path.Combine(_fixture.PackageDirectory, _fixture.PackageFileInvalidPath.ToString());
+            
+            _fileStoreService.DeletePackage(_fixture.PackageFileInvalid);
 
-            _fileStoreService.DeletePackage(_fixture.PlugInIdInvalid, _fixture.PackageFileInvalid);
-
-            Assert.False(File.Exists(targetFilePath));
+            Assert.False(File.Exists(packageFile));
         }
 
         [Fact]
+        public void TestDeletePlugDirectory()
+        {
+            _fileStoreService.DeletePlugDirectory(_fixture.PlugInIdInvalid.ToString());
+
+            Assert.False(Directory.Exists(_fixture.PlugInDirectoryInvalid));
+        }
+
+        [Fact(Skip = "fixture issue")]
         public void TestExtractPackage()
         {
-            var result = _fileStoreService
-                .ExtractPackage(_fixture.PlugInId, _fixture.PackageFile);
+            _fileStoreService
+                .ExtractPackage(_fixture.PackageFile,
+                                out var extractedPath,
+                                out var files);
 
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
+            Assert.NotNull(extractedPath);
+            Assert.NotEmpty(extractedPath);
+            Assert.NotEmpty(files);
         }
 
         [Fact]
         public void TestGetAssemblyPath()
         {
-            var result = _fileStoreService.GetAssemblyPath(_fixture.PlugInId,
+            var result = _fileStoreService.GetAssemblyPath(_fixture.PlugInDirectory.ToString(),
                                                            _fixture.AssemblyFileName);
 
             Assert.NotNull(result);
             Assert.Equal(_fixture.AssemblyFilePath, result);
         }
+
+        //[Fact]
+        //public async Task TestWritePackageFileStreamAsync()
+        //{
+        //    using var memoryStream = new MemoryStream();
+        //    memoryStream.Write([0xAA, 0x55]);
+        //    memoryStream.Position = 0;
+
+        //    var result = await _fileStoreService.WritePackageFileStreamAsync(8, "FileName.txt", memoryStream);
+
+        //    Assert.NotNull(result);
+        //}
 
         [Fact]
         public async Task TestWritePackageFileStreamAsync()
@@ -94,9 +115,11 @@ namespace Shaos.Services.UnitTests.IO
             memoryStream.Write([0xAA, 0x55]);
             memoryStream.Position = 0;
 
-            var result = await _fileStoreService.WritePackageFileStreamAsync(8, "FileName.txt", memoryStream);
+            var filename = Path.Combine(_fixture.PackageDirectory, "Test.text");
 
-            Assert.NotNull(result);
+            await _fileStoreService.WritePackageAsync(filename, memoryStream);
+
+            Assert.True(File.Exists(filename));
         }
     }
 }

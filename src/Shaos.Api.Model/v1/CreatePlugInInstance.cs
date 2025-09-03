@@ -36,7 +36,7 @@ namespace Shaos.Api.Model.v1
         /// The name of the instance
         /// </summary>
         [Required]
-        [StringLength(ModelConstants.MaxNameLength)]
+        [StringLength(ModelConstants.MaxFileNameLength)]
         public required string Name { get; set; }
 
         /// <summary>

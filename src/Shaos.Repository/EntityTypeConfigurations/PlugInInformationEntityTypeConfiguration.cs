@@ -22,34 +22,54 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Shaos.Repository.Models;
 
 namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// The <see cref="LogLevelSwitch"/> EF configuration
+    /// The <see cref="PlugInInformation"/> EF configuration
     /// </summary>
-    public class LogLevelSwitchEntityTypeConfiguration : IEntityTypeConfiguration<LogLevelSwitch>
+    public class PlugInInformationEntityTypeConfiguration : IEntityTypeConfiguration<PlugInInformation>
     {
         /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<LogLevelSwitch> builder)
+        public void Configure(EntityTypeBuilder<PlugInInformation> builder)
         {
             builder
-                .HasKey(_ => _.Id);
+                .Property(_ => _.Id);
 
             builder
-                .Property(_ => _.Name)
-                .IsRequired()
-                .HasMaxLength(ModelConstants.MaxFileNameLength);
+                .Property(_ => _.AssemblyFileName)
+                .HasMaxLength(ModelConstants.MaxAssemblyFileNameLength)
+                .IsRequired();
 
             builder
-               .HasIndex(_ => _.Name)
-               .IsUnique(true);
+                .Property(_ => _.AssemblyFileName)
+                .HasMaxLength(ModelConstants.MaxAssemblyVersionLength)
+                .IsRequired();
 
             builder
-                .Property(_ => _.Level)
+                .Property(_ => _.Directory)
+                .HasMaxLength(ModelConstants.MaxDirectoryLength)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.PackageFileName)
+                .HasMaxLength(ModelConstants.MaxFileNameLength)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.HasConfiguration)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.HasLogger)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.TypeName)
+                .HasMaxLength(ModelConstants.MaxTypeNameLength)
                 .IsRequired();
         }
     }

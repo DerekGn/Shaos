@@ -44,21 +44,27 @@ namespace Shaos.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Packages",
+                name: "PlugInInformations",
                 columns: table => new
                 {
-                    PlugInId = table.Column<int>(type: "INTEGER", nullable: false),
-                    AssemblyFile = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    AssemblyVersion = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
-                    FileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AssemblyFileName = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
+                    AssemblyVersion = table.Column<string>(type: "TEXT", nullable: false),
+                    Directory = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
                     HasConfiguration = table.Column<bool>(type: "INTEGER", nullable: false),
-                    HasLogger = table.Column<bool>(type: "INTEGER", nullable: false)
+                    HasLogger = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PackageFileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    PlugInId = table.Column<int>(type: "INTEGER", nullable: false),
+                    TypeName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Packages", x => x.PlugInId);
+                    table.PrimaryKey("PK_PlugInInformations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Packages_PlugIns_PlugInId",
+                        name: "FK_PlugInInformations_PlugIns_PlugInId",
                         column: x => x.PlugInId,
                         principalTable: "PlugIns",
                         principalColumn: "Id",
@@ -188,6 +194,12 @@ namespace Shaos.Repository.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlugInInformations_PlugInId",
+                table: "PlugInInformations",
+                column: "PlugInId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PlugInInstances_Name",
                 table: "PlugInInstances",
                 column: "Name",
@@ -218,7 +230,7 @@ namespace Shaos.Repository.Migrations
                 name: "LogLevelSwitches");
 
             migrationBuilder.DropTable(
-                name: "Packages");
+                name: "PlugInInformations");
 
             migrationBuilder.DropTable(
                 name: "Device");

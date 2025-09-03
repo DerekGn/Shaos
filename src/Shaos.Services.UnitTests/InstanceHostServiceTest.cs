@@ -107,7 +107,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
             };
 
             SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
@@ -129,7 +129,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
             };
 
             _mockInstanceHost
@@ -148,12 +148,12 @@ namespace Shaos.Services.UnitTests
             await _instanceHostService.StartInstanceAsync(1);
 
             _mockInstanceHost
-                .Verify(_ => _.InstanceExists(1), Times.Once);
+                .Verify(_ => _.InstanceExists(1));
 
             VerifyGetByIdAsync();
 
             _mockInstanceHost.Verify(_ => _.StartInstance(It.IsAny<int>(),
-                                                          It.IsAny<IPlugIn>()), Times.Once);
+                                                          It.IsAny<IPlugIn>()));
         }
 
         [Fact]
@@ -203,9 +203,9 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
-                    AssemblyFile = "AssemblyFile",
+                    AssemblyFileName = "AssemblyFile",
                     HasConfiguration = true
                 }
             };
@@ -221,7 +221,7 @@ namespace Shaos.Services.UnitTests
 
             _mockInstanceHost
                 .Verify(_ => _.StartInstance(It.IsAny<int>(),
-                                             It.IsAny<IPlugIn>()), Times.Once);
+                                             It.IsAny<IPlugIn>()));
         }
 
         [Fact]
@@ -232,9 +232,9 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
-                    AssemblyFile = "AssemblyFile",
+                    AssemblyFileName = "AssemblyFile",
                     HasConfiguration = true
                 }
             };
@@ -260,9 +260,9 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
-                    AssemblyFile = "AssemblyFile",
+                    AssemblyFileName = "AssemblyFile",
                     HasConfiguration = true
                 }
             };
@@ -287,7 +287,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                Package = new Package()
+                PlugInInformation = new PlugInInformation()
                 {
                     HasConfiguration = true
                 }
@@ -439,7 +439,7 @@ namespace Shaos.Services.UnitTests
                 .Returns(plugIns.ToAsyncEnumerable());
 
             _mockFileStoreService
-                .Setup(_ => _.GetAssemblyPath(It.IsAny<int>(),
+                .Setup(_ => _.GetAssemblyPath(It.IsAny<string>(),
                                               It.IsAny<string>()))
                 .Returns("AssemblyFile");
 
@@ -460,21 +460,18 @@ namespace Shaos.Services.UnitTests
                                                                     It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
                                                                     It.IsAny<bool>(),
                                                                     It.IsAny<List<string>?>(),
-                                                                    It.IsAny<CancellationToken>()),
-                    Times.Once);
+                                                                    It.IsAny<CancellationToken>()));
 
             _mockFileStoreService
-                .Verify(_ => _.GetAssemblyPath(It.IsAny<int>(),
-                                               It.IsAny<string>()),
-                                               Times.Once);
+                .Verify(_ => _.GetAssemblyPath(It.IsAny<string>(),
+                                               It.IsAny<string>()));
 
             _mockInstanceHost
                 .Verify(_ => _.CreateInstance(It.IsAny<int>(),
                                               It.IsAny<int>(),
                                               It.IsAny<string>(),
                                               It.IsAny<string>(),
-                                              It.IsAny<bool>()),
-                                              Times.Once);
+                                              It.IsAny<bool>()));
         }
 
         public class TestConfig

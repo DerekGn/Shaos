@@ -75,18 +75,18 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePackageAsync(PlugIn plugIn,
-                                                  Package package,
-                                                  CancellationToken cancellationToken = default)
+        public async Task<int> CreatePlugInInformationAsync(PlugIn plugIn,
+                                                            PlugInInformation plugInInformation,
+                                                            CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(plugIn);
-            ArgumentNullException.ThrowIfNull(package);
+            ArgumentNullException.ThrowIfNull(plugInInformation);
 
-            _logger.LogDebug("Creating new package for PlugIn: [{Id}] Package: [{Package}]",
-                plugIn.Id,
-                package);
+            _logger.LogDebug("Creating new package for PlugIn: [{Id}] Package: [{PlugInInformation}]",
+                             plugIn.Id,
+                             plugInInformation);
 
-            plugIn.Package = package;
+            plugIn.PlugInInformation = plugInInformation;
 
             return await _context.SaveChangesAsync(cancellationToken);
         }
