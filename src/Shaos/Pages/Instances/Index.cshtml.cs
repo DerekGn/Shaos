@@ -121,7 +121,8 @@ namespace Shaos.Pages.Instances
         {
             try
             {
-                await _instanceHostService.StartInstanceAsync(id, cancellationToken);
+                await _instanceHostService.StartInstanceAsync(id,
+                                                              cancellationToken);
             }
             catch (PlugInInstanceNotConfiguredException)
             {
