@@ -38,6 +38,7 @@ namespace Shaos.Test.PlugIn
     {
         private readonly TestPlugInConfiguration _configuration;
         private readonly ILogger<TestPlugIn> _logger;
+
         public TestPlugIn(ILogger<TestPlugIn> logger,
                           TestPlugInConfiguration configuration)
         {
@@ -54,12 +55,21 @@ namespace Shaos.Test.PlugIn
 
             await CreateDevicesAsync();
 
+            var freqParameter = (IntParameter)Devices.First().Parameters.First();
+
+            Random random = new Random();
+
             do
             {
                 await Task.Delay(_configuration.Delay, cancellationToken);
-                _logger.LogInformation("Executing [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
-                Devices.First().SignalLevel!.Level = 1;
-                Devices.First().BatteryLevel!.Level = 10;
+                _logger.LogInformation("Executing [{Name}].[{Operation}]",
+                                       nameof(TestPlugIn),
+                                       nameof(ExecuteAsync));
+
+                Devices.First().SignalLevel!.Level = random.Next(-100, 0);
+                Devices.First().BatteryLevel!.Level = (uint)random.Next(0, 100);
+
+                await freqParameter.WriteValueAsync(random.Next(0, 50));
             } while (!cancellationToken.IsCancellationRequested);
 
             _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
@@ -67,7 +77,7 @@ namespace Shaos.Test.PlugIn
 
         private async Task CreateDevicesAsync()
         {
-            if(!Devices.Any(_ => _.Name == "TestDevice"))
+            if (!Devices.Any(_ => _.Name == "TestDevice"))
             {
                 List<IBaseParameter> baseParameters =
                 [
