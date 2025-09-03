@@ -249,7 +249,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         private async Task CreateDeviceParametersAsync(IChildObservableList<IDevice, IBaseParameter> deviceParameters,
-                                                       IList<IBaseParameter> items)
+                                                       IList<IBaseParameter> parameters)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -257,15 +257,18 @@ namespace Shaos.Services.Runtime.Host
 
                 if(modelDevice != null)
                 {
-                    foreach (var item in items)
+                    foreach (var parameter in parameters)
                     {
-                        var modelParameter = item.ToModel();
+                        var modelParameter = parameter.ToModel()!;
+
                         modelParameter.DeviceId = modelDevice.Id;
 
                         await repository.AddAsync(modelParameter!);
-                    }
 
-                    await repository.SaveChangesAsync();
+                        await repository.SaveChangesAsync();
+
+                        parameter.SetId(modelParameter.Id);
+                    }
                 }
                 else
                 {
@@ -289,10 +292,10 @@ namespace Shaos.Services.Runtime.Host
 
                         await repository.AddAsync(modelDevice);
 
+                        await repository.SaveChangesAsync();
+
                         device.SetId(modelDevice.Id);
                     }
-
-                    await repository.SaveChangesAsync();
                 }
                 else
                 {
