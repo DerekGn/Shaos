@@ -90,10 +90,10 @@ namespace Shaos.Services.Runtime.Host
                 _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);
 
                 instance = new RuntimeInstance(id,
-                                        plugInId,
-                                        instanceName,
-                                        assemblyPath,
-                                        configurable);
+                                               plugInId,
+                                               instanceName,
+                                               assemblyPath,
+                                               configurable);
 
                 _executingInstances.Add(instance);
 

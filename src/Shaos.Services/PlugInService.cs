@@ -113,7 +113,7 @@ namespace Shaos.Services
 
                 if (plugIn.PlugInInformation != null)
                 {
-                    var package = plugIn.PlugInInformation;
+                    var plugInInformation = plugIn.PlugInInformation;
 
                     result = await _repository.CreatePlugInInstanceAsync(plugIn,
                                                                          plugInInstance,
@@ -122,8 +122,8 @@ namespace Shaos.Services
                     _instanceHost.CreateInstance(plugInInstance.Id,
                                                  plugIn.Id,
                                                  plugInInstance.Name,
-                                                 _fileStoreService.GetAssemblyPath(package.Directory, package.AssemblyFileName),
-                                                 package.HasConfiguration);
+                                                 _fileStoreService.GetAssemblyPath(plugInInformation.Directory, plugInInformation.AssemblyFileName),
+                                                 plugInInformation.HasConfiguration);
                 }
                 else
                 {

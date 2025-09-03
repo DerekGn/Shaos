@@ -84,9 +84,9 @@ namespace Shaos.Services
             var plugInInstance = await LoadPlugInInstanceAsync(id,
                                                                cancellationToken: cancellationToken);
 
-            var package = plugInInstance!.PlugIn!.PlugInInformation;
+            var plugInInformation = plugInInstance!.PlugIn!.PlugInInformation;
 
-            if (!package!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
+            if (!plugInInformation!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
             {
                 _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
                 throw new PlugInInstanceNotConfiguredException(id);
@@ -113,7 +113,7 @@ namespace Shaos.Services
                                                                cancellationToken: cancellationToken);
 
             var plugIn = plugInInstance.PlugIn!;
-            var package = plugIn.PlugInInformation!;
+            var plugInInformation = plugIn.PlugInInformation!;
 
             if (plugIn.PlugInInformation == null)
             {
@@ -122,7 +122,7 @@ namespace Shaos.Services
                 throw new PlugInPackageNotAssignedException(id);
             }
 
-            if (package.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))
+            if (plugInInformation.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))
             {
                 _logger.LogWarning("PlugIn instance Id: [{Id}] was not found.", id);
                 throw new PlugInInstanceNotConfiguredException(id);
