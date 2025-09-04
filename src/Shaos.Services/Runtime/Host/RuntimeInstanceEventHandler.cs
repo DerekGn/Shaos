@@ -202,7 +202,7 @@ namespace Shaos.Services.Runtime.Host
         {
             AttachParametersListChanged(device.Parameters);
 
-            AttachParameters([.. device.Parameters]);
+            AttachParameters(device.Parameters.ToList());
 
             AttachDevice(device);
         }
