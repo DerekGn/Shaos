@@ -75,23 +75,6 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>
-        public async Task<int> CreatePlugInInformationAsync(PlugIn plugIn,
-                                                            PlugInInformation plugInInformation,
-                                                            CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(plugIn);
-            ArgumentNullException.ThrowIfNull(plugInInformation);
-
-            _logger.LogDebug("Creating new package for PlugIn: [{Id}] Package: [{PlugInInformation}]",
-                             plugIn.Id,
-                             plugInInformation);
-
-            plugIn.PlugInInformation = plugInInformation;
-
-            return await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        /// <inheritdoc/>
         public async Task<int> CreatePlugInAsync(PlugIn plugIn,
                                                  CancellationToken cancellationToken = default)
         {
@@ -109,6 +92,22 @@ namespace Shaos.Repository
             });
         }
 
+        /// <inheritdoc/>
+        public async Task<int> CreatePlugInInformationAsync(PlugIn plugIn,
+                                                            PlugInInformation plugInInformation,
+                                                            CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(plugIn);
+            ArgumentNullException.ThrowIfNull(plugInInformation);
+
+            _logger.LogDebug("Creating new package for PlugIn: [{Id}] Package: [{PlugInInformation}]",
+                             plugIn.Id,
+                             plugInInformation);
+
+            plugIn.PlugInInformation = plugInInformation;
+
+            return await _context.SaveChangesAsync(cancellationToken);
+        }
         /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(PlugIn plugIn,
                                                          PlugInInstance plugInInstance,

@@ -129,7 +129,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
-                                                              ParameterValueChangedEventArgs<uint> e)
+                                                       ParameterValueChangedEventArgs<uint> e)
         {
             await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
             {
@@ -143,7 +143,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<string> e)
+                                                       ParameterValueChangedEventArgs<string> e)
         {
             await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
             {
@@ -157,7 +157,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<int> e)
+                                                       ParameterValueChangedEventArgs<int> e)
         {
             await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
             {
@@ -171,7 +171,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<float> e)
+                                                       ParameterValueChangedEventArgs<float> e)
         {
             await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
             {
@@ -185,7 +185,7 @@ namespace Shaos.Services.Runtime.Host
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
-                                                      ParameterValueChangedEventArgs<bool> e)
+                                                       ParameterValueChangedEventArgs<bool> e)
         {
             await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
             {
@@ -273,8 +273,6 @@ namespace Shaos.Services.Runtime.Host
                         await repository.SaveChangesAsync();
 
                         parameter.SetId(modelParameter.Id);
-
-                        AttachParameter(parameter);
                     }
                 }
                 else
@@ -284,7 +282,8 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
-        private async Task CreateDevicesAsync(IChildObservableList<IPlugIn, IDevice> plugInDeviceList, IList<IDevice> devices)
+        private async Task CreateDevicesAsync(IChildObservableList<IPlugIn, IDevice> plugInDeviceList,
+                                              IList<IDevice> devices)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -303,7 +302,10 @@ namespace Shaos.Services.Runtime.Host
 
                         device.SetId(modelDevice.Id);
 
-                        AttachDeviceAndParameters(device);
+                        for (var i = 0; i < modelDevice.Parameters.Count; i++)
+                        {
+                            device.Parameters[i].SetId(modelDevice.Parameters[i].Id);
+                        }
                     }
                 }
                 else
@@ -437,6 +439,11 @@ namespace Shaos.Services.Runtime.Host
                         if (e.Items != null)
                         {
                             await CreateDevicesAsync(sender as IChildObservableList<IPlugIn, IDevice>, e.Items);
+
+                            foreach (var device in e.Items)
+                            {
+                                AttachDeviceAndParameters(device);
+                            }
                         }
                         break;
 
@@ -529,7 +536,8 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task UpdateDeviceAsync(IDevice? device, Action<ModelDevice> updateOperation)
+        private async Task UpdateDeviceAsync(IDevice? device,
+                                             Action<ModelDevice> updateOperation)
         {
             if (device != null)
             {
