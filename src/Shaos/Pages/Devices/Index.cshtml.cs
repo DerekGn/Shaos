@@ -74,11 +74,11 @@ namespace Shaos.Pages.Devices
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.Id == id && _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
+                filter = _ => _.PlugInInstanceId == id && _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
             }
             else
             {
-                filter = _ => _.Id == id;
+                filter = _ => _.PlugInInstanceId == id;
             }
 
             switch (sortOrder)
