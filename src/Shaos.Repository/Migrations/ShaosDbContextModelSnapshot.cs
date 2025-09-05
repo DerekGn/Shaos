@@ -47,7 +47,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasIndex("PlugInInstanceId");
 
-                    b.ToTable("Device");
+                    b.ToTable("Devices");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.DeviceUpdate", b =>

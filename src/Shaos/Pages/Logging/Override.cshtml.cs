@@ -35,13 +35,9 @@ namespace Shaos.Pages.Logging
         private readonly ILoggingConfiguration _loggingConfiguration;
         private readonly IRepository _repository;
 
-        public OverrideModel(
-            ILoggingConfiguration loggingConfiguration,
-            IRepository repository)
+        public OverrideModel(ILoggingConfiguration loggingConfiguration,
+                             IRepository repository)
         {
-            ArgumentNullException.ThrowIfNull(loggingConfiguration);
-            ArgumentNullException.ThrowIfNull(repository);
-
             _loggingConfiguration = loggingConfiguration;
             _repository = repository;
         }

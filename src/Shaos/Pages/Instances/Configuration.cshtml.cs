@@ -34,8 +34,6 @@ namespace Shaos.Pages.Instances
 
         public ConfigurationModel(IInstanceHostService instanceHostService)
         {
-            ArgumentNullException.ThrowIfNull(instanceHostService);
-
             _instanceHostService = instanceHostService;
         }
 

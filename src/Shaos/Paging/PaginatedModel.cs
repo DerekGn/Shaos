@@ -29,6 +29,9 @@ namespace Shaos.Paging
 {
     public class PaginatedModel<T> : PageModel where T : class
     {
+        public const string NameDescending = "name_desc";
+        public const string IdentifierDescending = "id_desc";
+
         [BindProperty]
         public string CurrentFilter { get; set; } = string.Empty;
 
@@ -39,9 +42,9 @@ namespace Shaos.Paging
         public string IdSort { get; set; } = string.Empty;
 
         [BindProperty]
-        public string NameSort { get; set; } = string.Empty;
+        public PaginatedList<T> List { get; set; } = default!;
 
         [BindProperty]
-        public PaginatedList<T> List { get; set; } = default!;
+        public string NameSort { get; set; } = string.Empty;
     }
 }

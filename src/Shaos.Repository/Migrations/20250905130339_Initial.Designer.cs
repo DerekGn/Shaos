@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250902080653_Initial")]
+    [Migration("20250905130339_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -50,7 +50,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasIndex("PlugInInstanceId");
 
-                    b.ToTable("Device");
+                    b.ToTable("Devices");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.DeviceUpdate", b =>

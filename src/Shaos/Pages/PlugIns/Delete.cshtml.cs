@@ -36,13 +36,9 @@ namespace Shaos.Pages.PlugIns
         private readonly IPlugInService _plugInService;
         private readonly IRepository _repository;
 
-        public DeleteModel(
-            IRepository repository,
-            IPlugInService plugInService)
+        public DeleteModel(IRepository repository,
+                           IPlugInService plugInService)
         {
-            ArgumentNullException.ThrowIfNull(repository);
-            ArgumentNullException.ThrowIfNull(plugInService);
-
             _repository = repository;
             _plugInService = plugInService;
         }
