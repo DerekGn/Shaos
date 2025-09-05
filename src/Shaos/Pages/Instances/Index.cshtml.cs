@@ -40,10 +40,6 @@ namespace Shaos.Pages.Instances
                           IConfiguration configuration,
                           IInstanceHostService instanceHostService)
         {
-            ArgumentNullException.ThrowIfNull(instanceHost);
-            ArgumentNullException.ThrowIfNull(configuration);
-            ArgumentNullException.ThrowIfNull(instanceHostService);
-
             _instanceHost = instanceHost;
             _configuration = configuration;
             _instanceHostService = instanceHostService;
@@ -58,8 +54,8 @@ namespace Shaos.Pages.Instances
                           int? pageIndex)
         {
             CurrentSort = sortOrder;
-            NameSort = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            IdSort = sortOrder == nameof(RuntimeInstance.Id) ? "id_desc" : nameof(RuntimeInstance.Id);
+            NameSort = String.IsNullOrEmpty(sortOrder) ? NameDescending : "";
+            IdSort = sortOrder == nameof(RuntimeInstance.Id) ? IdentifierDescending : nameof(RuntimeInstance.Id);
             StateSort = sortOrder == nameof(RuntimeInstance.State) ? "state_desc" : nameof(RuntimeInstance.State);
 
             if (searchString != null)
@@ -82,7 +78,7 @@ namespace Shaos.Pages.Instances
 
             switch (sortOrder)
             {
-                case "name_desc":
+                case NameDescending:
                     queryable = queryable.OrderByDescending(_ => _.Name);
                     break;
 
@@ -90,7 +86,7 @@ namespace Shaos.Pages.Instances
                     queryable = queryable.OrderBy(_ => _.Name);
                     break;
 
-                case "id_desc":
+                case IdentifierDescending:
                     queryable = queryable.OrderByDescending(_ => _.Id);
                     break;
 

@@ -95,6 +95,11 @@
                         <a asp-page="./Configuration" asp-route-id="@item.Id" class="btn btn-sm btn-primary @canConfigure">
                             Configure
                         </a>
+                        <a asp-page="/Devices/Index" asp-route-id="@item.Id" class="btn btn-sm btn-primary title="Devices">
+                            <span>
+                                <svg bootstrap-icon="Cpu" width="24" height="24" aria-label="Devices"></svg>
+                            </span>
+                        </a>
                     </form>
                 </td>
             </tr>

@@ -23,7 +23,6 @@
 */
 
 using Shaos.Repository.Models.Devices.Parameters;
-using Shaos.Sdk.Devices;
 
 namespace Shaos.Repository.Models.Devices
 {

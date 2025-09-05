@@ -25,12 +25,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Repository;
-using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices;
 using System.Linq.Expressions;
 
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.Pages.Devices
 {
-    public class IndexModel : PaginatedModel<PlugInInstance>
+    public class IndexModel : PaginatedModel<Device>
     {
         private readonly IConfiguration _configuration;
         private readonly IRepository _repository;
@@ -43,7 +43,7 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
-        public int Id { get;set; } = default!;
+        public int Id { get; set; } = default!;
 
         public async Task OnGetAsync(int id,
                                      string sortOrder,
@@ -56,7 +56,7 @@ namespace Shaos.Pages.PlugInInstances
 
             CurrentSort = sortOrder;
             NameSort = string.IsNullOrEmpty(sortOrder) ? NameDescending : "";
-            IdSort = sortOrder == nameof(PlugIn.Id) ? IdentifierDescending : nameof(PlugIn.Id);
+            IdSort = sortOrder == nameof(Device.Id) ? IdentifierDescending : nameof(Device.Id);
 
             if (searchString != null)
             {
@@ -69,48 +69,47 @@ namespace Shaos.Pages.PlugInInstances
 
             CurrentFilter = searchString;
 
-            Expression<Func<PlugInInstance, bool>>? filter = null;
-            Func<IQueryable<PlugInInstance>, IOrderedQueryable<PlugInInstance>>? orderBy = null;
+            Expression<Func<Device, bool>>? filter = null;
+            Func<IQueryable<Device>, IOrderedQueryable<Device>>? orderBy = null;
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.PlugInId == id && _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
+                filter = _ => _.Id == id && _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
             }
             else
             {
-                filter = _ => _.PlugInId == id;
+                filter = _ => _.Id == id;
             }
 
-                switch (sortOrder)
-                {
-                    case NameDescending:
-                        orderBy = _ => _.OrderByDescending(_ => _.Name);
-                        break;
+            switch (sortOrder)
+            {
+                case NameDescending:
+                    orderBy = _ => _.OrderByDescending(_ => _.Name);
+                    break;
 
-                    case nameof(PlugInInstance.Name):
-                        orderBy = _ => _.OrderBy(_ => _.Name);
-                        break;
+                case nameof(Device.Name):
+                    orderBy = _ => _.OrderBy(_ => _.Name);
+                    break;
 
-                    case IdentifierDescending:
-                        orderBy = _ => _.OrderByDescending(_ => _.Id);
-                        break;
+                case IdentifierDescending:
+                    orderBy = _ => _.OrderByDescending(_ => _.Id);
+                    break;
 
-                    case nameof(PlugInInstance.Id):
-                        orderBy = _ => _.OrderBy(_ => _.Id);
-                        break;
+                case nameof(Device.Id):
+                    orderBy = _ => _.OrderBy(_ => _.Id);
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
+            }
 
-            var queryable = _repository.GetQueryable(
-                filter,
-                orderBy);
+            var queryable = _repository.GetQueryable(filter,
+                                                     orderBy);
 
-            List = await PaginatedList<PlugInInstance>.CreateAsync(queryable,
-                                                                   pageIndex ?? 1,
-                                                                   _configuration.GetValue("PageSize", 5),
-                                                                   cancellationToken);
+            List = await PaginatedList<Device>.CreateAsync(queryable,
+                                                           pageIndex ?? 1,
+                                                           _configuration.GetValue("PageSize", 5),
+                                                           cancellationToken);
         }
     }
 }

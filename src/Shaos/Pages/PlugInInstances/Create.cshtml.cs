@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Repository;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Services;
@@ -37,8 +36,6 @@ namespace Shaos.Pages.PlugInInstances
 
         public CreateModel(IPlugInService plugInService)
         {
-            ArgumentNullException.ThrowIfNull(plugInService);
-
             _plugInService = plugInService;
         }
 

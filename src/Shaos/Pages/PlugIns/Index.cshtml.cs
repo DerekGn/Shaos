@@ -34,13 +34,9 @@ namespace Shaos.Pages.PlugIns
         private readonly IConfiguration _configuration;
         private readonly IRepository _repository;
 
-        public IndexModel(
-            IConfiguration configuration,
-            IRepository repository)
+        public IndexModel(IConfiguration configuration,
+                          IRepository repository)
         {
-            ArgumentNullException.ThrowIfNull(repository);
-            ArgumentNullException.ThrowIfNull(configuration);
-
             _repository = repository;
             _configuration = configuration;
         }
@@ -52,8 +48,8 @@ namespace Shaos.Pages.PlugIns
                                      CancellationToken cancellationToken = default)
         {
             CurrentSort = sortOrder;
-            NameSort = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
-            IdSort = sortOrder == nameof(PlugIn.Id) ? "id_desc" : nameof(PlugIn.Id);
+            NameSort = string.IsNullOrEmpty(sortOrder) ? NameDescending : "";
+            IdSort = sortOrder == nameof(PlugIn.Id) ? IdentifierDescending : nameof(PlugIn.Id);
 
             if (searchString != null)
             {
@@ -76,7 +72,7 @@ namespace Shaos.Pages.PlugIns
 
             switch (sortOrder)
             {
-                case "name_desc":
+                case NameDescending:
                     orderBy = _ => _.OrderByDescending(_ => _.Name);
                     break;
 
@@ -84,7 +80,7 @@ namespace Shaos.Pages.PlugIns
                     orderBy = _ => _.OrderBy(_ => _.Name);
                     break;
 
-                case "id_desc":
+                case IdentifierDescending:
                     orderBy = _ => _.OrderByDescending(_ => _.Id);
                     break;
 

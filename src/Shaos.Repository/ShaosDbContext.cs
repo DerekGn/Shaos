@@ -25,6 +25,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.EntityTypeConfigurations;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices;
 
 namespace Shaos.Repository
 {
@@ -40,7 +41,10 @@ namespace Shaos.Repository
         }
 
         /// <inheritdoc/>>
-        public DbSet<PlugIn> PlugIns { get; set; }
+        public DbSet<Device> Devices { get; set; }
+
+        /// <inheritdoc/>>
+        public DbSet<LogLevelSwitch> LogLevelSwitches { get; set; }
 
         /// <inheritdoc/>>
         public DbSet<PlugInInformation> PlugInInformations { get; set; }
@@ -49,7 +53,7 @@ namespace Shaos.Repository
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
 
         /// <inheritdoc/>>
-        public DbSet<LogLevelSwitch> LogLevelSwitches { get; set; }
+        public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)

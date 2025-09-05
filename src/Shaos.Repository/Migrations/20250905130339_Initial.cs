@@ -96,7 +96,7 @@ namespace Shaos.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Device",
+                name: "Devices",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -110,9 +110,9 @@ namespace Shaos.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Device", x => x.Id);
+                    table.PrimaryKey("PK_Devices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Device_PlugInInstances_PlugInInstanceId",
+                        name: "FK_Devices_PlugInInstances_PlugInInstanceId",
                         column: x => x.PlugInInstanceId,
                         principalTable: "PlugInInstances",
                         principalColumn: "Id");
@@ -141,9 +141,9 @@ namespace Shaos.Repository.Migrations
                 {
                     table.PrimaryKey("PK_BaseParameter", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BaseParameter_Device_DeviceId",
+                        name: "FK_BaseParameter_Devices_DeviceId",
                         column: x => x.DeviceId,
-                        principalTable: "Device",
+                        principalTable: "Devices",
                         principalColumn: "Id");
                 });
 
@@ -165,9 +165,9 @@ namespace Shaos.Repository.Migrations
                 {
                     table.PrimaryKey("PK_DeviceUpdate", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DeviceUpdate_Device_DeviceId",
+                        name: "FK_DeviceUpdate_Devices_DeviceId",
                         column: x => x.DeviceId,
-                        principalTable: "Device",
+                        principalTable: "Devices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -178,8 +178,8 @@ namespace Shaos.Repository.Migrations
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Device_PlugInInstanceId",
-                table: "Device",
+                name: "IX_Devices_PlugInInstanceId",
+                table: "Devices",
                 column: "PlugInInstanceId");
 
             migrationBuilder.CreateIndex(
@@ -233,7 +233,7 @@ namespace Shaos.Repository.Migrations
                 name: "PlugInInformations");
 
             migrationBuilder.DropTable(
-                name: "Device");
+                name: "Devices");
 
             migrationBuilder.DropTable(
                 name: "PlugInInstances");
