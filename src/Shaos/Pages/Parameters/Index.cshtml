@@ -66,7 +66,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
-                @if(item is BoolParameter boolParameter)
+                @if (item is BoolParameter boolParameter)
                 {
                     <td>
                         @Html.DisplayFor(modelItem => boolParameter.ParameterType)
@@ -128,6 +128,7 @@
 }
 
 <a asp-page="./Index"
+   asp-route-id="@Model.Id"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
@@ -135,6 +136,7 @@
     Previous
 </a>
 <a asp-page="./Index"
+   asp-route-id="@Model.Id"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
