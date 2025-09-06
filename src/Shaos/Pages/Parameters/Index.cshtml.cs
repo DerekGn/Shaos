@@ -43,7 +43,7 @@ namespace Shaos.Pages.Parameters
         }
 
         [BindProperty]
-        public int Id { get; set; } = default!;
+        public int Id { get; set; }
 
         public async Task OnGetAsync(int id,
                                      string sortOrder,
