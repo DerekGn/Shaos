@@ -1,0 +1,155 @@
+﻿@page
+@using Shaos.Repository.Models.Devices.Parameters
+@model Shaos.Pages.Parameters.IndexModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Device Parameters</h1>
+
+@{
+    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
+}
+
+<form asp-page="./Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Find by name:
+            <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+            <input type="submit" value="Search" class="btn btn-sm btn-primary" /> |
+            <a asp-page="./Index" class="btn btn-sm btn-primary @backToListDisabled">Back To List</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-page="./Index"
+                   asp-route-id="@Model.Id"
+                   asp-route-sortOrder="@Model.IdSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.List[0].Id)
+                </a>
+            </th>
+            <th>
+                <a asp-page="./Index"
+                   asp-route-id="@Model.Id"
+                   asp-route-sortOrder="@Model.NameSort"
+                   asp-route-currentFilter="@Model.CurrentFilter">
+                    @Html.DisplayNameFor(model => model.List[0].Name)
+                </a>
+            </th>
+            <th>
+                @Html.DisplayName("Type")
+            </th>
+            <th>
+                @Html.DisplayName("Value")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.List[0].CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.List[0].UpdatedDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.List)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                @if (item is BoolParameter boolParameter)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => boolParameter.ParameterType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => boolParameter.Value)
+                    </td>
+                }
+                else if (item is FloatParameter floatParameter)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => floatParameter.ParameterType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => floatParameter.Value)
+                    </td>
+                }
+                else if (item is IntParameter intParameter)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => intParameter.ParameterType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => intParameter.Value)
+                    </td>
+                }
+                else if (item is StringParameter stringParameter)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => stringParameter.ParameterType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => stringParameter.Value)
+                    </td>
+                }
+                else if (item is UIntParameter uintParameter)
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => uintParameter.ParameterType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => uintParameter.Value)
+                    </td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedDate)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
+}
+
+<a asp-page="./Index"
+   asp-route-id="@Model.Id"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.List.PageIndex - 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-sm btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-page="./Index"
+   asp-route-id="@Model.Id"
+   asp-route-sortOrder="@Model.CurrentSort"
+   asp-route-pageIndex="@(Model.List.PageIndex + 1)"
+   asp-route-currentFilter="@Model.CurrentFilter"
+   class="btn btn-sm btn-primary @nextDisabled">
+    Next
+</a>
+
+<a asp-page="/Devices/Index" class="btn btn-sm btn-primary">
+    Back
+</a>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

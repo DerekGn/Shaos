@@ -5,7 +5,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Devices</h1>
+<h1>Instance Devices</h1>
 
 @{
     var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
@@ -77,6 +77,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.UpdatedDate)
             </td>
+            <td>
+                <a asp-page="/Parameters/Index" asp-route-id="@item.Id" class="btn btn-sm btn-primary title="Devices">
+                    <span>
+                        <svg bootstrap-icon="CardList" width="24" height="24" aria-label="Devices"></svg>
+                    </span>
+                </a>
+            </td>
         </tr>
 }
     </tbody>
@@ -88,6 +95,7 @@
 }
 
 <a asp-page="./Index"
+   asp-route-id="@Model.Id"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex - 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
@@ -95,11 +103,16 @@
     Previous
 </a>
 <a asp-page="./Index"
+   asp-route-id="@Model.Id"
    asp-route-sortOrder="@Model.CurrentSort"
    asp-route-pageIndex="@(Model.List.PageIndex + 1)"
    asp-route-currentFilter="@Model.CurrentFilter"
    class="btn btn-sm btn-primary @nextDisabled">
     Next
+</a>
+
+<a asp-page="/Instances/Index" class="btn btn-sm btn-primary">
+    Back
 </a>
 
 @section Scripts {
