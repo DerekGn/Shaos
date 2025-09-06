@@ -75,7 +75,7 @@
                         @Html.DisplayFor(modelItem => boolParameter.Value)
                     </td>
                 }
-                @if (item is FloatParameter floatParameter)
+                else if (item is FloatParameter floatParameter)
                 {
                     <td>
                         @Html.DisplayFor(modelItem => floatParameter.ParameterType)
@@ -84,7 +84,7 @@
                         @Html.DisplayFor(modelItem => floatParameter.Value)
                     </td>
                 }
-                @if (item is IntParameter intParameter)
+                else if (item is IntParameter intParameter)
                 {
                     <td>
                         @Html.DisplayFor(modelItem => intParameter.ParameterType)
@@ -93,7 +93,7 @@
                         @Html.DisplayFor(modelItem => intParameter.Value)
                     </td>
                 }
-                @if (item is StringParameter stringParameter)
+                else if (item is StringParameter stringParameter)
                 {
                     <td>
                         @Html.DisplayFor(modelItem => stringParameter.ParameterType)
@@ -102,7 +102,7 @@
                         @Html.DisplayFor(modelItem => stringParameter.Value)
                     </td>
                 }
-                @if (item is UIntParameter uintParameter)
+                else if (item is UIntParameter uintParameter)
                 {
                     <td>
                         @Html.DisplayFor(modelItem => uintParameter.ParameterType)
