@@ -140,7 +140,13 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new UIntParameterValue() { Parameter = parameter, ParameterId = parameter.Id , Value = e.Value });
+                parameter.Values.Add(new UIntParameterValue() 
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -155,7 +161,13 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new StringParameterValue() { Parameter = parameter, ParameterId = parameter.Id, Value = e.Value });
+                parameter.Values.Add(new StringParameterValue()
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -170,7 +182,13 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new IntParameterValue() { Parameter = parameter, ParameterId = parameter.Id, Value = e.Value });
+                parameter.Values.Add(new IntParameterValue()
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -185,7 +203,13 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new FloatParameterValue() { Parameter = parameter, ParameterId = parameter.Id, Value = e.Value });
+                parameter.Values.Add(new FloatParameterValue() 
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -200,7 +224,13 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new BoolParameterValue() { Parameter = parameter, ParameterId = parameter.Id , Value = e.Value });
+                parameter.Values.Add(new BoolParameterValue() 
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
