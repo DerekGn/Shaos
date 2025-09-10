@@ -33,15 +33,5 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The update time stamp
         /// </summary>
         public DateTime TimeStamp { get; set; }
-
-        /// <summary>
-        /// The parent <see cref="BaseParameter"/>
-        /// </summary>
-        public required BaseParameter Parameter { get; set; }
-
-        /// <summary>
-        /// The parent <see cref="BaseParameter"/> identifier
-        /// </summary>
-        public required int ParameterId { get; set; }
     }
 }

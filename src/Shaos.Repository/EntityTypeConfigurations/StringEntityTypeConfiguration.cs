@@ -40,6 +40,10 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .Property(_ => _.Value)
                 .HasMaxLength(255)
                 .IsRequired();
+
+            builder
+                .HasMany(_ => _.Updates)
+                .WithOne(_ => _.Parameter);
         }
     }
 }

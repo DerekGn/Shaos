@@ -33,5 +33,10 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The current value
         /// </summary>
         public float Value { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="BoolParameterValue"/> updates
+        /// </summary>
+        public List<FloatParameterValue> Updates { get; set; } = [];
     }
 }

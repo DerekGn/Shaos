@@ -33,5 +33,10 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The current value
         /// </summary>
         public uint Value { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="UIntParameterValue"/> updates
+        /// </summary>
+        public List<UIntParameterValue> Updates { get; set; } = [];
     }
 }

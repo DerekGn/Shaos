@@ -22,26 +22,22 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices.Parameters
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shaos.Repository.Models.Devices.Parameters;
+
+namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// A <see cref="Boolean"/> parameter value
+    /// The <see cref="BaseParameterValue"/> EF configuration
     /// </summary>
-    public class BoolParameterValue : BaseParameterValue
+    public class BaseParameterValueEntityTypeConfiguration : IEntityTypeConfiguration<BaseParameterValue>
     {
-        /// <summary>
-        /// The value
-        /// </summary>
-        public bool Value { get; set; }
-
-        /// <summary>
-        /// The parent <see cref="BoolParameter"/>
-        /// </summary>
-        public required BoolParameter Parameter { get; set; }
-
-        /// <summary>
-        /// The parent <see cref="BaseParameter"/> identifier
-        /// </summary>
-        public required int ParameterId { get; set; }
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<BaseParameterValue> builder)
+        {
+            builder
+                .Property(_ => _.Id);
+        }
     }
 }

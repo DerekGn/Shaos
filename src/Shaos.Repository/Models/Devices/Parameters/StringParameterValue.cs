@@ -33,5 +33,15 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The value
         /// </summary>
         public string? Value { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="StringParameter"/>
+        /// </summary>
+        public required StringParameter Parameter { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="StringParameter"/> identifier
+        /// </summary>
+        public required int ParameterId { get; set; }
     }
 }
