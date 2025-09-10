@@ -188,10 +188,8 @@ namespace Shaos.Repository.Migrations
                     IntParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
                     StringParameterValue_Value = table.Column<string>(type: "TEXT", nullable: true),
                     StringParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
-                    UIntParameterValue_Value = table.Column<int>(type: "INTEGER", nullable: true),
-                    UIntParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    UIntParameterValue_Value = table.Column<uint>(type: "INTEGER", nullable: true),
+                    UIntParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {

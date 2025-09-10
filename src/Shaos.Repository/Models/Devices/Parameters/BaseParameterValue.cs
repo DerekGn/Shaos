@@ -22,13 +22,21 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
     /// A base parameter
     /// </summary>
-    public abstract class BaseParameterValue : BaseEntity
+    public abstract class BaseParameterValue
     {
+        /// <summary>
+        /// The identifier
+        /// </summary>
+        [Key]
+        public int Id { get; set; }
+
         /// <summary>
         /// Create an instance of a <see cref="BaseParameterValue"/>
         /// </summary>

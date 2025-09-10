@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250910124033_Initial")]
+    [Migration("20250910195254_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -133,18 +133,12 @@ namespace Shaos.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(21)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -501,7 +495,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<int>("ParameterId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Value")
+                    b.Property<uint>("Value")
                         .HasColumnType("INTEGER");
 
                     b.HasIndex("ParameterId");
@@ -581,7 +575,7 @@ namespace Shaos.Repository.Migrations
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BoolParameterValue", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.Devices.Parameters.BoolParameter", "Parameter")
-                        .WithMany("Updates")
+                        .WithMany("Values")
                         .HasForeignKey("ParameterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -592,7 +586,7 @@ namespace Shaos.Repository.Migrations
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.FloatParameterValue", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.Devices.Parameters.FloatParameter", "Parameter")
-                        .WithMany("Updates")
+                        .WithMany("Values")
                         .HasForeignKey("ParameterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -603,7 +597,7 @@ namespace Shaos.Repository.Migrations
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.IntParameterValue", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.Devices.Parameters.IntParameter", "Parameter")
-                        .WithMany("Updates")
+                        .WithMany("Values")
                         .HasForeignKey("ParameterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -614,7 +608,7 @@ namespace Shaos.Repository.Migrations
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.StringParameterValue", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.Devices.Parameters.StringParameter", "Parameter")
-                        .WithMany("Updates")
+                        .WithMany("Values")
                         .HasForeignKey("ParameterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -625,7 +619,7 @@ namespace Shaos.Repository.Migrations
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.UIntParameterValue", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.Devices.Parameters.UIntParameter", "Parameter")
-                        .WithMany("Updates")
+                        .WithMany("Values")
                         .HasForeignKey("ParameterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -656,27 +650,27 @@ namespace Shaos.Repository.Migrations
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BoolParameter", b =>
                 {
-                    b.Navigation("Updates");
+                    b.Navigation("Values");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.FloatParameter", b =>
                 {
-                    b.Navigation("Updates");
+                    b.Navigation("Values");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.IntParameter", b =>
                 {
-                    b.Navigation("Updates");
+                    b.Navigation("Values");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.StringParameter", b =>
                 {
-                    b.Navigation("Updates");
+                    b.Navigation("Values");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.UIntParameter", b =>
                 {
-                    b.Navigation("Updates");
+                    b.Navigation("Values");
                 });
 #pragma warning restore 612, 618
         }

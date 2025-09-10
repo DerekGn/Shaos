@@ -57,7 +57,9 @@ namespace Shaos.Test.PlugIn
 
             var freqParameter = (IntParameter)Devices.First().Parameters.First();
 
-            Random random = new Random();
+            int freq = 0;
+            int signal = 0;
+            int battery = 0;
 
             do
             {
@@ -66,13 +68,33 @@ namespace Shaos.Test.PlugIn
                                        nameof(TestPlugIn),
                                        nameof(ExecuteAsync));
 
-                Devices.First().SignalLevel!.Level = random.Next(-100, 0);
-                Devices.First().BatteryLevel!.Level = (uint)random.Next(0, 100);
+                Devices.First().SignalLevel!.Level = DecrementLimit(ref signal, -100, 0);
+                Devices.First().BatteryLevel!.Level = (uint)IncrementLimit(ref battery, 0, 100);
 
-                await freqParameter.WriteValueAsync(random.Next(0, 50));
+                await freqParameter.WriteValueAsync(IncrementLimit(ref freq, 0, 50));
             } while (!cancellationToken.IsCancellationRequested);
 
             _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
+        }
+
+        private static int DecrementLimit(ref int value, int lower, int upper)
+        {
+            if (--value < lower)
+            {
+                value = upper;
+            }
+
+            return value;
+        }
+
+        private static int IncrementLimit(ref int value, int lower, int upper)
+        {
+            if(++value > upper)
+            {
+                value = lower;
+            }
+
+            return value;
         }
 
         private async Task CreateDevicesAsync()

@@ -32,7 +32,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The value
         /// </summary>
-        public int Value { get; set; }
+        public uint Value { get; set; }
 
         /// <summary>
         /// The parent <see cref="UIntParameter"/>
