@@ -40,7 +40,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public required UIntParameter Parameter { get; set; }
 
         /// <summary>
-        /// The parent <see cref="StringParameter"/> identifier
+        /// The parent <see cref="UIntParameter"/> identifier
         /// </summary>
         public required int ParameterId { get; set; }
     }
