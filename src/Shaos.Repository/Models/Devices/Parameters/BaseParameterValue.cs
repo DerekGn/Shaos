@@ -25,18 +25,23 @@
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// Represents a boolean parameter
+    /// A base parameter
     /// </summary>
-    public class BoolParameter : BaseParameter
+    public abstract class BaseParameterValue : BaseEntity
     {
         /// <summary>
-        /// The last boolean value
+        /// The update time stamp
         /// </summary>
-        public bool Value { get; set; }
+        public DateTime TimeStamp { get; set; }
 
         /// <summary>
-        /// The set of <see cref="BoolParameterValue"/> updates
+        /// The parent <see cref="BaseParameter"/>
         /// </summary>
-        public List<BoolParameterValue> Updates { get; set; } = [];
+        public required BaseParameter Parameter { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="BaseParameter"/> identifier
+        /// </summary>
+        public required int ParameterId { get; set; }
     }
 }
