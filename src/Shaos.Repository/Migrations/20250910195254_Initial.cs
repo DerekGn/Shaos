@@ -172,10 +172,89 @@ namespace Shaos.Repository.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "BaseParameterValue",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
+                    Value = table.Column<bool>(type: "INTEGER", nullable: true),
+                    ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    FloatParameterValue_Value = table.Column<float>(type: "REAL", nullable: true),
+                    FloatParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    IntParameterValue_Value = table.Column<int>(type: "INTEGER", nullable: true),
+                    IntParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    StringParameterValue_Value = table.Column<string>(type: "TEXT", nullable: true),
+                    StringParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UIntParameterValue_Value = table.Column<uint>(type: "INTEGER", nullable: true),
+                    UIntParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BaseParameterValue", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_FloatParameterValue_ParameterId",
+                        column: x => x.FloatParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_IntParameterValue_ParameterId",
+                        column: x => x.IntParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_ParameterId",
+                        column: x => x.ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_StringParameterValue_ParameterId",
+                        column: x => x.StringParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_UIntParameterValue_ParameterId",
+                        column: x => x.UIntParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_BaseParameter_DeviceId",
                 table: "BaseParameter",
                 column: "DeviceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_FloatParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "FloatParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_IntParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "IntParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_StringParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "StringParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_UIntParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "UIntParameterValue_ParameterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_PlugInInstanceId",
@@ -221,7 +300,7 @@ namespace Shaos.Repository.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BaseParameter");
+                name: "BaseParameterValue");
 
             migrationBuilder.DropTable(
                 name: "DeviceUpdate");
@@ -231,6 +310,9 @@ namespace Shaos.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlugInInformations");
+
+            migrationBuilder.DropTable(
+                name: "BaseParameter");
 
             migrationBuilder.DropTable(
                 name: "Devices");

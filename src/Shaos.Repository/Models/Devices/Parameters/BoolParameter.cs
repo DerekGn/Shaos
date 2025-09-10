@@ -30,8 +30,13 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class BoolParameter : BaseParameter
     {
         /// <summary>
-        /// The boolean value
+        /// The last boolean value
         /// </summary>
         public bool Value { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="BoolParameterValue"/> previous values
+        /// </summary>
+        public List<BoolParameterValue> Values { get; set; } = [];
     }
 }

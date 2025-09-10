@@ -22,21 +22,32 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// Represents a float parameter
+    /// A base parameter
     /// </summary>
-    public class FloatParameter : BaseParameter
+    public abstract class BaseParameterValue
     {
         /// <summary>
-        /// The current value
+        /// The identifier
         /// </summary>
-        public float Value { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         /// <summary>
-        /// The set of <see cref="FloatParameterValue"/> previous values
+        /// Create an instance of a <see cref="BaseParameterValue"/>
         /// </summary>
-        public List<FloatParameterValue> Values { get; set; } = [];
+        protected BaseParameterValue()
+        {
+            TimeStamp = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// The update time stamp
+        /// </summary>
+        public DateTime TimeStamp { get; set; }
     }
 }

@@ -22,21 +22,22 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices.Parameters
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shaos.Repository.Models.Devices.Parameters;
+
+namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// Represents a float parameter
+    /// The <see cref="BaseParameterValue"/> EF configuration
     /// </summary>
-    public class FloatParameter : BaseParameter
+    public class BaseParameterValueEntityTypeConfiguration : IEntityTypeConfiguration<BaseParameterValue>
     {
-        /// <summary>
-        /// The current value
-        /// </summary>
-        public float Value { get; set; }
-
-        /// <summary>
-        /// The set of <see cref="FloatParameterValue"/> previous values
-        /// </summary>
-        public List<FloatParameterValue> Values { get; set; } = [];
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<BaseParameterValue> builder)
+        {
+            builder
+                .Property(_ => _.Id);
+        }
     }
 }

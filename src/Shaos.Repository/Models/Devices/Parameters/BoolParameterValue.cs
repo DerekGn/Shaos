@@ -25,18 +25,23 @@
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// Represents a float parameter
+    /// A <see cref="Boolean"/> parameter value
     /// </summary>
-    public class FloatParameter : BaseParameter
+    public class BoolParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The current value
+        /// The value
         /// </summary>
-        public float Value { get; set; }
+        public bool Value { get; set; }
 
         /// <summary>
-        /// The set of <see cref="FloatParameterValue"/> previous values
+        /// The parent <see cref="BoolParameter"/>
         /// </summary>
-        public List<FloatParameterValue> Values { get; set; } = [];
+        public required BoolParameter Parameter { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="BaseParameter"/> identifier
+        /// </summary>
+        public required int ParameterId { get; set; }
     }
 }
