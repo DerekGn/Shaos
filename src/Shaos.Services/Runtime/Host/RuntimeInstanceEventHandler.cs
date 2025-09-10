@@ -26,6 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
@@ -139,6 +140,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new UIntParameterValue() { Parameter = parameter, ParameterId = parameter.Id });
             });
         }
 
@@ -153,6 +155,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new StringParameterValue() { Parameter = parameter, ParameterId = parameter.Id });
             });
         }
 
@@ -167,6 +170,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new IntParameterValue() { Parameter = parameter, ParameterId = parameter.Id });
             });
         }
 
@@ -181,6 +185,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new FloatParameterValue() { Parameter = parameter, ParameterId = parameter.Id });
             });
         }
 
@@ -195,6 +200,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new BoolParameterValue() { Parameter = parameter, ParameterId = parameter.Id });
             });
         }
 

@@ -35,8 +35,8 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public bool Value { get; set; }
 
         /// <summary>
-        /// The set of <see cref="BoolParameterValue"/> updates
+        /// The set of <see cref="BoolParameterValue"/> previous values
         /// </summary>
-        public List<BoolParameterValue> Updates { get; set; } = [];
+        public List<BoolParameterValue> Values { get; set; } = [];
     }
 }

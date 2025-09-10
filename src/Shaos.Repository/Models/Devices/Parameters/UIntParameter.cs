@@ -35,8 +35,8 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public uint Value { get; set; }
 
         /// <summary>
-        /// The set of <see cref="UIntParameterValue"/> updates
+        /// The set of <see cref="UIntParameterValue"/> previous values
         /// </summary>
-        public List<UIntParameterValue> Updates { get; set; } = [];
+        public List<UIntParameterValue> Values { get; set; } = [];
     }
 }

@@ -35,8 +35,8 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public string? Value { get; set; }
 
         /// <summary>
-        /// The set of <see cref="StringParameterValue"/> updates
+        /// The set of <see cref="StringParameterValue"/> previous values
         /// </summary>
-        public List<StringParameterValue> Updates { get; set; } = [];
+        public List<StringParameterValue> Values { get; set; } = [];
     }
 }

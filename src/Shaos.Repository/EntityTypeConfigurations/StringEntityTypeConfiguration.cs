@@ -42,7 +42,7 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .IsRequired();
 
             builder
-                .HasMany(_ => _.Updates)
+                .HasMany(_ => _.Values)
                 .WithOne(_ => _.Parameter);
         }
     }
