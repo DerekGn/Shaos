@@ -38,5 +38,23 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The set of <see cref="FloatParameterValue"/> previous values
         /// </summary>
         public List<FloatParameterValue> Values { get; set; } = [];
+
+        /// <summary>
+        /// Update the value and add a new value entry
+        /// </summary>
+        /// <param name="value">The updated value</param>
+        /// <param name="timestamp">The timestamp</param>
+        public void UpdateValue(float value, DateTime timestamp)
+        {
+            Value = value;
+
+            Values.Add(new FloatParameterValue()
+            {
+                Parameter = this,
+                ParameterId = Id,
+                TimeStamp = timestamp,
+                Value = value
+            });
+        }
     }
 }

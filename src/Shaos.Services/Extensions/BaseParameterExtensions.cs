@@ -60,7 +60,7 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        public static IList<SdkIBaseParameter> ToSdk(this IList<ModelBaseParameter> parameters)
+        public static IEnumerable<SdkIBaseParameter> ToSdk(this IEnumerable<ModelBaseParameter> parameters)
         {
             List<SdkIBaseParameter>? result = null;
 

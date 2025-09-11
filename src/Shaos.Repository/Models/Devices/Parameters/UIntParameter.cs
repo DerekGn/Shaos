@@ -38,5 +38,23 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The set of <see cref="UIntParameterValue"/> previous values
         /// </summary>
         public List<UIntParameterValue> Values { get; set; } = [];
+
+        /// <summary>
+        /// Update the value 
+        /// </summary>
+        /// <param name="value">The updated value</param>
+        /// <param name="timestamp">The timestamp</param>
+        public void UpdateValue(uint value, DateTime timestamp)
+        {
+            Value = value;
+
+            Values.Add(new UIntParameterValue()
+            {
+                Parameter = this,
+                ParameterId = this.Id,
+                TimeStamp = timestamp,
+                Value = value
+            });
+        }
     }
 }
