@@ -38,14 +38,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public int Id { get; set; }
 
         /// <summary>
-        /// Create an instance of a <see cref="BaseParameterValue"/>
-        /// </summary>
-        protected BaseParameterValue()
-        {
-            TimeStamp = DateTime.UtcNow;
-        }
-
-        /// <summary>
         /// The update time stamp
         /// </summary>
         public DateTime TimeStamp { get; set; }

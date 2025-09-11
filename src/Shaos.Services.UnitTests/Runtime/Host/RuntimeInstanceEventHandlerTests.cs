@@ -304,7 +304,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<bool>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<bool>>().Object,
-                            new ParameterValueChangedEventArgs<bool>() { Value = true });
+                            new ParameterValueChangedEventArgs<bool>(true));
         }
 
         [Fact]
@@ -326,7 +326,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<float>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<float>>().Object,
-                            new ParameterValueChangedEventArgs<float>() { Value = 1.0f });
+                            new ParameterValueChangedEventArgs<float>(1.0f));
         }
 
         [Fact]
@@ -348,7 +348,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<int>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<int>>().Object,
-                            new ParameterValueChangedEventArgs<int>() { Value = 1 });
+                            new ParameterValueChangedEventArgs<int>(1));
         }
 
         [Fact]
@@ -370,7 +370,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<string>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<string>>().Object,
-                            new ParameterValueChangedEventArgs<string>() { Value = "" });
+                            new ParameterValueChangedEventArgs<string>(""));
         }
 
         [Fact]
@@ -392,7 +392,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<uint>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<uint>>().Object,
-                            new ParameterValueChangedEventArgs<uint>() { Value = 10 });
+                            new ParameterValueChangedEventArgs<uint>(10));
         }
 
         [Fact]
