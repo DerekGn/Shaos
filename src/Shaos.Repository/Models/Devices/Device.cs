@@ -32,9 +32,8 @@ namespace Shaos.Repository.Models.Devices
     /// </summary>
     public class Device : BaseEntity
     {
-        private readonly Lazy<UIntParameter> _batteryParameter = new(ResolveBatteryParameter);
-
-        private readonly Lazy<IntParameter> _signalParameter = new(ResolveSignalParameter);
+        private const string SignalLevelName = "Signal Level";
+        private const string BatteryLevelName = "Battery Level";
 
         /// <summary>
         /// The <see cref="Device"/> last battery level
@@ -82,9 +81,9 @@ namespace Shaos.Repository.Models.Devices
                 var batteryParameter = new UIntParameter()
                 {
                     Device = this,
-                    Name = "Battery Voltage",
+                    Name = BatteryLevelName,
                     ParameterType = Sdk.Devices.Parameters.ParameterType.Voltage,
-                    Units = "volts",
+                    Units = "%",
                     Value = 0
                 };
 
@@ -97,7 +96,7 @@ namespace Shaos.Repository.Models.Devices
                 var signalParameter = new IntParameter()
                 {
                     Device = this,
-                    Name = "Signal Level",
+                    Name = SignalLevelName,
                     ParameterType = Sdk.Devices.Parameters.ParameterType.Rssi,
                     Units = string.Empty,
                     Value = 0
@@ -114,17 +113,7 @@ namespace Shaos.Repository.Models.Devices
         /// <returns>A list of <see cref="BaseParameter"/> instances</returns>
         public IEnumerable<BaseParameter> GetParameters()
         {
-            int skip = 0;
-
-            if ((Features & DeviceFeatures.BatteryPowered) == DeviceFeatures.BatteryPowered)
-            {
-                skip++;
-            }
-
-            if ((Features & DeviceFeatures.Wireless) == DeviceFeatures.Wireless)
-            {
-                skip++;
-            }
+            int skip = GetSystemParameterCount();
 
             return Parameters.Skip(skip);
         }
@@ -137,11 +126,15 @@ namespace Shaos.Repository.Models.Devices
         public void UpdateBatteryLevel(uint batteryLevel,
                                        DateTime timeStamp)
         {
-            if (_batteryParameter.Value != null)
+            var parameter = (UIntParameter?)Parameters
+                .Take(GetSystemParameterCount())
+                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Voltage && _.Name == BatteryLevelName);
+
+            if (parameter != null)
             {
                 BatteryLevel = batteryLevel;
 
-                _batteryParameter.Value.UpdateValue(batteryLevel, timeStamp);
+                parameter.UpdateValue(batteryLevel, timeStamp);
             }
         }
 
@@ -153,22 +146,33 @@ namespace Shaos.Repository.Models.Devices
         public void UpdateSignalLevel(int signalLevel,
                                       DateTime timeStamp)
         {
-            if (_signalParameter.Value != null)
+            var parameter = (IntParameter?)Parameters
+                .Take(GetSystemParameterCount())
+                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Rssi && _.Name == SignalLevelName);
+
+            if (parameter != null)
             {
                 SignalLevel = signalLevel;
 
-                _signalParameter.Value.UpdateValue(signalLevel, timeStamp);
+                parameter.UpdateValue(signalLevel, timeStamp);
             }
         }
 
-        private static UIntParameter ResolveBatteryParameter()
+        private int GetSystemParameterCount()
         {
-            throw new NotImplementedException();
-        }
+            int skip = 0;
 
-        private static IntParameter ResolveSignalParameter()
-        {
-            throw new NotImplementedException();
+            if ((Features & DeviceFeatures.BatteryPowered) == DeviceFeatures.BatteryPowered)
+            {
+                skip++;
+            }
+
+            if ((Features & DeviceFeatures.Wireless) == DeviceFeatures.Wireless)
+            {
+                skip++;
+            }
+
+            return skip;
         }
     }
 }

@@ -503,10 +503,17 @@ namespace Shaos.Services.Runtime.Host
 
         private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
+            try
+            {
+                using var scope = _serviceScopeFactory.CreateScope();
+                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
 
-            await operation(repository);
+                await operation(repository);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception occurred");
+            }
         }
 
         private async Task ParametersListChangedAsync(object sender,
