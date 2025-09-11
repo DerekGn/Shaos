@@ -51,7 +51,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
             Values.Add(new UIntParameterValue()
             {
                 Parameter = this,
-                ParameterId = this.Id,
+                ParameterId = Id,
                 TimeStamp = timestamp,
                 Value = value
             });
