@@ -91,7 +91,7 @@ namespace Shaos.Repository.Models.Devices
             }
 
             if (!Parameters.Any(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Rssi) &&
-                (Features & DeviceFeatures.BatteryPowered) == DeviceFeatures.Wireless)
+                (Features & DeviceFeatures.Wireless) == DeviceFeatures.Wireless)
             {
                 var signalParameter = new IntParameter()
                 {
