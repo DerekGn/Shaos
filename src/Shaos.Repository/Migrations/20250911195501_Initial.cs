@@ -102,6 +102,7 @@ namespace Shaos.Repository.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     BatteryLevel = table.Column<uint>(type: "INTEGER", nullable: true),
+                    Features = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     PlugInInstanceId = table.Column<int>(type: "INTEGER", nullable: true),
                     SignalLevel = table.Column<int>(type: "INTEGER", nullable: true),
@@ -124,7 +125,7 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
+                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
                     Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
@@ -142,30 +143,6 @@ namespace Shaos.Repository.Migrations
                     table.PrimaryKey("PK_BaseParameter", x => x.Id);
                     table.ForeignKey(
                         name: "FK_BaseParameter_Devices_DeviceId",
-                        column: x => x.DeviceId,
-                        principalTable: "Devices",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DeviceUpdate",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
-                    BatteryLevel = table.Column<uint>(type: "INTEGER", nullable: true),
-                    SignalLevel = table.Column<int>(type: "INTEGER", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeviceUpdate", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DeviceUpdate_Devices_DeviceId",
                         column: x => x.DeviceId,
                         principalTable: "Devices",
                         principalColumn: "Id",
@@ -262,11 +239,6 @@ namespace Shaos.Repository.Migrations
                 column: "PlugInInstanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeviceUpdate_DeviceId",
-                table: "DeviceUpdate",
-                column: "DeviceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_LogLevelSwitches_Name",
                 table: "LogLevelSwitches",
                 column: "Name",
@@ -301,9 +273,6 @@ namespace Shaos.Repository.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BaseParameterValue");
-
-            migrationBuilder.DropTable(
-                name: "DeviceUpdate");
 
             migrationBuilder.DropTable(
                 name: "LogLevelSwitches");

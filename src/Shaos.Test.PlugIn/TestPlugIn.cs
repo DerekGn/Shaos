@@ -106,7 +106,7 @@ namespace Shaos.Test.PlugIn
                     new IntParameter(0, "Test Parameter", "Units", ParameterType.Frequency)
                 ];
 
-                await Devices.AddAsync(new Device("TestDevice", baseParameters, 100, -1));
+                await Devices.AddAsync(new Device("TestDevice", DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, baseParameters));
             }
         }
     }

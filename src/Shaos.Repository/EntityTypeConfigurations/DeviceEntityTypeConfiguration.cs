@@ -49,12 +49,9 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .WithMany(_ => _.Devices);
 
             builder
-                .HasMany(_ => _.SignalUpdates)
-                .WithOne(_ => _.Device);
-
-            builder
-                .HasMany(_ => _.BatteryUpdates)
-                .WithOne(_ => _.Device);
+                .HasMany(_ => _.Parameters)
+                .WithOne(_ => _.Device)
+                .IsRequired();
         }
     }
 }

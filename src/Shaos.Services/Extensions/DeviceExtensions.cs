@@ -37,6 +37,7 @@ namespace Shaos.Services.Extensions
             {
                 Id = device.Id,
                 Name = device.Name,
+                Features = device.Features,
                 BatteryLevel = device.BatteryLevel?.Level,
                 SignalLevel = device.SignalLevel?.Level,
             };
@@ -49,9 +50,8 @@ namespace Shaos.Services.Extensions
         public static SdkDevice ToSdk(this ModelDevice device)
         {
             var sdkDevice = new Device(device.Name,
-                                       device.Parameters.ToSdk(),
-                                       device.BatteryLevel,
-                                       device.SignalLevel);
+                                       device.Features,
+                                       device.Parameters.ToSdk());
 
             sdkDevice.SetId(device.Id);
 
