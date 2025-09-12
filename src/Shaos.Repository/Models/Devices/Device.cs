@@ -82,7 +82,7 @@ namespace Shaos.Repository.Models.Devices
                 {
                     Device = this,
                     Name = BatteryLevelName,
-                    ParameterType = Sdk.Devices.Parameters.ParameterType.Voltage,
+                    ParameterType = Sdk.Devices.Parameters.ParameterType.Level,
                     Units = "%",
                     Value = 0
                 };
@@ -107,18 +107,6 @@ namespace Shaos.Repository.Models.Devices
         }
 
         /// <summary>
-        /// Get the set of <see cref="BaseParameter"/> instances that where defined by the plugin.
-        /// The system created parameters are excluded
-        /// </summary>
-        /// <returns>A list of <see cref="BaseParameter"/> instances</returns>
-        public IEnumerable<BaseParameter> GetParameters()
-        {
-            int skip = GetSystemParameterCount();
-
-            return Parameters.Skip(skip);
-        }
-
-        /// <summary>
         /// Update the device battery level
         /// </summary>
         /// <param name="batteryLevel">The updated device battery level</param>
@@ -127,8 +115,7 @@ namespace Shaos.Repository.Models.Devices
                                        DateTime timeStamp)
         {
             var parameter = (UIntParameter?)Parameters
-                .Take(GetSystemParameterCount())
-                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Voltage && _.Name == BatteryLevelName);
+                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Level && _.Name == BatteryLevelName);
 
             if (parameter != null)
             {
@@ -147,7 +134,6 @@ namespace Shaos.Repository.Models.Devices
                                       DateTime timeStamp)
         {
             var parameter = (IntParameter?)Parameters
-                .Take(GetSystemParameterCount())
                 .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Rssi && _.Name == SignalLevelName);
 
             if (parameter != null)
@@ -156,23 +142,6 @@ namespace Shaos.Repository.Models.Devices
 
                 parameter.UpdateValue(signalLevel, timeStamp);
             }
-        }
-
-        private int GetSystemParameterCount()
-        {
-            int skip = 0;
-
-            if ((Features & DeviceFeatures.BatteryPowered) == DeviceFeatures.BatteryPowered)
-            {
-                skip++;
-            }
-
-            if ((Features & DeviceFeatures.Wireless) == DeviceFeatures.Wireless)
-            {
-                skip++;
-            }
-
-            return skip;
         }
     }
 }

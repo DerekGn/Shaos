@@ -107,6 +107,12 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestBatteryLevelChanged()
         {
             var modelDevice = new ModelDevice();
+            modelDevice.Parameters.Add((ModelBaseParameter) new ModelUIntParameter()
+            {
+                ParameterType = ParameterType.Level,
+                Units = "%",
+                Name = "Battery Level"
+            });
 
             SetupCommonMocks();
 
@@ -129,7 +135,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             MockRepository
                 .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
 
-            //Assert.Single(modelDevice.BatteryUpdates);
+            ModelUIntParameter parameter = ((ModelUIntParameter)modelDevice.Parameters[0]);
+            Assert.NotNull(parameter);
+            Assert.Single(parameter.Values);
+            Assert.Equal((uint)1, parameter.Values.First().Value);
         }
 
         [Fact]
@@ -403,9 +412,15 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestSignalLevelChanged()
         {
-            SetupServiceScopeFactory();
-
             var modelDevice = new ModelDevice();
+            modelDevice.Parameters.Add((ModelBaseParameter)new ModelIntParameter()
+            {
+                ParameterType = ParameterType.Rssi,
+                Units = "",
+                Name = "Signal Level"
+            });
+
+            SetupServiceScopeFactory();
 
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
@@ -424,7 +439,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             MockRepository
                 .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
 
-            //Assert.Single(modelDevice.SignalUpdates);
+            ModelIntParameter parameter = ((ModelIntParameter)modelDevice.Parameters[0]);
+            Assert.NotNull(parameter);
+            Assert.Single(parameter.Values);
+            Assert.Equal((int)-1, parameter.Values.First().Value);
         }
 
         private void SetupCommonMocks()
