@@ -592,7 +592,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 await ExecuteRepositoryOperationAsync(async (repository) =>
                 {
-                    var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id, false);
+                    var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id, false, [nameof(Device.Parameters)]);
 
                     if (modelDevice != null)
                     {
