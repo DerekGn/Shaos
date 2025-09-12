@@ -30,6 +30,16 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class IntParameter : BaseParameter
     {
         /// <summary>
+        /// The maximum value for this <see cref="IntParameter"/>
+        /// </summary>
+        public int Max { get; set; }
+
+        /// <summary>
+        /// The minimum value for this <see cref="IntParameter"/>
+        /// </summary>
+        public int Min { get; set; }
+
+        /// <summary>
         /// The current value
         /// </summary>
         public int Value { get; set; }

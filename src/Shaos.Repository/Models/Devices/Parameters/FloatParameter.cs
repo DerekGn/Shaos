@@ -30,6 +30,16 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class FloatParameter : BaseParameter
     {
         /// <summary>
+        /// The maximum value for this <see cref="FloatParameter"/>
+        /// </summary>
+        public float Max { get; set; }
+
+        /// <summary>
+        /// The minimum value for this <see cref="FloatParameter"/>
+        /// </summary>
+        public float Min { get; set; }
+
+        /// <summary>
         /// The current value
         /// </summary>
         public float Value { get; set; }

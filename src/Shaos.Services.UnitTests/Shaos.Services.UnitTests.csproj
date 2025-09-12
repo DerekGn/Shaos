@@ -17,7 +17,7 @@
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.*" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
         <PackageReference Include="Moq" Version="4.*" />
-        <PackageReference Include="Shaos.Sdk" Version="0.8.3-beta" />
+        <PackageReference Include="Shaos.Sdk" Version="0.8.4-beta" />
         <PackageReference Include="System.Net.Http" Version="4.*" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.*" />
         <PackageReference Include="xunit" Version="2.*" />

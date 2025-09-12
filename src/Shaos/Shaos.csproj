@@ -27,7 +27,7 @@
         <PackageReference Include="Serilog.AspNetCore" Version="9.*" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="9.*" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
-        <PackageReference Include="Shaos.Sdk" Version="0.8.3-beta" />
+        <PackageReference Include="Shaos.Sdk" Version="0.8.4-beta" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="8.*" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.*" />
     </ItemGroup>

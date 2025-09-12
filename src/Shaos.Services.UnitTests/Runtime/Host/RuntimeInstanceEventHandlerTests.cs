@@ -188,10 +188,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                            DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless,
                            [
                                new BoolParameter(true, Name, Units, ParameterType.Iaq),
-                               new FloatParameter(0.2f, Name, Units, ParameterType.Iaq),
-                               new IntParameter(-18, Name, Units, ParameterType.Iaq),
+                               new FloatParameter(0.2f, 0, 10, Name, Units, ParameterType.Iaq),
+                               new IntParameter(-18, -1, 10, Name, Units, ParameterType.Iaq),
                                new StringParameter("string", Name, Units, ParameterType.Iaq),
-                               new UIntParameter(7218, Name, Units, ParameterType.Iaq)
+                               new UIntParameter(7218, 0, 10, Name, Units, ParameterType.Iaq)
                            ])
                        ]));
 
@@ -255,10 +255,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        new ListChangedEventArgs<IBaseParameter>(ListChangedAction.Add,
                        [
                            new BoolParameter(true, Name, Units, ParameterType.Iaq),
-                           new FloatParameter(1.0f, Name, Units, ParameterType.Iaq),
-                           new IntParameter(1, Name, Units, ParameterType.Iaq),
+                           new FloatParameter(1.0f, 0, 10, Name, Units, ParameterType.Iaq),
+                           new IntParameter(1, -1, 20, Name, Units, ParameterType.Iaq),
                            new StringParameter("string", Name, Units, ParameterType.Iaq),
-                           new UIntParameter(1, Name, Units, ParameterType.Iaq)
+                           new UIntParameter(1, 0, 299, Name, Units, ParameterType.Iaq)
                        ]));
 
             MockRepository

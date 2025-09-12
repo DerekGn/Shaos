@@ -30,6 +30,16 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class UIntParameter : BaseParameter
     {
         /// <summary>
+        /// The maximum value for this <see cref="UIntParameter"/>
+        /// </summary>
+        public uint Max { get; set; }
+
+        /// <summary>
+        /// The minimum value for this <see cref="UIntParameter"/>
+        /// </summary>
+        public uint Min { get; set; }
+
+        /// <summary>
         /// The current value
         /// </summary>
         public uint Value { get; set; }
@@ -40,7 +50,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public List<UIntParameterValue> Values { get; set; } = [];
 
         /// <summary>
-        /// Update the value 
+        /// Update the value
         /// </summary>
         /// <param name="value">The updated value</param>
         /// <param name="timestamp">The timestamp</param>
