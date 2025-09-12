@@ -25,36 +25,23 @@
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// Represents an integer parameter
+    /// A <see cref="string"/> parameter value
     /// </summary>
-    public class IntParameter : BaseParameter
+    public class StringParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The current value
+        /// The value
         /// </summary>
-        public int Value { get; set; }
+        public string? Value { get; set; }
 
         /// <summary>
-        /// The set of <see cref="IntParameterValue"/> previous values
+        /// The parent <see cref="StringParameter"/>
         /// </summary>
-        public List<IntParameterValue> Values { get; set; } = [];
+        public required StringParameter Parameter { get; set; }
 
         /// <summary>
-        /// Update the value and add a new value entry
+        /// The parent <see cref="StringParameter"/> identifier
         /// </summary>
-        /// <param name="value">The updated value</param>
-        /// <param name="timestamp">The timestamp</param>
-        public void UpdateValue(int value, DateTime timestamp)
-        {
-            Value = value;
-
-            Values.Add(new IntParameterValue()
-            {
-                Parameter = this,
-                ParameterId = Id,
-                TimeStamp = timestamp,
-                Value = value
-            });
-        }
+        public required int ParameterId { get; set; }
     }
 }

@@ -39,6 +39,10 @@ namespace Shaos.Repository.EntityTypeConfigurations
             builder
                 .Property(_ => _.Value)
                 .IsRequired();
+
+            builder
+                .HasMany(_ => _.Values)
+                .WithOne(_ => _.Parameter);
         }
     }
 }

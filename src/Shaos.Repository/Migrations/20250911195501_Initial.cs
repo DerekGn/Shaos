@@ -102,6 +102,7 @@ namespace Shaos.Repository.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     BatteryLevel = table.Column<uint>(type: "INTEGER", nullable: true),
+                    Features = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     PlugInInstanceId = table.Column<int>(type: "INTEGER", nullable: true),
                     SignalLevel = table.Column<int>(type: "INTEGER", nullable: true),
@@ -124,7 +125,7 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
+                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
                     Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
@@ -144,30 +145,60 @@ namespace Shaos.Repository.Migrations
                         name: "FK_BaseParameter_Devices_DeviceId",
                         column: x => x.DeviceId,
                         principalTable: "Devices",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DeviceUpdate",
+                name: "BaseParameterValue",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
-                    BatteryLevel = table.Column<uint>(type: "INTEGER", nullable: true),
-                    SignalLevel = table.Column<int>(type: "INTEGER", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Value = table.Column<bool>(type: "INTEGER", nullable: true),
+                    ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    FloatParameterValue_Value = table.Column<float>(type: "REAL", nullable: true),
+                    FloatParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    IntParameterValue_Value = table.Column<int>(type: "INTEGER", nullable: true),
+                    IntParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    StringParameterValue_Value = table.Column<string>(type: "TEXT", nullable: true),
+                    StringParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UIntParameterValue_Value = table.Column<uint>(type: "INTEGER", nullable: true),
+                    UIntParameterValue_ParameterId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeviceUpdate", x => x.Id);
+                    table.PrimaryKey("PK_BaseParameterValue", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DeviceUpdate_Devices_DeviceId",
-                        column: x => x.DeviceId,
-                        principalTable: "Devices",
+                        name: "FK_BaseParameterValue_BaseParameter_FloatParameterValue_ParameterId",
+                        column: x => x.FloatParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_IntParameterValue_ParameterId",
+                        column: x => x.IntParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_ParameterId",
+                        column: x => x.ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_StringParameterValue_ParameterId",
+                        column: x => x.StringParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BaseParameterValue_BaseParameter_UIntParameterValue_ParameterId",
+                        column: x => x.UIntParameterValue_ParameterId,
+                        principalTable: "BaseParameter",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -178,14 +209,34 @@ namespace Shaos.Repository.Migrations
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_FloatParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "FloatParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_IntParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "IntParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_StringParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "StringParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValue_UIntParameterValue_ParameterId",
+                table: "BaseParameterValue",
+                column: "UIntParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Devices_PlugInInstanceId",
                 table: "Devices",
                 column: "PlugInInstanceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DeviceUpdate_DeviceId",
-                table: "DeviceUpdate",
-                column: "DeviceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LogLevelSwitches_Name",
@@ -221,16 +272,16 @@ namespace Shaos.Repository.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BaseParameter");
-
-            migrationBuilder.DropTable(
-                name: "DeviceUpdate");
+                name: "BaseParameterValue");
 
             migrationBuilder.DropTable(
                 name: "LogLevelSwitches");
 
             migrationBuilder.DropTable(
                 name: "PlugInInformations");
+
+            migrationBuilder.DropTable(
+                name: "BaseParameter");
 
             migrationBuilder.DropTable(
                 name: "Devices");

@@ -22,16 +22,22 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shaos.Repository.Models.Devices.Parameters;
+
+namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// A device signal update
+    /// The <see cref="BaseParameterValue"/> EF configuration
     /// </summary>
-    public class DeviceSignalUpdate : DeviceUpdate
+    public class BaseParameterValueEntityTypeConfiguration : IEntityTypeConfiguration<BaseParameterValue>
     {
-        /// <summary>
-        /// The signal level
-        /// </summary>
-        public int SignalLevel { get; set; }
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<BaseParameterValue> builder)
+        {
+            builder
+                .Property(_ => _.Id);
+        }
     }
 }

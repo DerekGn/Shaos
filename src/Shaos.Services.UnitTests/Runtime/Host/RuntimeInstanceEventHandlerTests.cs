@@ -107,6 +107,12 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestBatteryLevelChanged()
         {
             var modelDevice = new ModelDevice();
+            modelDevice.Parameters.Add((ModelBaseParameter) new ModelUIntParameter()
+            {
+                ParameterType = ParameterType.Level,
+                Units = "%",
+                Name = "Battery Level"
+            });
 
             SetupCommonMocks();
 
@@ -129,7 +135,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             MockRepository
                 .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
 
-            Assert.Single(modelDevice.BatteryUpdates);
+            ModelUIntParameter parameter = ((ModelUIntParameter)modelDevice.Parameters[0]);
+            Assert.NotNull(parameter);
+            Assert.Single(parameter.Values);
+            Assert.Equal((uint)1, parameter.Values.First().Value);
         }
 
         [Fact]
@@ -173,16 +182,18 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
                        _mockChildObservableListDevices.Object,
-                       new ListChangedEventArgs<IDevice>(ListChangedAction.Add, [
-                           new SdkDevice(Name, 
+                       new ListChangedEventArgs<IDevice>(ListChangedAction.Add,
+                       [
+                           new SdkDevice(Name,
+                           DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless,
                            [
                                new BoolParameter(true, Name, Units, ParameterType.Iaq),
                                new FloatParameter(0.2f, Name, Units, ParameterType.Iaq),
                                new IntParameter(-18, Name, Units, ParameterType.Iaq),
                                new StringParameter("string", Name, Units, ParameterType.Iaq),
                                new UIntParameter(7218, Name, Units, ParameterType.Iaq)
-                           ], 0, 0)
-                           ]));
+                           ])
+                       ]));
 
             MockRepository
                 .Verify(_ => _.AddAsync(It.IsAny<ModelDevice>(),
@@ -207,7 +218,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
                        _mockChildObservableListDevices.Object,
-                       new ListChangedEventArgs<IDevice>(action, [new SdkDevice(Name, [], 0, 0)]));
+                       new ListChangedEventArgs<IDevice>(action, 
+                       [
+                           new SdkDevice(Name, DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, [])
+                       ]));
 
             MockRepository
                 .Verify(_ => _.DeleteAsync<ModelDevice>(It.IsAny<int>(),
@@ -304,7 +318,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<bool>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<bool>>().Object,
-                            new ParameterValueChangedEventArgs<bool>() { Value = true });
+                            new ParameterValueChangedEventArgs<bool>(true));
         }
 
         [Fact]
@@ -326,7 +340,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<float>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<float>>().Object,
-                            new ParameterValueChangedEventArgs<float>() { Value = 1.0f });
+                            new ParameterValueChangedEventArgs<float>(1.0f));
         }
 
         [Fact]
@@ -348,7 +362,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<int>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<int>>().Object,
-                            new ParameterValueChangedEventArgs<int>() { Value = 1 });
+                            new ParameterValueChangedEventArgs<int>(1));
         }
 
         [Fact]
@@ -370,7 +384,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<string>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<string>>().Object,
-                            new ParameterValueChangedEventArgs<string>() { Value = "" });
+                            new ParameterValueChangedEventArgs<string>(""));
         }
 
         [Fact]
@@ -392,15 +406,21 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .As<IBaseParameter<uint>>()
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<uint>>().Object,
-                            new ParameterValueChangedEventArgs<uint>() { Value = 10 });
+                            new ParameterValueChangedEventArgs<uint>(10));
         }
 
         [Fact]
         public void TestSignalLevelChanged()
         {
-            SetupServiceScopeFactory();
-
             var modelDevice = new ModelDevice();
+            modelDevice.Parameters.Add((ModelBaseParameter)new ModelIntParameter()
+            {
+                ParameterType = ParameterType.Rssi,
+                Units = "",
+                Name = "Signal Level"
+            });
+
+            SetupServiceScopeFactory();
 
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
@@ -419,7 +439,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             MockRepository
                 .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
 
-            Assert.Single(modelDevice.SignalUpdates);
+            ModelIntParameter parameter = ((ModelIntParameter)modelDevice.Parameters[0]);
+            Assert.NotNull(parameter);
+            Assert.Single(parameter.Values);
+            Assert.Equal((int)-1, parameter.Values.First().Value);
         }
 
         private void SetupCommonMocks()

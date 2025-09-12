@@ -26,6 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
@@ -133,12 +134,19 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
             {
-                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
                                  parameter.Id,
                                  parameter.Name,
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new UIntParameterValue() 
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -147,12 +155,19 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
             {
-                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
                                  parameter.Id,
                                  parameter.Name,
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new StringParameterValue()
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -161,12 +176,19 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
             {
-                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
                                  parameter.Id,
                                  parameter.Name,
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new IntParameterValue()
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -175,12 +197,19 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
             {
-                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
                                  parameter.Id,
                                  parameter.Name,
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new FloatParameterValue() 
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -189,12 +218,19 @@ namespace Shaos.Services.Runtime.Host
         {
             await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
             {
-                _logger.LogTrace("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
                                  parameter.Id,
                                  parameter.Name,
                                  parameter.Value);
 
                 parameter.Value = e.Value;
+                parameter.Values.Add(new BoolParameterValue() 
+                {
+                    Parameter = parameter,
+                    ParameterId = parameter.Id,
+                    TimeStamp = e.TimeStamp,
+                    Value = e.Value
+                });
             });
         }
 
@@ -295,6 +331,7 @@ namespace Shaos.Services.Runtime.Host
                     {
                         var modelDevice = device.ToModel();
                         modelDevice.PlugInInstanceId = plugInInstance.Id;
+                        modelDevice.CreateDeviceFeatureParameters();
 
                         await repository.AddAsync(modelDevice);
 
@@ -302,9 +339,14 @@ namespace Shaos.Services.Runtime.Host
 
                         device.SetId(modelDevice.Id);
 
-                        for (var i = 0; i < modelDevice.Parameters.Count; i++)
+                        foreach (var parameter in device.Parameters)
                         {
-                            device.Parameters[i].SetId(modelDevice.Parameters[i].Id);
+                            var deviceParameter = modelDevice.Parameters.FirstOrDefault(_ => _.Name == parameter.Name && _.ParameterType == parameter.ParameterType && _.Units == parameter.Units);
+
+                            if(deviceParameter != null)
+                            {
+                                parameter.SetId(deviceParameter.Id);
+                            }
                         }
                     }
                 }
@@ -466,10 +508,17 @@ namespace Shaos.Services.Runtime.Host
 
         private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
+            try
+            {
+                using var scope = _serviceScopeFactory.CreateScope();
+                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
 
-            await operation(repository);
+                await operation(repository);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception occurred");
+            }
         }
 
         private async Task ParametersListChangedAsync(object sender,

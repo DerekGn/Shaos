@@ -22,39 +22,24 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// Represents an integer parameter
+    /// A base parameter
     /// </summary>
-    public class IntParameter : BaseParameter
+    public abstract class BaseParameterValue
     {
         /// <summary>
-        /// The current value
+        /// The identifier
         /// </summary>
-        public int Value { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         /// <summary>
-        /// The set of <see cref="IntParameterValue"/> previous values
+        /// The update time stamp
         /// </summary>
-        public List<IntParameterValue> Values { get; set; } = [];
-
-        /// <summary>
-        /// Update the value and add a new value entry
-        /// </summary>
-        /// <param name="value">The updated value</param>
-        /// <param name="timestamp">The timestamp</param>
-        public void UpdateValue(int value, DateTime timestamp)
-        {
-            Value = value;
-
-            Values.Add(new IntParameterValue()
-            {
-                Parameter = this,
-                ParameterId = Id,
-                TimeStamp = timestamp,
-                Value = value
-            });
-        }
+        public DateTime TimeStamp { get; set; }
     }
 }

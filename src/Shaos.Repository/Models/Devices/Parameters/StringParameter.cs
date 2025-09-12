@@ -33,5 +33,28 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The current value
         /// </summary>
         public string? Value { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="StringParameterValue"/> previous values
+        /// </summary>
+        public List<StringParameterValue> Values { get; set; } = [];
+
+        /// <summary>
+        /// Update the value and add a new value entry
+        /// </summary>
+        /// <param name="value">The updated value</param>
+        /// <param name="timestamp">The timestamp</param>
+        public void UpdateValue(string value, DateTime timestamp)
+        {
+            Value = value;
+
+            Values.Add(new StringParameterValue()
+            {
+                Parameter = this,
+                ParameterId = Id,
+                TimeStamp = timestamp,
+                Value = value
+            });
+        }
     }
 }

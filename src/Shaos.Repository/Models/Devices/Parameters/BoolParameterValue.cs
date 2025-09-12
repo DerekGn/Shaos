@@ -22,26 +22,26 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices
+namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// A device update base update
+    /// A <see cref="Boolean"/> parameter value
     /// </summary>
-    public abstract class DeviceUpdate : BaseEntity
+    public class BoolParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The update time stamp
+        /// The value
         /// </summary>
-        public DateTime TimeStamp { get; set; }
+        public bool Value { get; set; }
 
         /// <summary>
-        /// The parent <see cref="Device"/>
+        /// The parent <see cref="BoolParameter"/>
         /// </summary>
-        public required Device Device { get; set; }
+        public required BoolParameter Parameter { get; set; }
 
         /// <summary>
-        /// The parent <see cref="Device"/> identifier
+        /// The parent <see cref="BaseParameter"/> identifier
         /// </summary>
-        public required int DeviceId { get; set; }
+        public required int ParameterId { get; set; }
     }
 }

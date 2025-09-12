@@ -22,16 +22,26 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices
+namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
-    /// A device battery update
+    /// A <see cref="int"/> parameter value
     /// </summary>
-    public class DeviceBatteryUpdate : DeviceUpdate
+    public class IntParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The battery level
+        /// The value
         /// </summary>
-        public uint BatteryLevel { get; set; }
+        public int Value { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="IntParameter"/>
+        /// </summary>
+        public required IntParameter Parameter { get; set; }
+
+        /// <summary>
+        /// The parent <see cref="BaseParameter"/> identifier
+        /// </summary>
+        public required int ParameterId { get; set; }
     }
 }
