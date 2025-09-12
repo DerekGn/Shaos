@@ -1,0 +1,53 @@
+﻿"use strict";
+
+const ctx = document.getElementById('chartCanvas').getContext('2d');
+const plot = new Chart(ctx, {
+    type: 'line',
+    options: {
+        scales: {
+            y: {
+                suggestedMax: 10,
+                suggestedMin: 1
+            }
+        }
+    }
+});
+
+var connection = new signalR
+    .HubConnectionBuilder()
+    .withUrl("/plotHub")
+    .build();
+
+async function start() {
+    try {
+        await connection.start();
+        console.log("SignalR Connected.");
+    } catch (err) {
+        console.log(err);
+        setTimeout(start, 5000);
+    }
+}
+
+connection.onclose(async () => {
+    await start();
+});
+
+connection.on("update", function (point) {
+
+    plot.data.labels.push(point.label);
+    plot.data.datasets.forEach((dataset) => {
+        dataset.data.push(point.value);
+    });
+
+    plot.update();
+
+    if (plot.data.labels.length > data.limit) {
+        plot.data.labels.splice(0, 1);
+        plot.data.datasets.forEach((dataset) => {
+            dataset.data.splice(0, 1);
+        });
+        plot.update();
+    }
+});
+
+start().then(() => { });

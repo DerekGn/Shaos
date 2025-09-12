@@ -215,6 +215,7 @@ namespace Shaos
 
             app.MapRazorPages();
             app.MapHub<RuntimeHub>($"/{nameof(RuntimeHub).ToCamelCase()}");
+            app.MapHub<PlotHub>($"/{nameof(PlotHub).ToCamelCase()}");
 
             app.Run();
         }
