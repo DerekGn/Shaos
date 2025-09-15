@@ -154,7 +154,7 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.FloatParameter):
-                    var floatParameter = (FloatParameter)parameter;
+                    var floatParameter = (Sdk.Devices.Parameters.FloatParameter)parameter;
                     result = new FloatParameter()
                     {
                         Id = parameter.Id,
@@ -168,7 +168,7 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.IntParameter):
-                    var intParameter = (IntParameter)parameter;
+                    var intParameter = (Sdk.Devices.Parameters.IntParameter)parameter;
                     result = new IntParameter()
                     {
                         Id = parameter.Id,
@@ -193,7 +193,7 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.UIntParameter):
-                    var uIntParameter = (UIntParameter)parameter;
+                    var uIntParameter = (Sdk.Devices.Parameters.UIntParameter)parameter;
                     result = new UIntParameter()
                     {
                         Id = parameter.Id,

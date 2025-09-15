@@ -1,13 +1,14 @@
 ﻿"use strict";
 
+const data = JSON.parse(document.getElementById('data').innerHTML);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const plot = new Chart(ctx, {
     type: 'line',
     options: {
         scales: {
             y: {
-                suggestedMax: 10,
-                suggestedMin: 1
+                suggestedMax: data.Max,
+                suggestedMin: data.Min
             }
         }
     }
