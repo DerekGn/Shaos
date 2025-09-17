@@ -117,11 +117,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.UpdatedDate)
                 </td>
-                @if(item is FloatParameter)
-                {
-                    <td></td>
-                }
-                else
+                @if(item is BoolParameter || item is FloatParameter || item is IntParameter || item is UIntParameter)
                 {
                     <td>
                         <a asp-page="/Parameters/Plot" asp-route-id="@item.Id" class="btn btn-sm btn-primary title="Plot">
@@ -130,6 +126,10 @@
                             </span>
                         </a>
                     </td>
+                }
+                else
+                {
+                    <td/>
                 }
             </tr>
         }
