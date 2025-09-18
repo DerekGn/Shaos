@@ -418,7 +418,7 @@ namespace Shaos.Services.UnitTests
                 Id = 1
             });
 
-            plugIn.Instances[0].Devices[0].Parameters.Add(new BoolParameter());
+            plugIn.Instances[0].Devices[0].Parameters.Add(new BoolParameter() { Name = "name" });
 
             List<PlugIn> plugIns =
             [

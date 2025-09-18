@@ -1,18 +1,18 @@
 ﻿"use strict";
 
-const data = JSON.parse(document.getElementById('data').innerHTML);
+const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const plot = new Chart(ctx, {
     type: 'line',
-    options: {
-        scales: {
-            y: {
-                suggestedMax: data.Max,
-                suggestedMin: data.Min
+    data: {
+        datasets: [
+            {
+                label: settings.label
             }
-        }
+        ]
     }
 });
+
 
 var connection = new signalR
     .HubConnectionBuilder()
@@ -23,6 +23,7 @@ async function start() {
     try {
         await connection.start();
         console.log("SignalR Connected.");
+        console.log(document.getElementById('settings').innerHTML);
     } catch (err) {
         console.log(err);
         setTimeout(start, 5000);

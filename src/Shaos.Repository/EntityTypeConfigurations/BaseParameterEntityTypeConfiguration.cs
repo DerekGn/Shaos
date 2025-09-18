@@ -41,7 +41,8 @@ namespace Shaos.Repository.EntityTypeConfigurations
 
             builder
                 .Property(_ => _.Name)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder
                 .Property(_ => _.ParameterType)

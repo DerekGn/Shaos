@@ -44,7 +44,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The <see cref="BaseParameter"/> name
         /// </summary>
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// The <see cref="ParameterType"/>

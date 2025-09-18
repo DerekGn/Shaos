@@ -309,7 +309,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                It.IsAny<bool>(),
                                                                It.IsAny<List<string>>(),
                                                                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelBoolParameter());
+                .ReturnsAsync(new ModelBoolParameter() { Name = "name" });
 
             _mockBaseParameters[0]
                 .As<IBaseParameter<bool>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
@@ -331,7 +331,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                 It.IsAny<bool>(),
                                                                 It.IsAny<List<string>>(),
                                                                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelFloatParameter());
+                .ReturnsAsync(new ModelFloatParameter() { Name = "name" });
 
             _mockBaseParameters[0]
                 .As<IBaseParameter<float>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
@@ -353,7 +353,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                               It.IsAny<bool>(),
                                                               It.IsAny<List<string>>(),
                                                               It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelIntParameter());
+                .ReturnsAsync(new ModelIntParameter() { Name = "name" });
 
             _mockBaseParameters[0]
                 .As<IBaseParameter<int>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
@@ -375,7 +375,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                  It.IsAny<bool>(),
                                                                  It.IsAny<List<string>>(),
                                                                  It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelStringParameter());
+                .ReturnsAsync(new ModelStringParameter() { Name = "name" });
 
             _mockBaseParameters[0]
                 .As<IBaseParameter<string>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
@@ -397,7 +397,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                  It.IsAny<bool>(),
                                                                  It.IsAny<List<string>>(),
                                                                  It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelUIntParameter());
+                .ReturnsAsync(new ModelUIntParameter() { Name = "name" });
 
             _mockBaseParameters[0]
                 .As<IBaseParameter<uint>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;

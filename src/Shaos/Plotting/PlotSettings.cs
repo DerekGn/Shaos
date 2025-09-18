@@ -22,11 +22,10 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Charting
+namespace Shaos.Plotting
 {
-    internal class UIntChartSettings : ChartSettings
+    public class PlotSettings
     {
-        public uint Min { get; set; }
-        public uint Max { get; set; }
+        public string Label { get; set; }
     }
 }

@@ -24,11 +24,10 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Charting;
 using Shaos.Exceptions;
+using Shaos.Plotting;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices.Parameters;
-using System.Reflection.Metadata;
 
 namespace Shaos.Pages.Parameters
 {
@@ -42,7 +41,7 @@ namespace Shaos.Pages.Parameters
         }
 
         [BindProperty]
-        public ChartSettings Settings { get; set; }
+        public PlotSettings Settings { get; set; }
 
         public async Task OnGetAsync(int id, CancellationToken cancellationToken)
         {
@@ -53,9 +52,10 @@ namespace Shaos.Pages.Parameters
             {
                 try
                 {
-                    Settings = MapParameterToSettings(parameter);
-
-
+                    Settings = new PlotSettings()
+                    {
+                        Label = parameter.Name
+                    };
                 }
                 catch (ParameterPlotNotSupportedException)
                 {
@@ -66,47 +66,6 @@ namespace Shaos.Pages.Parameters
             {
                 ModelState.AddModelError(string.Empty, $"Parameter [{id}] was not found.");
             }
-        }
-
-        private static ChartSettings MapParameterToSettings(BaseParameter parameter)
-        {
-            var type = parameter.GetType();
-
-            switch (type)
-            {
-                case Type _ when type == typeof(BoolParameter):
-                    return new BoolChartSettings()
-                    {
-                        Min = false,
-                        Max = true
-                    };
-
-                case Type _ when type == typeof(FloatParameter):
-                    var floatParameter = (FloatParameter)parameter;
-                    return new FloatChartSettings()
-                    {
-                        Min = floatParameter.Min,
-                        Max = floatParameter.Max
-                    };
-
-                case Type _ when type == typeof(IntParameter):
-                    var intParameter = (IntParameter)parameter;
-                    return new IntChartSettings()
-                    {
-                        Min = intParameter.Min,
-                        Max = intParameter.Max
-                    };
-
-                case Type _ when type == typeof(UIntParameter):
-                    var uintParameter = (UIntParameter)parameter;
-                    return new UIntChartSettings()
-                    {
-                        Min = uintParameter.Min,
-                        Max = uintParameter.Max
-                    };
-            }
-
-            throw new ParameterPlotNotSupportedException();
         }
     }
 }
