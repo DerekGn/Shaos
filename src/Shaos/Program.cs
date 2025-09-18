@@ -24,6 +24,7 @@
 
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -83,8 +84,8 @@ namespace Shaos
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(
-                options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services
+                .AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services
@@ -120,6 +121,11 @@ namespace Shaos
                         "/PlugIns/Package",
                         model => model.Filters.Add(new SerializeModelStatePageFilter()));
                 });
+
+            builder.Services.AddAuthorizationBuilder()
+                .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build());
 
             builder.Services.AddSignalR();
             builder.Services.AddControllers().AddJsonOptions(_ =>
