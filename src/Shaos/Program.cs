@@ -24,6 +24,7 @@
 
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -72,27 +73,37 @@ namespace Shaos
             });
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration
+                .GetConnectionString("DefaultConnection") ??
+                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(connectionString));
+            builder
+                .Services
+                .AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
 
-            builder.Services.AddDbContext<ShaosDbContext>(options =>
-                options.UseSqlite(connectionString,
-                _ => _.MigrationsAssembly(typeof(ShaosDbContext).Assembly.GetName().Name)));
+            builder
+                .Services
+                .AddDbContext<ShaosDbContext>(options => options
+                .UseSqlite(connectionString, _ => _
+                .MigrationsAssembly(typeof(ShaosDbContext).Assembly.GetName().Name)));
 
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            builder
+                .Services
+                .AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(
-                options => options.SignIn.RequireConfirmedAccount = true)
+            builder
+                .Services
+                .AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            builder.Services
+            builder
+                .Services
                 .AddAuthentication()
                 .AddBearerToken(IdentityConstants.BearerScheme);
 
-            builder.Services.AddDbContext<ShaosDbContext>(options =>
-                options.UseSqlite(connectionString));
+            builder
+                .Services
+                .AddDbContext<ShaosDbContext>(options => options.UseSqlite(connectionString));
 
             builder.Services.AddApiVersioning(_ =>
             {
@@ -120,6 +131,13 @@ namespace Shaos
                         "/PlugIns/Package",
                         model => model.Filters.Add(new SerializeModelStatePageFilter()));
                 });
+
+            builder
+                .Services
+                .AddAuthorizationBuilder()
+                .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build());
 
             builder.Services.AddSignalR();
             builder.Services.AddControllers().AddJsonOptions(_ =>
