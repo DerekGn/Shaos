@@ -453,7 +453,8 @@ namespace Shaos.Services.Runtime.Host
             {
                 await UpdateDeviceAsync(sender as IDevice, (device) =>
                 {
-                    device.UpdateBatteryLevel(e.BatteryLevel, e.TimeStamp);
+                    device.UpdateBatteryLevel(e.BatteryLevel,
+                                              e.TimeStamp);
                 });
             }
         }
@@ -465,7 +466,8 @@ namespace Shaos.Services.Runtime.Host
             {
                 await UpdateDeviceAsync(sender as IDevice, (device) =>
                 {
-                    device.UpdateSignalLevel(e.SignalLevel, e.TimeStamp);
+                    device.UpdateSignalLevel(e.SignalLevel,
+                                             e.TimeStamp);
                 });
             }
         }
@@ -568,7 +570,8 @@ namespace Shaos.Services.Runtime.Host
                 {
                     await ExecuteRepositoryOperationAsync(async (repository) =>
                     {
-                        var modelParameter = await repository.GetByIdAsync<T>(parameter.Id, false);
+                        var modelParameter = await repository.GetByIdAsync<T>(parameter.Id,
+                                                                              false);
 
                         if (modelParameter != null)
                         {
@@ -592,7 +595,9 @@ namespace Shaos.Services.Runtime.Host
             {
                 await ExecuteRepositoryOperationAsync(async (repository) =>
                 {
-                    var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id, false, [nameof(Device.Parameters)]);
+                    var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id,
+                                                                                 false,
+                                                                                 [nameof(Device.Parameters)]);
 
                     if (modelDevice != null)
                     {
