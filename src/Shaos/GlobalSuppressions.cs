@@ -23,5 +23,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Pages.PlugIns")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Paging")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Plotting")]
+[assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Startup")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.TagHelpers")]

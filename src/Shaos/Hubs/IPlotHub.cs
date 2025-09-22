@@ -23,8 +23,10 @@
 */
 namespace Shaos.Hubs
 {
-    public interface IPlotClient
+    public interface IPlotHub
     {
         Task UpdateAsync();
+
+        Task StartPlot(int id);
     }
 }

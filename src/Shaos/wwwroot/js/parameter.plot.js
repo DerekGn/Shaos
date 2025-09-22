@@ -22,6 +22,11 @@ var connection = new signalR
 async function start() {
     try {
         await connection.start();
+
+        connection.invoke("StartPlot", settings.id).catch(function (err) {
+            return console.error(err.toString());
+        });
+
         console.log("SignalR Connected.");
         console.log(document.getElementById('settings').innerHTML);
     } catch (err) {

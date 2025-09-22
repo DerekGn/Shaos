@@ -54,6 +54,7 @@ namespace Shaos.Pages.Parameters
                 {
                     Settings = new PlotSettings()
                     {
+                        Id = id,
                         Label = parameter.Name
                     };
                 }

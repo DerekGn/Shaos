@@ -26,6 +26,8 @@ namespace Shaos.Plotting
 {
     public class PlotSettings
     {
+        public int Id { get; set; }
+
         public string Label { get; set; }
     }
 }
