@@ -180,6 +180,7 @@ namespace Shaos
             builder.Services.AddScoped<IRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
+            builder.Services.AddSingleton<IDeviceEventSubscriber, DeviceEventSubscriber>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();

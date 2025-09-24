@@ -23,16 +23,20 @@
 */
 
 using Microsoft.AspNetCore.SignalR;
+using Shaos.Services;
 
 namespace Shaos.Hubs
 {
     public class PlotHub : Hub<IPlotHub>
     {
         private readonly ILogger<PlotHub> _logger;
+        private readonly IDeviceEventSubscriber _deviceEventSubscriber;
 
-        public PlotHub(ILogger<PlotHub> logger)
+        public PlotHub(ILogger<PlotHub> logger,
+                       IDeviceEventSubscriber deviceEventSubscriber)
         {
             _logger = logger;
+            _deviceEventSubscriber = deviceEventSubscriber;
         }
 
         public override Task OnConnectedAsync()
@@ -58,10 +62,20 @@ namespace Shaos.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        [HubMethodName("StartPlot")]
-        public async Task StartPlotAsync(int id)
+        [HubMethodName("Start")]
+        public async Task StartAsync(int id)
         {
             _logger.LogInformation("Starting Plot Parameter Id: [{Id}]", id);
+
+            await _deviceEventSubscriber.SubscribeDeviceParameterAsync(Context.UserIdentifier, id);
+        }
+
+        [HubMethodName("Stop")]
+        public async Task StopAsync(int id)
+        {
+            _logger.LogInformation("Stopping Plot Parameter Id: [{Id}]", id);
+
+            await _deviceEventSubscriber.UnsubscribeDeviceParameterAsync(Context.UserIdentifier, id);
         }
 
         public async Task UpdateAsync() => await Clients.All.UpdateAsync();

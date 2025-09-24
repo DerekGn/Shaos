@@ -21,12 +21,15 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+
 namespace Shaos.Hubs
 {
     public interface IPlotHub
     {
-        Task UpdateAsync();
+        Task StartAsync(int id);
 
-        Task StartPlot(int id);
+        Task StopAsync(int id);
+
+        Task UpdateAsync();
     }
 }
