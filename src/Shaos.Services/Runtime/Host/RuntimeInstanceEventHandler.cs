@@ -614,26 +614,23 @@ namespace Shaos.Services.Runtime.Host
         private async Task UpdateDeviceAsync(IDevice device,
                                              Action<ModelDevice> updateOperation)
         {
-            if (device != null)
+            await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
+                var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id,
+                                                                                false,
+                                                                                [nameof(Device.Parameters)]);
+
+                if (modelDevice != null)
                 {
-                    var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id,
-                                                                                 false,
-                                                                                 [nameof(Device.Parameters)]);
+                    updateOperation(modelDevice);
 
-                    if (modelDevice != null)
-                    {
-                        updateOperation(modelDevice);
-
-                        await repository.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        _logger.LogError("Unable to resolve Device for [{Id}]", device.Id);
-                    }
-                });
-            }
+                    await repository.SaveChangesAsync();
+                }
+                else
+                {
+                    _logger.LogError("Unable to resolve Device for [{Id}]", device.Id);
+                }
+            });
         }
     }
 }
