@@ -38,6 +38,7 @@ using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
+using Shaos.Services.Processing;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
@@ -188,10 +189,12 @@ namespace Shaos
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
+            builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItem(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
-            builder.Services.AddHostedService<MonitorBackgroundWorker>();
+            builder.Services.AddHostedService<MonitorHostedService>();
+            builder.Services.AddHostedService<WorkItemProcessorBackgroundService>();
 
             builder.Services.AddMemoryCache();
 
@@ -237,6 +240,16 @@ namespace Shaos
             app.MapHub<PlotHub>($"/{nameof(PlotHub).ToCamelCase()}");
 
             app.Run();
+        }
+
+        private static IWorkItemQueue InitWorkItem(ConfigurationManager configuration)
+        {
+            if (!int.TryParse(configuration["QueueCapacity"], out var queueCapacity))
+            {
+                queueCapacity = 100;
+            }
+
+            return new WorkItemQueue(queueCapacity);
         }
     }
 }

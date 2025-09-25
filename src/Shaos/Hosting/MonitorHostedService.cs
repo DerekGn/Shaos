@@ -24,11 +24,11 @@
 
 namespace Shaos.Hosting
 {
-    public class MonitorBackgroundWorker : IHostedService
+    public class MonitorHostedService : IHostedService
     {
-        private readonly ILogger<MonitorBackgroundWorker> _logger;
+        private readonly ILogger<MonitorHostedService> _logger;
         
-        public MonitorBackgroundWorker(ILogger<MonitorBackgroundWorker> logger,
+        public MonitorHostedService(ILogger<MonitorHostedService> logger,
                                        IHostApplicationLifetime hostApplicationLifetime)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -55,14 +55,14 @@ namespace Shaos.Hosting
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Background Worker [{nameof(MonitorBackgroundWorker)}] Starting");
+            _logger.LogInformation($"Background Worker [{nameof(MonitorHostedService)}] Starting");
 
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Background Worker [{nameof(MonitorBackgroundWorker)}] Stopping");
+            _logger.LogInformation($"Background Worker [{nameof(MonitorHostedService)}] Stopping");
 
             return Task.CompletedTask;
         }

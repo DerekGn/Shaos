@@ -32,6 +32,7 @@ using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Extensions;
+using Shaos.Services.Processing;
 
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
 using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
@@ -50,17 +51,21 @@ namespace Shaos.Services.Runtime.Host
     {
         private readonly ILogger<RuntimeInstanceEventHandler> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IWorkItemQueue _workItemQueue;
 
         /// <summary>
         /// Create an instance of a <see cref="IRuntimeInstanceEventHandler"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{T}"/> instance</param>
         /// <param name="serviceScopeFactory"></param>
+        /// <param name="workItemQueue"></param>
         public RuntimeInstanceEventHandler(ILogger<RuntimeInstanceEventHandler> logger,
-                                           IServiceScopeFactory serviceScopeFactory)
+                                           IServiceScopeFactory serviceScopeFactory,
+                                           IWorkItemQueue workItemQueue)
         {
             _logger = logger;
             _serviceScopeFactory = serviceScopeFactory;
+            _workItemQueue = workItemQueue;
         }
 
         /// <inheritdoc/>
@@ -140,7 +145,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new UIntParameterValue() 
+                parameter.Values.Add(new UIntParameterValue()
                 {
                     Parameter = parameter,
                     ParameterId = parameter.Id,
@@ -203,7 +208,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new FloatParameterValue() 
+                parameter.Values.Add(new FloatParameterValue()
                 {
                     Parameter = parameter,
                     ParameterId = parameter.Id,
@@ -224,7 +229,7 @@ namespace Shaos.Services.Runtime.Host
                                  parameter.Value);
 
                 parameter.Value = e.Value;
-                parameter.Values.Add(new BoolParameterValue() 
+                parameter.Values.Add(new BoolParameterValue()
                 {
                     Parameter = parameter,
                     ParameterId = parameter.Id,
@@ -232,6 +237,18 @@ namespace Shaos.Services.Runtime.Host
                     Value = e.Value
                 });
             });
+        }
+
+        private static async Task ExecuteDeviceOperationAsync(object sender,
+                                                              Func<IDevice, Task> operation)
+        {
+            if (sender != null)
+            {
+                if (sender is IDevice device)
+                {
+                    await operation(device);
+                }
+            }
         }
 
         private void AttachDeviceAndParameters(IDevice device)
@@ -343,7 +360,7 @@ namespace Shaos.Services.Runtime.Host
                         {
                             var deviceParameter = modelDevice.Parameters.FirstOrDefault(_ => _.Name == parameter.Name && _.ParameterType == parameter.ParameterType && _.Units == parameter.Units);
 
-                            if(deviceParameter != null)
+                            if (deviceParameter != null)
                             {
                                 parameter.SetId(deviceParameter.Id);
                             }
@@ -449,27 +466,33 @@ namespace Shaos.Services.Runtime.Host
         private async Task DeviceBatteryLevelChanged(object sender,
                                                      BatteryLevelChangedEventArgs e)
         {
-            if (sender != null)
+            await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await UpdateDeviceAsync(sender as IDevice, (device) =>
+                await _workItemQueue.QueueAsync(async (cancellationToken) =>
                 {
-                    device.UpdateBatteryLevel(e.BatteryLevel,
-                                              e.TimeStamp);
+                    await UpdateDeviceAsync(device, (device) =>
+                    {
+                        device.UpdateBatteryLevel(e.BatteryLevel,
+                                                  e.TimeStamp);
+                    });
                 });
-            }
+            });
         }
 
         private async Task DeviceSignalLevelChanged(object sender,
                                                     SignalLevelChangedEventArgs e)
         {
-            if (sender != null)
+            await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await UpdateDeviceAsync(sender as IDevice, (device) =>
+                await _workItemQueue.QueueAsync(async (cancellationToken) =>
                 {
-                    device.UpdateSignalLevel(e.SignalLevel,
-                                             e.TimeStamp);
+                    await UpdateDeviceAsync(device, (device) =>
+                    {
+                        device.UpdateSignalLevel(e.SignalLevel,
+                                                  e.TimeStamp);
+                    });
                 });
-            }
+            });
         }
 
         private async Task DevicesListChangedAsync(object sender,
@@ -588,7 +611,7 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task UpdateDeviceAsync(IDevice? device,
+        private async Task UpdateDeviceAsync(IDevice device,
                                              Action<ModelDevice> updateOperation)
         {
             if (device != null)

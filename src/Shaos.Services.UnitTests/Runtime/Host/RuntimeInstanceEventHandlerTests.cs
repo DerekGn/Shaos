@@ -31,6 +31,7 @@ using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
+using Shaos.Services.Processing;
 using Shaos.Services.Runtime.Host;
 using Xunit;
 using Xunit.Abstractions;
@@ -59,6 +60,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
+        private readonly Mock<IWorkItemQueue> _mockWorkItemQueue;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
 
         public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
@@ -70,6 +72,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
+            _mockWorkItemQueue = new Mock<IWorkItemQueue>();
 
             _mockBaseParameters =
             [
@@ -81,7 +84,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ];
 
             _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory.CreateLogger<RuntimeInstanceEventHandler>(),
-                                                                           _mockServiceScopeFactory.Object);
+                                                                           _mockServiceScopeFactory.Object,
+                                                                           _mockWorkItemQueue.Object);
         }
 
         [Fact]
@@ -107,7 +111,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestBatteryLevelChanged()
         {
             var modelDevice = new ModelDevice();
-            modelDevice.Parameters.Add((ModelBaseParameter) new ModelUIntParameter()
+            modelDevice.Parameters.Add((ModelBaseParameter)new ModelUIntParameter()
             {
                 ParameterType = ParameterType.Level,
                 Units = "%",
@@ -218,7 +222,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockChildObservableListDevices
                 .Raise(_ => _.ListChanged += null,
                        _mockChildObservableListDevices.Object,
-                       new ListChangedEventArgs<IDevice>(action, 
+                       new ListChangedEventArgs<IDevice>(action,
                        [
                            new SdkDevice(Name, DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, [])
                        ]));
