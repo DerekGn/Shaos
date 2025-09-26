@@ -60,7 +60,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
-        private readonly Mock<IWorkItemQueue> _mockWorkItemQueue;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
 
         private readonly Mock<IRuntimeDeviceUpdateHandler> _mockRuntimeDeviceUpdateHandler;
@@ -74,8 +73,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
-            _mockWorkItemQueue = new Mock<IWorkItemQueue>();
-            
+
             _mockRuntimeDeviceUpdateHandler = new Mock<IRuntimeDeviceUpdateHandler>();
 
             _mockBaseParameters =
@@ -113,25 +111,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestBatteryLevelChanged()
         {
-            var modelDevice = new ModelDevice();
-            modelDevice.Parameters.Add((ModelBaseParameter)new ModelUIntParameter()
-            {
-                ParameterType = ParameterType.Level,
-                Units = "%",
-                Name = "Battery Level"
-            });
-
-            SetupCommonMocks();
-
-            SetupServiceScopeFactory();
-
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
-                                                        It.IsAny<bool>(),
-                                                        It.IsAny<List<string>>(),
-                                                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(modelDevice);
-
             _runtimeInstanceEventHandler.AttachDevice(_mockDevice.Object);
 
             _mockDevice.Raise(_ => _.BatteryLevelChanged += null, _mockDevice.Object, new BatteryLevelChangedEventArgs()
@@ -139,13 +118,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 BatteryLevel = 1
             });
 
-            MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
-
-            ModelUIntParameter parameter = ((ModelUIntParameter)modelDevice.Parameters[0]);
-            Assert.NotNull(parameter);
-            Assert.Single(parameter.Values);
-            Assert.Equal((uint)1, parameter.Values.First().Value);
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceBatteryLevelUpdateAsync(It.IsAny<IDevice>(),
+                                                                                        It.IsAny<BatteryLevelChangedEventArgs>()));
         }
 
         [Fact]
@@ -171,8 +145,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestDevicesListChangedDeviceAdded()
         {
             var plugInInstance = new PlugInInstance();
-
-            SetupServiceScopeFactory();
 
             SetupCommonMocks();
 
@@ -201,13 +173,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                new UIntParameter(7218, 0, 10, Name, Units, ParameterType.Iaq)
                            ])
                        ]));
-
-            MockRepository
-                .Verify(_ => _.AddAsync(It.IsAny<ModelDevice>(),
-                                        It.IsAny<CancellationToken>()));
-
-            MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Theory]
@@ -216,8 +181,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public void TestDevicesListChangedDeviceDelete(ListChangedAction action)
         {
             SetupCommonMocks();
-
-            SetupServiceScopeFactory();
 
             _runtimeInstanceEventHandler
                 .AttachDevicesListChange(_mockChildObservableListDevices.Object);
@@ -241,17 +204,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParametersListChangedParameterAdded()
         {
-            SetupServiceScopeFactory();
-
             _mockObservableListParameters
                 .Setup(_ => _.Parent)
                 .Returns(_mockDevice.Object);
-
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
-                                                                  It.IsAny<bool>(),
-                                                                  It.IsAny<List<string>>(),
-                                                                  It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelDevice() { Id = 10 });
 
             _runtimeInstanceEventHandler
                 .AttachParametersListChanged(_mockObservableListParameters.Object);
@@ -282,8 +237,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupCommonMocks();
 
-            SetupServiceScopeFactory();
-
             _runtimeInstanceEventHandler
                 .AttachParametersListChanged(_mockObservableListParameters.Object);
 
@@ -309,8 +262,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedBoolAsync()
         {
-            SetupServiceScopeFactory();
-
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelBoolParameter>(It.IsAny<int>(),
                                                                It.IsAny<bool>(),
@@ -331,8 +282,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedFloatAsync()
         {
-            SetupServiceScopeFactory();
-
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelFloatParameter>(It.IsAny<int>(),
                                                                 It.IsAny<bool>(),
@@ -353,8 +302,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedIntAsync()
         {
-            SetupServiceScopeFactory();
-
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelIntParameter>(It.IsAny<int>(),
                                                               It.IsAny<bool>(),
@@ -375,8 +322,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedStringAsync()
         {
-            SetupServiceScopeFactory();
-
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelStringParameter>(It.IsAny<int>(),
                                                                  It.IsAny<bool>(),
@@ -397,8 +342,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedUIntAsync()
         {
-            SetupServiceScopeFactory();
-
             MockRepository
                 .Setup(_ => _.GetByIdAsync<ModelUIntParameter>(It.IsAny<int>(),
                                                                  It.IsAny<bool>(),
@@ -419,23 +362,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestSignalLevelChanged()
         {
-            var modelDevice = new ModelDevice();
-            modelDevice.Parameters.Add((ModelBaseParameter)new ModelIntParameter()
-            {
-                ParameterType = ParameterType.Rssi,
-                Units = "",
-                Name = "Signal Level"
-            });
-
-            SetupServiceScopeFactory();
-
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
-                                                        It.IsAny<bool>(),
-                                                        It.IsAny<List<string>>(),
-                                                        It.IsAny<CancellationToken>()))
-                .ReturnsAsync(modelDevice);
-
             _runtimeInstanceEventHandler.AttachDevice(_mockDevice.Object);
 
             _mockDevice.Raise(_ => _.SignalLevelChanged += null, _mockDevice.Object, new SignalLevelChangedEventArgs()
@@ -443,13 +369,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 SignalLevel = -1
             });
 
-            MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
-
-            ModelIntParameter parameter = ((ModelIntParameter)modelDevice.Parameters[0]);
-            Assert.NotNull(parameter);
-            Assert.Single(parameter.Values);
-            Assert.Equal((int)-1, parameter.Values.First().Value);
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceSignalLevelUpdateAsync(It.IsAny<IDevice>(),
+                                                                                       It.IsAny<SignalLevelChangedEventArgs>()));
         }
 
         private void SetupCommonMocks()
@@ -497,21 +418,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockObservableListParameters.
                 Setup(_ => _.Parent)
                 .Returns(_mockDevice.Object);
-        }
-
-        private void SetupServiceScopeFactory()
-        {
-            _mockServiceScopeFactory
-                .Setup(_ => _.CreateScope())
-                .Returns(_mockServiceScope.Object);
-
-            _mockServiceScope
-                .Setup(_ => _.ServiceProvider)
-                .Returns(_mockServiceProvider.Object);
-
-            _mockServiceProvider
-                .Setup(_ => _.GetService(typeof(IRepository)))
-                .Returns(MockRepository.Object);
         }
     }
 }
