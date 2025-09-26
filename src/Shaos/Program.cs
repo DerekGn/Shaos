@@ -242,7 +242,7 @@ namespace Shaos
             app.Run();
         }
 
-        private static IWorkItemQueue InitWorkItem(ConfigurationManager configuration)
+        private static WorkItemQueue InitWorkItem(ConfigurationManager configuration)
         {
             if (!int.TryParse(configuration["QueueCapacity"], out var queueCapacity))
             {
