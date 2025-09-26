@@ -23,17 +23,10 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Shaos.Repository.Models;
-using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
-using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
-using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
-using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
-using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
-using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -126,105 +119,50 @@ namespace Shaos.Services.Runtime.Host
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<uint> e)
         {
-            await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new UIntParameterValue()
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<string> e)
         {
-            await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new StringParameterValue()
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<int> e)
         {
-            await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new IntParameterValue()
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<float> e)
         {
-            await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new FloatParameterValue()
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<bool> e)
         {
-            await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new BoolParameterValue()
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
@@ -355,7 +293,9 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device, e);
+                await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device,
+                                                                                e.BatteryLevel,
+                                                                                e.TimeStamp);
             });
         }
 
@@ -364,7 +304,9 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device, e);
+                await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device,
+                                                                               e.SignalLevel,
+                                                                               e.TimeStamp);
             });
         }
 
@@ -408,7 +350,8 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogWarning("Sender is invalid type: [{Type}]", sender.GetType());
+                    _logger.LogWarning("Sender is invalid type: [{Type}]",
+                                       sender.GetType());
                 }
             }
         }
@@ -450,24 +393,29 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogWarning("Sender is invalid type: [{Type}]", sender.GetType());
+                    _logger.LogWarning("Sender is invalid type: [{Type}]",
+                                       sender.GetType());
                 }
             }
         }
 
-        private async Task SaveParameterChangeAsync<T>(object sender,
-                                                       Action<T> operation) where T : BaseEntity
+        private async Task ValidateParameterChangeAsync(object sender, Func<IBaseParameter, Task> operation)
         {
             if (sender != null)
             {
                 if (sender is IBaseParameter parameter)
                 {
-                    await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync<T>(parameter, operation);
+                    await operation(parameter);
                 }
                 else
                 {
-                    _logger.LogWarning("Sender is invalid type: [{Type}]", sender.GetType());
+                    _logger.LogWarning("Sender is invalid type: [{Type}]",
+                                       sender.GetType());
                 }
+            }
+            else
+            {
+                _logger.LogWarning("Sender is null");
             }
         }
     }

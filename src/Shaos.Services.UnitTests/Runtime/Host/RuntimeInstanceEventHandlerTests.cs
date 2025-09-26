@@ -114,7 +114,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             });
 
             _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceBatteryLevelUpdateAsync(It.IsAny<IDevice>(),
-                                                                                        It.IsAny<BatteryLevelChangedEventArgs>()));
+                                                                                        It.IsAny<uint>(),
+                                                                                        It.IsAny<DateTime>()));
         }
 
         [Fact]
@@ -319,7 +320,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             });
 
             _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceSignalLevelUpdateAsync(It.IsAny<IDevice>(),
-                                                                                       It.IsAny<SignalLevelChangedEventArgs>()));
+                                                                                       It.IsAny<int>(),
+                                                                                       It.IsAny<DateTime>()));
         }
 
         private void SetupCommonMocks()

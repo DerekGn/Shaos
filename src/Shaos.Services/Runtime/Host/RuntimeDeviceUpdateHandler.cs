@@ -1,17 +1,51 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿/*
+* MIT License
+*
+* Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Extensions;
 using Shaos.Services.Processing;
 
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
+using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
+using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
+using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
+using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
+using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
 
 namespace Shaos.Services.Runtime.Host
 {
+    /// <summary>
+    /// A <see cref="IRuntimeDeviceUpdateHandler"/> that stores updates to a database.
+    /// Updates are also published to an event queue.
+    /// </summary>
     public class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
     {
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
@@ -151,28 +185,30 @@ namespace Shaos.Services.Runtime.Host
 
         /// <inheritdoc/>
         public async Task DeviceBatteryLevelUpdateAsync(IDevice device,
-                                                        BatteryLevelChangedEventArgs e)
+                                                        uint level,
+                                                        DateTime timeStamp)
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
                 await UpdateDeviceAsync(device, (device) =>
                 {
-                    device.UpdateBatteryLevel(e.BatteryLevel,
-                                              e.TimeStamp);
+                    device.UpdateBatteryLevel(level,
+                                              timeStamp);
                 });
             });
         }
 
         /// <inheritdoc/>
         public async Task DeviceSignalLevelUpdateAsync(IDevice device,
-                                                       SignalLevelChangedEventArgs e)
+                                                       int level,
+                                                       DateTime timeStamp)
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
                 await UpdateDeviceAsync(device, (device) =>
                 {
-                    device.UpdateSignalLevel(e.SignalLevel,
-                                              e.TimeStamp);
+                    device.UpdateSignalLevel(level,
+                                             timeStamp);
                 });
             });
         }
@@ -196,7 +232,169 @@ namespace Shaos.Services.Runtime.Host
                     }
                     else
                     {
-                        _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]", typeof(T).Name, parameter.Id);
+                        _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]",
+                                           typeof(T).Name,
+                                           parameter.Id);
+                    }
+                });
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveParameterChangeAsync(int id,
+                                                   int value,
+                                                   DateTime timeStamp)
+        {
+            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            {
+                await ExecuteRepositoryOperationAsync(async (repository) =>
+                {
+                    var parameter = await repository.GetByIdAsync<ModelIntParameter>(id, false);
+
+                    if (parameter != null)
+                    {
+                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                         parameter.Id,
+                                         parameter.Name,
+                                         value);
+
+                        parameter.Value = value;
+
+                        parameter.Values.Add(new IntParameterValue()
+                        {
+                            Parameter = parameter,
+                            ParameterId = parameter.Id,
+                            TimeStamp = timeStamp,
+                            Value = value
+                        });
+                    }
+                });
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveParameterChangeAsync(int id,
+                                                   string value,
+                                                   DateTime timeStamp)
+        {
+            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            {
+                await ExecuteRepositoryOperationAsync(async (repository) =>
+                {
+                    var parameter = await repository.GetByIdAsync<ModelStringParameter>(id, false);
+
+                    if (parameter != null)
+                    {
+                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                         parameter.Id,
+                                         parameter.Name,
+                                         value);
+
+                        parameter.Value = value;
+
+                        parameter.Values.Add(new StringParameterValue()
+                        {
+                            Parameter = parameter,
+                            ParameterId = parameter.Id,
+                            TimeStamp = timeStamp,
+                            Value = value
+                        });
+                    }
+                });
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveParameterChangeAsync(int id,
+                                                   float value,
+                                                   DateTime timeStamp)
+        {
+            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            {
+                await ExecuteRepositoryOperationAsync(async (repository) =>
+                {
+                    var parameter = await repository.GetByIdAsync<ModelFloatParameter>(id, false);
+
+                    if (parameter != null)
+                    {
+                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                         parameter.Id,
+                                         parameter.Name,
+                                         value);
+
+                        parameter.Value = value;
+
+                        parameter.Values.Add(new FloatParameterValue()
+                        {
+                            Parameter = parameter,
+                            ParameterId = parameter.Id,
+                            TimeStamp = timeStamp,
+                            Value = value
+                        });
+                    }
+                });
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveParameterChangeAsync(int id,
+                                                   bool value,
+                                                   DateTime timeStamp)
+        {
+            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            {
+                await ExecuteRepositoryOperationAsync(async (repository) =>
+                {
+                    var parameter = await repository.GetByIdAsync<ModelBoolParameter>(id, false);
+
+                    if (parameter != null)
+                    {
+                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                         parameter.Id,
+                                         parameter.Name,
+                                         value);
+
+                        parameter.Value = value;
+
+                        parameter.Values.Add(new BoolParameterValue()
+                        {
+                            Parameter = parameter,
+                            ParameterId = parameter.Id,
+                            TimeStamp = timeStamp,
+                            Value = value
+                        });
+                    }
+                });
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveParameterChangeAsync(int id,
+                                                   uint value,
+                                                   DateTime timeStamp)
+        {
+            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            {
+                await ExecuteRepositoryOperationAsync(async (repository) =>
+                {
+                    var parameter = await repository.GetByIdAsync<ModelUIntParameter>(id, false);
+
+                    if (parameter != null)
+                    {
+                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                         parameter.Id,
+                                         parameter.Name,
+                                         value);
+
+                        parameter.Value = value;
+
+                        parameter.Values.Add(new UIntParameterValue()
+                        {
+                            Parameter = parameter,
+                            ParameterId = parameter.Id,
+                            TimeStamp = timeStamp,
+                            Value = value
+                        });
                     }
                 });
             });
@@ -234,7 +432,8 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogError("Unable to resolve Device for [{Id}]", device.Id);
+                    _logger.LogError("Unable to resolve Device for [{Id}]",
+                                     device.Id);
                 }
             });
         }
