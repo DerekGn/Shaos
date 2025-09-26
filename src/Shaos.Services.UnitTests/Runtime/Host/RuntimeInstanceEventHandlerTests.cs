@@ -25,19 +25,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
-using Shaos.Services.Processing;
 using Shaos.Services.Runtime.Host;
 using Xunit;
 using Xunit.Abstractions;
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
 using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
-using ModelDevice = Shaos.Repository.Models.Devices.Device;
 using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
 using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
 using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
@@ -57,13 +54,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IDevice> _mockDevice;
         private readonly Mock<IChildObservableList<IDevice, IBaseParameter>> _mockObservableListParameters;
         private readonly Mock<IPlugIn> _mockPlugIn;
+        private readonly Mock<IRuntimeDeviceUpdateHandler> _mockRuntimeDeviceUpdateHandler;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
-
-        private readonly Mock<IRuntimeDeviceUpdateHandler> _mockRuntimeDeviceUpdateHandler;
-
         public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _mockDevice = new Mock<IDevice>();
@@ -193,12 +188,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                            new SdkDevice(Name, DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, [])
                        ]));
 
-            MockRepository
-                .Verify(_ => _.DeleteAsync<ModelDevice>(It.IsAny<int>(),
-                                                        It.IsAny<CancellationToken>()));
-
-            MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeleteDevicesAsync(It.IsAny<IList<IDevice>>()));
         }
 
         [Fact]
@@ -223,11 +213,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                            new UIntParameter(1, 0, 299, Name, Units, ParameterType.Iaq)
                        ]));
 
-            MockRepository
-                .Verify(_ => _.AddAsync(It.IsAny<ModelBaseParameter>(),
-                                                  It.IsAny<CancellationToken>()), Times.Exactly(5));
-            MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.CreateDeviceParametersAsync(It.IsAny<int>(), It.IsAny<IList<IBaseParameter>>()));
         }
 
         [Theory]
@@ -252,23 +238,14 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                            _mockBaseParameters[4].As<IBaseParameter<uint>>().Object
                        ]));
 
-            MockRepository
-                .Verify(_ => _.DeleteAsync<ModelBaseParameter>(It.IsAny<int>(),
-                                                               It.IsAny<CancellationToken>()), Times.Exactly(5));
-            MockRepository
-                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            _mockRuntimeDeviceUpdateHandler
+                .Verify(_ => _
+                .DeleteDeviceParametersAsync(It.IsAny<IList<IBaseParameter>>()));
         }
 
         [Fact]
         public void TestParameterValueChangedBoolAsync()
         {
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelBoolParameter>(It.IsAny<int>(),
-                                                               It.IsAny<bool>(),
-                                                               It.IsAny<List<string>>(),
-                                                               It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelBoolParameter() { Name = "name" });
-
             _mockBaseParameters[0]
                 .As<IBaseParameter<bool>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
 
@@ -281,14 +258,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         [Fact]
         public void TestParameterValueChangedFloatAsync()
-        {
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelFloatParameter>(It.IsAny<int>(),
-                                                                It.IsAny<bool>(),
-                                                                It.IsAny<List<string>>(),
-                                                                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelFloatParameter() { Name = "name" });
-
+        {            
             _mockBaseParameters[0]
                 .As<IBaseParameter<float>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
 
@@ -302,13 +272,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedIntAsync()
         {
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelIntParameter>(It.IsAny<int>(),
-                                                              It.IsAny<bool>(),
-                                                              It.IsAny<List<string>>(),
-                                                              It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelIntParameter() { Name = "name" });
-
             _mockBaseParameters[0]
                 .As<IBaseParameter<int>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
 
@@ -322,13 +285,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedStringAsync()
         {
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelStringParameter>(It.IsAny<int>(),
-                                                                 It.IsAny<bool>(),
-                                                                 It.IsAny<List<string>>(),
-                                                                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelStringParameter() { Name = "name" });
-
             _mockBaseParameters[0]
                 .As<IBaseParameter<string>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
 
@@ -342,13 +298,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParameterValueChangedUIntAsync()
         {
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelUIntParameter>(It.IsAny<int>(),
-                                                                 It.IsAny<bool>(),
-                                                                 It.IsAny<List<string>>(),
-                                                                 It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelUIntParameter() { Name = "name" });
-
             _mockBaseParameters[0]
                 .As<IBaseParameter<uint>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
 

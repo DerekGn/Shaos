@@ -29,8 +29,6 @@ using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
-
-using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
 using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
 using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
 using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
@@ -46,7 +44,7 @@ namespace Shaos.Services.Runtime.Host
     {
         private readonly ILogger<RuntimeInstanceEventHandler> _logger;
         private readonly IRuntimeDeviceUpdateHandler _runtimeDeviceUpdateHandler;
-        
+
         /// <summary>
         /// Create an instance of a <see cref="IRuntimeInstanceEventHandler"/>
         /// </summary>
@@ -297,18 +295,6 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task CreateDeviceParametersAsync(IChildObservableList<IDevice, IBaseParameter> deviceParameters,
-                                                       IList<IBaseParameter> parameters)
-        {
-            await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(deviceParameters.Parent.Id, parameters);
-        }
-
-        private async Task CreateDevicesAsync(IChildObservableList<IPlugIn, IDevice> plugInDeviceList,
-                                              IList<IDevice> devices)
-        {
-            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(plugInDeviceList.Parent.Id, devices);
-        }
-
         private void DetachDevicesListChange(IObservableList<IDevice> devices)
         {
             devices.ListChanged -= DevicesListChangedAsync;
@@ -387,33 +373,42 @@ namespace Shaos.Services.Runtime.Host
         {
             if (sender != null)
             {
-                switch (e.Action)
+                if (sender is IChildObservableList<IPlugIn, IDevice> devices)
                 {
-                    case ListChangedAction.Add:
-                        if (e.Items != null)
+                    if (e.Items != null)
+                    {
+                        switch (e.Action)
                         {
-                            await CreateDevicesAsync(sender as IChildObservableList<IPlugIn, IDevice>, e.Items);
+                            case ListChangedAction.Add:
 
-                            foreach (var device in e.Items)
-                            {
-                                AttachDeviceAndParameters(device);
-                            }
-                        }
-                        break;
+                                await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id, e.Items);
 
-                    case ListChangedAction.Reset:
-                        if (e.Items != null)
-                        {
-                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items);
-                        }
-                        break;
+                                foreach (var device in e.Items)
+                                {
+                                    AttachDeviceAndParameters(device);
+                                }
 
-                    case ListChangedAction.Remove:
-                        if (e.Items != null)
-                        {
-                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items);
+                                break;
+
+                            case ListChangedAction.Reset:
+                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items);
+
+                                break;
+
+                            case ListChangedAction.Remove:
+                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items);
+
+                                break;
                         }
-                        break;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Event items collection empty");
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Sender is invalid type: [{Type}]", sender.GetType());
                 }
             }
         }
@@ -423,35 +418,39 @@ namespace Shaos.Services.Runtime.Host
         {
             if (sender != null)
             {
-                switch (e.Action)
+                if (sender is IChildObservableList<IDevice, IBaseParameter> deviceParameters)
                 {
-                    case ListChangedAction.Add:
-                        if (e.Items != null)
+                    if (e.Items != null)
+                    {
+                        switch (e.Action)
                         {
-                            await CreateDeviceParametersAsync(sender as IChildObservableList<IDevice, IBaseParameter>,
-                                                              e.Items);
+                            case ListChangedAction.Add:
+                                await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(deviceParameters.Parent.Id, e.Items);
 
-                            AttachParameters([.. e.Items]);
+                                AttachParameters([.. e.Items]);
+                                break;
+
+                            case ListChangedAction.Reset:
+                                DetachParameters(e.Items);
+
+                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items);
+                                break;
+
+                            case ListChangedAction.Remove:
+                                DetachParameters(e.Items);
+
+                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items);
+                                break;
                         }
-                        break;
-
-                    case ListChangedAction.Reset:
-                        if (e.Items != null)
-                        {
-                            DetachParameters(e.Items);
-
-                            await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items);
-                        }
-                        break;
-
-                    case ListChangedAction.Remove:
-                        if (e.Items != null)
-                        {
-                            DetachParameters(e.Items);
-
-                            await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items);
-                        }
-                        break;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Event items collection empty");
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Sender is invalid type: [{Type}]", sender.GetType());
                 }
             }
         }
@@ -464,6 +463,10 @@ namespace Shaos.Services.Runtime.Host
                 if (sender is IBaseParameter parameter)
                 {
                     await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync<T>(parameter, operation);
+                }
+                else
+                {
+                    _logger.LogWarning("Sender is invalid type: [{Type}]", sender.GetType());
                 }
             }
         }
