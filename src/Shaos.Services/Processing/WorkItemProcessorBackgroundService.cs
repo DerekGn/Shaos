@@ -28,12 +28,20 @@ using System.Diagnostics;
 
 namespace Shaos.Services.Processing
 {
+    /// <summary>
+    /// A <see cref="BackgroundService"/> implementation for the asynchronous execution of work items
+    /// </summary>
     public class WorkItemProcessorBackgroundService : BackgroundService
     {
         private readonly ILogger<WorkItemProcessorBackgroundService> _logger;
         private readonly IWorkItemQueue _workItemQueue;
         private readonly Stopwatch _stopwatch;
 
+        /// <summary>
+        /// Create an instance of a <see cref="WorkItemProcessorBackgroundService"/>
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="workItemQueue">The <see cref="WorkItemQueue"/> to dequeue work items from</param>
         public WorkItemProcessorBackgroundService(ILogger<WorkItemProcessorBackgroundService> logger,
                                                   IWorkItemQueue workItemQueue)
         {

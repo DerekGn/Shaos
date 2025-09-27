@@ -76,14 +76,44 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="timestamp">The timestamp of the event</param>
         Task DeviceSignalLevelUpdateAsync(IDevice device, int level, DateTime timestamp);
 
+        /// <summary>
+        /// Save a <see cref="BaseParameter"/>
+        /// </summary>
+        /// <param name="id">The parameter id</param>
+        /// <param name="value">The updated value</param>
+        /// <param name="timeStamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id, int value, DateTime timeStamp);
 
+        /// <summary>
+        /// Save a <see cref="BaseParameter"/>
+        /// </summary>
+        /// <param name="id">The parameter id</param>
+        /// <param name="value">The updated value</param>
+        /// <param name="timeStamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id, string value, DateTime timeStamp);
 
+        /// <summary>
+        /// Save a <see cref="BaseParameter"/>
+        /// </summary>
+        /// <param name="id">The parameter id</param>
+        /// <param name="value">The updated value</param>
+        /// <param name="timeStamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id, float value, DateTime timeStamp);
 
+        /// <summary>
+        /// Save a <see cref="BaseParameter"/>
+        /// </summary>
+        /// <param name="id">The parameter id</param>
+        /// <param name="value">The updated value</param>
+        /// <param name="timeStamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id, bool value, DateTime timeStamp);
 
+        /// <summary>
+        /// Save a <see cref="BaseParameter"/>
+        /// </summary>
+        /// <param name="id">The parameter id</param>
+        /// <param name="value">The updated value</param>
+        /// <param name="timeStamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id, uint value, DateTime timeStamp);
     }
 }

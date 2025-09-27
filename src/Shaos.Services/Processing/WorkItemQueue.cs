@@ -27,12 +27,16 @@ using System.Threading.Channels;
 namespace Shaos.Services.Processing
 {
     /// <summary>
-    ///
+    /// The <see cref="IWorkItemQueue"/>
     /// </summary>
     public class WorkItemQueue : IWorkItemQueue
     {
         private readonly Channel<Func<CancellationToken, Task>> _queue;
 
+        /// <summary>
+        /// Create an instance of a <see cref="WorkItemQueue"/>
+        /// </summary>
+        /// <param name="capacity">The item queue capacity</param>
         public WorkItemQueue(int capacity)
         {
             BoundedChannelOptions options = new(capacity)
@@ -54,7 +58,7 @@ namespace Shaos.Services.Processing
         }
 
         /// <inheritdoc/>
-        public async Task QueueAsync(Func<CancellationToken, Task> workItem)
+        public async Task QueueAsync(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(workItem);
 

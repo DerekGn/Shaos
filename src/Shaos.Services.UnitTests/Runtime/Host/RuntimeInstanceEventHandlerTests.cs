@@ -55,9 +55,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IChildObservableList<IDevice, IBaseParameter>> _mockObservableListParameters;
         private readonly Mock<IPlugIn> _mockPlugIn;
         private readonly Mock<IRuntimeDeviceUpdateHandler> _mockRuntimeDeviceUpdateHandler;
-        private readonly Mock<IServiceProvider> _mockServiceProvider;
-        private readonly Mock<IServiceScope> _mockServiceScope;
-        private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
         public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
@@ -65,9 +62,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockChildObservableListDevices = new Mock<IChildObservableList<IPlugIn, IDevice>>();
             _mockObservableListParameters = new Mock<IChildObservableList<IDevice, IBaseParameter>>();
             _mockPlugIn = new Mock<IPlugIn>();
-            _mockServiceProvider = new Mock<IServiceProvider>();
-            _mockServiceScope = new Mock<IServiceScope>();
-            _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
 
             _mockRuntimeDeviceUpdateHandler = new Mock<IRuntimeDeviceUpdateHandler>();
 

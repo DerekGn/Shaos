@@ -52,6 +52,12 @@ namespace Shaos.Services.Runtime.Host
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IWorkItemQueue _workItemQueue;
 
+        /// <summary>
+        /// Create an instance of a <see cref="RuntimeDeviceUpdateHandler"/>
+        /// </summary>
+        /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
+        /// <param name="serviceScopeFactory">A <see cref="_serviceScopeFactory"/> instance</param>
+        /// <param name="workItemQueue">The <see cref="IWorkItemQueue"/> instance</param>
         public RuntimeDeviceUpdateHandler(ILogger<RuntimeDeviceUpdateHandler> logger,
                                           IServiceScopeFactory serviceScopeFactory,
                                           IWorkItemQueue workItemQueue)
