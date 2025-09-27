@@ -26,7 +26,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository;
-using Shaos.Repository.Models.Devices;
+using Shaos.Repository.Models;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Processing;
 using Shaos.Services.Runtime.Host;
@@ -34,6 +34,10 @@ using Xunit;
 using Xunit.Abstractions;
 
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
+using ModelDevice = Shaos.Repository.Models.Devices.Device;
+
+using SdkBoolParameter = Shaos.Sdk.Devices.Parameters.BoolParameter;
+using SdkDevice = Shaos.Sdk.Devices.Device;
 
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
@@ -64,18 +68,46 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SetupServiceScopeFactory();
 
             MockRepository
-                .Setup(_ => _.GetByIdAsync<Device>(It.IsAny<int>(),
+                .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
                                                                It.IsAny<bool>(),
                                                                It.IsAny<List<string>>(),
                                                                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new Device());
+                .ReturnsAsync(new ModelDevice());
 
-            BoolParameter boolParameter = new(false, "name", "units", ParameterType.Level);
+            SdkBoolParameter boolParameter = new(false, "name", "units", ParameterType.Level);
 
             await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(1, [boolParameter]);
 
             MockRepository
                .Verify(_ => _.AddAsync(It.IsAny<ModelBaseParameter>(),
+                                       It.IsAny<CancellationToken>()));
+
+            MockRepository
+                .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestCreateDevicesAsync()
+        {
+            SetupServiceScopeFactory();
+
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PlugInInstance()
+                {
+                    Description = "description",
+                    Name = "Name"
+                });
+
+            var device = new SdkDevice("name", Sdk.Devices.DeviceFeatures.None, []);
+
+            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(1, [device]);
+
+            MockRepository
+               .Verify(_ => _.AddAsync(It.IsAny<ModelDevice>(),
                                        It.IsAny<CancellationToken>()));
 
             MockRepository
