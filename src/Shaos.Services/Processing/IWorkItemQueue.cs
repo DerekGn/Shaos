@@ -24,12 +24,27 @@
 
 namespace Shaos.Services.Processing
 {
+    /// <summary>
+    /// A work item queue
+    /// </summary>
     public interface IWorkItemQueue
     {
+        /// <summary>
+        /// The number of work items queued for processing
+        /// </summary>
         int Count { get; }
 
+        /// <summary>
+        /// Dequeue a work item for asynchronous processing.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken = default);
 
-        Task QueueAsync(Func<CancellationToken, Task> workItem);
+        /// <summary>
+        /// Queue a work item for asynchronous processing.
+        /// </summary>
+        /// <param name="workItem"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task QueueAsync(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken = default);
     }
 }
