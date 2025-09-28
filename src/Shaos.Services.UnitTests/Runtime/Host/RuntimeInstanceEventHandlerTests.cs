@@ -107,7 +107,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 BatteryLevel = 1
             });
 
-            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceBatteryLevelUpdateAsync(It.IsAny<IDevice>(),
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceBatteryLevelUpdateAsync(It.IsAny<int>(),
                                                                                         It.IsAny<uint>(),
                                                                                         It.IsAny<DateTime>()));
         }
@@ -183,7 +183,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                            new SdkDevice(Name, DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, [])
                        ]));
 
-            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeleteDevicesAsync(It.IsAny<IList<IDevice>>()));
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeleteDevicesAsync(It.IsAny<IEnumerable<int>>()));
         }
 
         [Fact]
@@ -235,7 +235,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _mockRuntimeDeviceUpdateHandler
                 .Verify(_ => _
-                .DeleteDeviceParametersAsync(It.IsAny<IList<IBaseParameter>>()));
+                .DeleteDeviceParametersAsync(It.IsAny<IEnumerable<int>>()));
         }
 
         [Fact]
@@ -313,7 +313,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 SignalLevel = -1
             });
 
-            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceSignalLevelUpdateAsync(It.IsAny<IDevice>(),
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceSignalLevelUpdateAsync(It.IsAny<int>(),
                                                                                        It.IsAny<int>(),
                                                                                        It.IsAny<DateTime>()));
         }

@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -91,18 +92,22 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
+            PlugInInstance plugInInstance = new()
+            {
+                Description = "description",
+                Name = "Name"
+            };
+
             MockRepository
                 .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
                                                                It.IsAny<bool>(),
                                                                It.IsAny<List<string>>(),
                                                                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PlugInInstance()
-                {
-                    Description = "description",
-                    Name = "Name"
-                });
+                .ReturnsAsync(plugInInstance);
 
-            var device = new SdkDevice("name", Sdk.Devices.DeviceFeatures.None, []);
+            var parameter = new BoolParameter(true, "name", "units", ParameterType.Level);
+
+            var device = new SdkDevice("name", Sdk.Devices.DeviceFeatures.None, [parameter]);
 
             await _runtimeDeviceUpdateHandler.CreateDevicesAsync(1, [device]);
 
@@ -112,6 +117,76 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             MockRepository
                 .Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestDeleteDeviceParametersAsync()
+        {
+            SetupServiceScopeFactory();
+
+            await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync([1]);
+
+            MockRepository.Verify(_ => _.DeleteAsync<ModelBaseParameter>(It.IsAny<int>(), It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestDeleteDevicesAsync()
+        {
+            SetupServiceScopeFactory();
+            
+            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync([1]);
+
+            MockRepository.Verify(_ => _.DeleteAsync<ModelDevice>(It.IsAny<int>(), It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestDeviceBatteryLevelUpdateAsync()
+        {
+            SetupServiceScopeFactory();
+
+            await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(1, 10, DateTime.UtcNow);
+
+            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestDeviceSignalLevelUpdateAsync()
+        {
+            SetupServiceScopeFactory();
+
+            await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(1, -10, DateTime.UtcNow);
+
+            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveParameterChangeAsyncInt()
+        {
+            SetupServiceScopeFactory();
+
+            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, -10, DateTime.UtcNow);
+
+            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveParameterChangeAsyncBool()
+        {
+            SetupServiceScopeFactory();
+
+            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, true, DateTime.UtcNow);
+
+            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveParameterChangeAsyncFloat()
+        {
+            SetupServiceScopeFactory();
+
+            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, 5.0f, DateTime.UtcNow);
+
+            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         private void SetupServiceScopeFactory()

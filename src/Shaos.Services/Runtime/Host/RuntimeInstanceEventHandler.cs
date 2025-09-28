@@ -293,7 +293,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device,
+                await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device.Id,
                                                                                 e.BatteryLevel,
                                                                                 e.TimeStamp);
             });
@@ -304,7 +304,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device,
+                await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device.Id,
                                                                                e.SignalLevel,
                                                                                e.TimeStamp);
             });
@@ -333,12 +333,12 @@ namespace Shaos.Services.Runtime.Host
                                 break;
 
                             case ListChangedAction.Reset:
-                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items);
+                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
 
                                 break;
 
                             case ListChangedAction.Remove:
-                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items);
+                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
 
                                 break;
                         }
@@ -376,13 +376,13 @@ namespace Shaos.Services.Runtime.Host
                             case ListChangedAction.Reset:
                                 DetachParameters(e.Items);
 
-                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items);
+                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
                                 break;
 
                             case ListChangedAction.Remove:
                                 DetachParameters(e.Items);
 
-                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items);
+                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
                                 break;
                         }
                     }

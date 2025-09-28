@@ -36,9 +36,9 @@ namespace Shaos.Services.Runtime.Host
         /// <summary>
         /// Create a <see cref="Device"/> <see cref="BaseParameter"/> instance.
         /// </summary>
-        /// <param name="id">The <see cref="Device"/> identifier.</param>
+        /// <param name="id">The <see cref="Device"/> instance identifier.</param>
         /// <param name="parameters">The <see cref="Device"/> <see cref="BaseParameter"/> instances.</param>
-        Task CreateDeviceParametersAsync(int id, IList<IBaseParameter> parameters);
+        Task CreateDeviceParametersAsync(int id, IEnumerable<IBaseParameter> parameters);
 
         /// <summary>
         /// Create a list of <see cref="Device"/> instances.
@@ -46,35 +46,35 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The <see cref="PlugInInstance"/> identifier.</param>
         /// <param name="devices">The set of <see cref="Device"/> to create.</param>
         /// <returns></returns>
-        Task CreateDevicesAsync(int id, IList<IDevice> devices);
+        Task CreateDevicesAsync(int id, IEnumerable<IDevice> devices);
 
         /// <summary>
         /// Delete a set of <see cref="IBaseParameter"/> instances.
         /// </summary>
-        /// <param name="items">The set of <see cref="IBaseParameter"/> instances to delete the <see cref="BaseParameter"/> instances.</param>
-        Task DeleteDeviceParametersAsync(IList<IBaseParameter> items);
+        /// <param name="parameterIds">The set of <see cref="IBaseParameter"/> instances identifiers to delete the <see cref="BaseParameter"/> instances.</param>
+        Task DeleteDeviceParametersAsync(IEnumerable<int> parameterIds);
 
         /// <summary>
         /// Delete a set of <see cref="IDevice"/> instances
         /// </summary>
-        /// <param name="items">The set of <see cref="IDevice"/> instances to delete the <see cref="Device"/> instances.</param>
-        Task DeleteDevicesAsync(IList<IDevice> items);
+        /// <param name="deviceIds">The set of <see cref="IDevice"/> instances identifiers to delete the <see cref="Device"/> instances.</param>
+        Task DeleteDevicesAsync(IEnumerable<int> deviceIds);
 
         /// <summary>
         /// Update a <see cref="IDevice"/> instance battery level.
         /// </summary>
-        /// <param name="device">The <see cref="IDevice"/> instance.</param>
+        /// <param name="id">The <see cref="IDevice"/> instance identifier.</param>
         /// <param name="level">The battery level</param>
         /// <param name="timestamp">The timestamp of the event</param>
-        Task DeviceBatteryLevelUpdateAsync(IDevice device, uint level, DateTime timestamp);
+        Task DeviceBatteryLevelUpdateAsync(int id, uint level, DateTime timestamp);
 
         /// <summary>
         /// Update a <see cref="IDevice"/> instance signal level.
         /// </summary>
-        /// <param name="device">The <see cref="IDevice"/> instance.</param>
+        /// <param name="id">The <see cref="IDevice"/> instance identifier.</param>
         /// <param name="level">The signal level</param>
         /// <param name="timestamp">The timestamp of the event</param>
-        Task DeviceSignalLevelUpdateAsync(IDevice device, int level, DateTime timestamp);
+        Task DeviceSignalLevelUpdateAsync(int id, int level, DateTime timestamp);
 
         /// <summary>
         /// Save a <see cref="BaseParameter"/>

@@ -69,7 +69,7 @@ namespace Shaos.Services.Runtime.Host
 
         /// <inheritdoc/>
         public async Task CreateDeviceParametersAsync(int id,
-                                                      IList<IBaseParameter> parameters)
+                                                      IEnumerable<IBaseParameter> parameters)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -105,7 +105,7 @@ namespace Shaos.Services.Runtime.Host
 
         /// <inheritdoc/>
         public async Task CreateDevicesAsync(int id,
-                                             IList<IDevice> devices)
+                                             IEnumerable<IDevice> devices)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -154,17 +154,16 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public async Task DeleteDeviceParametersAsync(IList<IBaseParameter> parameters)
+        public async Task DeleteDeviceParametersAsync(IEnumerable<int> parameterIds)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                foreach (var parameter in parameters)
+                foreach (var parameterId in parameterIds)
                 {
-                    _logger.LogInformation("Deleting Parameter Id: [{Id}] Name: [{Name}]",
-                                           parameter.Id,
-                                           parameter.Name);
+                    _logger.LogInformation("Deleting Parameter Id: [{Id}]",
+                                           parameterId);
 
-                    await repository.DeleteAsync<ModelBaseParameter>(parameter.Id);
+                    await repository.DeleteAsync<ModelBaseParameter>(parameterId);
                 }
 
                 await repository.SaveChangesAsync();
@@ -172,17 +171,16 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public async Task DeleteDevicesAsync(IList<IDevice> devices)
+        public async Task DeleteDevicesAsync(IEnumerable<int> deviceIds)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                foreach (var device in devices)
+                foreach (var deviceId in deviceIds)
                 {
-                    _logger.LogInformation("Deleting Device Id: [{Id}] Name: [{Name}]",
-                                           device.Id,
-                                           device.Name);
+                    _logger.LogInformation("Deleting Device Id: [{Id}]",
+                                           deviceId);
 
-                    await repository.DeleteAsync<ModelDevice>(device.Id);
+                    await repository.DeleteAsync<ModelDevice>(deviceId);
                 }
 
                 await repository.SaveChangesAsync();
@@ -190,13 +188,13 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public async Task DeviceBatteryLevelUpdateAsync(IDevice device,
+        public async Task DeviceBatteryLevelUpdateAsync(int id,
                                                         uint level,
                                                         DateTime timeStamp)
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await UpdateDeviceAsync(device, (device) =>
+                await UpdateDeviceAsync(id, (device) =>
                 {
                     device.UpdateBatteryLevel(level,
                                               timeStamp);
@@ -205,43 +203,16 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public async Task DeviceSignalLevelUpdateAsync(IDevice device,
+        public async Task DeviceSignalLevelUpdateAsync(int id,
                                                        int level,
                                                        DateTime timeStamp)
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await UpdateDeviceAsync(device, (device) =>
+                await UpdateDeviceAsync(id, (device) =>
                 {
                     device.UpdateSignalLevel(level,
                                              timeStamp);
-                });
-            });
-        }
-
-        /// <inheritdoc/>
-        public async Task SaveParameterChangeAsync<T>(IBaseParameter parameter,
-                                                      Action<T> operation) where T : BaseEntity
-        {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
-            {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
-                {
-                    var modelParameter = await repository.GetByIdAsync<T>(parameter.Id,
-                                                                          false);
-
-                    if (modelParameter != null)
-                    {
-                        operation(modelParameter);
-
-                        await repository.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]",
-                                           typeof(T).Name,
-                                           parameter.Id);
-                    }
                 });
             });
         }
@@ -421,14 +392,14 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task UpdateDeviceAsync(IDevice device,
+        internal async Task UpdateDeviceAsync(int id,
                                              Action<ModelDevice> updateOperation)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id,
-                                                                                false,
-                                                                                [nameof(ModelDevice.Parameters)]);
+                var modelDevice = await repository.GetByIdAsync<ModelDevice>(id,
+                                                                            false,
+                                                                            [nameof(ModelDevice.Parameters)]);
 
                 if (modelDevice != null)
                 {
@@ -439,7 +410,7 @@ namespace Shaos.Services.Runtime.Host
                 else
                 {
                     _logger.LogError("Unable to resolve Device for [{Id}]",
-                                     device.Id);
+                                    id);
                 }
             });
         }
