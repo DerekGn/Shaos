@@ -194,11 +194,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await UpdateDeviceAsync(id, (device) =>
-                {
-                    device.UpdateBatteryLevel(level,
-                                              timeStamp);
-                });
+                await UpdateDeviceBatteryLevelAsync(id, level, timeStamp);
             });
         }
 
@@ -209,11 +205,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await UpdateDeviceAsync(id, (device) =>
-                {
-                    device.UpdateSignalLevel(level,
-                                             timeStamp);
-                });
+                await UpdateDeviceSignalLevelAsync(id, level, timeStamp);
             });
         }
 
@@ -224,28 +216,10 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
-                {
-                    var parameter = await repository.GetByIdAsync<ModelIntParameter>(id, false);
-
-                    if (parameter != null)
-                    {
-                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                         parameter.Id,
-                                         parameter.Name,
-                                         value);
-
-                        parameter.Value = value;
-
-                        parameter.Values.Add(new IntParameterValue()
-                        {
-                            Parameter = parameter,
-                            ParameterId = parameter.Id,
-                            TimeStamp = timeStamp,
-                            Value = value
-                        });
-                    }
-                });
+                await SaveParameterChangeAsync(id,
+                                                  value,
+                                                  timeStamp,
+                                                  cancellationToken);
             });
         }
 
@@ -256,28 +230,10 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
-                {
-                    var parameter = await repository.GetByIdAsync<ModelStringParameter>(id, false);
-
-                    if (parameter != null)
-                    {
-                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                         parameter.Id,
-                                         parameter.Name,
-                                         value);
-
-                        parameter.Value = value;
-
-                        parameter.Values.Add(new StringParameterValue()
-                        {
-                            Parameter = parameter,
-                            ParameterId = parameter.Id,
-                            TimeStamp = timeStamp,
-                            Value = value
-                        });
-                    }
-                });
+                await SaveParameterChangeAsync(id,
+                                               value,
+                                               timeStamp,
+                                               cancellationToken);
             });
         }
 
@@ -288,28 +244,10 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
-                {
-                    var parameter = await repository.GetByIdAsync<ModelFloatParameter>(id, false);
-
-                    if (parameter != null)
-                    {
-                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                         parameter.Id,
-                                         parameter.Name,
-                                         value);
-
-                        parameter.Value = value;
-
-                        parameter.Values.Add(new FloatParameterValue()
-                        {
-                            Parameter = parameter,
-                            ParameterId = parameter.Id,
-                            TimeStamp = timeStamp,
-                            Value = value
-                        });
-                    }
-                });
+                await SaveParameterChangeAsync(id,
+                                               value,
+                                               timeStamp,
+                                               cancellationToken);
             });
         }
 
@@ -320,28 +258,10 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
-                {
-                    var parameter = await repository.GetByIdAsync<ModelBoolParameter>(id, false);
-
-                    if (parameter != null)
-                    {
-                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                         parameter.Id,
-                                         parameter.Name,
-                                         value);
-
-                        parameter.Value = value;
-
-                        parameter.Values.Add(new BoolParameterValue()
-                        {
-                            Parameter = parameter,
-                            ParameterId = parameter.Id,
-                            TimeStamp = timeStamp,
-                            Value = value
-                        });
-                    }
-                });
+                await SaveParameterChangeAsync(id,
+                                               value,
+                                               timeStamp,
+                                               cancellationToken);
             });
         }
 
@@ -352,47 +272,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.QueueAsync(async (cancellationToken) =>
             {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
-                {
-                    var parameter = await repository.GetByIdAsync<ModelUIntParameter>(id, false);
-
-                    if (parameter != null)
-                    {
-                        _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                         parameter.Id,
-                                         parameter.Name,
-                                         value);
-
-                        parameter.Value = value;
-
-                        parameter.Values.Add(new UIntParameterValue()
-                        {
-                            Parameter = parameter,
-                            ParameterId = parameter.Id,
-                            TimeStamp = timeStamp,
-                            Value = value
-                        });
-                    }
-                });
+                await SaveParameterChangeAsync(id, value, timeStamp, cancellationToken);
             });
         }
 
-        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
-        {
-            try
-            {
-                using var scope = _serviceScopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
-
-                await operation(repository);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled exception occurred");
-            }
-        }
-
-        internal async Task UpdateDeviceAsync(int id,
+        private async Task UpdateDeviceAsync(int id,
                                              Action<ModelDevice> updateOperation)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
@@ -412,6 +296,218 @@ namespace Shaos.Services.Runtime.Host
                     _logger.LogError("Unable to resolve Device for [{Id}]",
                                     id);
                 }
+            });
+        }
+
+        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
+        {
+            try
+            {
+                using var scope = _serviceScopeFactory.CreateScope();
+                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
+
+                await operation(repository);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception occurred");
+            }
+        }
+
+        internal async Task SaveParameterChangeAsync(int id,
+                                                     uint value,
+                                                     DateTime timeStamp,
+                                                     CancellationToken cancellationToken)
+        {
+            await ExecuteRepositoryOperationAsync(async (repository) =>
+            {
+                var parameter = await repository.GetByIdAsync<ModelUIntParameter>(id, false);
+
+                if (parameter != null)
+                {
+                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                     parameter.Id,
+                                     parameter.Name,
+                                     value);
+
+                    parameter.Value = value;
+
+                    parameter.Values.Add(new UIntParameterValue()
+                    {
+                        Parameter = parameter,
+                        ParameterId = parameter.Id,
+                        TimeStamp = timeStamp,
+                        Value = value
+                    });
+
+                    await repository.SaveChangesAsync(cancellationToken);
+                }
+                else
+                {
+                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                }
+            });
+        }
+
+        internal async Task SaveParameterChangeAsync(int id,
+                                                     bool value,
+                                                     DateTime timeStamp,
+                                                     CancellationToken cancellationToken = default)
+        {
+            await ExecuteRepositoryOperationAsync(async (repository) =>
+            {
+                var parameter = await repository.GetByIdAsync<ModelBoolParameter>(id, false);
+
+                if (parameter != null)
+                {
+                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                     parameter.Id,
+                                     parameter.Name,
+                                     value);
+
+                    parameter.Value = value;
+
+                    parameter.Values.Add(new BoolParameterValue()
+                    {
+                        Parameter = parameter,
+                        ParameterId = parameter.Id,
+                        TimeStamp = timeStamp,
+                        Value = value
+                    });
+
+                    await repository.SaveChangesAsync(cancellationToken);
+                }
+                else
+                {
+                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                }
+            });
+        }
+
+        internal async Task SaveParameterChangeAsync(int id,
+                                                     float value,
+                                                     DateTime timeStamp,
+                                                     CancellationToken cancellationToken = default)
+        {
+            await ExecuteRepositoryOperationAsync(async (repository) =>
+            {
+                var parameter = await repository.GetByIdAsync<ModelFloatParameter>(id, false);
+
+                if (parameter != null)
+                {
+                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                     parameter.Id,
+                                     parameter.Name,
+                                     value);
+
+                    parameter.Value = value;
+
+                    parameter.Values.Add(new FloatParameterValue()
+                    {
+                        Parameter = parameter,
+                        ParameterId = parameter.Id,
+                        TimeStamp = timeStamp,
+                        Value = value
+                    });
+
+                    await repository.SaveChangesAsync(cancellationToken);
+                }
+                else
+                {
+                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                }
+            });
+        }
+
+        internal async Task SaveParameterChangeAsync(int id,
+                                                     string value,
+                                                     DateTime timeStamp,
+                                                     CancellationToken cancellationToken = default)
+        {
+            await ExecuteRepositoryOperationAsync(async (repository) =>
+            {
+                var parameter = await repository.GetByIdAsync<ModelStringParameter>(id, false);
+
+                if (parameter != null)
+                {
+                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                     parameter.Id,
+                                     parameter.Name,
+                                     value);
+
+                    parameter.Value = value;
+
+                    parameter.Values.Add(new StringParameterValue()
+                    {
+                        Parameter = parameter,
+                        ParameterId = parameter.Id,
+                        TimeStamp = timeStamp,
+                        Value = value
+                    });
+
+                    await repository.SaveChangesAsync(cancellationToken);
+                }
+                else
+                {
+                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                }
+            });
+        }
+
+        internal async Task SaveParameterChangeAsync(int id,
+                                                     int value,
+                                                     DateTime timeStamp,
+                                                     CancellationToken cancellationToken = default)
+        {
+            await ExecuteRepositoryOperationAsync(async (repository) =>
+            {
+                var parameter = await repository.GetByIdAsync<ModelIntParameter>(id, false);
+
+                if (parameter != null)
+                {
+                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
+                                     parameter.Id,
+                                     parameter.Name,
+                                     value);
+
+                    parameter.Value = value;
+
+                    parameter.Values.Add(new IntParameterValue()
+                    {
+                        Parameter = parameter,
+                        ParameterId = parameter.Id,
+                        TimeStamp = timeStamp,
+                        Value = value
+                    });
+
+                    await repository.SaveChangesAsync(cancellationToken);
+                }
+                else
+                {
+                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                }
+            });
+        }
+
+        internal async Task UpdateDeviceBatteryLevelAsync(int id,
+                                                          uint level,
+                                                          DateTime timeStamp)
+        {
+            await UpdateDeviceAsync(id, (device) =>
+            {
+                device.UpdateBatteryLevel(level,
+                                          timeStamp);
+            });
+        }
+
+        internal async Task UpdateDeviceSignalLevelAsync(int id,
+                                                         int level,
+                                                         DateTime timeStamp)
+        {
+            await UpdateDeviceAsync(id, (device) =>
+            {
+                device.UpdateSignalLevel(level,
+                                         timeStamp);
             });
         }
     }
