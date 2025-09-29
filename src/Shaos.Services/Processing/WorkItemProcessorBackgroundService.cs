@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Shaos.Services.Hosting;
 using System.Diagnostics;
 
 namespace Shaos.Services.Processing
@@ -31,9 +32,8 @@ namespace Shaos.Services.Processing
     /// <summary>
     /// A <see cref="BackgroundService"/> implementation for the asynchronous execution of work items
     /// </summary>
-    public class WorkItemProcessorBackgroundService : BackgroundService
+    public class WorkItemProcessorBackgroundService : BaseBackgroundService
     {
-        private readonly ILogger<WorkItemProcessorBackgroundService> _logger;
         private readonly IWorkItemQueue _workItemQueue;
         private readonly Stopwatch _stopwatch;
 
@@ -43,41 +43,26 @@ namespace Shaos.Services.Processing
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="workItemQueue">The <see cref="WorkItemQueue"/> to dequeue work items from</param>
         public WorkItemProcessorBackgroundService(ILogger<WorkItemProcessorBackgroundService> logger,
-                                                  IWorkItemQueue workItemQueue)
+                                                  IWorkItemQueue workItemQueue) : base(logger)
         {
-            _logger = logger;
             _workItemQueue = workItemQueue;
 
             _stopwatch = Stopwatch.StartNew();
         }
 
         /// <inheritdoc/>
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteInternalAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    Func<CancellationToken, Task>? workItem =
+            Func<CancellationToken, Task>? workItem =
                         await _workItemQueue.DequeueAsync(stoppingToken);
 
-                    _stopwatch.Restart();
-                    await workItem(stoppingToken);
-                    _stopwatch.Stop();
+            _stopwatch.Restart();
+            await workItem(stoppingToken);
+            _stopwatch.Stop();
 
-                    _logger.LogDebug("Executed work item Elapsed: [{Elapsed}] remaining WorkItems: [{Count}]",
-                                     _stopwatch.Elapsed,
-                                     _workItemQueue.Count);
-                }
-                catch (OperationCanceledException)
-                {
-                    _logger.LogError("Background task cancelled");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error occurred executing task work item.");
-                }
-            }
+            Logger.LogDebug("Executed work item Elapsed: [{Elapsed}] remaining WorkItems: [{Count}]",
+                            _stopwatch.Elapsed,
+                            _workItemQueue.Count);
         }
     }
 }

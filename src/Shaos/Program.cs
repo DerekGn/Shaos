@@ -36,6 +36,7 @@ using Shaos.Hosting;
 using Shaos.Hubs;
 using Shaos.Repository;
 using Shaos.Services;
+using Shaos.Services.Eventing;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
 using Shaos.Services.Processing;
@@ -181,6 +182,7 @@ namespace Shaos
             builder.Services.AddScoped<IRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
+            builder.Services.AddSingleton<IDeviceEventQueue>(InitDeviceEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IDeviceEventSubscriber, DeviceEventSubscriber>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
@@ -189,7 +191,7 @@ namespace Shaos
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
-            builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItem(builder.Configuration));
+            builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItemQueue(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
@@ -242,9 +244,19 @@ namespace Shaos
             app.Run();
         }
 
-        private static WorkItemQueue InitWorkItem(ConfigurationManager configuration)
+        private static DeviceEventQueue InitDeviceEventQueue(ConfigurationManager configuration)
         {
-            if (!int.TryParse(configuration["QueueCapacity"], out var queueCapacity))
+            if (!int.TryParse(configuration["DeviceEventQueueCapacity"], out var queueCapacity))
+            {
+                queueCapacity = 100;
+            }
+
+            return new DeviceEventQueue(queueCapacity);
+        }
+
+        private static WorkItemQueue InitWorkItemQueue(ConfigurationManager configuration)
+        {
+            if (!int.TryParse(configuration["WorkItemQueueCapacity"], out var queueCapacity))
             {
                 queueCapacity = 100;
             }

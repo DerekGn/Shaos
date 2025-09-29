@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Critical Code Smell", "S1215:\"GC.Collect\" should not be called", Justification = "<Pending>", Scope = "member", Target = "~M:Shaos.Services.Runtime.UnloadingWeakReference`1.Dispose(System.Boolean)")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services")]
+[assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.Eventing")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.Exceptions")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.Extensions")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.IO")]
@@ -20,3 +21,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.Runtime.Validation")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.SystemInformation")]
 [assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.Validation")]
+[assembly: SuppressMessage("Naming", "VSSpell001:Spell Check", Justification = "<Pending>", Scope = "namespace", Target = "~N:Shaos.Services.Hosting")]
