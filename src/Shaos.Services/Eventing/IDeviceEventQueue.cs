@@ -35,18 +35,18 @@ namespace Shaos.Services.Eventing
         int Count { get; }
 
         /// <summary>
-        /// Dequeue a <see cref="BaseEvent"/> instance.
+        /// Dequeue a <see cref="BaseDeviceEvent"/> instance.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>A dequeued <see cref="BaseEvent"/></returns>
-        Task<BaseEvent> DequeueAsync(CancellationToken cancellationToken = default);
+        /// <returns>A dequeued <see cref="BaseDeviceEvent"/></returns>
+        Task<BaseDeviceEvent> DequeueAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Enqueue a <see cref="BaseEvent"/> instance.
+        /// Enqueue a <see cref="BaseDeviceEvent"/> instance.
         /// </summary>
-        /// <param name="event">The <see cref="BaseEvent"/> to enqueue.</param>
+        /// <param name="event">The <see cref="BaseDeviceEvent"/> to enqueue.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task EnqueueAsync(BaseEvent @event,
+        Task EnqueueAsync(BaseDeviceEvent @event,
                           CancellationToken cancellationToken = default);
     }
 }

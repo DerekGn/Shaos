@@ -22,46 +22,20 @@
 * SOFTWARE.
 */
 
-using System.Threading.Channels;
-
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The device event queue
+    /// The device subscription state
     /// </summary>
-    public class DeviceEventQueue : IDeviceEventQueue
+    public enum DeviceSubscriptionState
     {
-        private readonly Channel<BaseDeviceEvent> _queue;
-
         /// <summary>
-        /// Create an instance of a <see cref="DeviceEventQueue"/>
+        /// Subscribe to a device parameter
         /// </summary>
-        /// <param name="capacity">The event queue capacity</param>
-        public DeviceEventQueue(int capacity)
-        {
-            BoundedChannelOptions options = new(capacity)
-            {
-                FullMode = BoundedChannelFullMode.Wait
-            };
-
-            _queue = Channel.CreateBounded<BaseDeviceEvent>(options);
-        }
-
-        /// <inheritdoc/>
-        public int Count => _queue.Reader.Count;
-
-        /// <inheritdoc/>
-        public async Task<BaseDeviceEvent> DequeueAsync(CancellationToken cancellationToken = default)
-        {
-            return await _queue.Reader.ReadAsync(cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public async Task EnqueueAsync(BaseDeviceEvent @event,
-                                       CancellationToken cancellationToken = default)
-        {
-            await _queue.Writer.WriteAsync(@event,
-                                           cancellationToken);
-        }
+        Subscribe,
+        /// <summary>
+        /// Unsubscribe from the device parameter
+        /// </summary>
+        Unsubscribe
     }
 }

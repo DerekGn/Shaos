@@ -24,7 +24,14 @@
 
 namespace Shaos.Services.Eventing
 {
-    public abstract class BaseEvent
+    /// <summary>
+    /// The base device event
+    /// </summary>
+    public abstract record BaseDeviceEvent
     {
+        /// <summary>
+        /// The device parameter identifier
+        /// </summary>
+        public int ParameterId { get; init; }
     }
 }

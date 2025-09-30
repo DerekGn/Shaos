@@ -45,6 +45,20 @@ namespace Shaos.Hosting
         protected override async Task ExecuteInternalAsync(CancellationToken stoppingToken)
         {
             var @event = await _deviceEventQueue.DequeueAsync(stoppingToken);
+
+            ProcessEvent(@event);
+        }
+
+        private void ProcessEvent(BaseDeviceEvent @event)
+        {
+            var type = @event.GetType();
+
+            switch (type)
+            {
+                //case Type _ when type == typeof(BoolParameter):
+
+                //    break;
+            }
         }
     }
 }
