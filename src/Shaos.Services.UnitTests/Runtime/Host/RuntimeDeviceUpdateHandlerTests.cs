@@ -155,7 +155,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(1, 10, DateTime.UtcNow);
 
-            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(1, -10, DateTime.UtcNow);
 
-            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, true, DateTime.UtcNow);
 
-            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -185,7 +185,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, 5.0f, DateTime.UtcNow);
 
-            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -195,7 +195,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, -10, DateTime.UtcNow);
 
-            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -347,7 +347,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                                        "name",
                                                                        DateTime.UtcNow);
 
-            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(),
+            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(),
                                                         It.IsAny<CancellationToken>()));
         }
 
@@ -358,7 +358,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, 10u, DateTime.UtcNow);
 
-            _mockWorkItemQueue.Verify(_ => _.QueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
+            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]

@@ -192,7 +192,7 @@ namespace Shaos.Services.Runtime.Host
                                                         uint level,
                                                         DateTime timeStamp)
         {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await UpdateDeviceBatteryLevelAsync(id, level, timeStamp);
             });
@@ -203,7 +203,7 @@ namespace Shaos.Services.Runtime.Host
                                                        int level,
                                                        DateTime timeStamp)
         {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await UpdateDeviceSignalLevelAsync(id, level, timeStamp);
             });
@@ -214,7 +214,7 @@ namespace Shaos.Services.Runtime.Host
                                                    int value,
                                                    DateTime timeStamp)
         {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                   value,
@@ -228,7 +228,7 @@ namespace Shaos.Services.Runtime.Host
                                                    string value,
                                                    DateTime timeStamp)
         {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                value,
@@ -242,7 +242,7 @@ namespace Shaos.Services.Runtime.Host
                                                    float value,
                                                    DateTime timeStamp)
         {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                value,
@@ -256,7 +256,7 @@ namespace Shaos.Services.Runtime.Host
                                                    bool value,
                                                    DateTime timeStamp)
         {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                value,
@@ -270,7 +270,7 @@ namespace Shaos.Services.Runtime.Host
                                                    uint value,
                                                    DateTime timeStamp)
         {
-            await _workItemQueue.QueueAsync(async (cancellationToken) =>
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id, value, timeStamp, cancellationToken);
             });

@@ -60,6 +60,8 @@ namespace Shaos.Services.Eventing
         public async Task EnqueueAsync(BaseDeviceEvent @event,
                                        CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(@event);
+
             await _queue.Writer.WriteAsync(@event,
                                            cancellationToken);
         }

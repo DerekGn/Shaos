@@ -22,51 +22,43 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Eventing;
+using Shaos.Services.Processing;
 using Xunit;
 
-namespace Shaos.Services.UnitTests.Eventing
+namespace Shaos.Services.UnitTests.Processing
 {
-    public class DeviceEventQueueTests
+    public class WorkItemQueueTests
     {
-        private readonly DeviceEventQueue _deviceEventQueue;
+        private readonly WorkItemQueue _workItemQueue;
 
-        public DeviceEventQueueTests()
+        public WorkItemQueueTests()
         {
-            _deviceEventQueue = new DeviceEventQueue(10);
-        }
-
-        [Fact]
-        public async Task TestEnqueueAsync()
-        {
-            DeviceParameterSubscriptionEvent @event = new()
-            {
-                ParameterId = 1,
-                State = DeviceSubscriptionState.Subscribe,
-                UserIdentifier = "user"
-            };
-
-            await _deviceEventQueue.EnqueueAsync(@event);
-
-            Assert.Equal(1, _deviceEventQueue.Count);
+            _workItemQueue = new WorkItemQueue(10);
         }
 
         [Fact]
         public async Task TestDequeueAsync()
         {
-            DeviceParameterSubscriptionEvent @event = new()
+            await _workItemQueue.EnqueueAsync((token) =>
             {
-                ParameterId = 1,
-                State = DeviceSubscriptionState.Subscribe,
-                UserIdentifier = "user"
-            };
+                return Task.CompletedTask;
+            });
 
-            await _deviceEventQueue.EnqueueAsync(@event);
-
-            var result = await _deviceEventQueue.DequeueAsync();
+            var result = await _workItemQueue.DequeueAsync();
 
             Assert.NotNull(result);
-            Assert.Equal(0, _deviceEventQueue.Count);
+            Assert.Equal(0, _workItemQueue.Count);
+        }
+
+        [Fact]
+        public async Task TestEnqueueAsync()
+        {
+            await _workItemQueue.EnqueueAsync((token) =>
+            {
+                return Task.CompletedTask;
+            });
+
+            Assert.Equal(1, _workItemQueue.Count);
         }
     }
 }

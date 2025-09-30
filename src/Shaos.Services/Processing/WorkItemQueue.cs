@@ -58,11 +58,11 @@ namespace Shaos.Services.Processing
         }
 
         /// <inheritdoc/>
-        public async Task QueueAsync(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken = default)
+        public async Task EnqueueAsync(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(workItem);
 
-            await _queue.Writer.WriteAsync(workItem);
+            await _queue.Writer.WriteAsync(workItem, cancellationToken);
         }
     }
 }

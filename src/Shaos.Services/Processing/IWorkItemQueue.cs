@@ -45,6 +45,6 @@ namespace Shaos.Services.Processing
         /// </summary>
         /// <param name="workItem"></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task QueueAsync(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken = default);
+        Task EnqueueAsync(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken = default);
     }
 }
