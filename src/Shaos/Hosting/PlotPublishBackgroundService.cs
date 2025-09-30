@@ -32,33 +32,84 @@ namespace Shaos.Hosting
     public class PlotPublishBackgroundService : BaseBackgroundService
     {
         private readonly IDeviceEventQueue _deviceEventQueue;
+        private readonly ILogger<PlotPublishBackgroundService> _logger;
         private readonly IHubContext<PlotHub, IPlotHub> _hubContext;
+        private readonly Dictionary<int, List<string>> _subscriptions;
 
         public PlotPublishBackgroundService(ILogger<PlotPublishBackgroundService> logger,
                                             IHubContext<PlotHub, IPlotHub> hubContext,
                                             IDeviceEventQueue deviceEventQueue) : base(logger)
         {
+            _logger = logger;
             _hubContext = hubContext;
             _deviceEventQueue = deviceEventQueue;
+            _subscriptions = new Dictionary<int, List<string>>();
         }
 
         protected override async Task ExecuteInternalAsync(CancellationToken stoppingToken)
         {
             var @event = await _deviceEventQueue.DequeueAsync(stoppingToken);
 
-            ProcessEvent(@event);
-        }
-
-        private void ProcessEvent(BaseDeviceEvent @event)
-        {
             var type = @event.GetType();
 
             switch (type)
             {
-                //case Type _ when type == typeof(BoolParameter):
-
-                //    break;
+                case Type _ when type == typeof(DeviceParameterSubscriptionEvent):
+                    HandleDeviceParameterSubscriptionEvent((DeviceParameterSubscriptionEvent)@event);
+                    break;
+                case Type _ when type == typeof(DeviceParameterUpdatedEvent<>):
+                    HandleDeviceParameterUpdatedEvent(@event);
+                    break;
             }
+        }
+
+        private void HandleDeviceParameterSubscriptionEvent(DeviceParameterSubscriptionEvent @event)
+        {
+            if(@event.State == DeviceSubscriptionState.Subscribe)
+            {
+                if (!_subscriptions.TryGetValue(@event.ParameterId, out List<string>? userIds))
+                {
+                    userIds = [];
+                    _subscriptions.Add(@event.ParameterId, userIds);
+                }
+
+                if (!userIds.Contains(@event.UserIdentifier))
+                {
+                    userIds.Add(@event.UserIdentifier);
+                }
+                else
+                {
+                    _logger.LogWarning("User subscription exists. Parameter: [{Id}] User: [{User}]",
+                                       @event.ParameterId,
+                                       @event.UserIdentifier);
+                }
+            }
+            else
+            {
+                if (_subscriptions.TryGetValue(@event.ParameterId, out List<string>? userIds))
+                {
+                    if (userIds.Contains(@event.UserIdentifier))
+                    {
+                        userIds.Remove(@event.UserIdentifier);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("User subscription does not exist. Parameter: [{Id}] User: [{User}]",
+                                           @event.ParameterId,
+                                           @event.UserIdentifier);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Parameter subscription does not exist. Parameter: [{Id}] User: [{User}]",
+                                       @event.ParameterId,
+                                       @event.UserIdentifier);
+                }
+            }
+        }
+
+        private void HandleDeviceParameterUpdatedEvent(BaseDeviceEvent @event)
+        {
         }
     }
 }
