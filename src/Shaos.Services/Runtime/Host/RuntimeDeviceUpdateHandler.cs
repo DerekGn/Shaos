@@ -29,6 +29,7 @@ using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
+using Shaos.Services.Eventing;
 using Shaos.Services.Extensions;
 using Shaos.Services.Processing;
 
@@ -50,6 +51,7 @@ namespace Shaos.Services.Runtime.Host
     {
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly IWorkItemQueue _workItemQueue;
 
         /// <summary>
@@ -60,11 +62,15 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="workItemQueue">The <see cref="IWorkItemQueue"/> instance</param>
         public RuntimeDeviceUpdateHandler(ILogger<RuntimeDeviceUpdateHandler> logger,
                                           IServiceScopeFactory serviceScopeFactory,
+                                          IDeviceEventQueue deviceEventQueue,
                                           IWorkItemQueue workItemQueue)
         {
             _logger = logger;
             _serviceScopeFactory = serviceScopeFactory;
+            _deviceEventQueue = deviceEventQueue;
             _workItemQueue = workItemQueue;
+
+#warning TODO map device events
         }
 
         /// <inheritdoc/>
@@ -195,6 +201,8 @@ namespace Shaos.Services.Runtime.Host
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await UpdateDeviceBatteryLevelAsync(id, level, timeStamp);
+
+
             });
         }
 
