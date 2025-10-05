@@ -28,6 +28,7 @@ using Moq;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Sdk.Devices.Parameters;
+using Shaos.Services.Eventing;
 using Shaos.Services.Processing;
 using Shaos.Services.Runtime.Host;
 using Xunit;
@@ -46,6 +47,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeDeviceUpdateHandlerTests : BaseServiceTests
     {
+        private readonly Mock<IDeviceEventQueue> _mockDevicecEventQueue;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
@@ -54,13 +56,15 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         public RuntimeDeviceUpdateHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _mockWorkItemQueue = new Mock<IWorkItemQueue>();
+            _mockDevicecEventQueue = new Mock<IDeviceEventQueue>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
+            _mockWorkItemQueue = new Mock<IWorkItemQueue>();
 
             _runtimeDeviceUpdateHandler = new RuntimeDeviceUpdateHandler(LoggerFactory.CreateLogger<RuntimeDeviceUpdateHandler>(),
                                                                          _mockServiceScopeFactory.Object,
+                                                                         _mockDevicecEventQueue.Object,
                                                                          _mockWorkItemQueue.Object);
         }
 
