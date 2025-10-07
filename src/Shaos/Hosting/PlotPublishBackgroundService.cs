@@ -32,8 +32,8 @@ namespace Shaos.Hosting
     public class PlotPublishBackgroundService : BaseBackgroundService
     {
         private readonly IDeviceEventQueue _deviceEventQueue;
-        private readonly ILogger<PlotPublishBackgroundService> _logger;
         private readonly IHubContext<PlotHub, IPlotHub> _hubContext;
+        private readonly ILogger<PlotPublishBackgroundService> _logger;
         private readonly Dictionary<int, List<string>> _subscriptions;
 
         public PlotPublishBackgroundService(ILogger<PlotPublishBackgroundService> logger,
@@ -58,7 +58,7 @@ namespace Shaos.Hosting
                     HandleDeviceParameterSubscriptionEvent((DeviceParameterSubscriptionEvent)@event);
                     break;
                 case Type _ when type == typeof(DeviceParameterUpdatedEvent<>):
-                    HandleDeviceParameterUpdatedEvent(@event);
+                    await HandleDeviceParameterUpdatedEventAsync(@event);
                     break;
             }
         }
@@ -108,8 +108,38 @@ namespace Shaos.Hosting
             }
         }
 
-        private void HandleDeviceParameterUpdatedEvent(BaseDeviceEvent @event)
+        private async Task HandleDeviceParameterUpdatedEventAsync(BaseDeviceEvent @event)
         {
+            if(_subscriptions.TryGetValue(@event.ParameterId, out var subscriptionUsers))
+            {
+                switch (@event)
+                {
+                    case DeviceParameterUpdatedEvent<bool> parameterValue:
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        break;
+
+                    case DeviceParameterUpdatedEvent<float> parameterValue:
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        break;
+
+                    case DeviceParameterUpdatedEvent<int> parameterValue:
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        break;
+
+                    case DeviceParameterUpdatedEvent<string> parameterValue:
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        break;
+
+                    case DeviceParameterUpdatedEvent<uint> parameterValue:
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        break;
+                }
+            }
+            else
+            {
+                _logger.LogWarning("No parameter subscriptions do not exist for parameter: [{ParameterId}]",
+                                   @event.ParameterId);
+            }
         }
     }
 }

@@ -49,9 +49,9 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
     {
+        private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly IWorkItemQueue _workItemQueue;
 
         /// <summary>
@@ -59,6 +59,7 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="serviceScopeFactory">A <see cref="_serviceScopeFactory"/> instance</param>
+        /// <param name="deviceEventQueue">The device event queue</param>
         /// <param name="workItemQueue">The <see cref="IWorkItemQueue"/> instance</param>
         public RuntimeDeviceUpdateHandler(ILogger<RuntimeDeviceUpdateHandler> logger,
                                           IServiceScopeFactory serviceScopeFactory,
@@ -69,8 +70,6 @@ namespace Shaos.Services.Runtime.Host
             _serviceScopeFactory = serviceScopeFactory;
             _deviceEventQueue = deviceEventQueue;
             _workItemQueue = workItemQueue;
-
-#warning TODO map device events
         }
 
         /// <inheritdoc/>
@@ -200,9 +199,14 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await UpdateDeviceBatteryLevelAsync(id, level, timeStamp);
+                await UpdateDeviceBatteryLevelAsync(id,
+                                                    level,
+                                                    timeStamp);
 
-
+                await PublishDeviceParameterEventAsync(id,
+                                                       level,
+                                                       timeStamp,
+                                                       cancellationToken);
             });
         }
 
@@ -214,6 +218,11 @@ namespace Shaos.Services.Runtime.Host
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await UpdateDeviceSignalLevelAsync(id, level, timeStamp);
+
+                await PublishDeviceParameterEventAsync(id,
+                                                      level,
+                                                      timeStamp,
+                                                      cancellationToken);
             });
         }
 
@@ -228,6 +237,11 @@ namespace Shaos.Services.Runtime.Host
                                                   value,
                                                   timeStamp,
                                                   cancellationToken);
+
+                await PublishDeviceParameterEventAsync(id,
+                                                      value,
+                                                      timeStamp,
+                                                      cancellationToken);
             });
         }
 
@@ -242,6 +256,11 @@ namespace Shaos.Services.Runtime.Host
                                                value,
                                                timeStamp,
                                                cancellationToken);
+
+                await PublishDeviceParameterEventAsync(id,
+                                                       value,
+                                                       timeStamp,
+                                                       cancellationToken);
             });
         }
 
@@ -256,6 +275,11 @@ namespace Shaos.Services.Runtime.Host
                                                value,
                                                timeStamp,
                                                cancellationToken);
+
+                await PublishDeviceParameterEventAsync(id,
+                                                      value,
+                                                      timeStamp,
+                                                      cancellationToken);
             });
         }
 
@@ -270,6 +294,11 @@ namespace Shaos.Services.Runtime.Host
                                                value,
                                                timeStamp,
                                                cancellationToken);
+
+                await PublishDeviceParameterEventAsync(id,
+                                                      value,
+                                                      timeStamp,
+                                                      cancellationToken);
             });
         }
 
@@ -281,45 +310,12 @@ namespace Shaos.Services.Runtime.Host
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id, value, timeStamp, cancellationToken);
+
+                await PublishDeviceParameterEventAsync(id,
+                                                      value,
+                                                      timeStamp,
+                                                      cancellationToken);
             });
-        }
-
-        private async Task UpdateDeviceAsync(int id,
-                                             Action<ModelDevice> updateOperation)
-        {
-            await ExecuteRepositoryOperationAsync(async (repository) =>
-            {
-                var modelDevice = await repository.GetByIdAsync<ModelDevice>(id,
-                                                                            false,
-                                                                            [nameof(ModelDevice.Parameters)]);
-
-                if (modelDevice != null)
-                {
-                    updateOperation(modelDevice);
-
-                    await repository.SaveChangesAsync();
-                }
-                else
-                {
-                    _logger.LogError("Unable to resolve Device for [{Id}]",
-                                    id);
-                }
-            });
-        }
-
-        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
-        {
-            try
-            {
-                using var scope = _serviceScopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
-
-                await operation(repository);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled exception occurred");
-            }
         }
 
         internal async Task SaveParameterChangeAsync(int id,
@@ -516,6 +512,56 @@ namespace Shaos.Services.Runtime.Host
             {
                 device.UpdateSignalLevel(level,
                                          timeStamp);
+            });
+        }
+
+        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
+        {
+            try
+            {
+                using var scope = _serviceScopeFactory.CreateScope();
+                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
+
+                await operation(repository);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception occurred");
+            }
+        }
+
+        private async Task PublishDeviceParameterEventAsync<T>(int id,
+                                                                                                                                                                               T level,
+                                                               DateTime timeStamp,
+                                                               CancellationToken cancellationToken)
+        {
+            await _deviceEventQueue.EnqueueAsync(new DeviceParameterUpdatedEvent<T>()
+            {
+                Value = level,
+                ParameterId = id,
+                Timestamp = timeStamp
+            }, cancellationToken);
+        }
+        private async Task UpdateDeviceAsync(int id,
+                                             Action<ModelDevice> updateOperation)
+        {
+            await ExecuteRepositoryOperationAsync(async (repository) =>
+            {
+                var modelDevice = await repository.GetByIdAsync<ModelDevice>(id,
+                                                                            false,
+                                                                            [nameof(ModelDevice.Parameters)]);
+
+                if (modelDevice != null)
+                {
+                    updateOperation(modelDevice);
+
+                    await repository.SaveChangesAsync();
+                }
+                else
+                {
+                    _logger.LogError("Unable to resolve Device for [{Id}]",
+                                    id);
+                }
             });
         }
     }

@@ -29,8 +29,8 @@ namespace Shaos.Hubs
 {
     public class PlotHub : Hub<IPlotHub>
     {
-        private readonly ILogger<PlotHub> _logger;
         private readonly IDeviceEventQueue _deviceEventQueue;
+        private readonly ILogger<PlotHub> _logger;
 
         public PlotHub(ILogger<PlotHub> logger,
                        IDeviceEventQueue deviceEventQueue)
@@ -65,19 +65,30 @@ namespace Shaos.Hubs
         [HubMethodName("Start")]
         public async Task StartAsync(int id)
         {
-            _logger.LogInformation("Starting Plot Parameter Id: [{Id}]", id);
+            _logger.LogInformation("Starting Plot Parameter Id: [{Id}] for User Id: [{UserId}]",
+                                   id,
+                                   Context.UserIdentifier);
 
-            //await _deviceEventSubscriber.SubscribeDeviceParameterAsync(Context.UserIdentifier, id);
+            await DeviceParameterSubscription(id, DeviceSubscriptionState.Unsubscribe);
         }
 
         [HubMethodName("Stop")]
         public async Task StopAsync(int id)
         {
-            _logger.LogInformation("Stopping Plot Parameter Id: [{Id}]", id);
-
-            //await _deviceEventSubscriber.UnsubscribeDeviceParameterAsync(Context.UserIdentifier, id);
+            _logger.LogInformation("Stopping Plot Parameter Id: [{Id}] for User Id: [{UserId}]",
+                                   id,
+                                   Context.UserIdentifier);
+            await DeviceParameterSubscription(id, DeviceSubscriptionState.Subscribe);
         }
 
-        public async Task UpdateAsync() => await Clients.All.UpdateAsync();
+        private async Task DeviceParameterSubscription(int id, DeviceSubscriptionState state)
+        {
+            await _deviceEventQueue.EnqueueAsync(new DeviceParameterSubscriptionEvent()
+            {
+                ParameterId = id,
+                State = state,
+                UserIdentifier = Context.UserIdentifier!
+            });
+        }
     }
 }

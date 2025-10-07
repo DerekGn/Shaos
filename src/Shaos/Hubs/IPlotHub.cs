@@ -30,6 +30,14 @@ namespace Shaos.Hubs
 
         Task StopAsync(int id);
 
-        Task UpdateAsync();
+        Task UpdateAsync(int value);
+
+        Task UpdateAsync(uint value);
+
+        Task UpdateAsync(bool value);
+
+        Task UpdateAsync(float value);
+
+        Task UpdateAsync(string value);
     }
 }
