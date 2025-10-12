@@ -196,6 +196,7 @@ namespace Shaos
 
             builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorHostedService>();
+            builder.Services.AddHostedService<PlotPublishBackgroundService>();
             builder.Services.AddHostedService<WorkItemProcessorBackgroundService>();
 
             builder.Services.AddMemoryCache();
