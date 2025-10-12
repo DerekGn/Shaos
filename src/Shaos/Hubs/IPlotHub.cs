@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.SignalR;
+
 namespace Shaos.Hubs
 {
     public interface IPlotHub
@@ -30,14 +32,19 @@ namespace Shaos.Hubs
 
         Task StopAsync(int id);
 
+        [HubMethodName("update")]
         Task UpdateAsync(int value);
 
+        [HubMethodName("update")]
         Task UpdateAsync(uint value);
 
+        [HubMethodName("update")]
         Task UpdateAsync(bool value);
 
+        [HubMethodName("update")]
         Task UpdateAsync(float value);
 
+        [HubMethodName("update")]
         Task UpdateAsync(string value);
     }
 }
