@@ -69,7 +69,7 @@ namespace Shaos.Hubs
                                    id,
                                    Context.UserIdentifier);
 
-            await DeviceParameterSubscription(id, DeviceSubscriptionState.Unsubscribe);
+            await DeviceParameterSubscription(id, DeviceSubscriptionState.Subscribe);
         }
 
         [HubMethodName("Stop")]
@@ -78,7 +78,7 @@ namespace Shaos.Hubs
             _logger.LogInformation("Stopping Plot Parameter Id: [{Id}] for User Id: [{UserId}]",
                                    id,
                                    Context.UserIdentifier);
-            await DeviceParameterSubscription(id, DeviceSubscriptionState.Subscribe);
+            await DeviceParameterSubscription(id, DeviceSubscriptionState.Unsubscribe);
         }
 
         private async Task DeviceParameterSubscription(int id, DeviceSubscriptionState state)
