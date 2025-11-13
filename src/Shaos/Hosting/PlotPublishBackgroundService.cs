@@ -113,23 +113,28 @@ namespace Shaos.Hosting
                 switch (@event)
                 {
                     case DeviceParameterUpdatedEvent<bool> parameterValue:
-                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value,
+                                                                                       parameterValue.Timestamp);
                         break;
 
                     case DeviceParameterUpdatedEvent<float> parameterValue:
-                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value,
+                                                                                       parameterValue.Timestamp);
                         break;
 
                     case DeviceParameterUpdatedEvent<int> parameterValue:
-                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value,
+                                                                                       parameterValue.Timestamp);
                         break;
 
                     case DeviceParameterUpdatedEvent<string> parameterValue:
-                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value,
+                                                                                       parameterValue.Timestamp);
                         break;
 
                     case DeviceParameterUpdatedEvent<uint> parameterValue:
-                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value);
+                        await _hubContext.Clients.Users(subscriptionUsers).UpdateAsync(parameterValue.Value,
+                                                                                       parameterValue.Timestamp);
                         break;
                 }
             }

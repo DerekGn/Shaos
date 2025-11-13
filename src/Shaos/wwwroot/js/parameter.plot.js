@@ -1,17 +1,33 @@
 ﻿"use strict";
 
-/*const { start } = require("@popperjs/core");*/
-
 const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
-const plot = new Chart(ctx, {
+const chart = new Chart(ctx, {
     type: 'line',
     data: {
         datasets: [
             {
-                label: settings.label
+                limit = 64,
+                label: 'Speed',
+                data: []
             }
         ]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                type: 'realtime',
+                delay: 0,
+                // 20 seconds of data
+                duration: 20000
+            }],
+            yAxes: [{
+                ticks: {
+                    suggestedMin: 0,
+                    suggestedMax: 50
+                }
+            }]
+        }
     }
 });
 
@@ -51,19 +67,20 @@ window.onload = function () {
     });
 }
 
-connection.on("update", function (point) {
-    plot.data.labels.push(point.label);
-    plot.data.datasets.forEach((dataset) => {
-        dataset.data.push(point.value);
+connection.on("update", function (value, timestamp) {
+
+    chart.data.labels.push(timestamp);
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data.push(value);
     });
 
-    plot.update();
+    chart.update();
 
-    if (plot.data.labels.length > data.limit) {
-        plot.data.labels.splice(0, 1);
-        plot.data.datasets.forEach((dataset) => {
+    if (chart.data.labels.length > data.limit) {
+        chart.data.labels.splice(0, 1);
+        chart.data.datasets.forEach((dataset) => {
             dataset.data.splice(0, 1);
         });
-        plot.update();
+        chart.update();
     }
 });

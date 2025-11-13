@@ -26,25 +26,36 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Shaos.Hubs
 {
+    /// <summary>
+    /// The plot hub interface
+    /// </summary>
     public interface IPlotHub
     {
+        /// <summary>
+        /// Start a subscription publish
+        /// </summary>
+        /// <param name="id">The parameter identifier to start publishing updates</param>
         Task StartAsync(int id);
 
+        /// <summary>
+        /// Stop a subscription publish
+        /// </summary>
+        /// <param name="id">The parameter identifier to stop publishing updates</param>
         Task StopAsync(int id);
 
         [HubMethodName("update")]
-        Task UpdateAsync(int value);
+        Task UpdateAsync(int value, DateTime timeStamp);
 
         [HubMethodName("update")]
-        Task UpdateAsync(uint value);
+        Task UpdateAsync(uint value, DateTime timeStamp);
 
         [HubMethodName("update")]
-        Task UpdateAsync(bool value);
+        Task UpdateAsync(bool value, DateTime timeStamp);
 
         [HubMethodName("update")]
-        Task UpdateAsync(float value);
+        Task UpdateAsync(float value, DateTime timeStamp);
 
         [HubMethodName("update")]
-        Task UpdateAsync(string value);
+        Task UpdateAsync(string value, DateTime timeStamp);
     }
 }
