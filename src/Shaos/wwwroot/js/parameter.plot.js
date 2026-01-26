@@ -17,7 +17,6 @@ const chart = new Chart(ctx, {
             xAxes: [{
                 type: 'realtime',
                 delay: 0,
-                // 20 seconds of data
                 duration: 20000
             }],
             yAxes: [{

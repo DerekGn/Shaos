@@ -11,7 +11,7 @@
       ]
     },
     {
-      "library": "chart.js@4.5.0",
+      "library": "chart.js@latest",
       "destination": "wwwroot/lib/chart.js"
     }
   ]
