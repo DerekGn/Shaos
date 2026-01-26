@@ -7,8 +7,7 @@ const chart = new Chart(ctx, {
     data: {
         datasets: [
             {
-                limit = 64,
-                label: 'Speed',
+                label: settings.label,
                 data: []
             }
         ]
