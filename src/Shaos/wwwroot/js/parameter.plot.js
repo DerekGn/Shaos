@@ -74,7 +74,8 @@ connection.on("update", function (value, timestamp) {
 
     chart.update();
 
-    if (chart.data.labels.length > data.limit) {
+    // this limit should be configurable
+    if (chart.data.labels.length > 10) {
         chart.data.labels.splice(0, 1);
         chart.data.datasets.forEach((dataset) => {
             dataset.data.splice(0, 1);
