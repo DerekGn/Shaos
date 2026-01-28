@@ -77,7 +77,9 @@ namespace Shaos.Test.PlugIn
             _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
         }
 
-        private static int DecrementLimit(ref int value, int lower, int upper)
+        private static int DecrementLimit(ref int value,
+                                          int lower,
+                                          int upper)
         {
             if (--value < lower)
             {
@@ -87,7 +89,9 @@ namespace Shaos.Test.PlugIn
             return value;
         }
 
-        private static int IncrementLimit(ref int value, int lower, int upper)
+        private static int IncrementLimit(ref int value,
+                                          int lower,
+                                          int upper)
         {
             if(++value > upper)
             {
@@ -103,10 +107,17 @@ namespace Shaos.Test.PlugIn
             {
                 List<IBaseParameter> baseParameters =
                 [
-                    new IntParameter(0, "Test Parameter", "Units", ParameterType.Frequency)
+                    new IntParameter(0,
+                                     0,
+                                     10,
+                                     "Test Parameter",
+                                     "Units",
+                                     ParameterType.Frequency)
                 ];
 
-                await Devices.AddAsync(new Device("TestDevice", DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, baseParameters));
+                await Devices.AddAsync(new Device("TestDevice",
+                                                  DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless,
+                                                  baseParameters));
             }
         }
     }

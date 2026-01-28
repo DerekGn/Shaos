@@ -284,6 +284,12 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
+                    b.Property<float>("Max")
+                        .HasColumnType("REAL");
+
+                    b.Property<float>("Min")
+                        .HasColumnType("REAL");
+
                     b.Property<float>("Value")
                         .HasColumnType("REAL");
 
@@ -300,11 +306,23 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
+                    b.Property<int>("Max")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Min")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Value")
                         .HasColumnType("INTEGER");
 
                     b.ToTable("BaseParameter", t =>
                         {
+                            t.Property("Max")
+                                .HasColumnName("IntParameter_Max");
+
+                            t.Property("Min")
+                                .HasColumnName("IntParameter_Min");
+
                             t.Property("Value")
                                 .HasColumnName("IntParameter_Value");
                         });
@@ -334,11 +352,23 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameter");
 
+                    b.Property<uint>("Max")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<uint>("Min")
+                        .HasColumnType("INTEGER");
+
                     b.Property<uint>("Value")
                         .HasColumnType("INTEGER");
 
                     b.ToTable("BaseParameter", t =>
                         {
+                            t.Property("Max")
+                                .HasColumnName("UIntParameter_Max");
+
+                            t.Property("Min")
+                                .HasColumnName("UIntParameter_Min");
+
                             t.Property("Value")
                                 .HasColumnName("UIntParameter_Value");
                         });

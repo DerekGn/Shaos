@@ -13,7 +13,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Shaos.Sdk" Version="0.8.3-beta" />
+        <PackageReference Include="Shaos.Sdk" Version="0.8.4-beta" />
         <PackageReference Include="xunit" Version="2.*" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.*">
             <PrivateAssets>all</PrivateAssets>

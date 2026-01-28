@@ -91,14 +91,21 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(FloatParameter):
-                    result = new Sdk.Devices.Parameters.FloatParameter(((FloatParameter)parameter).Value,
+                    var floatParameter = (FloatParameter)parameter;
+                    result = new Sdk.Devices.Parameters.FloatParameter(floatParameter.Value,
+                                                                       floatParameter.Min,
+                                                                       floatParameter.Max,
                                                                        parameter.Name,
                                                                        parameter.Units,
                                                                        parameter.ParameterType);
                     break;
 
                 case Type _ when type == typeof(IntParameter):
-                    result = new Sdk.Devices.Parameters.IntParameter(((IntParameter)parameter).Value,
+                    var intParameter = (IntParameter)parameter;
+
+                    result = new Sdk.Devices.Parameters.IntParameter(intParameter.Value,
+                                                                     intParameter.Min,
+                                                                     intParameter.Max,
                                                                      parameter.Name,
                                                                      parameter.Units,
                                                                      parameter.ParameterType);
@@ -112,7 +119,11 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(UIntParameter):
-                    result = new Sdk.Devices.Parameters.UIntParameter(((UIntParameter)parameter).Value,
+                    var uintParameter = (UIntParameter)parameter;
+
+                    result = new Sdk.Devices.Parameters.UIntParameter(uintParameter.Value,
+                                                                      uintParameter.Min,
+                                                                      uintParameter.Max,
                                                                       parameter.Name,
                                                                       parameter.Units,
                                                                       parameter.ParameterType);
@@ -143,24 +154,30 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.FloatParameter):
+                    var floatParameter = (Sdk.Devices.Parameters.FloatParameter)parameter;
                     result = new FloatParameter()
                     {
                         Id = parameter.Id,
+                        Max = floatParameter.Max,
+                        Min = floatParameter.Min,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
                         Units = parameter.Units,
-                        Value = ((Sdk.Devices.Parameters.FloatParameter)parameter).Value
+                        Value = floatParameter.Value
                     };
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.IntParameter):
+                    var intParameter = (Sdk.Devices.Parameters.IntParameter)parameter;
                     result = new IntParameter()
                     {
                         Id = parameter.Id,
+                        Max = intParameter.Max,
+                        Min = intParameter.Min,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
                         Units = parameter.Units,
-                        Value = ((Sdk.Devices.Parameters.IntParameter)parameter).Value
+                        Value = intParameter.Value
                     };
                     break;
 
@@ -176,13 +193,16 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.UIntParameter):
+                    var uIntParameter = (Sdk.Devices.Parameters.UIntParameter)parameter;
                     result = new UIntParameter()
                     {
                         Id = parameter.Id,
+                        Max = uIntParameter.Max,
+                        Min = uIntParameter.Min,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
                         Units = parameter.Units,
-                        Value = ((Sdk.Devices.Parameters.UIntParameter)parameter).Value
+                        Value = uIntParameter.Value
                     };
                     break;
             }

@@ -1,0 +1,23 @@
+﻿@page
+@model Shaos.Pages.Parameters.PlotModel
+@{
+}
+
+<h1>Parameter Plot</h1>
+
+<hr />
+
+<div class="container-fluid">
+    <canvas id="chartCanvas"></canvas>
+</div>
+<div class="btnContainer">
+    <button id="start">Start Plot</button>
+    <button id="stop">Stop Plot</button>
+</div>
+<script id="settings" type="application/json">
+    @Json.Serialize(Model.Settings)
+</script>
+
+<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/lib/chart.js/dist/chart.umd.min.js"></script>
+<script src="~/js/parameter.plot.js"></script>

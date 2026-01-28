@@ -22,24 +22,11 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Shaos.Repository;
-using Shaos.Repository.Models;
-using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk;
 using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
-using Shaos.Services.Extensions;
-
-using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
-using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
-using ModelDevice = Shaos.Repository.Models.Devices.Device;
-using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
-using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
-using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
-using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -49,18 +36,18 @@ namespace Shaos.Services.Runtime.Host
     public class RuntimeInstanceEventHandler : IRuntimeInstanceEventHandler
     {
         private readonly ILogger<RuntimeInstanceEventHandler> _logger;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IRuntimeDeviceUpdateHandler _runtimeDeviceUpdateHandler;
 
         /// <summary>
         /// Create an instance of a <see cref="IRuntimeInstanceEventHandler"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{T}"/> instance</param>
-        /// <param name="serviceScopeFactory"></param>
+        /// <param name="runtimeDeviceUpdateHandler"></param>
         public RuntimeInstanceEventHandler(ILogger<RuntimeInstanceEventHandler> logger,
-                                           IServiceScopeFactory serviceScopeFactory)
+                                           IRuntimeDeviceUpdateHandler runtimeDeviceUpdateHandler)
         {
             _logger = logger;
-            _serviceScopeFactory = serviceScopeFactory;
+            _runtimeDeviceUpdateHandler = runtimeDeviceUpdateHandler;
         }
 
         /// <inheritdoc/>
@@ -132,106 +119,63 @@ namespace Shaos.Services.Runtime.Host
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<uint> e)
         {
-            await SaveParameterChangeAsync<ModelUIntParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new UIntParameterValue() 
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<string> e)
         {
-            await SaveParameterChangeAsync<ModelStringParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new StringParameterValue()
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<int> e)
         {
-            await SaveParameterChangeAsync<ModelIntParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new IntParameterValue()
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<float> e)
         {
-            await SaveParameterChangeAsync<ModelFloatParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new FloatParameterValue() 
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<bool> e)
         {
-            await SaveParameterChangeAsync<ModelBoolParameter>(sender, (parameter) =>
-            {
-                _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                 parameter.Id,
-                                 parameter.Name,
-                                 parameter.Value);
-
-                parameter.Value = e.Value;
-                parameter.Values.Add(new BoolParameterValue() 
-                {
-                    Parameter = parameter,
-                    ParameterId = parameter.Id,
-                    TimeStamp = e.TimeStamp,
-                    Value = e.Value
-                });
+            await ValidateParameterChangeAsync(sender, async (parameter) => {
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                                                                           e.Value,
+                                                                           e.TimeStamp);
             });
+        }
+
+        private static async Task ExecuteDeviceOperationAsync(object sender,
+                                                              Func<IDevice, Task> operation)
+        {
+            if (sender != null)
+            {
+                if (sender is IDevice device)
+                {
+                    await operation(device);
+                }
+            }
         }
 
         private void AttachDeviceAndParameters(IDevice device)
@@ -287,108 +231,6 @@ namespace Shaos.Services.Runtime.Host
             {
                 AttachDeviceAndParameters(device);
             }
-        }
-
-        private async Task CreateDeviceParametersAsync(IChildObservableList<IDevice, IBaseParameter> deviceParameters,
-                                                       IList<IBaseParameter> parameters)
-        {
-            await ExecuteRepositoryOperationAsync(async (repository) =>
-            {
-                var modelDevice = await repository.GetByIdAsync<ModelDevice>(deviceParameters.Parent.Id);
-
-                if (modelDevice != null)
-                {
-                    foreach (var parameter in parameters)
-                    {
-                        var modelParameter = parameter.ToModel()!;
-
-                        modelParameter.DeviceId = modelDevice.Id;
-
-                        await repository.AddAsync(modelParameter!);
-
-                        await repository.SaveChangesAsync();
-
-                        parameter.SetId(modelParameter.Id);
-                    }
-                }
-                else
-                {
-                    _logger.LogError("Unable to resolve Device for Id: [{Id}]", deviceParameters.Parent.Id);
-                }
-            });
-        }
-
-        private async Task CreateDevicesAsync(IChildObservableList<IPlugIn, IDevice> plugInDeviceList,
-                                              IList<IDevice> devices)
-        {
-            await ExecuteRepositoryOperationAsync(async (repository) =>
-            {
-                var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(plugInDeviceList.Parent.Id);
-
-                if (plugInInstance != null)
-                {
-                    foreach (IDevice device in devices)
-                    {
-                        var modelDevice = device.ToModel();
-                        modelDevice.PlugInInstanceId = plugInInstance.Id;
-                        modelDevice.CreateDeviceFeatureParameters();
-
-                        await repository.AddAsync(modelDevice);
-
-                        await repository.SaveChangesAsync();
-
-                        device.SetId(modelDevice.Id);
-
-                        foreach (var parameter in device.Parameters)
-                        {
-                            var deviceParameter = modelDevice.Parameters.FirstOrDefault(_ => _.Name == parameter.Name && _.ParameterType == parameter.ParameterType && _.Units == parameter.Units);
-
-                            if(deviceParameter != null)
-                            {
-                                parameter.SetId(deviceParameter.Id);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    _logger.LogError("Unable to resolve PlugIn for Id: [{Id}]", plugInDeviceList.Parent.Id);
-                }
-            });
-        }
-
-        private async Task DeleteDeviceParametersAsync(IList<IBaseParameter> parameters)
-        {
-            await ExecuteRepositoryOperationAsync(async (repository) =>
-            {
-                foreach (var parameter in parameters)
-                {
-                    _logger.LogInformation("Deleting Parameter Id: [{Id}] Name: [{Name}]",
-                                           parameter.Id,
-                                           parameter.Name);
-
-                    await repository.DeleteAsync<ModelBaseParameter>(parameter.Id);
-                }
-
-                await repository.SaveChangesAsync();
-            });
-        }
-
-        private async Task DeleteDevicesAsync(IList<IDevice> devices)
-        {
-            await ExecuteRepositoryOperationAsync(async (repository) =>
-            {
-                foreach (var device in devices)
-                {
-                    _logger.LogInformation("Deleting Device Id: [{Id}] Name: [{Name}]",
-                                           device.Id,
-                                           device.Name);
-
-                    await repository.DeleteAsync<ModelDevice>(device.Id);
-                }
-
-                await repository.SaveChangesAsync();
-            });
         }
 
         private void DetachDevicesListChange(IObservableList<IDevice> devices)
@@ -449,25 +291,23 @@ namespace Shaos.Services.Runtime.Host
         private async Task DeviceBatteryLevelChanged(object sender,
                                                      BatteryLevelChangedEventArgs e)
         {
-            if (sender != null)
+            await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await UpdateDeviceAsync(sender as IDevice, (device) =>
-                {
-                    device.UpdateBatteryLevel(e.BatteryLevel, e.TimeStamp);
-                });
-            }
+                await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device.Id,
+                                                                                e.BatteryLevel,
+                                                                                e.TimeStamp);
+            });
         }
 
         private async Task DeviceSignalLevelChanged(object sender,
                                                     SignalLevelChangedEventArgs e)
         {
-            if (sender != null)
+            await ExecuteDeviceOperationAsync(sender, async (device) =>
             {
-                await UpdateDeviceAsync(sender as IDevice, (device) =>
-                {
-                    device.UpdateSignalLevel(e.SignalLevel, e.TimeStamp);
-                });
-            }
+                await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device.Id,
+                                                                               e.SignalLevel,
+                                                                               e.TimeStamp);
+            });
         }
 
         private async Task DevicesListChangedAsync(object sender,
@@ -475,49 +315,44 @@ namespace Shaos.Services.Runtime.Host
         {
             if (sender != null)
             {
-                switch (e.Action)
+                if (sender is IChildObservableList<IPlugIn, IDevice> devices)
                 {
-                    case ListChangedAction.Add:
-                        if (e.Items != null)
+                    if (e.Items != null)
+                    {
+                        switch (e.Action)
                         {
-                            await CreateDevicesAsync(sender as IChildObservableList<IPlugIn, IDevice>, e.Items);
+                            case ListChangedAction.Add:
 
-                            foreach (var device in e.Items)
-                            {
-                                AttachDeviceAndParameters(device);
-                            }
-                        }
-                        break;
+                                await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id, e.Items);
 
-                    case ListChangedAction.Reset:
-                        if (e.Items != null)
-                        {
-                            await DeleteDevicesAsync(e.Items);
-                        }
-                        break;
+                                foreach (var device in e.Items)
+                                {
+                                    AttachDeviceAndParameters(device);
+                                }
 
-                    case ListChangedAction.Remove:
-                        if (e.Items != null)
-                        {
-                            await DeleteDevicesAsync(e.Items);
+                                break;
+
+                            case ListChangedAction.Reset:
+                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
+
+                                break;
+
+                            case ListChangedAction.Remove:
+                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
+
+                                break;
                         }
-                        break;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Event items collection empty");
+                    }
                 }
-            }
-        }
-
-        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
-        {
-            try
-            {
-                using var scope = _serviceScopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
-
-                await operation(repository);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled exception occurred");
+                else
+                {
+                    _logger.LogWarning("Sender is invalid type: [{Type}]",
+                                       sender.GetType());
+                }
             }
         }
 
@@ -526,85 +361,61 @@ namespace Shaos.Services.Runtime.Host
         {
             if (sender != null)
             {
-                switch (e.Action)
+                if (sender is IChildObservableList<IDevice, IBaseParameter> deviceParameters)
                 {
-                    case ListChangedAction.Add:
-                        if (e.Items != null)
+                    if (e.Items != null)
+                    {
+                        switch (e.Action)
                         {
-                            await CreateDeviceParametersAsync(sender as IChildObservableList<IDevice, IBaseParameter>,
-                                                              e.Items);
+                            case ListChangedAction.Add:
+                                await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(deviceParameters.Parent.Id, e.Items);
 
-                            AttachParameters([.. e.Items]);
+                                AttachParameters([.. e.Items]);
+                                break;
+
+                            case ListChangedAction.Reset:
+                                DetachParameters(e.Items);
+
+                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
+                                break;
+
+                            case ListChangedAction.Remove:
+                                DetachParameters(e.Items);
+
+                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
+                                break;
                         }
-                        break;
-
-                    case ListChangedAction.Reset:
-                        if (e.Items != null)
-                        {
-                            DetachParameters(e.Items);
-
-                            await DeleteDeviceParametersAsync(e.Items);
-                        }
-                        break;
-
-                    case ListChangedAction.Remove:
-                        if (e.Items != null)
-                        {
-                            DetachParameters(e.Items);
-
-                            await DeleteDeviceParametersAsync(e.Items);
-                        }
-                        break;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Event items collection empty");
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Sender is invalid type: [{Type}]",
+                                       sender.GetType());
                 }
             }
         }
 
-        private async Task SaveParameterChangeAsync<T>(object sender,
-                                                       Action<T> operation) where T : BaseEntity
+        private async Task ValidateParameterChangeAsync(object sender, Func<IBaseParameter, Task> operation)
         {
             if (sender != null)
             {
                 if (sender is IBaseParameter parameter)
                 {
-                    await ExecuteRepositoryOperationAsync(async (repository) =>
-                    {
-                        var modelParameter = await repository.GetByIdAsync<T>(parameter.Id, false);
-
-                        if (modelParameter != null)
-                        {
-                            operation(modelParameter);
-
-                            await repository.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Unable to resolve [{Type}] With Id: [{Id}]", typeof(T).Name, parameter.Id);
-                        }
-                    });
+                    await operation(parameter);
+                }
+                else
+                {
+                    _logger.LogWarning("Sender is invalid type: [{Type}]",
+                                       sender.GetType());
                 }
             }
-        }
-
-        private async Task UpdateDeviceAsync(IDevice? device,
-                                             Action<ModelDevice> updateOperation)
-        {
-            if (device != null)
+            else
             {
-                await ExecuteRepositoryOperationAsync(async (repository) =>
-                {
-                    var modelDevice = await repository.GetByIdAsync<ModelDevice>(device.Id, false, [nameof(Device.Parameters)]);
-
-                    if (modelDevice != null)
-                    {
-                        updateOperation(modelDevice);
-
-                        await repository.SaveChangesAsync();
-                    }
-                    else
-                    {
-                        _logger.LogError("Unable to resolve Device for [{Id}]", device.Id);
-                    }
-                });
+                _logger.LogWarning("Sender is null");
             }
         }
     }

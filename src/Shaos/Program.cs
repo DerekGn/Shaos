@@ -36,8 +36,10 @@ using Shaos.Hosting;
 using Shaos.Hubs;
 using Shaos.Repository;
 using Shaos.Services;
+using Shaos.Services.Eventing;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
+using Shaos.Services.Processing;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
@@ -73,27 +75,37 @@ namespace Shaos
             });
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration
+                .GetConnectionString("DefaultConnection") ??
+                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(connectionString));
+            builder
+                .Services
+                .AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
 
-            builder.Services.AddDbContext<ShaosDbContext>(options =>
-                options.UseSqlite(connectionString,
-                _ => _.MigrationsAssembly(typeof(ShaosDbContext).Assembly.GetName().Name)));
+            builder
+                .Services
+                .AddDbContext<ShaosDbContext>(options => options
+                .UseSqlite(connectionString, _ => _
+                .MigrationsAssembly(typeof(ShaosDbContext).Assembly.GetName().Name)));
 
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+            builder
+                .Services
+                .AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services
+            builder
+                .Services
                 .AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            builder.Services
+            builder
+                .Services
                 .AddAuthentication()
                 .AddBearerToken(IdentityConstants.BearerScheme);
 
-            builder.Services.AddDbContext<ShaosDbContext>(options =>
-                options.UseSqlite(connectionString));
+            builder
+                .Services
+                .AddDbContext<ShaosDbContext>(options => options.UseSqlite(connectionString));
 
             builder.Services.AddApiVersioning(_ =>
             {
@@ -122,7 +134,9 @@ namespace Shaos
                         model => model.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
-            builder.Services.AddAuthorizationBuilder()
+            builder
+                .Services
+                .AddAuthorizationBuilder()
                 .SetFallbackPolicy(new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build());
@@ -168,17 +182,22 @@ namespace Shaos
             builder.Services.AddScoped<IRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
+            builder.Services.AddSingleton<IDeviceEventQueue>(InitDeviceEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
+            builder.Services.AddSingleton<IRuntimeDeviceUpdateHandler, RuntimeDeviceUpdateHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
+            builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItemQueue(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
-            builder.Services.AddHostedService<MonitorBackgroundWorker>();
+            builder.Services.AddHostedService<MonitorHostedService>();
+            builder.Services.AddHostedService<PlotPublishBackgroundService>();
+            builder.Services.AddHostedService<WorkItemProcessorBackgroundService>();
 
             builder.Services.AddMemoryCache();
 
@@ -221,8 +240,29 @@ namespace Shaos
 
             app.MapRazorPages();
             app.MapHub<RuntimeHub>($"/{nameof(RuntimeHub).ToCamelCase()}");
+            app.MapHub<PlotHub>($"/{nameof(PlotHub).ToCamelCase()}");
 
             app.Run();
+        }
+
+        private static DeviceEventQueue InitDeviceEventQueue(ConfigurationManager configuration)
+        {
+            if (!int.TryParse(configuration["DeviceEventQueueCapacity"], out var queueCapacity))
+            {
+                queueCapacity = 100;
+            }
+
+            return new DeviceEventQueue(queueCapacity);
+        }
+
+        private static WorkItemQueue InitWorkItemQueue(ConfigurationManager configuration)
+        {
+            if (!int.TryParse(configuration["WorkItemQueueCapacity"], out var queueCapacity))
+            {
+                queueCapacity = 100;
+            }
+
+            return new WorkItemQueue(queueCapacity);
         }
     }
 }
