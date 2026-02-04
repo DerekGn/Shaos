@@ -40,8 +40,7 @@ namespace Shaos.Hosting
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Background Worker [{nameof(MonitorHostedService)}] Starting");
-
+            LogStart();
             return Task.CompletedTask;
         }
 
