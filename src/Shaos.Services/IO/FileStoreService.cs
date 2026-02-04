@@ -32,7 +32,7 @@ namespace Shaos.Services.IO
     /// <summary>
     /// A file store service that abstracts file store operations
     /// </summary>
-    public class FileStoreService : IFileStoreService
+    public partial class FileStoreService : IFileStoreService
     {
         private readonly ILogger<FileStoreService> _logger;
         private readonly IOptions<FileStoreOptions> _options;
@@ -50,9 +50,10 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeletePackage(string packageFile)
+        public void DeletePackage(string packagePath)
         {
-            var packageFilePath = Path.Combine(_options.Value.PackagesPath, packageFile);
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath,
+                                               packagePath);
 
             if (File.Exists(packageFilePath))
             {
@@ -63,13 +64,15 @@ namespace Shaos.Services.IO
         /// <inheritdoc/>
         public void DeletePlugDirectory(string plugInDirectory)
         {
-            var extractedPackagePath = Path.Combine(_options.Value.BinariesPath, plugInDirectory);
+            var extractedPackagePath = Path.Combine(_options.Value.BinariesPath,
+                                                    plugInDirectory);
 
             if (Directory.Exists(extractedPackagePath))
             {
-                _logger.LogInformation("Deleting folder [{Path}]", extractedPackagePath);
+                LogDeletingDirectory(extractedPackagePath);
 
-                Directory.Delete(extractedPackagePath, true);
+                Directory.Delete(extractedPackagePath,
+                                 true);
             }
         }
 
@@ -79,20 +82,24 @@ namespace Shaos.Services.IO
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
-            var sourcePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
-            var targetPath = Path.Combine(_options.Value.BinariesPath, id.ToString());
+            var sourcePath = Path.Combine(_options.Value.PackagesPath,
+                                          id.ToString());
+            var targetPath = Path.Combine(_options.Value.BinariesPath,
+                                          id.ToString());
 
-            _logger.LogInformation("Emptying directory [{TargetPath}]", targetPath);
+            LogEmptyDirectory(targetPath);
 
             targetPath.EmptyDirectory();
 
-            sourcePath = Path.Combine(sourcePath, packageFileName);
+            sourcePath = Path.Combine(sourcePath,
+                                      packageFileName);
 
-            _logger.LogInformation("Extracting package: [{SourcePath}] to [{TargetPath}]",
-                sourcePath,
-                targetPath);
+            LogExtracingPackage(sourcePath,
+                                targetPath);
 
-            ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
+            ZipFile.ExtractToDirectory(sourcePath,
+                                       targetPath,
+                                       true);
 
             return Directory.EnumerateFiles(targetPath);
         }
@@ -106,15 +113,18 @@ namespace Shaos.Services.IO
 
             extractedPath = Guid.NewGuid().ToString();
             var sourcePath = _options.Value.PackagesPath;
-            var targetPath = Path.Combine(_options.Value.BinariesPath, extractedPath);
+            var targetPath = Path.Combine(_options.Value.BinariesPath,
+                                          extractedPath);
 
-            sourcePath = Path.Combine(sourcePath, packageFileName);
+            sourcePath = Path.Combine(sourcePath,
+                                      packageFileName);
 
-            _logger.LogInformation("Extracting package: [{SourcePath}] to [{TargetPath}]",
-                                   sourcePath,
-                                   targetPath);
+            LogExtracingPackage(sourcePath,
+                                targetPath);
 
-            ZipFile.ExtractToDirectory(sourcePath, targetPath, true);
+            ZipFile.ExtractToDirectory(sourcePath,
+                                       targetPath,
+                                       true);
 
             files = Directory.EnumerateFiles(targetPath);
         }
@@ -126,7 +136,9 @@ namespace Shaos.Services.IO
             ArgumentNullException.ThrowIfNull(plugInDirectory);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
 
-            return Path.Combine(Path.Combine(_options.Value.BinariesPath, plugInDirectory), plugInAssemblyFileName);
+            return Path.Combine(Path.Combine(_options.Value.BinariesPath,
+                                             plugInDirectory),
+                                plugInAssemblyFileName);
         }
 
         /// <inheritdoc/>
@@ -139,31 +151,35 @@ namespace Shaos.Services.IO
 
             if (_options.Value.PackagesPath.CreateDirectory())
             {
-                _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
+                LogCreatingPackagesDirectory(_options.Value.PackagesPath);
             }
 
             var packageFilePath = _options.Value.PackagesPath;
 
             if (Directory.Exists(packageFilePath))
             {
-                _logger.LogInformation("Emptying package directory [{Folder}]", packageFilePath);
+                LogEmptyingPackageDirectory(packageFilePath);
 
                 packageFilePath.EmptyDirectory();
             }
             else
             {
-                _logger.LogInformation("Creating package directory [{Folder}]", packageFilePath);
+                LogCreatingPackageDirectory(packageFilePath);
 
                 packageFilePath.CreateDirectory();
             }
 
-            packageFilePath = Path.Combine(packageFilePath, packageFileName);
+            packageFilePath = Path.Combine(packageFilePath,
+                                           packageFileName);
 
-            _logger.LogInformation("Writing Package File: [{PackageFile}]", packageFilePath);
+            LogWritingPackageFile(packageFilePath);
 
-            using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var outputStream = File.Open(packageFilePath,
+                                               FileMode.OpenOrCreate,
+                                               FileAccess.Write);
 
-            await packageFileStream.CopyToAsync(outputStream, cancellationToken);
+            await packageFileStream.CopyToAsync(outputStream,
+                                                cancellationToken);
 
             await packageFileStream.FlushAsync(cancellationToken);
         }
@@ -179,35 +195,62 @@ namespace Shaos.Services.IO
 
             if (_options.Value.PackagesPath.CreateDirectory())
             {
-                _logger.LogInformation("Creating packages directory [{Folder}]", _options.Value.PackagesPath);
+                LogCreatingPackagesDirectory(_options.Value.PackagesPath);
             }
 
-            var packageFilePath = Path.Combine(_options.Value.PackagesPath, id.ToString());
+            var packageFilePath = Path.Combine(_options.Value.PackagesPath,
+                                               id.ToString());
 
             if (Directory.Exists(packageFilePath))
             {
-                _logger.LogInformation("Emptying package directory [{Folder}]", packageFilePath);
-
+                LogEmptyingPackageDirectory(packageFilePath);
+                
                 packageFilePath.EmptyDirectory();
             }
             else
             {
-                _logger.LogInformation("Creating package directory [{Folder}]", packageFilePath);
+                LogCreatingPackageDirectory(_options.Value.PackagesPath);
 
                 packageFilePath.CreateDirectory();
             }
 
-            packageFilePath = Path.Combine(packageFilePath, packageFileName);
+            packageFilePath = Path.Combine(packageFilePath,
+                                           packageFileName);
 
-            _logger.LogInformation("Writing Package File: [{PackageFile}]", packageFilePath);
+            LogWritingPackageFile(packageFilePath);
 
-            using var outputStream = File.Open(packageFilePath, FileMode.OpenOrCreate, FileAccess.Write);
+            using var outputStream = File.Open(packageFilePath,
+                                               FileMode.OpenOrCreate,
+                                               FileAccess.Write);
 
-            await stream.CopyToAsync(outputStream, cancellationToken);
+            await stream.CopyToAsync(outputStream,
+                                     cancellationToken);
 
             await stream.FlushAsync(cancellationToken);
 
             return packageFilePath;
         }
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Creating package directory [{path}]")]
+        private partial void LogCreatingPackageDirectory(string path);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Creating packages directory [{path}]")]
+        private partial void LogCreatingPackagesDirectory(string path);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Deleting directory [{path}]")]
+        private partial void LogDeletingDirectory(string path);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Emptying directory [{path}]")]
+        private partial void LogEmptyDirectory(string path);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Emptying package directory [{path}]")]
+        private partial void LogEmptyingPackageDirectory(string path);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Extracting package: [{sourcePath}] to [{targetPath}]")]
+        private partial void LogExtracingPackage(string sourcePath,
+                                                 string targetPath);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Writing Package File: [{file}]")]
+        private partial void LogWritingPackageFile(string file);
     }
 }

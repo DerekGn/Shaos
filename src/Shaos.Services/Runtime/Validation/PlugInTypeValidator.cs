@@ -31,7 +31,7 @@ using System.Reflection;
 namespace Shaos.Services.Runtime.Validation
 {
     /// <summary>
-    /// A PlugIn type validator
+    /// A PlugIn type validation
     /// </summary>
     public class PlugInTypeValidator : IPlugInTypeValidator
     {

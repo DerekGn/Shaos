@@ -211,7 +211,7 @@ namespace Shaos.Services
             }
             else
             {
-                _logger.LogWarning("Instance [{Id}] not found", id);
+                LogInstanceNotFound(id);
             }
         }
 
@@ -228,9 +228,6 @@ namespace Shaos.Services
             if (plugInFile == null)
             {
                 LogNoAssemblyFound(PlugInNamePostFix, packageFileName);
-                _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
-                                 PlugInNamePostFix,
-                                 packageFileName);
 
                 throw new NoValidPlugInAssemblyFoundException(
                     $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
@@ -503,6 +500,8 @@ namespace Shaos.Services
         [LoggerMessage(Level = LogLevel.Error, Message = "Found running instance [{plugInInstanceId}]")]
         private partial void LogFoundRunningInstance(int plugInInstanceId);
 
+        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugIn Instance Id: [{Id}] not found")]
+        private partial void LogInstanceNotFound(int id);
         [LoggerMessage(Level = LogLevel.Warning, Message = "Instance [{id}] Running")]
         private partial void LogInstanceRunning(int id);
 

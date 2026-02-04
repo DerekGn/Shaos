@@ -37,7 +37,7 @@ namespace Shaos.Services.Runtime.Host
     /// <remarks>
     /// Responsible for the runtime hosting and management of <see cref="RuntimeInstance"/>
     /// </remarks>
-    public class RuntimeInstanceHost : IRuntimeInstanceHost
+    public partial class RuntimeInstanceHost : IRuntimeInstanceHost
     {
         internal readonly List<RuntimeInstance> _executingInstances;
         internal readonly Dictionary<int, RuntimeInstanceLoadContext> _instanceLoadContexts;
@@ -87,7 +87,8 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                _logger.LogInformation("Creating Instance Id: [{Id}] Name: [{Name}]", id, instanceName);
+                LogCreartingInstance(id,
+                                     instanceName);
 
                 instance = new RuntimeInstance(id,
                                                plugInId,
@@ -106,7 +107,7 @@ namespace Shaos.Services.Runtime.Host
             }
             else
             {
-                _logger.LogError("Instance Id: [{Id}] exists", id);
+                LogInstanceExists(id, instance.Name);
 
                 throw new InstanceExistsException(id);
             }
@@ -137,7 +138,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State == RuntimeInstanceState.Running)
                 {
-                    _logger.LogError("Instance Id: [{Id}] is already running", id);
+                    LogInstanceAlreadyRunning(id, instance.Name);
 
                     throw new InstanceRunningException(id);
                 }
@@ -157,9 +158,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State == RuntimeInstanceState.Running)
                 {
-                    _logger.LogWarning("Instance: [{Id}] Name: [{Name}] Already Running",
-                                       id,
-                                       instance.Name);
+                    LogInstanceAlreadyRunning(id, instance.Name);
 
                     throw new InstanceRunningException(id);
                 }
@@ -272,6 +271,16 @@ namespace Shaos.Services.Runtime.Host
                 _instanceLoadContexts.Add(instance.PlugInId, instanceLoadContext);
             }
         }
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Created Device [{id}] Name: [{name}]")]
+        private partial void LogCreartingInstance(int id, string name);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Runtime Instance Id: [{Id}] Name: [{name}] is already running")]
+        private partial void LogInstanceAlreadyRunning(int id, string name);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Runtime Instance Id: [{id}] Name: [{name}] exists")]
+        private partial void LogInstanceExists(int id,
+                                               string name);
 
         [DebuggerStepThrough]
         private T ResolveExecutingInstance<T>(int id,

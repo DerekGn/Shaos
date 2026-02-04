@@ -415,21 +415,14 @@ namespace Shaos.Services.Runtime.Host
 
         private async Task ValidateParameterChangeAsync(object sender, Func<IBaseParameter, Task> operation)
         {
-            if (sender != null)
+
+            if (sender is IBaseParameter parameter)
             {
-                if (sender is IBaseParameter parameter)
-                {
-                    await operation(parameter);
-                }
-                else
-                {
-                    _logger.LogWarning("Sender is invalid type: [{Type}]",
-                                       sender.GetType());
-                }
+                await operation(parameter);
             }
             else
             {
-                _logger.LogWarning("Sender is null");
+                LogInvalidType(sender.GetType());
             }
         }
     }
