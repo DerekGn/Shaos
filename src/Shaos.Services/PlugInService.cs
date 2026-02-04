@@ -37,7 +37,7 @@ namespace Shaos.Services
     /// <summary>
     /// The PlugIn service
     /// </summary>
-    public class PlugInService : IPlugInService
+    public partial class PlugInService : IPlugInService
     {
         private const string PlugInNamePostFix = ".PlugIn.dll";
 
@@ -78,7 +78,8 @@ namespace Shaos.Services
                                             string plugInAssemblyFileName,
                                             CancellationToken cancellationToken = default)
         {
-            var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFileName));
+            var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory,
+                                                                                                        plugInAssemblyFileName));
 
             var plugIn = new PlugIn()
             {
@@ -97,7 +98,8 @@ namespace Shaos.Services
                 PlugIn = plugIn
             };
 
-            await _repository.CreatePlugInAsync(plugIn, cancellationToken);
+            await _repository.CreatePlugInAsync(plugIn,
+                                                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -109,7 +111,7 @@ namespace Shaos.Services
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
-                _logger.LogInformation("Creating PlugInInstance. PlugIn: [{Id}]", id);
+                LogPlugInInstanceCreating(id);
 
                 if (plugIn.PlugInInformation != null)
                 {
@@ -146,7 +148,8 @@ namespace Shaos.Services
                 {
                     RemoveInstancesFromHost(plugIn);
 
-                    await _repository.DeleteAsync<PlugIn>(id, cancellationToken);
+                    await _repository.DeleteAsync<PlugIn>(id,
+                                                          cancellationToken);
 
                     var plugInInformation = plugIn.PlugInInformation!;
 
@@ -155,9 +158,10 @@ namespace Shaos.Services
                 }
                 else
                 {
-                    _logger.LogWarning("PlugIn [{Id}] still running", id);
+                    LogPlugInStillRunning(id);
 
-                    throw new PlugInInstanceRunningException(plugInInstanceId, $"PlugIn [{id}] still running");
+                    throw new PlugInInstanceRunningException(plugInInstanceId,
+                                                             $"PlugIn [{id}] still running");
                 }
             },
             false,
@@ -165,12 +169,12 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public void DeletePlugInFiles(string packagePath,
+        public void DeletePlugInFiles(string packageFileName,
                                       string plugInDirectory)
         {
-            if (!string.IsNullOrWhiteSpace(packagePath))
+            if (!string.IsNullOrWhiteSpace(packageFileName))
             {
-                _fileStoreService.DeletePackage(packagePath);
+                _fileStoreService.DeletePackage(packageFileName);
             }
 
             if (!string.IsNullOrWhiteSpace(plugInDirectory))
@@ -189,17 +193,18 @@ namespace Shaos.Services
             {
                 if (instance.State == RuntimeInstanceState.Running)
                 {
-                    _logger.LogWarning("Instance [{Id}] Running", id);
+                    LogInstanceRunning(id);
 
                     throw new PlugInInstanceRunningException(id, $"Instance [{id}] Running");
                 }
                 else
                 {
-                    _logger.LogInformation("Deleting PlugInInstance [{Id}]", id);
+                    LogPlugInInstanceDeleting(id);
 
-                    await _repository.DeleteAsync<PlugInInstance>(id, cancellationToken);
+                    await _repository.DeleteAsync<PlugInInstance>(id,
+                                                                  cancellationToken);
 
-                    _logger.LogInformation("Deleting Instance [{Id}] from InstanceHost", id);
+                    LogPlugInInstanceDeletingInstanceHost(id);
 
                     _instanceHost.RemoveInstance(id);
                 }
@@ -217,10 +222,12 @@ namespace Shaos.Services
                                              out var plugInDirectory,
                                              out var files);
 
-            var plugInFile = files?.FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase))!;
+            var plugInFile = files?.FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix,
+                                                                   StringComparison.OrdinalIgnoreCase))!;
 
             if (plugInFile == null)
             {
+                LogNoAssemblyFound(PlugInNamePostFix, packageFileName);
                 _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
                                  PlugInNamePostFix,
                                  packageFileName);
@@ -245,7 +252,8 @@ namespace Shaos.Services
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInDirectory);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
 
-            return _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory, plugInAssemblyFileName));
+            return _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory,
+                                                                                   plugInAssemblyFileName));
         }
 
         /// <inheritdoc/>
@@ -300,15 +308,16 @@ namespace Shaos.Services
             {
                 if (VerifyPlugState(plugIn, RuntimeInstanceState.Running, out var ids))
                 {
-                    _logger.LogError("Found running PlugIn Instances Id: [{Id}]", string.Join(",", ids));
+                    LogRunningPlugInFound(ids);
 
-                    throw new PlugInInstancesRunningException(ids, "Instances are Running");
+                    throw new PlugInInstancesRunningException(ids,
+                                                              "Instances are Running");
                 }
 
                 var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory,
                                                                                                             plugInAssemblyFileName));
 
-                if (PlugInPackageChanged(plugIn, plugInDirectory, plugInTypeInformation))
+                if (PlugInPackageChanged(plugIn, plugInTypeInformation))
                 {
                     plugIn.Description = plugInTypeInformation.Description;
                     plugIn.Name = plugInTypeInformation.Name;
@@ -324,7 +333,8 @@ namespace Shaos.Services
                 }
                 else
                 {
-                    _logger.LogInformation("PlugIn [{Id}] Name: [{Name}] package not changed", plugIn.Id, plugIn.Name);
+                    LogPackageNotChanged(plugIn.Id,
+                                         plugIn.Name);
                 }
             },
             false,
@@ -343,12 +353,12 @@ namespace Shaos.Services
             {
                 if (VerifyPlugState(plugIn, RuntimeInstanceState.Running, out var ids))
                 {
-                    _logger.LogError("Found running PlugIn Instances Id: [{Id}]", string.Join(",", ids));
+                    LogRunningPlugInFound(ids);
 
                     throw new PlugInInstancesRunningException(ids, "Instances are Running");
                 }
 
-                _logger.LogInformation("Writing PlugIn Package file [{FileName}]", packageFileName);
+                LogWrittingPlugInPackageFile(packageFileName);
 
                 await _fileStoreService.WritePackageFileStreamAsync(plugIn.Id,
                                                                     packageFileName,
@@ -361,9 +371,8 @@ namespace Shaos.Services
 
                 if (plugInFile == null)
                 {
-                    _logger.LogError("No assembly file ending with [{PostFix}] was found in the package [{FileName}] files",
-                        PlugInNamePostFix,
-                        packageFileName);
+                    NoAssemblyFilePackageFileFound(PlugInNamePostFix,
+                                                   packageFileName);
 
                     throw new NoValidPlugInAssemblyFoundException(
                         $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
@@ -377,6 +386,23 @@ namespace Shaos.Services
             },
             false,
             cancellationToken);
+        }
+
+        private static bool PlugInPackageChanged(PlugIn plugIn,
+                                                 PlugInTypeInformation plugInTypeInformation)
+        {
+            bool result = false;
+
+            result = result && plugIn.Description == plugInTypeInformation.Description;
+            result = result && plugIn.Name == plugInTypeInformation.Name;
+            result = result && plugIn.PlugInInformation!.AssemblyFileName == plugInTypeInformation.AssemblyFileName;
+            result = result && plugIn.PlugInInformation!.AssemblyVersion == plugInTypeInformation.AssemblyVersion;
+            result = result && plugIn.PlugInInformation!.Directory == plugInTypeInformation.Directory;
+            result = result && plugIn.PlugInInformation!.HasConfiguration == plugInTypeInformation.HasConfiguration;
+            result = result && plugIn.PlugInInformation!.HasLogger == plugInTypeInformation.HasLogger;
+            result = result && plugIn.PlugInInformation!.TypeName == plugInTypeInformation.TypeName;
+
+            return !result;
         }
 
         private bool CheckPlugInRunning(PlugIn plugIn,
@@ -394,7 +420,7 @@ namespace Shaos.Services
 
                     if (instance != null && instance.State == RuntimeInstanceState.Running)
                     {
-                        _logger.LogDebug("Found running instance [{Id}]", plugInInstanceId);
+                        LogFoundRunningInstance(plugInInstanceId);
                         plugInInstanceId = id;
                         result = true;
                         break;
@@ -413,10 +439,9 @@ namespace Shaos.Services
         {
             if (plugIn.PlugInInformation == null)
             {
-                _logger.LogInformation("Creating a new PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
-                    plugIn.Id,
-                    assemblyFileName,
-                    plugInTypeInformation.AssemblyVersion);
+                LogCreatingPlugInPackage(plugIn.Id,
+                                         assemblyFileName,
+                                         plugInTypeInformation.AssemblyVersion);
 
                 var plugInInformation = new PlugInInformation()
                 {
@@ -433,10 +458,9 @@ namespace Shaos.Services
             }
             else
             {
-                _logger.LogInformation("Updating a PlugIn package. PlugIn: [{Id}] Assembly: [{Assembly}] Version: [{AssemblyVersion}]",
-                                       plugIn.Id,
-                                       assemblyFileName,
-                                       plugInTypeInformation.AssemblyVersion.ToString());
+                LogUpdatingPlugInPackage(plugIn.Id,
+                                         assemblyFileName,
+                                         plugInTypeInformation.AssemblyVersion);
 
                 plugIn.PlugInInformation.AssemblyFileName = assemblyFileName;
                 plugIn.PlugInInformation.AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString();
@@ -465,34 +489,70 @@ namespace Shaos.Services
             }
             else
             {
-                _logger.LogWarning("PlugIn: [{Id}] not found", id);
+                LogPlugInNotFound(id);
+
                 throw new NotFoundException(id, $"PlugIn: [{id}] not found");
             }
         }
 
-        private static bool PlugInPackageChanged(PlugIn plugIn,
-                                                 string plugInDirectory,
-                                                 PlugInTypeInformation plugInTypeInformation)
-        {
-            bool result = false;
+        [LoggerMessage(Level = LogLevel.Information, Message = "Creating a new PlugIn package. PlugIn: [{id}] Assembly: [{assemblyFileName}] Version: [{assemblyVersion}]")]
+        private partial void LogCreatingPlugInPackage(int id,
+                                                      string assemblyFileName,
+                                                      string assemblyVersion);
 
-            result = result && plugIn.Description == plugInTypeInformation.Description;
-            result = result && plugIn.Name == plugInTypeInformation.Name;
-            result = result && plugIn.PlugInInformation!.AssemblyFileName == plugInTypeInformation.AssemblyFileName;
-            result = result && plugIn.PlugInInformation!.AssemblyVersion == plugInTypeInformation.AssemblyVersion;
-            result = result && plugIn.PlugInInformation!.Directory == plugInTypeInformation.Directory;
-            result = result && plugIn.PlugInInformation!.HasConfiguration == plugInTypeInformation.HasConfiguration;
-            result = result && plugIn.PlugInInformation!.HasLogger == plugInTypeInformation.HasLogger;
-            result = result && plugIn.PlugInInformation!.TypeName == plugInTypeInformation.TypeName;
+        [LoggerMessage(Level = LogLevel.Error, Message = "Found running instance [{plugInInstanceId}]")]
+        private partial void LogFoundRunningInstance(int plugInInstanceId);
 
-            return !result;
-        }
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Instance [{id}] Running")]
+        private partial void LogInstanceRunning(int id);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "No assembly file ending with [{plugInNamePostFix}] was found in the package [{packageFileName}] files")]
+        private partial void LogNoAssemblyFound(string plugInNamePostFix,
+                                                string packageFileName);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "PlugIn [{id}] Name: [{name}] package not changed")]
+        private partial void LogPackageNotChanged(int id,
+                                                  string name);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Creating PlugInInstance. PlugIn: [{id}]")]
+        private partial void LogPlugInInstanceCreating(int id);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Deleting Instance [{id}] from InstanceHost")]
+        private partial void LogPlugInInstanceDeleting(int id);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Deleting PlugInInstance [{id}]")]
+        private partial void LogPlugInInstanceDeletingInstanceHost(int id);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugIn: [{id}] not found")]
+        private partial void LogPlugInNotFound(int id);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugIn [{id}] still running")]
+        private partial void LogPlugInStillRunning(int id);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Removing Instance [{id}] from instance host")]
+        private partial void LogRemovingInstance(int id);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Found running PlugIn Instances Id: [{ids}]")]
+        private partial void LogRunningPlugInFound(List<int> ids);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Updating a PlugIn package. PlugIn: [{id}] Assembly: [{assemblyFileName}] Version: [{assemblyVersion}]")]
+        private partial void LogUpdatingPlugInPackage(int id,
+                                                      string assemblyFileName,
+                                                      string assemblyVersion);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Writing PlugIn Package file [{packageFileName}]")]
+        private partial void LogWrittingPlugInPackageFile(string packageFileName);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "No assembly file ending with [{plugInNamePostFix}] was found in the package [{packageFileName}] files")]
+        private partial void NoAssemblyFilePackageFileFound(string plugInNamePostFix,
+                                                            string packageFileName);
 
         private void RemoveInstancesFromHost(PlugIn plugIn)
         {
             foreach (var id in plugIn.Instances.Select(_ => _.Id))
             {
-                _logger.LogDebug("Removing Instance [{Id}] from instance host", id);
+                LogRemovingInstance(id);
+
                 _instanceHost.RemoveInstance(id);
             }
         }
