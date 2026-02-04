@@ -116,7 +116,7 @@ namespace Shaos.Testing.Shared
                                             string assemblyDirectory,
                                             string targetPackageDirectory)
         {
-            var sourcePackageDirectory = assemblyDirectory!.Replace(testProjectName, packageName).Replace("net8.0", string.Empty);
+            var sourcePackageDirectory = assemblyDirectory!.Replace(testProjectName, packageName).Replace($"net{Environment.Version.Major}.{Environment.Version.Minor}", string.Empty);
             var sourcePackageFilePath = Path.Combine(sourcePackageDirectory, packageFileName);
             var targetPackageFilePath = Path.Combine(targetPackageDirectory, packageFileName);
 
