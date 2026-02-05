@@ -107,7 +107,8 @@ namespace Shaos.Test.PlugIn
             {
                 List<IBaseParameter> baseParameters =
                 [
-                    new IntParameter(0,
+                    new IntParameter(10,
+                                     0,
                                      0,
                                      10,
                                      "Test Parameter",
@@ -115,7 +116,8 @@ namespace Shaos.Test.PlugIn
                                      ParameterType.Frequency)
                 ];
 
-                await Devices.AddAsync(new Device("TestDevice",
+                await Devices.AddAsync(new Device(1,
+                                                  "TestDevice",
                                                   DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless,
                                                   baseParameters));
             }
