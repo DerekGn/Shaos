@@ -71,7 +71,7 @@ namespace Shaos.Test.PlugIn
                 Devices.First().SignalLevel!.Level = DecrementLimit(ref signal, -100, 0);
                 Devices.First().BatteryLevel!.Level = (uint)IncrementLimit(ref battery, 0, 100);
 
-                await freqParameter.WriteValueAsync(IncrementLimit(ref freq, 0, 50));
+                await freqParameter.NotifyValueChangedAsync(IncrementLimit(ref freq, 0, 50));
             } while (!cancellationToken.IsCancellationRequested);
 
             _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));

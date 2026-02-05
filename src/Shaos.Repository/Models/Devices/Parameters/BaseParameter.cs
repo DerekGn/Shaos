@@ -54,6 +54,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The <see cref="BaseParameter"/> units
         /// </summary>
-        public string? Units { get; set; }
+        public required string Units { get; set; }
     }
 }

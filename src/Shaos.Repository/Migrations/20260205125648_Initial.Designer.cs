@@ -11,14 +11,14 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20250912203610_Initial")]
+    [Migration("20260205125648_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
                 {
@@ -65,8 +65,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("DeviceId")
-                        .IsRequired()
+                    b.Property<int>("DeviceId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Discriminator")
@@ -75,6 +74,7 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
@@ -82,6 +82,7 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Units")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
@@ -94,7 +95,7 @@ namespace Shaos.Repository.Migrations
 
                     b.ToTable("BaseParameter");
 
-                    b.HasDiscriminator().HasValue("BaseParameter");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseParameter");
 
                     b.UseTphMappingStrategy();
                 });
@@ -117,7 +118,7 @@ namespace Shaos.Repository.Migrations
 
                     b.ToTable("BaseParameterValue");
 
-                    b.HasDiscriminator().HasValue("BaseParameterValue");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseParameterValue");
 
                     b.UseTphMappingStrategy();
                 });
