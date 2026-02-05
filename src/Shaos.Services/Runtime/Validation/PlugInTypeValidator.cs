@@ -33,7 +33,7 @@ namespace Shaos.Services.Runtime.Validation
     /// <summary>
     /// A PlugIn type validation
     /// </summary>
-    public class PlugInTypeValidator : IPlugInTypeValidator
+    public partial class PlugInTypeValidator : IPlugInTypeValidator
     {
         private const int AllowedConstructorCount = 1;
         private const int AllowedConstructorParameterCount = 2;
@@ -93,9 +93,8 @@ namespace Shaos.Services.Runtime.Validation
 
             if (constructors.Length != AllowedConstructorCount)
             {
-                _logger.LogError("PlugIn [{Name}] contains invalid number of constructors [{Length}]",
-                    plugInType.Name,
-                    constructors.Length);
+                LogInvalidConstructorCount(plugInType.Name,
+                                           constructors.Length);
 
                 throw new PlugInConstructorsException(
                     $"PlugIn [{plugInType.Name}] contains invalid number of constructors [{constructors.Length}]");
@@ -105,9 +104,8 @@ namespace Shaos.Services.Runtime.Validation
 
             if (parameterInfos.Length > AllowedConstructorParameterCount)
             {
-                _logger.LogError("PlugIn [{Name}] contains invalid number of constructor parameters [{Length}]",
-                    plugInType.Name,
-                    parameterInfos.Length);
+                LogInvalidConstructorParameterCount(plugInType.Name,
+                                                    parameterInfos.Length);
 
                 throw new PlugInConstructorException(
                     $"PlugIn [{plugInType.Name}] constructor contains invalid number of constructor parameters [{parameterInfos.Length}]");
@@ -128,9 +126,8 @@ namespace Shaos.Services.Runtime.Validation
             {
                 var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
 
-                _logger.LogError("PlugIn [{Name}] contains an invalid constructor parameters [{List}]",
-                    plugInType.Name,
-                    constructorParameterList);
+                LogInvalidConstuctorParameters(plugInType.Name,
+                                               constructorParameterList);
 
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{constructorParameterList}]");
             }
@@ -139,9 +136,8 @@ namespace Shaos.Services.Runtime.Validation
             {
                 var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
 
-                _logger.LogError("PlugIn [{Name}] contains an invalid constructor parameters [{List}]",
-                    plugInType.Name,
-                    constructorParameterList);
+                LogInvalidConstuctorParameters(plugInType.Name,
+                                               constructorParameterList);
 
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{constructorParameterList}]");
             }
@@ -154,10 +150,9 @@ namespace Shaos.Services.Runtime.Validation
 
                 if (loggerGenericType != plugInType)
                 {
-                    _logger.LogError("PlugIn [{Name}] [{Type}] parameter invalid generic type parameter [{Arg}]",
-                        plugInType.Name,
-                        nameof(ILogger),
-                        loggerGenericType.Name);
+                    LogInvalidConstuctorGenericParameters(plugInType.Name,
+                                                          nameof(ILogger),
+                                                          loggerGenericType.Name);
 
                     throw new PlugInConstructorException(
                         $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerGenericType.Name}]");
@@ -197,8 +192,31 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
+        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] contains invalid number of constructors [{length}]")]
+        private partial void LogInvalidConstructorCount(string name,
+                                                        int length);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] contains invalid number of constructor parameters [{length}]")]
+        private partial void LogInvalidConstructorParameterCount(string name,
+                                                                 int length);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] [{type}] parameter invalid generic type parameter [{argument}]")]
+        private partial void LogInvalidConstuctorGenericParameters(string name,
+                                                                   string type,
+                                                                   string argument);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] contains an invalid constructor parameters [{parameters}]")]
+        private partial void LogInvalidConstuctorParameters(string name,
+                                                            string parameters);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "More than one PlugIn type found in assembly [{fullName}]")]
+        private partial void LogMultiplePlugInTypesFound(string? fullName);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "No PlugIn type found in assembly [{fullName}]")]
+        private partial void LogNoPlugInTypeFound(string? fullName);
+
         private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile,
-                                                             out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
+                                                                             out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
         {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
@@ -213,13 +231,13 @@ namespace Shaos.Services.Runtime.Validation
 
                 if (count == 0)
                 {
-                    _logger.LogError("No PlugIn type found in assembly [{Assembly}]", assembly.FullName);
+                    LogNoPlugInTypeFound(assembly.FullName);
                     throw new PlugInTypeNotFoundException();
                 }
 
                 if (count > 1)
                 {
-                    _logger.LogError("More than one PlugIn type found in assembly [{Assembly}]", assembly.FullName);
+                    LogMultiplePlugInTypesFound(assembly.FullName);
                     throw new PlugInTypesFoundException(count);
                 }
 
