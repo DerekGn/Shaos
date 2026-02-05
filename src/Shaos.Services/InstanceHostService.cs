@@ -40,7 +40,7 @@ namespace Shaos.Services
     /// <summary>
     /// An instance hosting service
     /// </summary>
-    public class InstanceHostService : IInstanceHostService
+    public partial class InstanceHostService : IInstanceHostService
     {
         private readonly IFileStoreService _fileStoreService;
         private readonly IRuntimeInstanceEventHandler _instanceEventHandler;
@@ -88,7 +88,8 @@ namespace Shaos.Services
 
             if (!plugInInformation!.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
             {
-                _logger.LogError("PlugInInstance has no configuration [{Id}]", id);
+                LogPlugInHasNoConfiguration(id);
+
                 throw new PlugInInstanceNotConfiguredException(id);
             }
 
@@ -104,7 +105,7 @@ namespace Shaos.Services
         {
             if (!_instanceHost.InstanceExists(id))
             {
-                _logger.LogWarning("Unable to start a PlugIn instance. Instance host does not contain instance Id: [{Id}]", id);
+                LogUnableToStartPlugIn(id);
 
                 throw new InstanceNotFoundException(id);
             }
@@ -117,14 +118,15 @@ namespace Shaos.Services
 
             if (plugIn.PlugInInformation == null)
             {
-                _logger.LogWarning("PlugInInstance package not assigned. Id: [{Id}]", id);
+                LogPlugInInstancePackageNotAssigned(id);
 
                 throw new PlugInPackageNotAssignedException(id);
             }
 
             if (plugInInformation.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))
             {
-                _logger.LogWarning("PlugIn instance Id: [{Id}] was not found.", id);
+                LogPlugInInstanceNotConfigured(id);
+
                 throw new PlugInInstanceNotConfiguredException(id);
             }
 
@@ -165,26 +167,21 @@ namespace Shaos.Services
 
                         if (!plugInInstance.Enabled)
                         {
-                            _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not enabled for startUp",
-                                               nameof(plugInInstance),
-                                               plugInInstance.Id,
-                                               plugInInstance.Name);
+                            LogPlugInInstanceNotEnabled(plugInInstance.Id,
+                                                        plugInInstance.Name);
                             continue;
                         }
 
                         if (plugInInformation.HasConfiguration && plugInInstance.Configuration!.IsEmptyOrWhiteSpace())
                         {
-                            _logger.LogWarning("{Type}: [{Id}] Name: [{Name}] not configured",
-                                               nameof(plugInInstance),
-                                               plugInInstance.Id,
-                                               plugInInstance.Name);
+                            LogPlugInInstanceNotConfigured(plugInInstance.Id,
+                                                           plugInInstance.Name);
 
                             continue;
                         }
 
-                        _logger.LogInformation("Starting PlugIn instance. Id: [{Id} Name: [{Name}]]",
-                                               instance.Id,
-                                               instance.Name);
+                        LogStartingPlugInInstance(instance.Id,
+                                                  instance.Name);
 
                         _instanceHost.StartInstance(instance.Id,
                                                     runtimeInstance!);
@@ -250,8 +247,7 @@ namespace Shaos.Services
 
             var runtimeInstance = plugInBuilder.PlugIn;
 
-            _logger.LogInformation("Attaching event handlers to PlugIn Id: [{Id}] Name: [{Name}]",
-                                   plugInInstance.Id,
+            LogAttachEventHandlers(plugInInstance.Id,
                                    plugInInstance.Name);
 
             _instanceEventHandler.Attach(runtimeInstance!);
@@ -290,12 +286,43 @@ namespace Shaos.Services
 
             if (plugInInstance == null)
             {
-                _logger.LogWarning("Unable to resolve PlugInInstance. Id: [{Id}]", id);
+                LogUnableToResolvePlugInInstance(id);
 
                 throw new PlugInInstanceNotFoundException(id);
             }
 
             return plugInInstance;
         }
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Attaching event handlers to PlugIn Instance Id: [{id}] Name: [{name}]")]
+        private partial void LogAttachEventHandlers(int id,
+                                                    string name);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "PlugInInstance has no configuration [{id}]")]
+        private partial void LogPlugInHasNoConfiguration(int id);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugIn instance Id: [{id}] Name: [{name}] was not configured.")]
+        private partial void LogPlugInInstanceNotConfigured(int id,
+                                                            string name);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugIn instance Id: [{id}] was not found.")]
+        private partial void LogPlugInInstanceNotConfigured(int id);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugIn Instance Id: [{id}] Name: [{name}] not enabled for startUp")]
+        private partial void LogPlugInInstanceNotEnabled(int id,
+                                                         string name);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugInInstance package not assigned. Id: [{id}]")]
+        private partial void LogPlugInInstancePackageNotAssigned(int id);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Starting PlugIn instance. Id: [{id} Name: [{name}]]")]
+        private partial void LogStartingPlugInInstance(int id,
+                                                       string name);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Unable to resolve PlugIn Instance. Id: [{Id}]")]
+        private partial void LogUnableToResolvePlugInInstance(int id);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Unable to start a PlugIn instance Id: [{id}]. Instance host does not contain instance.")]
+        private partial void LogUnableToStartPlugIn(int id);
     }
 }

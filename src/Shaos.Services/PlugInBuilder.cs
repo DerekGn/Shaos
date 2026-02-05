@@ -37,10 +37,9 @@ namespace Shaos.Services
     /// </summary>
     /// <param name="loggerFactory">A <see cref="ILoggerFactory"/> instance</param>
     /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
-    public class PlugInBuilder(ILoggerFactory loggerFactory,
-                               ILogger<PlugInBuilder> logger) : BasePlugInBuilder(logger), IPlugInBuilder
+    public partial class PlugInBuilder(ILoggerFactory loggerFactory,
+                                       ILogger<PlugInBuilder> logger) : BasePlugInBuilder(logger), IPlugInBuilder
     {
-        private readonly ILogger<PlugInBuilder> _logger = logger;
         private readonly ILoggerFactory _loggerFactory = loggerFactory;
         private IPlugIn? _plugin;
 
@@ -66,8 +65,7 @@ namespace Shaos.Services
 
             var plugInType = ResolvePlugInType(assembly);
 
-            _logger.LogDebug("Resolved PlugIn: [{Name}] from Assembly: [{Assembly}]",
-                             plugInType.Name,
+            LogResolvedPlugIn(plugInType.Name,
                              assembly.FullName);
 
             var constructorParameters = GetConstructorParameters(plugInType);
@@ -133,7 +131,7 @@ namespace Shaos.Services
                         Type[] typeArgs = { parameterType.GenericTypeArguments[0] };
                         Type loggerType = typeof(Logger<>).MakeGenericType(typeArgs);
 
-                        _logger.LogDebug("Creating instance of [{Name}]", parameterType.FullName);
+                        LogCreatingPlugIn(parameterType.FullName);
 
                         result.Add(Activator.CreateInstance(loggerType, _loggerFactory)!);
                     }
@@ -156,5 +154,12 @@ namespace Shaos.Services
 
             return configurationInstance;
         }
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Creating instance of [{fullName}]")]
+        private partial void LogCreatingPlugIn(string? fullName);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved PlugIn: [{name}] from Assembly: [{assembly}]")]
+        private partial void LogResolvedPlugIn(string name,
+                                               string? assembly);
     }
 }

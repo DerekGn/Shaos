@@ -31,7 +31,7 @@ namespace Shaos.Services.SystemInformation
     /// <summary>
     /// The <see cref="ISystemService"/> implementation
     /// </summary>
-    public class SystemService : ISystemService
+    public partial class SystemService : ISystemService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<SystemService> _logger;
@@ -111,7 +111,7 @@ namespace Shaos.Services.SystemInformation
         /// <inheritdoc/>
         public void ShutdownApplication()
         {
-            _logger.LogInformation("Stopping Application");
+            LogApplicationStopping();
 
             _hostApplicationLifetime.StopApplication();
         }
@@ -127,5 +127,8 @@ namespace Shaos.Services.SystemInformation
                 RuntimeIdentifier = global::System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
             };
         }
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Stopping Application")]
+        private partial void LogApplicationStopping();
     }
 }
