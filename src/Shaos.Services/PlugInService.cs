@@ -46,20 +46,20 @@ namespace Shaos.Services
         private readonly ILogger<PlugInService> _logger;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
         private readonly IPlugInTypeValidator _plugInTypeValidator;
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
 
         /// <summary>
         /// Create an instance of a <see cref="PlugInService"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/></param>
         /// <param name="instanceHost">The <see cref="IRuntimeInstanceHost"/> instance</param>
-        /// <param name="repository">The <see cref="IRepository"/> instance</param>
+        /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="plugInTypeValidator">The <see cref="IPlugInTypeValidator"/> instance</param>
         /// <param name="plugInConfigurationBuilder"></param>
         public PlugInService(ILogger<PlugInService> logger,
                              IRuntimeInstanceHost instanceHost,
-                             IRepository repository,
+                             IShaosRepository repository,
                              IFileStoreService fileStoreService,
                              IPlugInTypeValidator plugInTypeValidator,
                              IPlugInConfigurationBuilder plugInConfigurationBuilder)

@@ -47,7 +47,7 @@ namespace Shaos.Services
         private readonly IRuntimeInstanceHost _instanceHost;
         private readonly ILogger<InstanceHostService> _logger;
         private readonly IPlugInConfigurationBuilder _plugInConfigurationBuilder;
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
         /// <summary>
@@ -55,14 +55,14 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="instanceHost">The <see cref="IRuntimeInstanceHost"/> instance</param>
-        /// <param name="repository">The <see cref="IRepository"/> instance</param>
+        /// <param name="repository">The <see cref="IShaosRepository"/> instance</param>
         /// <param name="fileStoreService">The <see cref="IFileStoreService"/> instance</param>
         /// <param name="serviceScopeFactory"></param>
         /// <param name="instanceEventHandler"></param>
         /// <param name="plugInConfigurationBuilder"></param>
         public InstanceHostService(ILogger<InstanceHostService> logger,
                                    IRuntimeInstanceHost instanceHost,
-                                   IRepository repository,
+                                   IShaosRepository repository,
                                    IFileStoreService fileStoreService,
                                    IServiceScopeFactory serviceScopeFactory,
                                    IRuntimeInstanceEventHandler instanceEventHandler,

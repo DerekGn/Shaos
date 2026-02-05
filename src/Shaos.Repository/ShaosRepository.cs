@@ -37,7 +37,7 @@ namespace Shaos.Repository
     /// <summary>
     /// The repository implementation
     /// </summary>
-    public partial class ShaosRepository : IRepository
+    public partial class ShaosRepository : IShaosRepository
     {
         private readonly ShaosDbContext _context;
         private readonly ILogger<ShaosRepository> _logger;

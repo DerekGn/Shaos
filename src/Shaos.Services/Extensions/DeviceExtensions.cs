@@ -47,15 +47,15 @@ namespace Shaos.Services.Extensions
             return modelDevice;
         }
 
-        public static SdkDevice ToSdk(this ModelDevice device)
-        {
-            var sdkDevice = new Device(device.Name,
-                                       device.Features,
-                                       device.Parameters.ToSdk());
+        //public static SdkDevice ToSdk(this ModelDevice device)
+        //{
+        //    var sdkDevice = new Device(device.Name,
+        //                               device.Features,
+        //                               device.Parameters.ToSdk());
 
-            sdkDevice.SetId(device.Id);
+        //    sdkDevice.SetId(device.Id);
 
-            return sdkDevice;
-        }
+        //    return sdkDevice;
+        //}
     }
 }

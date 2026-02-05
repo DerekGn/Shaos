@@ -179,7 +179,7 @@ namespace Shaos
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
             builder.Services.AddScoped<IPlugInBuilder, PlugInBuilder>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
-            builder.Services.AddScoped<IRepository, ShaosRepository>();
+            builder.Services.AddScoped<IShaosRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<IDeviceEventQueue>(InitDeviceEventQueue(builder.Configuration));

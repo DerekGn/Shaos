@@ -33,9 +33,9 @@ namespace Shaos.Pages.Parameters
 {
     public class PlotModel : PageModel
     {
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
 
-        public PlotModel(IRepository repository)
+        public PlotModel(IShaosRepository repository)
         {
             _repository = repository;
         }

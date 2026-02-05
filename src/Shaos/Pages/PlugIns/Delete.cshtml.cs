@@ -34,9 +34,9 @@ namespace Shaos.Pages.PlugIns
     public class DeleteModel : PageModel
     {
         private readonly IPlugInService _plugInService;
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
 
-        public DeleteModel(IRepository repository,
+        public DeleteModel(IShaosRepository repository,
                            IPlugInService plugInService)
         {
             _repository = repository;

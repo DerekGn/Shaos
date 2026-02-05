@@ -33,10 +33,10 @@ namespace Shaos.Pages.Devices
     public class IndexModel : PaginatedModel<Device>
     {
         private readonly IConfiguration _configuration;
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
 
         public IndexModel(IConfiguration configuration,
-                          IRepository repository)
+                          IShaosRepository repository)
         {
             _configuration = configuration;
             _repository = repository;

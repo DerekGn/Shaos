@@ -92,8 +92,6 @@ namespace Shaos.Services.Runtime.Host
 
                         await repository.SaveChangesAsync();
 
-                        parameter.SetId(modelParameter.Id);
-
                         LogDeviceCreated(id,
                                          modelDevice.Name,
                                          parameter.Id,
@@ -127,8 +125,6 @@ namespace Shaos.Services.Runtime.Host
 
                         await repository.SaveChangesAsync();
 
-                        device.SetId(modelDevice.Id);
-
                         LogDeviceCreated(id,
                                          device.Name);
 
@@ -136,15 +132,10 @@ namespace Shaos.Services.Runtime.Host
                         {
                             var deviceParameter = modelDevice.Parameters.FirstOrDefault(_ => _.Name == parameter.Name && _.ParameterType == parameter.ParameterType && _.Units == parameter.Units);
 
-                            if (deviceParameter != null)
-                            {
-                                parameter.SetId(deviceParameter.Id);
-                            }
-
                             LogDeviceParameterCreated(id,
-                                             device.Name,
-                                             parameter.Id,
-                                             parameter.Name);
+                                                      device.Name,
+                                                      parameter.Id,
+                                                      parameter.Name);
                         }
                     }
                 }
@@ -504,12 +495,12 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
-        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
+        private async Task ExecuteRepositoryOperationAsync(Func<IShaosRepository, Task> operation)
         {
             try
             {
                 using var scope = _serviceScopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
+                var repository = scope.ServiceProvider.GetRequiredService<IShaosRepository>();
 
                 await operation(repository);
             }

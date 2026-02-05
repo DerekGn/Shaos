@@ -56,6 +56,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IPlugIn> _mockPlugIn;
         private readonly Mock<IRuntimeDeviceUpdateHandler> _mockRuntimeDeviceUpdateHandler;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
+
         public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             _mockDevice = new Mock<IDevice>();
@@ -153,14 +154,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockChildObservableListDevices.Object,
                        new ListChangedEventArgs<IDevice>(ListChangedAction.Add,
                        [
-                           new SdkDevice(Name,
-                           DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless,
+                           new SdkDevice(1, Name, DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless,
                            [
-                               new BoolParameter(true, Name, Units, ParameterType.Iaq),
-                               new FloatParameter(0.2f, 0, 10, Name, Units, ParameterType.Iaq),
-                               new IntParameter(-18, -1, 10, Name, Units, ParameterType.Iaq),
-                               new StringParameter("string", Name, Units, ParameterType.Iaq),
-                               new UIntParameter(7218, 0, 10, Name, Units, ParameterType.Iaq)
+                               new BoolParameter(1, true, Name, Units, ParameterType.Iaq),
+                               new FloatParameter(2, 0.2f, 0, 10, Name, Units, ParameterType.Iaq),
+                               new IntParameter(3, -18, -1, 10, Name, Units, ParameterType.Iaq),
+                               new StringParameter(4, "string", Name, Units, ParameterType.Iaq),
+                               new UIntParameter(6, 7218, 0, 10, Name, Units, ParameterType.Iaq)
                            ])
                        ]));
         }
@@ -180,7 +180,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockChildObservableListDevices.Object,
                        new ListChangedEventArgs<IDevice>(action,
                        [
-                           new SdkDevice(Name, DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, [])
+                           new SdkDevice(1, Name, DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless, [])
                        ]));
 
             _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeleteDevicesAsync(It.IsAny<IEnumerable<int>>()));
@@ -201,11 +201,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockObservableListParameters.Object,
                        new ListChangedEventArgs<IBaseParameter>(ListChangedAction.Add,
                        [
-                           new BoolParameter(true, Name, Units, ParameterType.Iaq),
-                           new FloatParameter(1.0f, 0, 10, Name, Units, ParameterType.Iaq),
-                           new IntParameter(1, -1, 20, Name, Units, ParameterType.Iaq),
-                           new StringParameter("string", Name, Units, ParameterType.Iaq),
-                           new UIntParameter(1, 0, 299, Name, Units, ParameterType.Iaq)
+                           new BoolParameter(1, true, Name, Units, ParameterType.Iaq),
+                           new FloatParameter(2, 1.0f, 0, 10, Name, Units, ParameterType.Iaq),
+                           new IntParameter(3, 1, -1, 20, Name, Units, ParameterType.Iaq),
+                           new StringParameter(4, "string", Name, Units, ParameterType.Iaq),
+                           new UIntParameter(5, 1, 0, 299, Name, Units, ParameterType.Iaq)
                        ]));
 
             _mockRuntimeDeviceUpdateHandler.Verify(_ => _.CreateDeviceParametersAsync(It.IsAny<int>(), It.IsAny<IList<IBaseParameter>>()));
@@ -253,7 +253,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         [Fact]
         public void TestParameterValueChangedFloatAsync()
-        {            
+        {
             _mockBaseParameters[0]
                 .As<IBaseParameter<float>>().Object.ValueChanged += _runtimeInstanceEventHandler.ParameterValueChangedAsync;
 

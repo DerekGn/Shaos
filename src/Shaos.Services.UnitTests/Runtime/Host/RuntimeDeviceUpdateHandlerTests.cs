@@ -80,7 +80,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ModelDevice());
 
-            SdkBoolParameter parameter = new(false,
+            SdkBoolParameter parameter = new(1,
+                                             false,
                                              "name",
                                              "units",
                                              ParameterType.Level);
@@ -113,12 +114,14 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                            It.IsAny<CancellationToken>()))
                 .ReturnsAsync(plugInInstance);
 
-            SdkBoolParameter parameter = new(false,
+            SdkBoolParameter parameter = new(1,
+                                             false,
                                              "name",
                                              "units",
                                              ParameterType.Level);
 
-            var device = new SdkDevice("name",
+            var device = new SdkDevice(1,
+                                       "name",
                                        Sdk.Devices.DeviceFeatures.None,
                                        [parameter]);
 
@@ -433,7 +436,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Returns(_mockServiceProvider.Object);
 
             _mockServiceProvider
-                .Setup(_ => _.GetService(typeof(IRepository)))
+                .Setup(_ => _.GetService(typeof(IShaosRepository)))
                 .Returns(MockRepository.Object);
         }
     }
