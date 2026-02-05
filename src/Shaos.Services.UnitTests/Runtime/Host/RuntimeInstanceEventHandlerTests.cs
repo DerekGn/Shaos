@@ -74,7 +74,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 new Mock<IBaseParameter>()
             ];
 
-            _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory.CreateLogger<RuntimeInstanceEventHandler>(),
+            _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory!.CreateLogger<RuntimeInstanceEventHandler>(),
                                                                            _mockRuntimeDeviceUpdateHandler.Object);
         }
 

@@ -195,7 +195,7 @@ namespace Shaos.Services
         {
             var instance = _instanceHost.Instances.FirstOrDefault(_ => _.Id == id);
 
-            if (instance != null && instance.ExecutionContext != null)
+            if (instance != null && instance.ExecutionContext != null && instance.ExecutionContext.PlugIn != null)
             {
                 _instanceEventHandler.Detach(instance.ExecutionContext.PlugIn);
             }

@@ -112,7 +112,8 @@ namespace Shaos.Services.Extensions
                     break;
 
                 case Type _ when type == typeof(StringParameter):
-                    result = new Sdk.Devices.Parameters.StringParameter(((StringParameter)parameter).Value,
+                    var stringParameter = (StringParameter)parameter;
+                    result = new Sdk.Devices.Parameters.StringParameter(stringParameter.Value!,
                                                                         parameter.Name,
                                                                         parameter.Units,
                                                                         parameter.ParameterType);

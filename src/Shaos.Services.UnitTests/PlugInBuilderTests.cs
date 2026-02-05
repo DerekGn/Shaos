@@ -23,12 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Moq;
 using Shaos.Repository.Models;
-using Shaos.Repository.Models.Devices.Parameters;
-using Shaos.Sdk;
-using Shaos.Sdk.Collections.Generic;
-using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Exceptions;
 using Shaos.Services.UnitTests.Fixtures;
@@ -41,13 +36,10 @@ namespace Shaos.Services.UnitTests
     public class PlugInBuilderTests : PlugInBuilderBaseTests
     {
         private readonly PlugInBuilder _builder;
-        private readonly Mock<IPlugIn> _plugIn;
 
         public PlugInBuilderTests(ITestOutputHelper output,
                                   TestFixture fixture) : base(output, fixture)
         {
-            _plugIn = new Mock<IPlugIn>();
-
             _builder = new PlugInBuilder(LoggerFactory!,
                                          LoggerFactory!.CreateLogger<PlugInBuilder>());
         }
@@ -69,9 +61,9 @@ namespace Shaos.Services.UnitTests
         {
             PlugInInstance plugInInstance = SetupPlugInInstance();
 
-            _builder.PlugIn = new TestPlugIn(LoggerFactory.CreateLogger<TestPlugIn>(),
+            _builder.PlugIn = new TestPlugIn(LoggerFactory!.CreateLogger<TestPlugIn>(),
                                              new TestPlugInConfiguration());
-            
+
             _builder.Restore(plugInInstance);
 
             var plugIn = _builder.PlugIn;
