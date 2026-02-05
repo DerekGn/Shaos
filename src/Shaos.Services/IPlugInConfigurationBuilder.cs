@@ -43,12 +43,12 @@ namespace Shaos.Services
         /// <summary>
         /// Load the configuration type from a PlugIn assembly
         /// </summary>
-        /// <param name="plugInFolder">The folder where the PlugIn was extracted</param>
-        /// <param name="plugInAssemblyFileName">The PlugIn assembly file name</param>
+        /// <param name="extractedFolder">The folder where the PlugIn was extracted</param>
+        /// <param name="assemblyFile">The PlugIn assembly file name</param>
         /// <param name="configuration">The optional json configuration to apply to the configuration instance</param>
         /// <returns>An instance of a configuration type</returns>
-        object? LoadConfiguration(string plugInFolder,
-                                  string plugInAssemblyFileName,
+        object? LoadConfiguration(string extractedFolder,
+                                  string assemblyFile,
                                   string? configuration = default);
     }
 }

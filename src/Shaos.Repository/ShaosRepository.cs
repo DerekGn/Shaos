@@ -37,7 +37,7 @@ namespace Shaos.Repository
     /// <summary>
     /// The repository implementation
     /// </summary>
-    public class ShaosRepository : IRepository
+    public partial class ShaosRepository : IRepository
     {
         private readonly ShaosDbContext _context;
         private readonly ILogger<ShaosRepository> _logger;
@@ -86,7 +86,8 @@ namespace Shaos.Repository
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                _logger.LogInformation("PlugIn [{Id}] [{Name}] Created", plugIn.Id, plugIn.Name);
+                LogPlugInCreated(plugIn.Id,
+                                 plugIn.Name);
 
                 return plugIn.Id;
             });
@@ -100,14 +101,14 @@ namespace Shaos.Repository
             ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(plugInInformation);
 
-            _logger.LogDebug("Creating new package for PlugIn: [{Id}] Package: [{PlugInInformation}]",
-                             plugIn.Id,
-                             plugInInformation);
+            LogCreatingPackage(plugIn.Id,
+                               plugInInformation);
 
             plugIn.PlugInInformation = plugInInformation;
 
             return await _context.SaveChangesAsync(cancellationToken);
         }
+
         /// <inheritdoc/>
         public async Task<int> CreatePlugInInstanceAsync(PlugIn plugIn,
                                                          PlugInInstance plugInInstance,
@@ -320,7 +321,8 @@ namespace Shaos.Repository
             {
                 if (sqliteException.SqliteErrorCode == 0x13)
                 {
-                    _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
+                    LogDuplicatePlugInInstanceName(name,
+                                                   exception);
 
                     throw new NameExistsException(name);
                 }
@@ -340,7 +342,7 @@ namespace Shaos.Repository
             {
                 if (sqliteException.SqliteErrorCode == 0x13)
                 {
-                    _logger.LogWarning(exception, "Duplicate PlugIn Name: [{Name}] exists", name);
+                    LogDuplicatePlugInName(name, exception);
 
                     throw new NameExistsException(name);
                 }
@@ -348,5 +350,21 @@ namespace Shaos.Repository
                 throw;
             }
         }
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Creating new package for PlugIn: [{id}] Package: [{plugInInformation}]")]
+        private partial void LogCreatingPackage(int id,
+                                                PlugInInformation plugInInformation);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Duplicate PlugIn Instance Name: [{name}] exists")]
+        private partial void LogDuplicatePlugInInstanceName(string name,
+                                                            Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Duplicate PlugIn Name: [{name}] exists")]
+        private partial void LogDuplicatePlugInName(string name,
+                                                    Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "PlugIn [{id}] [{name}] Created")]
+        private partial void LogPlugInCreated(int id,
+                                              string name);
     }
 }

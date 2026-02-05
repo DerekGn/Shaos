@@ -47,7 +47,7 @@ namespace Shaos.Services.Runtime.Host
     /// A <see cref="IRuntimeDeviceUpdateHandler"/> that stores updates to a database.
     /// Updates are also published to an event queue.
     /// </summary>
-    public class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
+    public partial class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
     {
         private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
@@ -94,8 +94,7 @@ namespace Shaos.Services.Runtime.Host
 
                         parameter.SetId(modelParameter.Id);
 
-                        _logger.LogDebug("Created Device [{Id}] Name: [{DeviceName}] Parameter: [{ParameterId}] Name: [{ParameterName}]",
-                                         id,
+                        LogDeviceCreated(id,
                                          modelDevice.Name,
                                          parameter.Id,
                                          parameter.Name);
@@ -103,7 +102,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogError("Unable to resolve Device for Id: [{Id}]", id);
+                    LogUnableToResolveDevice(id);
                 }
             });
         }
@@ -130,8 +129,7 @@ namespace Shaos.Services.Runtime.Host
 
                         device.SetId(modelDevice.Id);
 
-                        _logger.LogDebug("Created Device [{Id}] Name: [{Name}]",
-                                         id,
+                        LogDeviceCreated(id,
                                          device.Name);
 
                         foreach (var parameter in device.Parameters)
@@ -143,8 +141,7 @@ namespace Shaos.Services.Runtime.Host
                                 parameter.SetId(deviceParameter.Id);
                             }
 
-                            _logger.LogDebug("Created Device: [{Id}] Name: [{DeviceName}] Parameter: [{ParameterId}] Name: [{ParameterName}]",
-                                             id,
+                            LogDeviceParameterCreated(id,
                                              device.Name,
                                              parameter.Id,
                                              parameter.Name);
@@ -153,7 +150,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogError("Unable to resolve PlugIn for Id: [{Id}]", id);
+                    LogUnableToResolvePlugIn(id);
                 }
             });
         }
@@ -165,8 +162,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 foreach (var parameterId in parameterIds)
                 {
-                    _logger.LogInformation("Deleting Parameter Id: [{Id}]",
-                                           parameterId);
+                    LogParameterDelete(parameterId);
 
                     await repository.DeleteAsync<ModelBaseParameter>(parameterId);
                 }
@@ -182,8 +178,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 foreach (var deviceId in deviceIds)
                 {
-                    _logger.LogInformation("Deleting Device Id: [{Id}]",
-                                           deviceId);
+                    LogDeviceDelete(deviceId);
 
                     await repository.DeleteAsync<ModelDevice>(deviceId);
                 }
@@ -195,17 +190,17 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task DeviceBatteryLevelUpdateAsync(int id,
                                                         uint level,
-                                                        DateTime timeStamp)
+                                                        DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await UpdateDeviceBatteryLevelAsync(id,
                                                     level,
-                                                    timeStamp);
+                                                    timestamp);
 
                 await PublishDeviceParameterEventAsync(id,
                                                        level,
-                                                       timeStamp,
+                                                       timestamp,
                                                        cancellationToken);
             });
         }
@@ -213,15 +208,15 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task DeviceSignalLevelUpdateAsync(int id,
                                                        int level,
-                                                       DateTime timeStamp)
+                                                       DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await UpdateDeviceSignalLevelAsync(id, level, timeStamp);
+                await UpdateDeviceSignalLevelAsync(id, level, timestamp);
 
                 await PublishDeviceParameterEventAsync(id,
                                                       level,
-                                                      timeStamp,
+                                                      timestamp,
                                                       cancellationToken);
             });
         }
@@ -229,18 +224,18 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    int value,
-                                                   DateTime timeStamp)
+                                                   DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                   value,
-                                                  timeStamp,
+                                                  timestamp,
                                                   cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
                                                       value,
-                                                      timeStamp,
+                                                      timestamp,
                                                       cancellationToken);
             });
         }
@@ -248,18 +243,18 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    string value,
-                                                   DateTime timeStamp)
+                                                   DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                value,
-                                               timeStamp,
+                                               timestamp,
                                                cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
                                                        value,
-                                                       timeStamp,
+                                                       timestamp,
                                                        cancellationToken);
             });
         }
@@ -267,18 +262,18 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    float value,
-                                                   DateTime timeStamp)
+                                                   DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                value,
-                                               timeStamp,
+                                               timestamp,
                                                cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
                                                       value,
-                                                      timeStamp,
+                                                      timestamp,
                                                       cancellationToken);
             });
         }
@@ -286,18 +281,18 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    bool value,
-                                                   DateTime timeStamp)
+                                                   DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
                                                value,
-                                               timeStamp,
+                                               timestamp,
                                                cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
                                                       value,
-                                                      timeStamp,
+                                                      timestamp,
                                                       cancellationToken);
             });
         }
@@ -305,15 +300,15 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    uint value,
-                                                   DateTime timeStamp)
+                                                   DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await SaveParameterChangeAsync(id, value, timeStamp, cancellationToken);
+                await SaveParameterChangeAsync(id, value, timestamp, cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
                                                       value,
-                                                      timeStamp,
+                                                      timestamp,
                                                       cancellationToken);
             });
         }
@@ -329,10 +324,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                     parameter.Id,
-                                     parameter.Name,
-                                     value);
+                    LogUpdatingParameter(parameter.Id,
+                                         parameter.Name,
+                                         value);
 
                     parameter.Value = value;
 
@@ -348,7 +342,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                    LogParameterNotFound(id);
                 }
             });
         }
@@ -364,10 +358,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                     parameter.Id,
-                                     parameter.Name,
-                                     value);
+                    LogUpdatingParameter(parameter.Id,
+                                         parameter.Name,
+                                         value);
 
                     parameter.Value = value;
 
@@ -383,7 +376,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                    LogParameterNotFound(id);
                 }
             });
         }
@@ -391,7 +384,7 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      float value,
                                                      DateTime timeStamp,
-                                                     CancellationToken cancellationToken = default)
+                                                     CancellationToken cancellationToken)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -399,11 +392,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                     parameter.Id,
-                                     parameter.Name,
-                                     value);
-
+                    LogUpdatingParameter(parameter.Id,
+                                         parameter.Name,
+                                         value);
                     parameter.Value = value;
 
                     parameter.Values.Add(new FloatParameterValue()
@@ -418,7 +409,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                    LogParameterNotFound(id);
                 }
             });
         }
@@ -434,10 +425,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                     parameter.Id,
-                                     parameter.Name,
-                                     value);
+                    LogUpdatingParameter(parameter.Id,
+                                         parameter.Name,
+                                         value);
 
                     parameter.Value = value;
 
@@ -453,7 +443,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                    LogParameterNotFound(id);
                 }
             });
         }
@@ -469,10 +459,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    _logger.LogDebug("Updating parameter Id: [{Id}] Name: [{Name}] Value: [{Value}]",
-                                     parameter.Id,
-                                     parameter.Name,
-                                     value);
+                    LogUpdatingParameter(parameter.Id,
+                                         parameter.Name,
+                                         value);
 
                     parameter.Value = value;
 
@@ -488,7 +477,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogWarning("Parameter Id: [{Id}] Not Found", id);
+                    LogParameterNotFound(id);
                 }
             });
         }
@@ -526,12 +515,61 @@ namespace Shaos.Services.Runtime.Host
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception occurred");
+                LogUnhandledException(ex);
             }
         }
 
+        [LoggerMessage(Level = LogLevel.Error, Message = "Unhandled exception occurred")]
+        private partial void LogUnhandledException(Exception ex);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Created Device [{id}] Name: [{name}]")]
+        private partial void LogDeviceCreated(int id,
+                                              string name);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Created Device [{id}] Name: [{deviceName}] Parameter: [{parameterId}] Name: [{parameterName}]")]
+        private partial void LogDeviceCreated(int id,
+                                              string deviceName,
+                                              int parameterId,
+                                              string? parameterName);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Deleting Device Id: [{id}]")]
+        private partial void LogDeviceDelete(int id);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Created Device: [{id}] Name: [{deviceName}] Parameter: [{parameterId}] Name: [{parameterName}]")]
+        private partial void LogDeviceParameterCreated(int id,
+                                                       string deviceName,
+                                                       int parameterId,
+                                                       string? parameterName);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Deleting Parameter Id: [{id}]")]
+        private partial void LogParameterDelete(int id);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Parameter Id: [{Id}] Not Found")]
+        private partial void LogParameterNotFound(int id);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Unable to resolve Device for Id: [{id}]")]
+        private partial void LogUnableToResolveDevice(int id);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Unable to resolve PlugIn for Id: [{id}]")]
+        private partial void LogUnableToResolvePlugIn(int id);
+
+        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
+        private partial void LogUpdatingParameter(int id, string name, string value);
+
+        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
+        private partial void LogUpdatingParameter(int id, string name, int value);
+
+        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
+        private partial void LogUpdatingParameter(int id, string name, uint value);
+
+        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
+        private partial void LogUpdatingParameter(int id, string name, bool value);
+
+        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
+        private partial void LogUpdatingParameter(int id, string name, float value);
+
         private async Task PublishDeviceParameterEventAsync<T>(int id,
-                                                                                                                                                                               T level,
+                                                               T level,
                                                                DateTime timeStamp,
                                                                CancellationToken cancellationToken)
         {
@@ -542,6 +580,7 @@ namespace Shaos.Services.Runtime.Host
                 Timestamp = timeStamp
             }, cancellationToken);
         }
+
         private async Task UpdateDeviceAsync(int id,
                                              Action<ModelDevice> updateOperation)
         {
@@ -559,8 +598,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    _logger.LogError("Unable to resolve Device for [{Id}]",
-                                    id);
+                    LogUnableToResolveDevice(id);
                 }
             });
         }

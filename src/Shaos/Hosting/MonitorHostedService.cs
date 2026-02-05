@@ -24,7 +24,7 @@
 
 namespace Shaos.Hosting
 {
-    public class MonitorHostedService : IHostedService
+    public partial class MonitorHostedService : IHostedService
     {
         private readonly ILogger<MonitorHostedService> _logger;
 
@@ -38,33 +38,46 @@ namespace Shaos.Hosting
             hostApplicationLifetime.ApplicationStopping.Register(OnStopping);
         }
 
-        private void OnStopping()
-        {
-            _logger.LogInformation("Application Stopping");
-        }
-
-        private void OnStopped()
-        {
-            _logger.LogInformation("Application Stopped");
-        }
-
-        private void OnStarted()
-        {
-            _logger.LogInformation("Application Started");
-        }
-
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Background Worker [{nameof(MonitorHostedService)}] Starting");
-
+            LogStart();
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Background Worker [{nameof(MonitorHostedService)}] Stopping");
-
+            LogStop();
             return Task.CompletedTask;
+        }
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Application Starting")]
+        private partial void LogApplicationStarted();
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Application Stopped")]
+        private partial void LogApplicationStopped();
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Application Stopping")]
+        private partial void LogApplicationStopping();
+
+        [LoggerMessage(Level = LogLevel.Information, Message = $"Background Worker [{nameof(MonitorHostedService)}] Starting")]
+        private partial void LogStart();
+
+        [LoggerMessage(Level = LogLevel.Information, Message = $"Background Worker [{nameof(MonitorHostedService)}] Stopping")]
+        private partial void LogStop();
+
+        private void OnStarted()
+        {
+            LogApplicationStarted();
+        }
+
+        private void OnStopped()
+        {
+            LogApplicationStopped();
+        }
+
+        private void OnStopping()
+        {
+            LogApplicationStopping();
         }
     }
 }

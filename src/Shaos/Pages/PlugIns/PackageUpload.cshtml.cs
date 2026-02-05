@@ -6,7 +6,7 @@ using Shaos.Services.Validation;
 
 namespace Shaos.Pages.PlugIns
 {
-    public class PackageUploadModel : PageModel
+    public partial class PackageUploadModel : PageModel
     {
         private readonly IFileStoreService _fileStoreService;
         private readonly ILogger<PackageUploadModel> _logger;
@@ -58,10 +58,13 @@ namespace Shaos.Pages.PlugIns
             {
                 ModelState.AddModelError(string.Empty, "Exception occurred check the logs");
 
-                _logger.LogWarning(ex, "A exception occurred");
+                LogWarning(ex);
             }
 
             return Page();
         }
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "A exception occurred")]
+        private partial void LogWarning(Exception exception);
     }
 }

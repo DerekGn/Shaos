@@ -38,7 +38,8 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The <see cref="Device"/> instance identifier.</param>
         /// <param name="parameters">The <see cref="Device"/> <see cref="BaseParameter"/> instances.</param>
-        Task CreateDeviceParametersAsync(int id, IEnumerable<IBaseParameter> parameters);
+        Task CreateDeviceParametersAsync(int id,
+                                         IEnumerable<IBaseParameter> parameters);
 
         /// <summary>
         /// Create a list of <see cref="Device"/> instances.
@@ -46,7 +47,8 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The <see cref="PlugInInstance"/> identifier.</param>
         /// <param name="devices">The set of <see cref="Device"/> to create.</param>
         /// <returns></returns>
-        Task CreateDevicesAsync(int id, IEnumerable<IDevice> devices);
+        Task CreateDevicesAsync(int id,
+                                IEnumerable<IDevice> devices);
 
         /// <summary>
         /// Delete a set of <see cref="IBaseParameter"/> instances.
@@ -66,7 +68,9 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The <see cref="IDevice"/> instance identifier.</param>
         /// <param name="level">The battery level</param>
         /// <param name="timestamp">The timestamp of the event</param>
-        Task DeviceBatteryLevelUpdateAsync(int id, uint level, DateTime timestamp);
+        Task DeviceBatteryLevelUpdateAsync(int id,
+                                           uint level,
+                                           DateTime timestamp);
 
         /// <summary>
         /// Update a <see cref="IDevice"/> instance signal level.
@@ -74,46 +78,58 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The <see cref="IDevice"/> instance identifier.</param>
         /// <param name="level">The signal level</param>
         /// <param name="timestamp">The timestamp of the event</param>
-        Task DeviceSignalLevelUpdateAsync(int id, int level, DateTime timestamp);
+        Task DeviceSignalLevelUpdateAsync(int id,
+                                          int level,
+                                          DateTime timestamp);
 
         /// <summary>
         /// Save a <see cref="BaseParameter"/>
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
-        /// <param name="timeStamp">The timestamp</param>
-        Task SaveParameterChangeAsync(int id, int value, DateTime timeStamp);
+        /// <param name="timestamp">The timestamp</param>
+        Task SaveParameterChangeAsync(int id,
+                                      int value,
+                                      DateTime timestamp);
 
         /// <summary>
         /// Save a <see cref="BaseParameter"/>
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
-        /// <param name="timeStamp">The timestamp</param>
-        Task SaveParameterChangeAsync(int id, string value, DateTime timeStamp);
+        /// <param name="timestamp">The timestamp</param>
+        Task SaveParameterChangeAsync(int id,
+                                      string value,
+                                      DateTime timestamp);
 
         /// <summary>
         /// Save a <see cref="BaseParameter"/>
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
-        /// <param name="timeStamp">The timestamp</param>
-        Task SaveParameterChangeAsync(int id, float value, DateTime timeStamp);
+        /// <param name="timestamp">The timestamp</param>
+        Task SaveParameterChangeAsync(int id,
+                                      float value,
+                                      DateTime timestamp);
 
         /// <summary>
         /// Save a <see cref="BaseParameter"/>
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
-        /// <param name="timeStamp">The timestamp</param>
-        Task SaveParameterChangeAsync(int id, bool value, DateTime timeStamp);
+        /// <param name="timestamp">The timestamp</param>
+        Task SaveParameterChangeAsync(int id,
+                                      bool value,
+                                      DateTime timestamp);
 
         /// <summary>
         /// Save a <see cref="BaseParameter"/>
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
-        /// <param name="timeStamp">The timestamp</param>
-        Task SaveParameterChangeAsync(int id, uint value, DateTime timeStamp);
+        /// <param name="timestamp">The timestamp</param>
+        Task SaveParameterChangeAsync(int id,
+                                      uint value,
+                                      DateTime timestamp);
     }
 }

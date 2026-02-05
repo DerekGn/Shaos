@@ -55,9 +55,9 @@ namespace Shaos.Services.Hosting
                 {
                     await ExecuteInternalAsync(stoppingToken);
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException ex)
                 {
-                    Logger.LogError("Background task cancelled");
+                    Logger.LogError(ex, "Background task cancelled");
                 }
                 catch (Exception ex)
                 {

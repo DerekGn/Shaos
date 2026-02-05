@@ -27,7 +27,7 @@ using Shaos.Services.Eventing;
 
 namespace Shaos.Hubs
 {
-    public class PlotHub : Hub<IPlotHub>
+    public partial class PlotHub : Hub<IPlotHub>
     {
         private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly ILogger<PlotHub> _logger;
@@ -41,8 +41,7 @@ namespace Shaos.Hubs
 
         public override Task OnConnectedAsync()
         {
-            _logger.LogInformation("User: {User} Connected. Connection Id: [{ConnectionId}]",
-                                   Context.UserIdentifier,
+            LogUserConnected(Context.UserIdentifier,
                                    Context.ConnectionId);
 
             return base.OnConnectedAsync();
@@ -50,13 +49,14 @@ namespace Shaos.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            _logger.LogInformation("User: {User} Disconnected. Connection Id: [{ConnectionId}]",
-                                   Context.UserIdentifier,
-                                   Context.ConnectionId);
+            LogUserDisconnected(Context.UserIdentifier,
+                                Context.ConnectionId);
 
             if (exception != null)
             {
-                _logger.LogWarning(exception, "An exception occurred connection disconnected");
+                LogException(Context.UserIdentifier,
+                             Context.ConnectionId,
+                             exception);
             }
 
             return base.OnDisconnectedAsync(exception);
@@ -65,9 +65,8 @@ namespace Shaos.Hubs
         [HubMethodName("Start")]
         public async Task StartAsync(int id)
         {
-            _logger.LogInformation("Starting Plot Parameter Id: [{Id}] for User Id: [{UserId}]",
-                                   id,
-                                   Context.UserIdentifier);
+            LogStartParameterPlot(id,
+                                  Context.UserIdentifier);
 
             await DeviceParameterSubscription(id, DeviceSubscriptionState.Subscribe);
         }
@@ -75,9 +74,9 @@ namespace Shaos.Hubs
         [HubMethodName("Stop")]
         public async Task StopAsync(int id)
         {
-            _logger.LogInformation("Stopping Plot Parameter Id: [{Id}] for User Id: [{UserId}]",
-                                   id,
-                                   Context.UserIdentifier);
+            LogStopParameterPlot(id,
+                                 Context.UserIdentifier);
+
             await DeviceParameterSubscription(id, DeviceSubscriptionState.Unsubscribe);
         }
 
@@ -90,5 +89,24 @@ namespace Shaos.Hubs
                 UserIdentifier = Context.UserIdentifier!
             });
         }
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "User: [{id}] Disconnection Id: [{connectionId}]")]
+        private partial void LogException(string? id,
+                                          string connectionId,
+                                          Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Starting Plot Parameter Id: [{id}] for User Id: [{userIdentifier}]")]
+        private partial void LogStartParameterPlot(int id, string? userIdentifier);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Stopping Plot Parameter Id: [{id}] for User Id: [{userIdentifier}]")]
+        private partial void LogStopParameterPlot(int id, string? userIdentifier);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "User: [{id}] Connected. Connection Id: [{connectionId}]")]
+        private partial void LogUserConnected(string? id,
+                                              string connectionId);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "User: [{id}] Disconnected. Connection Id: [{connectionId}]")]
+        private partial void LogUserDisconnected(string? id,
+                                                 string connectionId);
     }
 }

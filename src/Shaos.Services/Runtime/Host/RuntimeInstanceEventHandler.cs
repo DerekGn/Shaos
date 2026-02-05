@@ -33,7 +33,7 @@ namespace Shaos.Services.Runtime.Host
     /// <summary>
     /// The runtime instance event handler
     /// </summary>
-    public class RuntimeInstanceEventHandler : IRuntimeInstanceEventHandler
+    public partial class RuntimeInstanceEventHandler : IRuntimeInstanceEventHandler
     {
         private readonly ILogger<RuntimeInstanceEventHandler> _logger;
         private readonly IRuntimeDeviceUpdateHandler _runtimeDeviceUpdateHandler;
@@ -72,9 +72,8 @@ namespace Shaos.Services.Runtime.Host
 
         internal void AttachDevice(IDevice device)
         {
-            _logger.LogDebug("Attaching device signal level and battery level event handler for Device: [{Id}] Name: [{Name}]",
-                             device.Id,
-                             device.Name);
+            LogAttachingDeviceSignalAndBatteryHandlers(device.Id,
+                                                       device.Name);
 
             device.SignalLevelChanged += DeviceSignalLevelChanged;
             device.BatteryLevelChanged += DeviceBatteryLevelChanged;
@@ -82,35 +81,31 @@ namespace Shaos.Services.Runtime.Host
 
         internal void AttachDevicesListChange(IChildObservableList<IPlugIn, IDevice> devices)
         {
-            _logger.LogDebug("Attaching device list event handler for PlugIn Id: [{Id}]",
-                             devices.Parent.Id);
+            LogAttachingDevicesListChangedHandler(devices.Parent.Id);
 
             devices.ListChanged += DevicesListChangedAsync;
         }
 
         internal void AttachParametersListChanged(IChildObservableList<IDevice, IBaseParameter> parameters)
         {
-            _logger.LogDebug("Attaching parameter list event handler for PlugIn Id: [{Id}] Name: [{Name}]",
-                             parameters.Parent.Id,
-                             parameters.Parent.Name);
+            LogAttachParametersListChangedHandler(parameters.Parent.Id,
+                                                  parameters.Parent.Name);
 
             parameters.ListChanged += ParametersListChangedAsync;
         }
 
         internal void DetachParametersListChanged(IChildObservableList<IDevice, IBaseParameter> parameters)
         {
-            _logger.LogDebug("Detaching parameter list event handler for PlugIn Id: [{Id}] Name: [{Name}]",
-                             parameters.Parent.Id,
-                             parameters.Parent.Name);
+            LogDetachParametersListChangedHandler(parameters.Parent.Id,
+                                                  parameters.Parent.Name);
 
             parameters.ListChanged -= ParametersListChangedAsync;
         }
 
         internal void DetatchDevice(IDevice device)
         {
-            _logger.LogDebug("Detaching device signal level and battery level event handler for Device: [{Id}] Name: [{Name}]",
-                             device.Id,
-                             device.Name);
+            LogDetachingDeviceSignalAndBatteryHandlers(device.Id,
+                                                       device.Name);
 
             device.SignalLevelChanged -= DeviceSignalLevelChanged;
             device.BatteryLevelChanged -= DeviceBatteryLevelChanged;
@@ -119,7 +114,8 @@ namespace Shaos.Services.Runtime.Host
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<uint> e)
         {
-            await ValidateParameterChangeAsync(sender, async (parameter) => {
+            await ValidateParameterChangeAsync(sender, async (parameter) =>
+            {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
                                                                            e.TimeStamp);
@@ -129,7 +125,8 @@ namespace Shaos.Services.Runtime.Host
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<string> e)
         {
-            await ValidateParameterChangeAsync(sender, async (parameter) => {
+            await ValidateParameterChangeAsync(sender, async (parameter) =>
+            {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
                                                                            e.TimeStamp);
@@ -139,7 +136,8 @@ namespace Shaos.Services.Runtime.Host
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<int> e)
         {
-            await ValidateParameterChangeAsync(sender, async (parameter) => {
+            await ValidateParameterChangeAsync(sender, async (parameter) =>
+            {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
                                                                            e.TimeStamp);
@@ -149,7 +147,8 @@ namespace Shaos.Services.Runtime.Host
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<float> e)
         {
-            await ValidateParameterChangeAsync(sender, async (parameter) => {
+            await ValidateParameterChangeAsync(sender, async (parameter) =>
+            {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
                                                                            e.TimeStamp);
@@ -159,7 +158,8 @@ namespace Shaos.Services.Runtime.Host
         internal async Task ParameterValueChangedAsync(object sender,
                                                        ParameterValueChangedEventArgs<bool> e)
         {
-            await ValidateParameterChangeAsync(sender, async (parameter) => {
+            await ValidateParameterChangeAsync(sender, async (parameter) =>
+            {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
                                                                            e.TimeStamp);
@@ -169,12 +169,9 @@ namespace Shaos.Services.Runtime.Host
         private static async Task ExecuteDeviceOperationAsync(object sender,
                                                               Func<IDevice, Task> operation)
         {
-            if (sender != null)
+            if (sender is IDevice device)
             {
-                if (sender is IDevice device)
-                {
-                    await operation(device);
-                }
+                await operation(device);
             }
         }
 
@@ -182,16 +179,15 @@ namespace Shaos.Services.Runtime.Host
         {
             AttachParametersListChanged(device.Parameters);
 
-            AttachParameters(device.Parameters.ToList());
+            AttachParameters([.. device.Parameters]);
 
             AttachDevice(device);
         }
 
         private void AttachParameter(IBaseParameter parameter)
         {
-            _logger.LogDebug("Attaching event handler for parameter Id: [{Id}] Name: [{Name}]",
-                             parameter.Id,
-                             parameter.Name);
+            LogAttachingParameterEventHandler(parameter.Id,
+                                              parameter.Name);
 
             switch (parameter)
             {
@@ -240,9 +236,8 @@ namespace Shaos.Services.Runtime.Host
 
         private void DetachParameter(IBaseParameter parameter)
         {
-            _logger.LogDebug("Detaching parameter event handler for parameter Id: [{Id}] Name: [{Name}]",
-                             parameter.Id,
-                             parameter.Name);
+            LogDetachParametersChangedHandler(parameter.Id,
+                                              parameter.Name);
 
             switch (parameter)
             {
@@ -313,109 +308,121 @@ namespace Shaos.Services.Runtime.Host
         private async Task DevicesListChangedAsync(object sender,
                                                    ListChangedEventArgs<IDevice> e)
         {
-            if (sender != null)
+            if (sender is IChildObservableList<IPlugIn, IDevice> devices)
             {
-                if (sender is IChildObservableList<IPlugIn, IDevice> devices)
+                if (e.Items != null)
                 {
-                    if (e.Items != null)
+                    switch (e.Action)
                     {
-                        switch (e.Action)
-                        {
-                            case ListChangedAction.Add:
+                        case ListChangedAction.Add:
 
-                                await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id, e.Items);
+                            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id, e.Items);
 
-                                foreach (var device in e.Items)
-                                {
-                                    AttachDeviceAndParameters(device);
-                                }
+                            foreach (var device in e.Items)
+                            {
+                                AttachDeviceAndParameters(device);
+                            }
 
-                                break;
+                            break;
 
-                            case ListChangedAction.Reset:
-                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
+                        case ListChangedAction.Reset:
+                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
 
-                                break;
+                            break;
 
-                            case ListChangedAction.Remove:
-                                await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
+                        case ListChangedAction.Remove:
+                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
 
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Event items collection empty");
+                            break;
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("Sender is invalid type: [{Type}]",
-                                       sender.GetType());
+                    LogEventItemsEmpty();
                 }
             }
+            else
+            {
+                LogInvalidType(sender.GetType());
+            }
         }
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Attaching device signal level and battery level event handler for Device: [{id}] Name: [{name}]")]
+        private partial void LogAttachingDeviceSignalAndBatteryHandlers(int id,
+                                                                        string name);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Attaching device list event handler for PlugIn Id: [{id}]")]
+        private partial void LogAttachingDevicesListChangedHandler(int id);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Attaching event handler for parameter Id: [{id}] Name: [{name}]")]
+        private partial void LogAttachingParameterEventHandler(int id, string? name);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Attaching parameter list event handler for PlugIn Id: [{id}] Name: [{name}]")]
+        private partial void LogAttachParametersListChangedHandler(int id,
+                                                                   string name);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Detaching device signal level and battery level event handler for Device: [{id}] Name: [{name}]")]
+        private partial void LogDetachingDeviceSignalAndBatteryHandlers(int id,
+                                                                        string name);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Detaching event handler for parameter Id: [{id}] Name: [{name}]")]
+        private partial void LogDetachParametersChangedHandler(int id, string? name);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Detaching parameter list event handler for PlugIn Id: [{id}] Name: [{name}]")]
+        private partial void LogDetachParametersListChangedHandler(int id,
+                                                                   string name);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Event items collection empty")]
+        private partial void LogEventItemsEmpty();
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Sender is invalid type: [{type}]")]
+        private partial void LogInvalidType(Type type);
 
         private async Task ParametersListChangedAsync(object sender,
                                                       ListChangedEventArgs<IBaseParameter> e)
         {
-            if (sender != null)
+            if (sender is IChildObservableList<IDevice, IBaseParameter> deviceParameters)
             {
-                if (sender is IChildObservableList<IDevice, IBaseParameter> deviceParameters)
+                if (e.Items != null)
                 {
-                    if (e.Items != null)
+                    switch (e.Action)
                     {
-                        switch (e.Action)
-                        {
-                            case ListChangedAction.Add:
-                                await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(deviceParameters.Parent.Id, e.Items);
+                        case ListChangedAction.Add:
+                            await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(deviceParameters.Parent.Id,
+                                                                                          e.Items);
 
-                                AttachParameters([.. e.Items]);
-                                break;
+                            AttachParameters([.. e.Items]);
+                            break;
 
-                            case ListChangedAction.Reset:
-                                DetachParameters(e.Items);
+                        case ListChangedAction.Remove:
+                        case ListChangedAction.Reset:
+                            DetachParameters(e.Items);
 
-                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
-                                break;
-
-                            case ListChangedAction.Remove:
-                                DetachParameters(e.Items);
-
-                                await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogWarning("Event items collection empty");
+                            await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
+                            break;
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("Sender is invalid type: [{Type}]",
-                                       sender.GetType());
+                    LogEventItemsEmpty();
                 }
+            }
+            else
+            {
+                LogInvalidType(sender.GetType());
             }
         }
 
         private async Task ValidateParameterChangeAsync(object sender, Func<IBaseParameter, Task> operation)
         {
-            if (sender != null)
+
+            if (sender is IBaseParameter parameter)
             {
-                if (sender is IBaseParameter parameter)
-                {
-                    await operation(parameter);
-                }
-                else
-                {
-                    _logger.LogWarning("Sender is invalid type: [{Type}]",
-                                       sender.GetType());
-                }
+                await operation(parameter);
             }
             else
             {
-                _logger.LogWarning("Sender is null");
+                LogInvalidType(sender.GetType());
             }
         }
     }

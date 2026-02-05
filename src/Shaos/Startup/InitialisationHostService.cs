@@ -27,7 +27,7 @@ using Shaos.Services.Logging;
 
 namespace Shaos.Startup
 {
-    public class InitialisationHostService : IHostedService
+    public partial class InitialisationHostService : IHostedService
     {
         private readonly ILogger<InitialisationHostService> _logger;
         private readonly IServiceProvider _services;
@@ -41,7 +41,7 @@ namespace Shaos.Startup
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Initialising application");
+            LogInitialisingApplication();
 
             await InitialiseLoggingConfiguration(cancellationToken);
 
@@ -55,34 +55,41 @@ namespace Shaos.Startup
 
         private async Task InitialiseInstanceHostAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Initialising instance host");
+            LogInitialisingInstanceHost();
 
-            using (var scope = _services.CreateScope())
-            {
-                var instanceHostService = scope.ServiceProvider
-                    .GetRequiredService<IInstanceHostService>();
+            using var scope = _services.CreateScope();
 
-                await instanceHostService.StartInstancesAsync(cancellationToken);
-            }
+            var instanceHostService = scope.ServiceProvider
+                .GetRequiredService<IInstanceHostService>();
+
+            await instanceHostService.StartInstancesAsync(cancellationToken);
         }
 
         private async Task InitialiseLoggingConfiguration(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Initialising logging configuration");
+            LogInitialisingLoggingConfiguration();
 
-            using (var scope = _services.CreateScope())
-            {
-                var loggingConfiguration = scope
-                    .ServiceProvider
-                    .GetRequiredService<ILoggingConfiguration>();
+            using var scope = _services.CreateScope();
 
-                var loggingConfigurationService = scope
-                    .ServiceProvider
-                    .GetRequiredService<ILoggingConfigurationService>();
+            var loggingConfiguration = scope
+                .ServiceProvider
+                .GetRequiredService<ILoggingConfiguration>();
 
-                await loggingConfigurationService.InitialiseLoggingConfigurationAsync(loggingConfiguration,
-                                                                                      cancellationToken);
-            }
+            var loggingConfigurationService = scope
+                .ServiceProvider
+                .GetRequiredService<ILoggingConfigurationService>();
+
+            await loggingConfigurationService.InitialiseLoggingConfigurationAsync(loggingConfiguration,
+                                                                                  cancellationToken);
         }
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Initialising application")]
+        private partial void LogInitialisingApplication();
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Initialising instance host")]
+        private partial void LogInitialisingInstanceHost();
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Initialising logging configuration")]
+        private partial void LogInitialisingLoggingConfiguration();
     }
 }
