@@ -316,7 +316,8 @@ namespace Shaos.Services.Runtime.Host
                     {
                         case ListChangedAction.Add:
 
-                            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id, e.Items);
+                            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id,
+                                                                                 e.Items);
 
                             foreach (var device in e.Items)
                             {
@@ -413,7 +414,8 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task ValidateParameterChangeAsync(object sender, Func<IBaseParameter, Task> operation)
+        private async Task ValidateParameterChangeAsync(object sender,
+                                                        Func<IBaseParameter, Task> operation)
         {
 
             if (sender is IBaseParameter parameter)

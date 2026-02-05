@@ -32,13 +32,18 @@ namespace Shaos.Repository.Models.Devices
     /// </summary>
     public class Device : BaseEntity
     {
-        private const string SignalLevelName = "Signal Level";
         private const string BatteryLevelName = "Battery Level";
+        private const string SignalLevelName = "Signal Level";
 
         /// <summary>
         /// The <see cref="Device"/> last battery level
         /// </summary>
         public uint? BatteryLevel { get; set; }
+
+        /// <summary>
+        /// The <see cref="Sdk.Devices.Device"/> identifier
+        /// </summary>
+        public int DeviceId { get; set; }
 
         /// <summary>
         /// The <see cref="Device"/> features

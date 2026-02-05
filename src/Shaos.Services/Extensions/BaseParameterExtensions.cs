@@ -146,7 +146,6 @@ namespace Shaos.Services.Extensions
                 case Type _ when type == typeof(Sdk.Devices.Parameters.BoolParameter):
                     result = new BoolParameter()
                     {
-                        Id = parameter.Id,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
                         Units = parameter.Units,
@@ -158,7 +157,6 @@ namespace Shaos.Services.Extensions
                     var floatParameter = (Sdk.Devices.Parameters.FloatParameter)parameter;
                     result = new FloatParameter()
                     {
-                        Id = parameter.Id,
                         Max = floatParameter.Max,
                         Min = floatParameter.Min,
                         Name = parameter.Name,
@@ -172,7 +170,6 @@ namespace Shaos.Services.Extensions
                     var intParameter = (Sdk.Devices.Parameters.IntParameter)parameter;
                     result = new IntParameter()
                     {
-                        Id = parameter.Id,
                         Max = intParameter.Max,
                         Min = intParameter.Min,
                         Name = parameter.Name,
@@ -185,7 +182,6 @@ namespace Shaos.Services.Extensions
                 case Type _ when type == typeof(Sdk.Devices.Parameters.StringParameter):
                     result = new StringParameter()
                     {
-                        Id = parameter.Id,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
                         Units = parameter.Units,
@@ -197,7 +193,6 @@ namespace Shaos.Services.Extensions
                     var uIntParameter = (Sdk.Devices.Parameters.UIntParameter)parameter;
                     result = new UIntParameter()
                     {
-                        Id = parameter.Id,
                         Max = uIntParameter.Max,
                         Min = uIntParameter.Min,
                         Name = parameter.Name,

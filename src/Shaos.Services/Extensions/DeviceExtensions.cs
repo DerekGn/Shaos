@@ -35,11 +35,11 @@ namespace Shaos.Services.Extensions
         {
             var modelDevice = new ModelDevice()
             {
-                Id = device.Id,
-                Name = device.Name,
-                Features = device.Features,
                 BatteryLevel = device.BatteryLevel?.Level,
-                SignalLevel = device.SignalLevel?.Level,
+                DeviceId = device.Id,
+                Features = device.Features,
+                Name = device.Name,
+                SignalLevel = device.SignalLevel?.Level
             };
 
             modelDevice.Parameters.AddRange(device.Parameters.ToModel());

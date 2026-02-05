@@ -29,6 +29,9 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Features")
                         .HasColumnType("INTEGER");
 
@@ -74,6 +77,9 @@ namespace Shaos.Repository.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("ParameterId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ParameterType")
                         .HasColumnType("INTEGER");
