@@ -40,7 +40,7 @@ namespace Shaos.Services.UnitTests.Processing
         {
             _mockWorkItemQueue = new Mock<IWorkItemQueue>();
 
-            _backgroundService = new TestWorkItemProcessorBackgroundService(LoggerFactory.CreateLogger<WorkItemProcessorBackgroundService>(),
+            _backgroundService = new TestWorkItemProcessorBackgroundService(LoggerFactory!.CreateLogger<WorkItemProcessorBackgroundService>(),
                                                                             _mockWorkItemQueue.Object);
         }
 

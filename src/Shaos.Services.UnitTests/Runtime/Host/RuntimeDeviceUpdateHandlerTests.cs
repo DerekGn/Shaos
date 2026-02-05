@@ -62,7 +62,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
             _mockWorkItemQueue = new Mock<IWorkItemQueue>();
 
-            _runtimeDeviceUpdateHandler = new RuntimeDeviceUpdateHandler(LoggerFactory.CreateLogger<RuntimeDeviceUpdateHandler>(),
+            _runtimeDeviceUpdateHandler = new RuntimeDeviceUpdateHandler(LoggerFactory!.CreateLogger<RuntimeDeviceUpdateHandler>(),
                                                                          _mockServiceScopeFactory.Object,
                                                                          _mockDevicecEventQueue.Object,
                                                                          _mockWorkItemQueue.Object);
