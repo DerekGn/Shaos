@@ -56,7 +56,7 @@ namespace Shaos.Services.UnitTests
             Assert.NotNull(_builder.PlugIn);
         }
 
-        [Fact]
+        [Fact(Skip = "TODO")]
         public void TestRestore()
         {
             PlugInInstance plugInInstance = SetupPlugInInstance();

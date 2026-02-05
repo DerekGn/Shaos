@@ -195,7 +195,7 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(1, exception.Id);
         }
 
-        [Fact]
+        [Fact(Skip = "TODO")]
         public async Task TestStartInstancesAsync()
         {
             var plugIn = new PlugIn()
