@@ -148,6 +148,7 @@ namespace Shaos.Services.Extensions
                     {
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
+                        InstanceId = parameter.Id,
                         Units = parameter.Units,
                         Value = ((Sdk.Devices.Parameters.BoolParameter)parameter).Value
                     };
@@ -161,6 +162,7 @@ namespace Shaos.Services.Extensions
                         Min = floatParameter.Min,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
+                        InstanceId = parameter.Id,
                         Units = parameter.Units,
                         Value = floatParameter.Value
                     };
@@ -174,6 +176,7 @@ namespace Shaos.Services.Extensions
                         Min = intParameter.Min,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
+                        InstanceId = parameter.Id,
                         Units = parameter.Units,
                         Value = intParameter.Value
                     };
@@ -184,6 +187,7 @@ namespace Shaos.Services.Extensions
                     {
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
+                        InstanceId = parameter.Id,
                         Units = parameter.Units,
                         Value = ((Sdk.Devices.Parameters.StringParameter)parameter).Value
                     };
@@ -197,6 +201,7 @@ namespace Shaos.Services.Extensions
                         Min = uIntParameter.Min,
                         Name = parameter.Name,
                         ParameterType = parameter.ParameterType,
+                        InstanceId = parameter.Id,
                         Units = parameter.Units,
                         Value = uIntParameter.Value
                     };

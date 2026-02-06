@@ -38,7 +38,11 @@ namespace Shaos.Services.Validation
         /// <inheritdoc/>
         public void ValidateFile(IFormFile formFile)
         {
-            if (string.IsNullOrWhiteSpace(formFile.ContentType))
+            if (formFile == null)
+            {
+                throw new ArgumentNullException(nameof(formFile));
+            }
+            else if (string.IsNullOrWhiteSpace(formFile.ContentType))
             {
                 throw new FileContentInvalidException(formFile.FileName, formFile.ContentType, formFile.Length);
             }

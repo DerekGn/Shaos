@@ -25,7 +25,6 @@
 using Shaos.Sdk.Devices;
 
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
-using SdkDevice = Shaos.Sdk.Devices.Device;
 
 namespace Shaos.Services.Extensions
 {
@@ -36,7 +35,7 @@ namespace Shaos.Services.Extensions
             var modelDevice = new ModelDevice()
             {
                 BatteryLevel = device.BatteryLevel?.Level,
-                DeviceId = device.Id,
+                InstanceId = device.Id,
                 Features = device.Features,
                 Name = device.Name,
                 SignalLevel = device.SignalLevel?.Level

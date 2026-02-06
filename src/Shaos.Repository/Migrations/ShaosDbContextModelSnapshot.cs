@@ -29,10 +29,10 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DeviceId")
+                    b.Property<int>("Features")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Features")
+                    b.Property<int>("InstanceId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -73,13 +73,13 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(21)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("InstanceId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("ParameterId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ParameterType")
                         .HasColumnType("INTEGER");

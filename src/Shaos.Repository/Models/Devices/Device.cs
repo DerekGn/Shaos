@@ -43,7 +43,7 @@ namespace Shaos.Repository.Models.Devices
         /// <summary>
         /// The <see cref="Sdk.Devices.Device"/> identifier
         /// </summary>
-        public int DeviceId { get; set; }
+        public int InstanceId { get; set; }
 
         /// <summary>
         /// The <see cref="Device"/> features

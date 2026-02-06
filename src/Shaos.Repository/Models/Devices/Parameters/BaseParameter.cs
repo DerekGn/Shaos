@@ -49,7 +49,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The <see cref="Sdk.Devices.Parameters.BaseParameter"/> identifier.
         /// </summary>
-        public int ParameterId { get; set; }
+        public int InstanceId { get; set; }
 
         /// <summary>
         /// The <see cref="ParameterType"/>
