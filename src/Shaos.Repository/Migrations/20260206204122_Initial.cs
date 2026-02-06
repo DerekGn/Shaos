@@ -126,7 +126,7 @@ namespace Shaos.Repository.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
                     Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
