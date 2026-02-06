@@ -107,7 +107,7 @@ namespace Shaos.Test.PlugIn
             {
                 List<IBaseParameter> baseParameters =
                 [
-                    new IntParameter(10,
+                    new IntParameter(1,
                                      0,
                                      0,
                                      10,

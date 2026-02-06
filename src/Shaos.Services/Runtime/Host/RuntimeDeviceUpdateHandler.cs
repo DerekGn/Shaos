@@ -311,7 +311,8 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelUIntParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelUIntParameter>(_ => _.ParameterId == id,
+                                                                                            false);
 
                 if (parameter != null)
                 {
@@ -345,7 +346,8 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelBoolParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelBoolParameter>(_ => _.ParameterId == id,
+                                                                                            false);
 
                 if (parameter != null)
                 {
@@ -379,13 +381,15 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelFloatParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelFloatParameter>(_ => _.ParameterId == id,
+                                                                                             false);
 
                 if (parameter != null)
                 {
                     LogUpdatingParameter(parameter.Id,
                                          parameter.Name,
                                          value);
+
                     parameter.Value = value;
 
                     parameter.Values.Add(new FloatParameterValue()
@@ -412,7 +416,8 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelStringParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelStringParameter>(_ => _.ParameterId == id,
+                                                                                              false);
 
                 if (parameter != null)
                 {
@@ -446,7 +451,8 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelIntParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelIntParameter>(_ => _.ParameterId == id,
+                                                                                           false);
 
                 if (parameter != null)
                 {
@@ -577,9 +583,9 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelDevice = await repository.GetByIdAsync<ModelDevice>(id,
-                                                                            false,
-                                                                            [nameof(ModelDevice.Parameters)]);
+                var modelDevice = await repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.DeviceId == id,
+                                                                                       false,
+                                                                                       [nameof(ModelDevice.Parameters)]);
 
                 if (modelDevice != null)
                 {

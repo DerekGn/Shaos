@@ -192,18 +192,14 @@ namespace Shaos.Repository
 
         /// <inheritdoc/>
         public Task<T?> GetFirstOrDefaultAsync<T>(Expression<Func<T, bool>>? predicate = null,
+                                                  bool withNoTracking = true,
+                                                  List<string>? includeProperties = null,
                                                   CancellationToken cancellationToken = default) where T : BaseEntity
         {
-            var query = _context.Set<T>();
-
-            if (predicate != null)
-            {
-                return query.FirstOrDefaultAsync(predicate, cancellationToken);
-            }
-            else
-            {
-                return query.FirstOrDefaultAsync(cancellationToken);
-            }
+            return _context
+                .Set<T>()
+                .GetQueryable(withNoTracking, predicate, includeProperties: includeProperties)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <inheritdoc/>

@@ -145,9 +145,13 @@ namespace Shaos.Repository
         /// </summary>
         /// <typeparam name="T">The <see cref="BaseEntity"/></typeparam>
         /// <param name="predicate">A function to test an element for a condition.</param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="BaseEntity"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An instance of a <see cref="BaseEntity"/></returns>
         Task<T?> GetFirstOrDefaultAsync<T>(Expression<Func<T, bool>>? predicate = null,
+                                           bool withNoTracking = true,
+                                           List<string>? includeProperties = null,
                                            CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
