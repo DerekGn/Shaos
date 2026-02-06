@@ -121,7 +121,6 @@ namespace Shaos.Services.Runtime.Host
                         var modelDevice = device.ToModel();
                         modelDevice.InstanceId = device.Id;
                         modelDevice.PlugInInstanceId = plugInInstance.Id;
-                        modelDevice.CreateDeviceFeatureParameters();
 
                         await repository.AddAsync(modelDevice);
 

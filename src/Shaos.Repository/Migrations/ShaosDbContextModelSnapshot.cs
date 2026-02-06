@@ -29,9 +29,6 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Features")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("InstanceId")
                         .HasColumnType("INTEGER");
 

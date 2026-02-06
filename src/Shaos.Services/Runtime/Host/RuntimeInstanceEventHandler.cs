@@ -74,9 +74,9 @@ namespace Shaos.Services.Runtime.Host
         {
             LogAttachingDeviceSignalAndBatteryHandlers(device.Id,
                                                        device.Name);
-
-            device.SignalLevelChanged += DeviceSignalLevelChanged;
-            device.BatteryLevelChanged += DeviceBatteryLevelChanged;
+#warning TODO
+            //device.SignalLevelChanged += DeviceSignalLevelChanged;
+            //device.BatteryLevelChanged += DeviceBatteryLevelChanged;
         }
 
         internal void AttachDevicesListChange(IChildObservableList<IPlugIn, IDevice> devices)
@@ -106,9 +106,9 @@ namespace Shaos.Services.Runtime.Host
         {
             LogDetachingDeviceSignalAndBatteryHandlers(device.Id,
                                                        device.Name);
-
-            device.SignalLevelChanged -= DeviceSignalLevelChanged;
-            device.BatteryLevelChanged -= DeviceBatteryLevelChanged;
+#warning TODO
+            //device.SignalLevelChanged -= DeviceSignalLevelChanged;
+            //device.BatteryLevelChanged -= DeviceBatteryLevelChanged;
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
@@ -283,27 +283,29 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task DeviceBatteryLevelChanged(object sender,
-                                                     BatteryLevelChangedEventArgs e)
-        {
-            await ExecuteDeviceOperationAsync(sender, async (device) =>
-            {
-                await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device.Id,
-                                                                                e.BatteryLevel,
-                                                                                e.TimeStamp);
-            });
-        }
+#warning TODO
+        //private async Task DeviceBatteryLevelChanged(object sender,
+        //                                             BatteryLevelChangedEventArgs e)
+        //{
+        //    await ExecuteDeviceOperationAsync(sender, async (device) =>
+        //    {
+        //        await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device.Id,
+        //                                                                        e.BatteryLevel,
+        //                                                                        e.TimeStamp);
+        //    });
+        //}
 
-        private async Task DeviceSignalLevelChanged(object sender,
-                                                    SignalLevelChangedEventArgs e)
-        {
-            await ExecuteDeviceOperationAsync(sender, async (device) =>
-            {
-                await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device.Id,
-                                                                               e.SignalLevel,
-                                                                               e.TimeStamp);
-            });
-        }
+#warning TODO
+        //private async Task DeviceSignalLevelChanged(object sender,
+        //                                            SignalLevelChangedEventArgs e)
+        //{
+        //    await ExecuteDeviceOperationAsync(sender, async (device) =>
+        //    {
+        //        await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device.Id,
+        //                                                                       e.SignalLevel,
+        //                                                                       e.TimeStamp);
+        //    });
+        //}
 
         private async Task DevicesListChangedAsync(object sender,
                                                    ListChangedEventArgs<IDevice> e)

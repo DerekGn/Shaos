@@ -103,7 +103,6 @@ namespace Shaos.Repository.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     BatteryLevel = table.Column<uint>(type: "INTEGER", nullable: true),
                     InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Features = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     PlugInInstanceId = table.Column<int>(type: "INTEGER", nullable: true),
                     SignalLevel = table.Column<int>(type: "INTEGER", nullable: true),

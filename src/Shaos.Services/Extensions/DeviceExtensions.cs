@@ -32,13 +32,13 @@ namespace Shaos.Services.Extensions
     {
         public static ModelDevice ToModel(this IDevice device)
         {
+#warning TODO
             var modelDevice = new ModelDevice()
             {
-                BatteryLevel = device.BatteryLevel?.Level,
+                //BatteryLevel = device.BatteryLevel?.Level,
                 InstanceId = device.Id,
-                Features = device.Features,
                 Name = device.Name,
-                SignalLevel = device.SignalLevel?.Level
+                //SignalLevel = device.SignalLevel?.Level
             };
 
             modelDevice.Parameters.AddRange(device.Parameters.ToModel());

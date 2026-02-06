@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20260206174131_Initial")]
+    [Migration("20260206200600_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -31,9 +31,6 @@ namespace Shaos.Repository.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Features")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("InstanceId")
                         .HasColumnType("INTEGER");

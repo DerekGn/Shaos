@@ -46,11 +46,6 @@ namespace Shaos.Repository.Models.Devices
         public int InstanceId { get; set; }
 
         /// <summary>
-        /// The <see cref="Device"/> features
-        /// </summary>
-        public DeviceFeatures Features { get; set; }
-
-        /// <summary>
         /// The <see cref="Device"/> instance name
         /// </summary>
         public string Name { get; set; } = string.Empty;
@@ -74,42 +69,6 @@ namespace Shaos.Repository.Models.Devices
         /// The <see cref="Device"/> last signal level
         /// </summary>
         public int? SignalLevel { get; set; }
-
-        /// <summary>
-        /// Create the device signal level and battery parameters
-        /// </summary>
-        public void CreateDeviceFeatureParameters()
-        {
-            if (!Parameters.Any(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Voltage) &&
-                (Features & DeviceFeatures.BatteryPowered) == DeviceFeatures.BatteryPowered)
-            {
-                var batteryParameter = new UIntParameter()
-                {
-                    Device = this,
-                    Name = BatteryLevelName,
-                    ParameterType = Sdk.Devices.Parameters.ParameterType.Level,
-                    Units = "%",
-                    Value = 0
-                };
-
-                Parameters.Add(batteryParameter);
-            }
-
-            if (!Parameters.Any(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Rssi) &&
-                (Features & DeviceFeatures.Wireless) == DeviceFeatures.Wireless)
-            {
-                var signalParameter = new IntParameter()
-                {
-                    Device = this,
-                    Name = SignalLevelName,
-                    ParameterType = Sdk.Devices.Parameters.ParameterType.Rssi,
-                    Units = string.Empty,
-                    Value = 0
-                };
-
-                Parameters.Add(signalParameter);
-            }
-        }
 
         /// <summary>
         /// Update the device battery level
