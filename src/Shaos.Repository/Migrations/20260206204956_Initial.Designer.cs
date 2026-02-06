@@ -11,11 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-<<<<<<<< HEAD:src/Shaos.Repository/Migrations/20260206200600_Initial.Designer.cs
-    [Migration("20260206200600_Initial")]
-========
-    [Migration("20260206204122_Initial")]
->>>>>>>> 4c536155664f9aef3cf73685426348c70df7bfd6:src/Shaos.Repository/Migrations/20260206204122_Initial.Designer.cs
+    [Migration("20260206204956_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
