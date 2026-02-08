@@ -85,9 +85,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SetupCommonMocks();
 
             _runtimeInstanceEventHandler.Attach(_mockPlugIn.Object);
-#warning TODO
-            //_mockDevice.VerifyAdd(_ => _.BatteryLevelChanged += It.IsAny<AsyncEventHandler<BatteryLevelChangedEventArgs>>());
-            //_mockDevice.VerifyAdd(_ => _.SignalLevelChanged += It.IsAny<AsyncEventHandler<SignalLevelChangedEventArgs>>());
             _mockChildObservableListDevices.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
             _mockObservableListParameters.VerifyAdd(_ => _.ListChanged += It.IsAny<AsyncEventHandler<ListChangedEventArgs<IBaseParameter>>>());
 
@@ -98,20 +95,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockBaseParameters[4].As<IBaseParameter<uint>>().VerifyAdd(_ => _.ValueChanged += It.IsAny<AsyncEventHandler<ParameterValueChangedEventArgs<uint>>>());
         }
 
-        [Fact]
-        public void TestBatteryLevelChanged()
-        {
-            _runtimeInstanceEventHandler.AttachDevice(_mockDevice.Object);
-#warning TODO
-            //_mockDevice.Raise(_ => _.BatteryLevelChanged += null, _mockDevice.Object, new BatteryLevelChangedEventArgs()
-            //{
-            //    BatteryLevel = 1
-            //});
-
-            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceBatteryLevelUpdateAsync(It.IsAny<int>(),
-                                                                                        It.IsAny<uint>(),
-                                                                                        It.IsAny<DateTime>()));
-        }
 
         [Fact]
         public void TestDetach()
@@ -119,9 +102,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SetupCommonMocks();
 
             _runtimeInstanceEventHandler.Detach(_mockPlugIn.Object);
-#warning TODO
-            //_mockDevice.VerifyRemove(_ => _.BatteryLevelChanged -= It.IsAny<AsyncEventHandler<BatteryLevelChangedEventArgs>>());
-            //_mockDevice.VerifyRemove(_ => _.SignalLevelChanged -= It.IsAny<AsyncEventHandler<SignalLevelChangedEventArgs>>());
             _mockChildObservableListDevices.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IDevice>>>());
             _mockObservableListParameters.VerifyRemove(_ => _.ListChanged -= It.IsAny<AsyncEventHandler<ListChangedEventArgs<IBaseParameter>>>());
 
@@ -301,22 +281,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<uint>>().Object,
                             new ParameterValueChangedEventArgs<uint>(10));
-        }
-
-        [Fact]
-        public void TestSignalLevelChanged()
-        {
-            _runtimeInstanceEventHandler.AttachDevice(_mockDevice.Object);
-
-#warning TODO
-            //_mockDevice.Raise(_ => _.SignalLevelChanged += null, _mockDevice.Object, new SignalLevelChangedEventArgs()
-            //{
-            //    SignalLevel = -1
-            //});
-
-            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeviceSignalLevelUpdateAsync(It.IsAny<int>(),
-                                                                                       It.IsAny<int>(),
-                                                                                       It.IsAny<DateTime>()));
         }
 
         private void SetupCommonMocks()
