@@ -253,11 +253,11 @@ namespace Shaos.Services.Runtime.Host
 
         private void DetachPlugInDevice(IObservableList<IDevice> devices)
         {
-            foreach (var device in devices)
+            foreach (var parameters in devices.Select(_ => _.Parameters))
             {
-                DetachParametersListChanged(device.Parameters);
+                DetachParametersListChanged(parameters);
 
-                DetachParameters([.. device.Parameters]);
+                DetachParameters(parameters.ToList());
             }
         }
 
