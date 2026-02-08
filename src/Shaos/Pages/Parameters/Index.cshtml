@@ -126,7 +126,7 @@
                 @if(item is BoolParameter || item is FloatParameter || item is IntParameter || item is UIntParameter)
                 {
                     <td>
-                        <a asp-page="/Parameters/Plot" asp-route-id="@item.Id" class="btn btn-sm btn-primary title="Plot">
+                        <a asp-page="/Parameters/Plot" asp-route-id="@item.InstanceId" class="btn btn-sm btn-primary" title="Plot">
                             <span>
                                 <svg bootstrap-icon="GraphUp" width="24" height="24" aria-label="Plot"></svg>
                             </span>

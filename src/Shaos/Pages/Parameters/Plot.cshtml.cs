@@ -45,8 +45,8 @@ namespace Shaos.Pages.Parameters
 
         public async Task OnGetAsync(int id, CancellationToken cancellationToken)
         {
-            var parameter = await _repository.GetByIdAsync<BaseParameter>(id,
-                                                                          cancellationToken: cancellationToken);
+            var parameter = await _repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.InstanceId == id,
+                                                                                    cancellationToken: cancellationToken);
 
             if (parameter != null)
             {

@@ -40,6 +40,7 @@ using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatPara
 using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
 using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
 using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
+using System.Linq;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -78,23 +79,24 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelDevice = await repository.GetByIdAsync<ModelDevice>(id);
+                var modelDevice = await repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.InstanceId == id,
+                                                                                       false,
+                                                                                       [nameof(ModelDevice.Parameters)]);
 
                 if (modelDevice != null)
                 {
-                    foreach (var parameter in parameters)
+                    foreach (var (parameter, modelParameter) in from parameter in parameters
+                                                                where !modelDevice.Parameters.Any(_ => _.InstanceId == parameter.Id)
+                                                                let modelParameter = parameter.ToModel()!
+                                                                select (parameter, modelParameter))
                     {
-                        var modelParameter = parameter.ToModel()!;
-
                         modelParameter.InstanceId = parameter.Id;
                         modelParameter.DeviceId = modelDevice.Id;
-
                         await repository.AddAsync(modelParameter!);
-
-                        LogDeviceCreated(id,
-                                         modelDevice.Name,
-                                         parameter.Id,
-                                         parameter.Name);
+                        LogDeviceParameterCreated(id,
+                                                  modelDevice.Name,
+                                                  parameter.Id,
+                                                  parameter.Name);
                     }
 
                     await repository.SaveChangesAsync();
@@ -112,18 +114,20 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(id);
+                var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(id,
+                                                                                   true,
+                                                                                   [nameof(PlugInInstance.Devices)]);
 
                 if (plugInInstance != null)
                 {
-                    foreach (IDevice device in devices)
+                    foreach (var (device, modelDevice) in from device in devices
+                                                          where !plugInInstance.Devices.Any(_ => _.InstanceId == device.Id)
+                                                          let modelDevice = device.ToModel()
+                                                          select (device, modelDevice))
                     {
-                        var modelDevice = device.ToModel();
                         modelDevice.InstanceId = device.Id;
                         modelDevice.PlugInInstanceId = plugInInstance.Id;
-
                         await repository.AddAsync(modelDevice);
-
                         LogDeviceCreated(id,
                                          device.Name);
                     }
