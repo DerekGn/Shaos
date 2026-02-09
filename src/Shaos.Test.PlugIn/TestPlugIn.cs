@@ -51,15 +51,19 @@ namespace Shaos.Test.PlugIn
 
         public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Starting [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
+            _logger.LogInformation("Starting [{Name}].[{Operation}]",
+                                   nameof(TestPlugIn),
+                                   nameof(ExecuteAsync));
 
             await CreateDevicesAsync();
 
             var freqParameter = (IntParameter)Devices.First().Parameters.First();
+            var batteryParameter = (UIntParameter)Devices.First().Parameters.Skip(1).First();
+            var signalParameter = (IntParameter)Devices.First().Parameters.Skip(2).First();
 
             int freq = 0;
             int signal = 0;
-            int battery = 0;
+            uint battery = 0;
 
             do
             {
@@ -68,13 +72,15 @@ namespace Shaos.Test.PlugIn
                                        nameof(TestPlugIn),
                                        nameof(ExecuteAsync));
 
-                Devices.First().SignalLevel!.Level = DecrementLimit(ref signal, -100, 0);
-                Devices.First().BatteryLevel!.Level = (uint)IncrementLimit(ref battery, 0, 100);
+                await freqParameter.NotifyValueChangedAsync(IncrementLimit(ref freq, 0, 50));
+                await batteryParameter.NotifyValueChangedAsync(IncrementLimit(ref battery, 0, 100));
+                await signalParameter.NotifyValueChangedAsync(DecrementLimit(ref signal, -100, 0));
 
-                await freqParameter.WriteValueAsync(IncrementLimit(ref freq, 0, 50));
             } while (!cancellationToken.IsCancellationRequested);
 
-            _logger.LogInformation("Completed [{Name}].[{Operation}]", nameof(TestPlugIn), nameof(ExecuteAsync));
+            _logger.LogInformation("Completed [{Name}].[{Operation}]",
+                                   nameof(TestPlugIn),
+                                   nameof(ExecuteAsync));
         }
 
         private static int DecrementLimit(ref int value,
@@ -101,23 +107,52 @@ namespace Shaos.Test.PlugIn
             return value;
         }
 
+        private static uint IncrementLimit(ref uint value,
+                                           uint lower,
+                                           uint upper)
+        {
+            if (++value > upper)
+            {
+                value = lower;
+            }
+
+            return value;
+        }
+
         private async Task CreateDevicesAsync()
         {
             if (!Devices.Any(_ => _.Name == "TestDevice"))
             {
                 List<IBaseParameter> baseParameters =
                 [
-                    new IntParameter(0,
+                    new IntParameter(11,
+                                     0,
                                      0,
                                      10,
                                      "Test Parameter",
                                      "Units",
-                                     ParameterType.Frequency)
+                                     ParameterType.Frequency),
+                    new UIntParameter(12,
+                                     0,
+                                     0,
+                                     100,
+                                     "Battery Level",
+                                     "%",
+                                     ParameterType.Level),
+                    new IntParameter(13,
+                                     0,
+                                     -100,
+                                     0,
+                                     "Signal Level",
+                                     string.Empty,
+                                     ParameterType.Rssi)
                 ];
 
-                await Devices.AddAsync(new Device("TestDevice",
-                                                  DeviceFeatures.BatteryPowered | DeviceFeatures.Wireless,
-                                                  baseParameters));
+                var device = new Device(10,
+                                        "TestDevice",
+                                        baseParameters);
+
+                await Devices.AddAsync(device);
             }
         }
     }

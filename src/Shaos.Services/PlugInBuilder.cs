@@ -90,10 +90,10 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotLoadedException();
             }
 
-            foreach (var device in plugInInstance.Devices)
-            {
-                _plugin.Devices.Add(device.ToSdk());
-            }
+            //foreach (var device in plugInInstance.Devices)
+            //{
+            //    _plugin.Devices.Add(device.ToSdk());
+            //}
 
             AssignPlugInIdentifier(plugInInstance.Id);
         }

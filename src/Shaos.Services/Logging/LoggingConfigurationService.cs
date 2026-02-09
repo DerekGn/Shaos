@@ -35,16 +35,16 @@ namespace Shaos.Services.Logging
     public partial class LoggingConfigurationService : ILoggingConfigurationService
     {
         private readonly ILogger<LoggingConfigurationService> _logger;
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
 
         /// <summary>
         /// Create an instance of a <see cref="LoggingConfigurationService"/>
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> instance</param>
-        /// <param name="repository">The <see cref="IRepository"/> instance used for storing logging changes</param>
+        /// <param name="repository">The <see cref="IShaosRepository"/> instance used for storing logging changes</param>
         /// <exception cref="ArgumentNullException"></exception>
         public LoggingConfigurationService(ILogger<LoggingConfigurationService> logger,
-                                           IRepository repository)
+                                           IShaosRepository repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

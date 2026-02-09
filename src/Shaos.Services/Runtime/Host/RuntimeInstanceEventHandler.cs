@@ -70,15 +70,6 @@ namespace Shaos.Services.Runtime.Host
             DetachDevicesListChange(plugIn.Devices);
         }
 
-        internal void AttachDevice(IDevice device)
-        {
-            LogAttachingDeviceSignalAndBatteryHandlers(device.Id,
-                                                       device.Name);
-
-            device.SignalLevelChanged += DeviceSignalLevelChanged;
-            device.BatteryLevelChanged += DeviceBatteryLevelChanged;
-        }
-
         internal void AttachDevicesListChange(IChildObservableList<IPlugIn, IDevice> devices)
         {
             LogAttachingDevicesListChangedHandler(devices.Parent.Id);
@@ -100,15 +91,6 @@ namespace Shaos.Services.Runtime.Host
                                                   parameters.Parent.Name);
 
             parameters.ListChanged -= ParametersListChangedAsync;
-        }
-
-        internal void DetatchDevice(IDevice device)
-        {
-            LogDetachingDeviceSignalAndBatteryHandlers(device.Id,
-                                                       device.Name);
-
-            device.SignalLevelChanged -= DeviceSignalLevelChanged;
-            device.BatteryLevelChanged -= DeviceBatteryLevelChanged;
         }
 
         internal async Task ParameterValueChangedAsync(object sender,
@@ -180,8 +162,6 @@ namespace Shaos.Services.Runtime.Host
             AttachParametersListChanged(device.Parameters);
 
             AttachParameters([.. device.Parameters]);
-
-            AttachDevice(device);
         }
 
         private void AttachParameter(IBaseParameter parameter)
@@ -273,36 +253,12 @@ namespace Shaos.Services.Runtime.Host
 
         private void DetachPlugInDevice(IObservableList<IDevice> devices)
         {
-            foreach (var device in devices)
+            foreach (var parameters in devices.Select(_ => _.Parameters))
             {
-                DetachParametersListChanged(device.Parameters);
+                DetachParametersListChanged(parameters);
 
-                DetachParameters(device.Parameters.ToList());
-
-                DetatchDevice(device);
+                DetachParameters(parameters.ToList());
             }
-        }
-
-        private async Task DeviceBatteryLevelChanged(object sender,
-                                                     BatteryLevelChangedEventArgs e)
-        {
-            await ExecuteDeviceOperationAsync(sender, async (device) =>
-            {
-                await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(device.Id,
-                                                                                e.BatteryLevel,
-                                                                                e.TimeStamp);
-            });
-        }
-
-        private async Task DeviceSignalLevelChanged(object sender,
-                                                    SignalLevelChangedEventArgs e)
-        {
-            await ExecuteDeviceOperationAsync(sender, async (device) =>
-            {
-                await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(device.Id,
-                                                                               e.SignalLevel,
-                                                                               e.TimeStamp);
-            });
         }
 
         private async Task DevicesListChangedAsync(object sender,
@@ -316,7 +272,8 @@ namespace Shaos.Services.Runtime.Host
                     {
                         case ListChangedAction.Add:
 
-                            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id, e.Items);
+                            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id,
+                                                                                 e.Items);
 
                             foreach (var device in e.Items)
                             {
@@ -413,7 +370,8 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        private async Task ValidateParameterChangeAsync(object sender, Func<IBaseParameter, Task> operation)
+        private async Task ValidateParameterChangeAsync(object sender,
+                                                        Func<IBaseParameter, Task> operation)
         {
 
             if (sender is IBaseParameter parameter)

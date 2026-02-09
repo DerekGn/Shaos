@@ -25,7 +25,6 @@
 using Shaos.Sdk.Devices;
 
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
-using SdkDevice = Shaos.Sdk.Devices.Device;
 
 namespace Shaos.Services.Extensions
 {
@@ -33,13 +32,13 @@ namespace Shaos.Services.Extensions
     {
         public static ModelDevice ToModel(this IDevice device)
         {
+#warning TODO
             var modelDevice = new ModelDevice()
             {
-                Id = device.Id,
+                //BatteryLevel = device.BatteryLevel?.Level,
+                InstanceId = device.Id,
                 Name = device.Name,
-                Features = device.Features,
-                BatteryLevel = device.BatteryLevel?.Level,
-                SignalLevel = device.SignalLevel?.Level,
+                //SignalLevel = device.SignalLevel?.Level
             };
 
             modelDevice.Parameters.AddRange(device.Parameters.ToModel());
@@ -47,15 +46,15 @@ namespace Shaos.Services.Extensions
             return modelDevice;
         }
 
-        public static SdkDevice ToSdk(this ModelDevice device)
-        {
-            var sdkDevice = new Device(device.Name,
-                                       device.Features,
-                                       device.Parameters.ToSdk());
+        //public static SdkDevice ToSdk(this ModelDevice device)
+        //{
+        //    var sdkDevice = new Device(device.Name,
+        //                               device.Features,
+        //                               device.Parameters.ToSdk());
 
-            sdkDevice.SetId(device.Id);
+        //    sdkDevice.SetId(device.Id);
 
-            return sdkDevice;
-        }
+        //    return sdkDevice;
+        //}
     }
 }

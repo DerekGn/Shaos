@@ -47,6 +47,11 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public required string Name { get; set; }
 
         /// <summary>
+        /// The <see cref="Sdk.Devices.Parameters.BaseParameter"/> identifier.
+        /// </summary>
+        public int InstanceId { get; set; }
+
+        /// <summary>
         /// The <see cref="ParameterType"/>
         /// </summary>
         public ParameterType? ParameterType { get; set; }
@@ -54,6 +59,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The <see cref="BaseParameter"/> units
         /// </summary>
-        public string? Units { get; set; }
+        public required string Units { get; set; }
     }
 }

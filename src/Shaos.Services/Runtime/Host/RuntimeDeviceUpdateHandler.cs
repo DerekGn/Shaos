@@ -40,6 +40,7 @@ using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatPara
 using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
 using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
 using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
+using System.Linq;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -78,27 +79,27 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelDevice = await repository.GetByIdAsync<ModelDevice>(id);
+                var modelDevice = await repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.InstanceId == id,
+                                                                                       false,
+                                                                                       [nameof(ModelDevice.Parameters)]);
 
                 if (modelDevice != null)
                 {
-                    foreach (var parameter in parameters)
+                    foreach (var (parameter, modelParameter) in from parameter in parameters
+                                                                where !modelDevice.Parameters.Any(_ => _.InstanceId == parameter.Id)
+                                                                let modelParameter = parameter.ToModel()!
+                                                                select (parameter, modelParameter))
                     {
-                        var modelParameter = parameter.ToModel()!;
-
+                        modelParameter.InstanceId = parameter.Id;
                         modelParameter.DeviceId = modelDevice.Id;
-
                         await repository.AddAsync(modelParameter!);
-
-                        await repository.SaveChangesAsync();
-
-                        parameter.SetId(modelParameter.Id);
-
-                        LogDeviceCreated(id,
-                                         modelDevice.Name,
-                                         parameter.Id,
-                                         parameter.Name);
+                        LogDeviceParameterCreated(id,
+                                                  modelDevice.Name,
+                                                  parameter.Id,
+                                                  parameter.Name);
                     }
+
+                    await repository.SaveChangesAsync();
                 }
                 else
                 {
@@ -113,40 +114,25 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(id);
+                var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(id,
+                                                                                   true,
+                                                                                   [nameof(PlugInInstance.Devices)]);
 
                 if (plugInInstance != null)
                 {
-                    foreach (IDevice device in devices)
+                    foreach (var (device, modelDevice) in from device in devices
+                                                          where !plugInInstance.Devices.Any(_ => _.InstanceId == device.Id)
+                                                          let modelDevice = device.ToModel()
+                                                          select (device, modelDevice))
                     {
-                        var modelDevice = device.ToModel();
+                        modelDevice.InstanceId = device.Id;
                         modelDevice.PlugInInstanceId = plugInInstance.Id;
-                        modelDevice.CreateDeviceFeatureParameters();
-
                         await repository.AddAsync(modelDevice);
-
-                        await repository.SaveChangesAsync();
-
-                        device.SetId(modelDevice.Id);
-
                         LogDeviceCreated(id,
                                          device.Name);
-
-                        foreach (var parameter in device.Parameters)
-                        {
-                            var deviceParameter = modelDevice.Parameters.FirstOrDefault(_ => _.Name == parameter.Name && _.ParameterType == parameter.ParameterType && _.Units == parameter.Units);
-
-                            if (deviceParameter != null)
-                            {
-                                parameter.SetId(deviceParameter.Id);
-                            }
-
-                            LogDeviceParameterCreated(id,
-                                             device.Name,
-                                             parameter.Id,
-                                             parameter.Name);
-                        }
                     }
+
+                    await repository.SaveChangesAsync();
                 }
                 else
                 {
@@ -188,40 +174,6 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public async Task DeviceBatteryLevelUpdateAsync(int id,
-                                                        uint level,
-                                                        DateTime timestamp)
-        {
-            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
-            {
-                await UpdateDeviceBatteryLevelAsync(id,
-                                                    level,
-                                                    timestamp);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                       level,
-                                                       timestamp,
-                                                       cancellationToken);
-            });
-        }
-
-        /// <inheritdoc/>
-        public async Task DeviceSignalLevelUpdateAsync(int id,
-                                                       int level,
-                                                       DateTime timestamp)
-        {
-            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
-            {
-                await UpdateDeviceSignalLevelAsync(id, level, timestamp);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                      level,
-                                                      timestamp,
-                                                      cancellationToken);
-            });
-        }
-
-        /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    int value,
                                                    DateTime timestamp)
@@ -229,9 +181,9 @@ namespace Shaos.Services.Runtime.Host
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
                 await SaveParameterChangeAsync(id,
-                                                  value,
-                                                  timestamp,
-                                                  cancellationToken);
+                                               value,
+                                               timestamp,
+                                               cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
                                                       value,
@@ -304,7 +256,10 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await SaveParameterChangeAsync(id, value, timestamp, cancellationToken);
+                await SaveParameterChangeAsync(id,
+                                               value,
+                                               timestamp,
+                                               cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
                                                       value,
@@ -320,7 +275,8 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelUIntParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelUIntParameter>(_ => _.InstanceId == id,
+                                                                                            false);
 
                 if (parameter != null)
                 {
@@ -350,11 +306,12 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      bool value,
                                                      DateTime timeStamp,
-                                                     CancellationToken cancellationToken = default)
+                                                     CancellationToken cancellationToken)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelBoolParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelBoolParameter>(_ => _.InstanceId == id,
+                                                                                            false);
 
                 if (parameter != null)
                 {
@@ -388,13 +345,15 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelFloatParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelFloatParameter>(_ => _.InstanceId == id,
+                                                                                             false);
 
                 if (parameter != null)
                 {
                     LogUpdatingParameter(parameter.Id,
                                          parameter.Name,
                                          value);
+
                     parameter.Value = value;
 
                     parameter.Values.Add(new FloatParameterValue()
@@ -416,12 +375,13 @@ namespace Shaos.Services.Runtime.Host
 
         internal async Task SaveParameterChangeAsync(int id,
                                                      string value,
-                                                     DateTime timeStamp,
-                                                     CancellationToken cancellationToken = default)
+                                                     DateTime timestamp,
+                                                     CancellationToken cancellationToken)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelStringParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelStringParameter>(_ => _.InstanceId == id,
+                                                                                              false);
 
                 if (parameter != null)
                 {
@@ -435,7 +395,7 @@ namespace Shaos.Services.Runtime.Host
                     {
                         Parameter = parameter,
                         ParameterId = parameter.Id,
-                        TimeStamp = timeStamp,
+                        TimeStamp = timestamp,
                         Value = value
                     });
 
@@ -451,11 +411,12 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      int value,
                                                      DateTime timeStamp,
-                                                     CancellationToken cancellationToken = default)
+                                                     CancellationToken cancellationToken)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetByIdAsync<ModelIntParameter>(id, false);
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelIntParameter>(_ => _.InstanceId == id,
+                                                                                           false);
 
                 if (parameter != null)
                 {
@@ -482,34 +443,12 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
-        internal async Task UpdateDeviceBatteryLevelAsync(int id,
-                                                          uint level,
-                                                          DateTime timeStamp)
-        {
-            await UpdateDeviceAsync(id, (device) =>
-            {
-                device.UpdateBatteryLevel(level,
-                                          timeStamp);
-            });
-        }
-
-        internal async Task UpdateDeviceSignalLevelAsync(int id,
-                                                         int level,
-                                                         DateTime timeStamp)
-        {
-            await UpdateDeviceAsync(id, (device) =>
-            {
-                device.UpdateSignalLevel(level,
-                                         timeStamp);
-            });
-        }
-
-        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
+        private async Task ExecuteRepositoryOperationAsync(Func<IShaosRepository, Task> operation)
         {
             try
             {
                 using var scope = _serviceScopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
+                var repository = scope.ServiceProvider.GetRequiredService<IShaosRepository>();
 
                 await operation(repository);
             }
@@ -586,9 +525,9 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelDevice = await repository.GetByIdAsync<ModelDevice>(id,
-                                                                            false,
-                                                                            [nameof(ModelDevice.Parameters)]);
+                var modelDevice = await repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.InstanceId == id,
+                                                                                       false,
+                                                                                       [nameof(ModelDevice.Parameters)]);
 
                 if (modelDevice != null)
                 {

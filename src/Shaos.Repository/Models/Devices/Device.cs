@@ -32,18 +32,13 @@ namespace Shaos.Repository.Models.Devices
     /// </summary>
     public class Device : BaseEntity
     {
-        private const string SignalLevelName = "Signal Level";
         private const string BatteryLevelName = "Battery Level";
+        private const string SignalLevelName = "Signal Level";
 
         /// <summary>
-        /// The <see cref="Device"/> last battery level
+        /// The <see cref="Sdk.Devices.Device"/> identifier
         /// </summary>
-        public uint? BatteryLevel { get; set; }
-
-        /// <summary>
-        /// The <see cref="Device"/> features
-        /// </summary>
-        public DeviceFeatures Features { get; set; }
+        public int InstanceId { get; set; }
 
         /// <summary>
         /// The <see cref="Device"/> instance name
@@ -64,84 +59,5 @@ namespace Shaos.Repository.Models.Devices
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int? PlugInInstanceId { get; set; } = null;
-
-        /// <summary>
-        /// The <see cref="Device"/> last signal level
-        /// </summary>
-        public int? SignalLevel { get; set; }
-
-        /// <summary>
-        /// Create the device signal level and battery parameters
-        /// </summary>
-        public void CreateDeviceFeatureParameters()
-        {
-            if (!Parameters.Any(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Voltage) &&
-                (Features & DeviceFeatures.BatteryPowered) == DeviceFeatures.BatteryPowered)
-            {
-                var batteryParameter = new UIntParameter()
-                {
-                    Device = this,
-                    Name = BatteryLevelName,
-                    ParameterType = Sdk.Devices.Parameters.ParameterType.Level,
-                    Units = "%",
-                    Value = 0
-                };
-
-                Parameters.Add(batteryParameter);
-            }
-
-            if (!Parameters.Any(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Rssi) &&
-                (Features & DeviceFeatures.Wireless) == DeviceFeatures.Wireless)
-            {
-                var signalParameter = new IntParameter()
-                {
-                    Device = this,
-                    Name = SignalLevelName,
-                    ParameterType = Sdk.Devices.Parameters.ParameterType.Rssi,
-                    Units = string.Empty,
-                    Value = 0
-                };
-
-                Parameters.Add(signalParameter);
-            }
-        }
-
-        /// <summary>
-        /// Update the device battery level
-        /// </summary>
-        /// <param name="batteryLevel">The updated device battery level</param>
-        /// <param name="timeStamp">The timestamp of the update</param>
-        public void UpdateBatteryLevel(uint batteryLevel,
-                                       DateTime timeStamp)
-        {
-            var parameter = (UIntParameter?)Parameters
-                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Level && _.Name == BatteryLevelName);
-
-            if (parameter != null)
-            {
-                BatteryLevel = batteryLevel;
-
-                parameter.UpdateValue(batteryLevel, timeStamp);
-            }
-        }
-
-        /// <summary>
-        /// Update the device signal level
-        /// </summary>
-        /// <param name="signalLevel">The updated device signal level</param>
-        /// <param name="timeStamp">The timestamp of the update</param>
-        public void UpdateSignalLevel(int signalLevel,
-                                      DateTime timeStamp)
-        {
-            var parameter = (IntParameter?)Parameters
-                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Rssi && _.Name == SignalLevelName);
-
-            if (parameter != null)
-            {
-                SignalLevel = signalLevel;
-
-                parameter.UpdateValue(signalLevel, timeStamp);
-            }
-        }
     }
 }

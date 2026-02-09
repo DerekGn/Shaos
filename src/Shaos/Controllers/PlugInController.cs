@@ -57,7 +57,7 @@ namespace Shaos.Controllers
         private readonly IZipFileValidationService _codeFileValidationService;
 
         public PlugInController(ILogger<PlugInController> logger,
-                                IRepository repository,
+                                IShaosRepository repository,
                                 IPlugInService plugInService,
                                 IZipFileValidationService codeFileValidationService) : base(logger, repository, plugInService)
         {

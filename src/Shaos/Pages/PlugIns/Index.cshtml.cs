@@ -32,10 +32,10 @@ namespace Shaos.Pages.PlugIns
     public class IndexModel : PaginatedModel<PlugIn>
     {
         private readonly IConfiguration _configuration;
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
 
         public IndexModel(IConfiguration configuration,
-                          IRepository repository)
+                          IShaosRepository repository)
         {
             _repository = repository;
             _configuration = configuration;

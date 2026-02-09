@@ -33,10 +33,10 @@ namespace Shaos.Pages.Logging
     public class OverrideModel : PageModel
     {
         private readonly ILoggingConfiguration _loggingConfiguration;
-        private readonly IRepository _repository;
+        private readonly IShaosRepository _repository;
 
         public OverrideModel(ILoggingConfiguration loggingConfiguration,
-                             IRepository repository)
+                             IShaosRepository repository)
         {
             _loggingConfiguration = loggingConfiguration;
             _repository = repository;

@@ -63,26 +63,6 @@ namespace Shaos.Services.Runtime.Host
         Task DeleteDevicesAsync(IEnumerable<int> deviceIds);
 
         /// <summary>
-        /// Update a <see cref="IDevice"/> instance battery level.
-        /// </summary>
-        /// <param name="id">The <see cref="IDevice"/> instance identifier.</param>
-        /// <param name="level">The battery level</param>
-        /// <param name="timestamp">The timestamp of the event</param>
-        Task DeviceBatteryLevelUpdateAsync(int id,
-                                           uint level,
-                                           DateTime timestamp);
-
-        /// <summary>
-        /// Update a <see cref="IDevice"/> instance signal level.
-        /// </summary>
-        /// <param name="id">The <see cref="IDevice"/> instance identifier.</param>
-        /// <param name="level">The signal level</param>
-        /// <param name="timestamp">The timestamp of the event</param>
-        Task DeviceSignalLevelUpdateAsync(int id,
-                                          int level,
-                                          DateTime timestamp);
-
-        /// <summary>
         /// Save a <see cref="BaseParameter"/>
         /// </summary>
         /// <param name="id">The parameter id</param>

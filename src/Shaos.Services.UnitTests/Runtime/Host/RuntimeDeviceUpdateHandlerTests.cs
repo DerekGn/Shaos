@@ -31,6 +31,7 @@ using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Eventing;
 using Shaos.Services.Processing;
 using Shaos.Services.Runtime.Host;
+using System.Linq.Expressions;
 using Xunit;
 using Xunit.Abstractions;
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
@@ -74,18 +75,20 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SetupServiceScopeFactory();
 
             MockRepository
-                .Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
-                                                        It.IsAny<bool>(),
-                                                        It.IsAny<List<string>>(),
-                                                        It.IsAny<CancellationToken>()))
+                .Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelDevice, bool>>>(),
+                                                     It.IsAny<bool>(),
+                                                     It.IsAny<List<string>>(),
+                                                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ModelDevice());
 
-            SdkBoolParameter parameter = new(false,
+            SdkBoolParameter parameter = new(1,
+                                             false,
                                              "name",
                                              "units",
                                              ParameterType.Level);
 
-            await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(1, [parameter]);
+            await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(1,
+                                                                          [parameter]);
 
             MockRepository
                .Verify(_ => _.AddAsync(It.IsAny<ModelBaseParameter>(),
@@ -113,16 +116,18 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                            It.IsAny<CancellationToken>()))
                 .ReturnsAsync(plugInInstance);
 
-            SdkBoolParameter parameter = new(false,
+            SdkBoolParameter parameter = new(1,
+                                             false,
                                              "name",
                                              "units",
                                              ParameterType.Level);
 
-            var device = new SdkDevice("name",
-                                       Sdk.Devices.DeviceFeatures.None,
+            var device = new SdkDevice(1,
+                                       "name",
                                        [parameter]);
 
-            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(1, [device]);
+            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(1,
+                                                                 [device]);
 
             MockRepository
                .Verify(_ => _.AddAsync(It.IsAny<ModelDevice>(),
@@ -150,26 +155,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             await _runtimeDeviceUpdateHandler.DeleteDevicesAsync([1]);
 
             MockRepository.Verify(_ => _.DeleteAsync<ModelDevice>(It.IsAny<int>(), It.IsAny<CancellationToken>()));
-        }
-
-        [Fact]
-        public async Task TestDeviceBatteryLevelUpdateAsync()
-        {
-            SetupServiceScopeFactory();
-
-            await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(1, 10, DateTime.UtcNow);
-
-            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
-        }
-
-        [Fact]
-        public async Task TestDeviceSignalLevelUpdateAsync()
-        {
-            SetupServiceScopeFactory();
-
-            await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(1, -10, DateTime.UtcNow);
-
-            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -212,12 +197,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ModelFloatParameter parameter = new ModelFloatParameter()
             {
                 Name = "name",
+                Units = string.Empty
             };
 
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelFloatParameter>(It.IsAny<int>(),
-                                                                         It.IsAny<bool>(),
-                                                                         It.IsAny<List<string>>(),
-                                                                         It.IsAny<CancellationToken>()))
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelFloatParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parameter);
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
@@ -240,12 +226,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ModelBoolParameter parameter = new ModelBoolParameter()
             {
                 Name = "name",
+                Units = string.Empty
             };
 
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelBoolParameter>(It.IsAny<int>(),
-                                                                         It.IsAny<bool>(),
-                                                                         It.IsAny<List<string>>(),
-                                                                         It.IsAny<CancellationToken>()))
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync<ModelBoolParameter>(It.IsAny<Expression<Func<ModelBoolParameter, bool>>>(),
+                                                                                   It.IsAny<bool>(),
+                                                                                   It.IsAny<List<string>>(),
+                                                                                   It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parameter);
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
@@ -268,12 +255,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ModelIntParameter parameter = new ModelIntParameter()
             {
                 Name = "name",
+                Units = string.Empty
             };
 
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelIntParameter>(It.IsAny<int>(),
-                                                                         It.IsAny<bool>(),
-                                                                         It.IsAny<List<string>>(),
-                                                                         It.IsAny<CancellationToken>()))
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelIntParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parameter);
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
@@ -296,12 +284,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ModelStringParameter parameter = new ModelStringParameter()
             {
                 Name = "name",
+                Units = string.Empty
             };
 
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelStringParameter>(It.IsAny<int>(),
-                                                                         It.IsAny<bool>(),
-                                                                         It.IsAny<List<string>>(),
-                                                                         It.IsAny<CancellationToken>()))
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelStringParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parameter);
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
@@ -324,12 +313,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ModelUIntParameter parameter = new ModelUIntParameter()
             {
                 Name = "name",
+                Units = string.Empty
             };
 
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelUIntParameter>(It.IsAny<int>(),
-                                                                         It.IsAny<bool>(),
-                                                                         It.IsAny<List<string>>(),
-                                                                         It.IsAny<CancellationToken>()))
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelUIntParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
                 .ReturnsAsync(parameter);
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
@@ -365,62 +355,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
 
-        [Fact]
-        public async Task TestUpdateDeviceBatteryLevelAsync()
-        {
-            SetupServiceScopeFactory();
-
-            ModelDevice modelDevice = new ModelDevice()
-            {
-                Features = Sdk.Devices.DeviceFeatures.BatteryPowered
-            };
-
-            modelDevice.CreateDeviceFeatureParameters();
-
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
-                                                                  It.IsAny<bool>(),
-                                                                  It.IsAny<List<string>>(),
-                                                                  It.IsAny<CancellationToken>()))
-                .ReturnsAsync(modelDevice);
-
-            await _runtimeDeviceUpdateHandler.UpdateDeviceBatteryLevelAsync(1,
-                                                                            10,
-                                                                            DateTime.UtcNow);
-            
-            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
-
-            Assert.NotNull(modelDevice.BatteryLevel);
-            Assert.Equal(10u, modelDevice.BatteryLevel!.Value);
-        }
-
-        [Fact]
-        public async Task TestUpdateDeviceSignalLevelAsync()
-        {
-            SetupServiceScopeFactory();
-
-            ModelDevice modelDevice = new ModelDevice()
-            {
-                Features = Sdk.Devices.DeviceFeatures.Wireless
-            };
-
-            modelDevice.CreateDeviceFeatureParameters();
-
-            MockRepository.Setup(_ => _.GetByIdAsync<ModelDevice>(It.IsAny<int>(),
-                                                                  It.IsAny<bool>(),
-                                                                  It.IsAny<List<string>>(),
-                                                                  It.IsAny<CancellationToken>()))
-                .ReturnsAsync(modelDevice);
-
-            await _runtimeDeviceUpdateHandler.UpdateDeviceSignalLevelAsync(1,
-                                                                           -10,
-                                                                           DateTime.UtcNow);
-
-            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
-
-            Assert.NotNull(modelDevice.SignalLevel);
-            Assert.Equal(-10, modelDevice.SignalLevel!.Value);
-        }
-
         private void SetupServiceScopeFactory()
         {
             _mockServiceScopeFactory
@@ -432,7 +366,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Returns(_mockServiceProvider.Object);
 
             _mockServiceProvider
-                .Setup(_ => _.GetService(typeof(IRepository)))
+                .Setup(_ => _.GetService(typeof(IShaosRepository)))
                 .Returns(MockRepository.Object);
         }
     }
