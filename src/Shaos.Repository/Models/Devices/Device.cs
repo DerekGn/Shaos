@@ -36,11 +36,6 @@ namespace Shaos.Repository.Models.Devices
         private const string SignalLevelName = "Signal Level";
 
         /// <summary>
-        /// The <see cref="Device"/> last battery level
-        /// </summary>
-        public uint? BatteryLevel { get; set; }
-
-        /// <summary>
         /// The <see cref="Sdk.Devices.Device"/> identifier
         /// </summary>
         public int InstanceId { get; set; }
@@ -64,48 +59,5 @@ namespace Shaos.Repository.Models.Devices
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int? PlugInInstanceId { get; set; } = null;
-
-        /// <summary>
-        /// The <see cref="Device"/> last signal level
-        /// </summary>
-        public int? SignalLevel { get; set; }
-
-        /// <summary>
-        /// Update the device battery level
-        /// </summary>
-        /// <param name="batteryLevel">The updated device battery level</param>
-        /// <param name="timeStamp">The timestamp of the update</param>
-        public void UpdateBatteryLevel(uint batteryLevel,
-                                       DateTime timeStamp)
-        {
-            var parameter = (UIntParameter?)Parameters
-                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Level && _.Name == BatteryLevelName);
-
-            if (parameter != null)
-            {
-                BatteryLevel = batteryLevel;
-
-                parameter.UpdateValue(batteryLevel, timeStamp);
-            }
-        }
-
-        /// <summary>
-        /// Update the device signal level
-        /// </summary>
-        /// <param name="signalLevel">The updated device signal level</param>
-        /// <param name="timeStamp">The timestamp of the update</param>
-        public void UpdateSignalLevel(int signalLevel,
-                                      DateTime timeStamp)
-        {
-            var parameter = (IntParameter?)Parameters
-                .FirstOrDefault(_ => _.ParameterType == Sdk.Devices.Parameters.ParameterType.Rssi && _.Name == SignalLevelName);
-
-            if (parameter != null)
-            {
-                SignalLevel = signalLevel;
-
-                parameter.UpdateValue(signalLevel, timeStamp);
-            }
-        }
     }
 }

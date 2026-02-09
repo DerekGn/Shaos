@@ -84,10 +84,8 @@ namespace Shaos.Services.UnitTests
         {
             var device = new Repository.Models.Devices.Device()
             {
-                BatteryLevel = 100,
                 Id = 2,
-                Name = "name",
-                SignalLevel = -10
+                Name = "name"
             };
 
             device.Parameters.Add(new Repository.Models.Devices.Parameters.BoolParameter()

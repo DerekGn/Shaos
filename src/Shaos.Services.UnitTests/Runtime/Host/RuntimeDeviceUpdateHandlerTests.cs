@@ -158,26 +158,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         }
 
         [Fact]
-        public async Task TestDeviceBatteryLevelUpdateAsync()
-        {
-            SetupServiceScopeFactory();
-
-            await _runtimeDeviceUpdateHandler.DeviceBatteryLevelUpdateAsync(1, 10, DateTime.UtcNow);
-
-            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
-        }
-
-        [Fact]
-        public async Task TestDeviceSignalLevelUpdateAsync()
-        {
-            SetupServiceScopeFactory();
-
-            await _runtimeDeviceUpdateHandler.DeviceSignalLevelUpdateAsync(1, -10, DateTime.UtcNow);
-
-            _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
-        }
-
-        [Fact]
         public async Task TestSaveParameterChangeAsyncBool()
         {
             SetupServiceScopeFactory();

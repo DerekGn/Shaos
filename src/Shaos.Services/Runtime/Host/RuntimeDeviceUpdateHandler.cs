@@ -174,42 +174,6 @@ namespace Shaos.Services.Runtime.Host
         }
 
         /// <inheritdoc/>
-        public async Task DeviceBatteryLevelUpdateAsync(int id,
-                                                        uint level,
-                                                        DateTime timestamp)
-        {
-            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
-            {
-                await UpdateDeviceBatteryLevelAsync(id,
-                                                    level,
-                                                    timestamp);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                       level,
-                                                       timestamp,
-                                                       cancellationToken);
-            });
-        }
-
-        /// <inheritdoc/>
-        public async Task DeviceSignalLevelUpdateAsync(int id,
-                                                       int level,
-                                                       DateTime timestamp)
-        {
-            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
-            {
-                await UpdateDeviceSignalLevelAsync(id,
-                                                   level,
-                                                   timestamp);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                      level,
-                                                      timestamp,
-                                                      cancellationToken);
-            });
-        }
-
-        /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    int value,
                                                    DateTime timestamp)
@@ -476,28 +440,6 @@ namespace Shaos.Services.Runtime.Host
                 {
                     LogParameterNotFound(id);
                 }
-            });
-        }
-
-        internal async Task UpdateDeviceBatteryLevelAsync(int id,
-                                                          uint level,
-                                                          DateTime timeStamp)
-        {
-            await UpdateDeviceAsync(id, (device) =>
-            {
-                device.UpdateBatteryLevel(level,
-                                          timeStamp);
-            });
-        }
-
-        internal async Task UpdateDeviceSignalLevelAsync(int id,
-                                                         int level,
-                                                         DateTime timeStamp)
-        {
-            await UpdateDeviceAsync(id, (device) =>
-            {
-                device.UpdateSignalLevel(level,
-                                         timeStamp);
             });
         }
 
