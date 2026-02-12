@@ -27,7 +27,7 @@ using Shaos.Services.Logging;
 
 namespace Shaos.Startup
 {
-    public partial class InitialisationHostService : IHostedService
+    public class InitialisationHostService : IHostedService
     {
         private readonly ILogger<InitialisationHostService> _logger;
         private readonly IServiceProvider _services;
@@ -41,7 +41,7 @@ namespace Shaos.Startup
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            LogInitialisingApplication();
+            _logger.LogInformation("Initialising Application");
 
             await InitialiseLoggingConfiguration(cancellationToken);
 
@@ -55,7 +55,7 @@ namespace Shaos.Startup
 
         private async Task InitialiseInstanceHostAsync(CancellationToken cancellationToken)
         {
-            LogInitialisingInstanceHost();
+            _logger.LogInformation("Initialising Instance Host");
 
             using var scope = _services.CreateScope();
 
@@ -67,7 +67,7 @@ namespace Shaos.Startup
 
         private async Task InitialiseLoggingConfiguration(CancellationToken cancellationToken)
         {
-            LogInitialisingLoggingConfiguration();
+            _logger.LogInformation("Initialising Logging Configuration");
 
             using var scope = _services.CreateScope();
 
@@ -82,14 +82,5 @@ namespace Shaos.Startup
             await loggingConfigurationService.InitialiseLoggingConfigurationAsync(loggingConfiguration,
                                                                                   cancellationToken);
         }
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Initialising application")]
-        private partial void LogInitialisingApplication();
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Initialising instance host")]
-        private partial void LogInitialisingInstanceHost();
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Initialising logging configuration")]
-        private partial void LogInitialisingLoggingConfiguration();
     }
 }
