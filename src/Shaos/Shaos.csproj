@@ -42,8 +42,4 @@
             <_Parameter1>$(MSBuildProjectName).UnitTests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Pages\Dashboard\" />
-    </ItemGroup>
 </Project>
