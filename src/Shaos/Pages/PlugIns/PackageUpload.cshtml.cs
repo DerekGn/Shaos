@@ -58,13 +58,10 @@ namespace Shaos.Pages.PlugIns
             {
                 ModelState.AddModelError(string.Empty, "Exception occurred check the logs");
 
-                LogWarning(ex);
+                _logger.LogWarning(ex, "An unhandled exception occurred");
             }
 
             return Page();
         }
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "A exception occurred")]
-        private partial void LogWarning(Exception exception);
     }
 }

@@ -27,7 +27,7 @@ using Shaos.Services.Eventing;
 
 namespace Shaos.Hubs
 {
-    public partial class PlotHub : Hub<IPlotHub>
+    public class PlotHub : Hub<IPlotHub>
     {
         private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly ILogger<PlotHub> _logger;
@@ -41,7 +41,8 @@ namespace Shaos.Hubs
 
         public override Task OnConnectedAsync()
         {
-            LogUserConnected(Context.UserIdentifier,
+            _logger.LogInformation("User: [{Id}] Connected. Connection Id: [{ConnectionId}]",
+                                   Context.UserIdentifier,
                                    Context.ConnectionId);
 
             return base.OnConnectedAsync();
@@ -49,14 +50,16 @@ namespace Shaos.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            LogUserDisconnected(Context.UserIdentifier,
-                                Context.ConnectionId);
+            _logger.LogInformation("User: [{Id}] Disconnection. Connection Id: [{ConnectionId}]",
+                                   Context.UserIdentifier,
+                                   Context.ConnectionId);
 
             if (exception != null)
             {
-                LogException(Context.UserIdentifier,
-                             Context.ConnectionId,
-                             exception);
+                _logger.LogError(exception,
+                                 "User: [{Id}] Disconnection. Connection Id: [{ConnectionId}]",
+                                 Context.UserIdentifier,
+                                 Context.ConnectionId);
             }
 
             return base.OnDisconnectedAsync(exception);
@@ -65,8 +68,9 @@ namespace Shaos.Hubs
         [HubMethodName("Start")]
         public async Task StartAsync(int id)
         {
-            LogStartParameterPlot(id,
-                                  Context.UserIdentifier);
+            _logger.LogInformation("Starting Plot Parameter Id: [{Id}] for User Id: [{UserId}]",
+                                   id,
+                                   Context.UserIdentifier);
 
             await DeviceParameterSubscription(id, DeviceSubscriptionState.Subscribe);
         }
@@ -74,8 +78,9 @@ namespace Shaos.Hubs
         [HubMethodName("Stop")]
         public async Task StopAsync(int id)
         {
-            LogStopParameterPlot(id,
-                                 Context.UserIdentifier);
+            _logger.LogInformation("Stopping Plot Parameter Id: [{Id}] for User Id: [{UserId}]",
+                                   id,
+                                   Context.UserIdentifier);
 
             await DeviceParameterSubscription(id, DeviceSubscriptionState.Unsubscribe);
         }
@@ -89,24 +94,5 @@ namespace Shaos.Hubs
                 UserIdentifier = Context.UserIdentifier!
             });
         }
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "User: [{id}] Disconnection Id: [{connectionId}]")]
-        private partial void LogException(string? id,
-                                          string connectionId,
-                                          Exception exception);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Starting Plot Parameter Id: [{id}] for User Id: [{userIdentifier}]")]
-        private partial void LogStartParameterPlot(int id, string? userIdentifier);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stopping Plot Parameter Id: [{id}] for User Id: [{userIdentifier}]")]
-        private partial void LogStopParameterPlot(int id, string? userIdentifier);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "User: [{id}] Connected. Connection Id: [{connectionId}]")]
-        private partial void LogUserConnected(string? id,
-                                              string connectionId);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "User: [{id}] Disconnected. Connection Id: [{connectionId}]")]
-        private partial void LogUserDisconnected(string? id,
-                                                 string connectionId);
     }
 }
