@@ -24,7 +24,7 @@
 
 namespace Shaos.Hosting
 {
-    public partial class MonitorHostedService : IHostedService
+    public class MonitorHostedService : IHostedService
     {
         private readonly ILogger<MonitorHostedService> _logger;
 
@@ -40,44 +40,29 @@ namespace Shaos.Hosting
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            LogStart();
+            _logger.LogInformation($"Background Worker[{nameof(MonitorHostedService)}] Started");
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            LogStop();
+            _logger.LogInformation($"Background Worker[{nameof(MonitorHostedService)}] Stopped");
             return Task.CompletedTask;
         }
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Application Starting")]
-        private partial void LogApplicationStarted();
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Application Stopped")]
-        private partial void LogApplicationStopped();
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Application Stopping")]
-        private partial void LogApplicationStopping();
-
-        [LoggerMessage(Level = LogLevel.Information, Message = $"Background Worker [{nameof(MonitorHostedService)}] Starting")]
-        private partial void LogStart();
-
-        [LoggerMessage(Level = LogLevel.Information, Message = $"Background Worker [{nameof(MonitorHostedService)}] Stopping")]
-        private partial void LogStop();
-
         private void OnStarted()
         {
-            LogApplicationStarted();
+            _logger.LogInformation("Application Starting");
         }
 
         private void OnStopped()
         {
-            LogApplicationStopped();
+            _logger.LogInformation("Application Stopped");
         }
 
         private void OnStopping()
         {
-            LogApplicationStopping();
+            _logger.LogInformation("Application Stopping");
         }
     }
 }

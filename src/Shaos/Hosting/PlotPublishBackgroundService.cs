@@ -63,7 +63,8 @@ namespace Shaos.Hosting
         {
             if (@event.State == DeviceSubscriptionState.Subscribe)
             {
-                if (!_subscriptions.TryGetValue(@event.ParameterId, out List<string>? userIds))
+                if (!_subscriptions.TryGetValue(@event.ParameterId,
+                                                out List<string>? userIds))
                 {
                     userIds = [];
                     _subscriptions.Add(@event.ParameterId, userIds);
@@ -75,13 +76,15 @@ namespace Shaos.Hosting
                 }
                 else
                 {
-                    LogUserSubscriptionExists(@event.ParameterId,
-                                              @event.UserIdentifier);
+                    Logger.LogWarning("User subscription exists. Parameter: [{Id}] User: [{User}]",
+                                      @event.ParameterId,
+                                      @event.UserIdentifier);
                 }
             }
             else
             {
-                if (_subscriptions.TryGetValue(@event.ParameterId, out List<string>? userIds))
+                if (_subscriptions.TryGetValue(@event.ParameterId,
+                                               out List<string>? userIds))
                 {
                     if (userIds.Contains(@event.UserIdentifier))
                     {
@@ -89,14 +92,16 @@ namespace Shaos.Hosting
                     }
                     else
                     {
-                        LogUserSubscriptionDoesNotExists(@event.ParameterId,
-                                                         @event.UserIdentifier);
+                        Logger.LogWarning("User subscription does not exist. Parameter: [{Id}] User: [{User}]",
+                                          @event.ParameterId,
+                                          @event.ParameterId);
                     }
                 }
                 else
                 {
-                    LogUserSubscriptionDoesNotExists(@event.ParameterId,
-                                                     @event.UserIdentifier);
+                    Logger.LogWarning("User subscription does not exist. Parameter: [{Id}] User: [{User}]",
+                                      @event.ParameterId,
+                                      @event.ParameterId);
                 }
             }
         }
@@ -135,19 +140,13 @@ namespace Shaos.Hosting
             }
             else
             {
-                LogNoParameterSubscriptionExists(@event.ParameterId);
+                Logger.LogWarning("No parameter subscriptions exist for parameter: [{Id}]",
+                                  @event.ParameterId);
             }
         }
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "No parameter subscriptions exist for parameter: [{id}]")]
-        private partial void LogNoParameterSubscriptionExists(int id);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "User subscription does not exist. Parameter: [{id}] User: [{user}]")]
-        private partial void LogUserSubscriptionDoesNotExists(int id,
-                                                              string user);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "User subscription exists. Parameter: [{id}] User: [{user}]")]
-        private partial void LogUserSubscriptionExists(int id,
-                                                       string user);
+        //[LoggerMessage(Level = LogLevel.Warning, Message = "User subscription exists. Parameter: [{id}] User: [{user}]")]
+        //private partial void LogUserSubscriptionExists(int id,
+        //                                               string user);
     }
 }
