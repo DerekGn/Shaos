@@ -32,13 +32,13 @@ namespace Shaos.Repository.Models
     public class LogLevelSwitch : BaseEntity
     {
         /// <summary>
-        /// The name of this <see cref="LogLevelSwitch"/>
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
         /// The current <see cref="LogEventLevel"/>
         /// </summary>
         public LogEventLevel Level { get; set; }
+
+        /// <summary>
+        /// The name of this <see cref="LogLevelSwitch"/>
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
     }
 }

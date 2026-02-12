@@ -30,11 +30,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class FloatParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The value
-        /// </summary>
-        public float Value { get; set; }
-
-        /// <summary>
         /// The parent <see cref="FloatParameter"/>
         /// </summary>
         public required FloatParameter Parameter { get; set; }
@@ -43,5 +38,10 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The parent <see cref="BaseParameter"/> identifier
         /// </summary>
         public required int ParameterId { get; set; }
+
+        /// <summary>
+        /// The value
+        /// </summary>
+        public float Value { get; set; }
     }
 }
