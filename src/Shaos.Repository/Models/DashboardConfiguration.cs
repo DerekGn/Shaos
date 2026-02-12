@@ -5,7 +5,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// The <see cref="BaseParameter"/> render
     /// </summary>
-    public class ParameterRender : BaseEntity
+    public class DashboardConfiguration : BaseEntity
     {
         /// <summary>
         /// The parameter to render
