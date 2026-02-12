@@ -23,7 +23,6 @@
 */
 
 using Shaos.Repository.Models.Devices.Parameters;
-using Shaos.Sdk.Devices;
 
 namespace Shaos.Repository.Models.Devices
 {
@@ -32,9 +31,6 @@ namespace Shaos.Repository.Models.Devices
     /// </summary>
     public class Device : BaseEntity
     {
-        private const string BatteryLevelName = "Battery Level";
-        private const string SignalLevelName = "Signal Level";
-
         /// <summary>
         /// The <see cref="Sdk.Devices.Device"/> identifier
         /// </summary>

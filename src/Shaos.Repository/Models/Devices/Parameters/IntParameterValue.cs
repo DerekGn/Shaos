@@ -30,11 +30,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class IntParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The value
-        /// </summary>
-        public int Value { get; set; }
-
-        /// <summary>
         /// The parent <see cref="IntParameter"/>
         /// </summary>
         public required IntParameter Parameter { get; set; }
@@ -43,5 +38,10 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The parent <see cref="BaseParameter"/> identifier
         /// </summary>
         public required int ParameterId { get; set; }
+
+        /// <summary>
+        /// The value
+        /// </summary>
+        public int Value { get; set; }
     }
 }

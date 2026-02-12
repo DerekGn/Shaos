@@ -42,14 +42,14 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public int? DeviceId { get; set; }
 
         /// <summary>
-        /// The <see cref="BaseParameter"/> name
-        /// </summary>
-        public required string Name { get; set; }
-
-        /// <summary>
         /// The <see cref="Sdk.Devices.Parameters.BaseParameter"/> identifier.
         /// </summary>
         public int InstanceId { get; set; }
+
+        /// <summary>
+        /// The <see cref="BaseParameter"/> name
+        /// </summary>
+        public required string Name { get; set; }
 
         /// <summary>
         /// The <see cref="ParameterType"/>

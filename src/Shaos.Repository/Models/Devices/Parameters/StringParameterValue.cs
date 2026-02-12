@@ -30,11 +30,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class StringParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The value
-        /// </summary>
-        public string? Value { get; set; }
-
-        /// <summary>
         /// The parent <see cref="StringParameter"/>
         /// </summary>
         public required StringParameter Parameter { get; set; }
@@ -43,5 +38,10 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The parent <see cref="StringParameter"/> identifier
         /// </summary>
         public required int ParameterId { get; set; }
+
+        /// <summary>
+        /// The value
+        /// </summary>
+        public string? Value { get; set; }
     }
 }

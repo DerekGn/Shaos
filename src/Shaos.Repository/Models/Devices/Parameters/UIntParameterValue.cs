@@ -30,11 +30,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public class UIntParameterValue : BaseParameterValue
     {
         /// <summary>
-        /// The value
-        /// </summary>
-        public uint Value { get; set; }
-
-        /// <summary>
         /// The parent <see cref="UIntParameter"/>
         /// </summary>
         public required UIntParameter Parameter { get; set; }
@@ -43,5 +38,10 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The parent <see cref="UIntParameter"/> identifier
         /// </summary>
         public required int ParameterId { get; set; }
+
+        /// <summary>
+        /// The value
+        /// </summary>
+        public uint Value { get; set; }
     }
 }

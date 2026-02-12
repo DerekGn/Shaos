@@ -40,19 +40,34 @@ namespace Shaos.Repository
         {
         }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="Device"/>
+        /// </summary>
         public DbSet<Device> Devices { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="LogLevelSwitch"/>
+        /// </summary>
         public DbSet<LogLevelSwitch> LogLevelSwitches { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="DashboardConfiguration"/>
+        /// </summary>
+        public DbSet<DashboardConfiguration> DashboardConfigurations { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="PlugInInformation"/>
+        /// </summary>
         public DbSet<PlugInInformation> PlugInInformations { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="PlugInInstance"/>
+        /// </summary>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="PlugIn"/>
+        /// </summary>
         public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>

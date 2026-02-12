@@ -30,6 +30,16 @@ namespace Shaos.Repository.Models
     public static class ModelConstants
     {
         /// <summary>
+        /// The maximum assembly file name length
+        /// </summary>
+        public const int MaxAssemblyFileNameLength = 40;
+
+        /// <summary>
+        /// The maximum assembly version field length
+        /// </summary>
+        public const int MaxAssemblyVersionLength = 10;
+
+        /// <summary>
         /// The maximum configuration type name field length
         /// </summary>
         public const int MaxConfigTypeLength = 100;
@@ -40,24 +50,14 @@ namespace Shaos.Repository.Models
         public const int MaxDescriptionLength = 100;
 
         /// <summary>
-        /// The maximum assembly file name length
+        /// The maximum directory field length
         /// </summary>
-        public const int MaxAssemblyFileNameLength = 40;
+        public const int MaxDirectoryLength = 32;
 
         /// <summary>
         /// The maximum file name field length
         /// </summary>
         public const int MaxFileNameLength = 40;
-
-        /// <summary>
-        /// The maximum assembly version field length
-        /// </summary>
-        public const int MaxAssemblyVersionLength = 10;
-
-        /// <summary>
-        /// The maximum directory field length
-        /// </summary>
-        public const int MaxDirectoryLength = 32;
 
         /// <summary>
         /// Max type name field length

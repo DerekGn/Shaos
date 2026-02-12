@@ -45,6 +45,11 @@ namespace Shaos.Repository.Models
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
+        /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>
+        /// </summary>
+        public List<Device> Devices { get; } = [];
+
+        /// <summary>
         /// Indicates if the <see cref="PlugInInstance"/> is enabled
         /// </summary>
         public bool Enabled { get; set; } = false;
@@ -53,11 +58,6 @@ namespace Shaos.Repository.Models
         /// The name of this <see cref="PlugInInstance"/>
         /// </summary>
         public string Name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>
-        /// </summary>
-        public List<Device> Devices { get; } = [];
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]
