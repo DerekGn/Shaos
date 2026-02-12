@@ -23,9 +23,6 @@ namespace Shaos.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<uint?>("BatteryLevel")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
@@ -38,9 +35,6 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PlugInInstanceId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("SignalLevel")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedDate")

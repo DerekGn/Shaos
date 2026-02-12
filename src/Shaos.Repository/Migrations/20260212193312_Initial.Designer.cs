@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20260206204956_Initial")]
+    [Migration("20260212193312_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -26,9 +26,6 @@ namespace Shaos.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<uint?>("BatteryLevel")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
@@ -41,9 +38,6 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PlugInInstanceId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("SignalLevel")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UpdatedDate")
