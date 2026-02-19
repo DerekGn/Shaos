@@ -27,7 +27,8 @@ using Shaos.Extensions;
 using Shaos.Services;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
-using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using InstanceApi = Shaos.Api.Model.v1.Instance;
 
@@ -50,13 +51,12 @@ namespace Shaos.Controllers
         }
 
         [HttpGet()]
-        [SwaggerResponse(StatusCodes.Status200OK, "The list of Instances", Type = typeof(IEnumerable<InstanceApi>))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Gets the list of Instances",
-            Description = "The list of Instances",
-            OperationId = "GetInstances")]
+        [EndpointDescription("Get the list of Runtime Instances")]
+        [EndpointName("Gets the list of Runtime Instances")]
+        [EndpointSummary("GetRuntimeInstances")]
+        [ProducesResponseType<IEnumerable<InstanceApi>>(StatusCodes.Status200OK, Description = "The list of Instances")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
         public IEnumerable<InstanceApi> GetInstances()
         {
             foreach (var item in _instanceHost.Instances)
@@ -66,36 +66,33 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("{id}/start")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The Instance will be started")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "The Instance was not found", Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Start a Instance",
-            Description = "Start a Instance executing",
-            OperationId = "StartInstance")]
-        public ActionResult StartInstance(
-                [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
+        [EndpointDescription("Start a PlugIn Instance executing")]
+        [EndpointName("StartPlugInInstance")]
+        [EndpointSummary("Start a PlugIn Instance")]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Description = "The Instance will be started")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, Description = "The Instance was not found")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult> StartInstance([FromRoute, Required, Description(InstanceIdentifier), Range(1, int.MaxValue)] int id,
+                                                CancellationToken cancellationToken = default)
         {
-            return HandleError(id, (id) =>
+            return await HandleErrorAsync(id, async (id) =>
             {
-                _instanceHostService.StartInstanceAsync(id);
+                await _instanceHostService.StartInstanceAsync(id);
 
                 return Accepted();
             });
         }
 
         [HttpPut("{id}/stop")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "A ExecutingInstance will be stopped")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Stop an Instance",
-            Description = "Stop an Instance",
-            OperationId = "StopInstance")]
-        public ActionResult StopInstance(
-            [FromRoute, SwaggerParameter(InstanceIdentifier, Required = true)] int id)
+        [EndpointDescription("Stop an executing PlugIn Instance")]
+        [EndpointName("StopPlugInInstance")]
+        [EndpointSummary("Stop a PlugIn Instance")]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Description = "An executing PlugIn Instance will be stopped")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public ActionResult StopInstance([FromRoute, Required, Description(InstanceIdentifier), Range(1, int.MaxValue)] int id)
         {
             return HandleError(id, (id) =>
             {
@@ -105,7 +102,8 @@ namespace Shaos.Controllers
             });
         }
 
-        private ActionResult HandleError(int id, Func<int, ActionResult> operation)
+        private ActionResult HandleError(int id,
+                                         Func<int, ActionResult> operation)
         {
             try
             {
@@ -113,15 +111,34 @@ namespace Shaos.Controllers
             }
             catch (InstanceNotFoundException)
             {
-                return BadRequest(
-                    CreateProblemDetails(HttpStatusCode.NotFound,
-                        $"Instance [{id}] not found"));
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                       $"Instance [{id}] not found"));
             }
             catch (ArgumentOutOfRangeException)
             {
-                return BadRequest(
-                    CreateProblemDetails(HttpStatusCode.BadRequest,
-                        "Id is invalid"));
+                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                       "Id is invalid"));
+            }
+
+            return Accepted();
+        }
+
+        private async Task<ActionResult> HandleErrorAsync(int id,
+                                                          Func<int, Task<AcceptedResult>> operation)
+        {
+            try
+            {
+                await operation(id);
+            }
+            catch (InstanceNotFoundException)
+            {
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                       $"Instance [{id}] not found"));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                       "Id is invalid"));
             }
 
             return Accepted();

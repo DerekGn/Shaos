@@ -1,4 +1,4 @@
-﻿ /*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -26,7 +26,7 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog.Events;
 using Shaos.DataAnnotations;
 using Shaos.Services.Logging;
-using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Controllers
@@ -41,32 +41,30 @@ namespace Shaos.Controllers
                                  ILoggingConfiguration loggingConfiguration,
                                  ILoggingConfigurationService loggingConfigurationService) : base(logger)
         {
-            _loggingConfiguration = loggingConfiguration ?? throw new ArgumentNullException(nameof(loggingConfiguration));
-            _loggingConfigurationService = loggingConfigurationService ?? throw new ArgumentNullException(nameof(loggingConfigurationService));
+            _loggingConfiguration = loggingConfiguration;
+            _loggingConfigurationService = loggingConfigurationService;
         }
 
         [HttpGet("levels")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The log level switches", Type = typeof(IDictionary<string, LogEventLevel>))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Gets the set of configured log level switches",
-            Description = "Get the currently configured set of the log level switches",
-            OperationId = "GetLogLevelSwitches")]
+        [EndpointDescription("Get the currently configured set of the log level switches")]
+        [EndpointName("GetLogLevelSwitches")]
+        [EndpointSummary("Gets the set of configured log level switches")]
+        [ProducesResponseType<IDictionary<string, LogEventLevel>>(StatusCodes.Status200OK, Description = "The log level switches")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
         public IDictionary<string, LogEventLevel> GetLogLevelSwitches()
             => _loggingConfiguration.LoggingLevelSwitches.ToDictionary(_ => _.Key, _ => _.Value.MinimumLevel);
 
         [HttpPost("levels")]
-        [SwaggerResponse(StatusCodes.Status202Accepted)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Set a log level switch level",
-            Description = "Set the current log level switch level",
-            OperationId = "SetLogLevelSwitch")]
-        public async Task<IActionResult> SetLogLevelSwitches([LogLevelSwitchName] string name,
-                                                             [Required] LogEventLevel level,
-                                                             CancellationToken cancellationToken)
+        [EndpointDescription("Set the current log level switch level")]
+        [EndpointName("SetLogLevelSwitch")]
+        [EndpointSummary("Set a log level switch level")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<IActionResult> SetLogLevelSwitches([LogLevelSwitchName, Description("The log level switch name")] string name,
+                                                             [Required, Description("The log level")] LogEventLevel level,
+                                                             CancellationToken cancellationToken = default)
         {
             _loggingConfiguration.LoggingLevelSwitches[name].MinimumLevel = level;
 
