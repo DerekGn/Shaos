@@ -186,7 +186,7 @@ namespace Shaos
             {
                 app.UseMigrationsEndPoint();
 
-                app.MapOpenApi();
+                app.MapOpenApi("/api/openapi/{documentName}.json").AllowAnonymous();
             }
             else
             {
