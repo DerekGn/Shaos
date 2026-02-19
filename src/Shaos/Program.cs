@@ -111,25 +111,22 @@ namespace Shaos
                 _.AssumeDefaultVersionWhenUnspecified = true;
                 _.ReportApiVersions = true;
                 _.ApiVersionReader = new UrlSegmentApiVersionReader();
-            })
-            .AddApiExplorer(_ =>
-            {
-                _.GroupNameFormat = "'v'VVV";
-                _.SubstituteApiVersionInUrl = true;
             });
 
-            builder.Services.AddRazorPages(
-                options =>
-                {
-                    options.Conventions.AddFolderApplicationModelConvention(
-                        "/Instances",
-                        model => model.Filters.Add(new SerializeModelStatePageFilter()));
-                    //options.Conventions.AddFolderApplicationModelConvention(
-                    //   "/PlugIns",
-                    //   model => model.Filters.Add(new SerializeModelStatePageFilter()));
-                    options.Conventions.AddPageApplicationModelConvention(
-                        "/PlugIns/Package",
-                        model => model.Filters.Add(new SerializeModelStatePageFilter()));
+            builder
+                .Services
+                .AddRazorPages(
+                    options =>
+                    {
+                        options.Conventions.AddFolderApplicationModelConvention(
+                            "/Instances",
+                            model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                        //options.Conventions.AddFolderApplicationModelConvention(
+                        //   "/PlugIns",
+                        //   model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                        options.Conventions.AddPageApplicationModelConvention(
+                            "/PlugIns/Package",
+                            model => model.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
             builder
@@ -179,7 +176,7 @@ namespace Shaos
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
 
             var app = builder.Build();
-            
+
             app.MapIdentityApi<IdentityUser>();
 
             app.MapControllers();
