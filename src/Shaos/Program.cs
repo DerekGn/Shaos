@@ -23,11 +23,9 @@
 */
 
 using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
 using Serilog;
 using Shaos.Data;
 using Shaos.Extensions;
@@ -113,25 +111,22 @@ namespace Shaos
                 _.AssumeDefaultVersionWhenUnspecified = true;
                 _.ReportApiVersions = true;
                 _.ApiVersionReader = new UrlSegmentApiVersionReader();
-            })
-            .AddApiExplorer(_ =>
-            {
-                _.GroupNameFormat = "'v'VVV";
-                _.SubstituteApiVersionInUrl = true;
             });
 
-            builder.Services.AddRazorPages(
-                options =>
-                {
-                    options.Conventions.AddFolderApplicationModelConvention(
-                        "/Instances",
-                        model => model.Filters.Add(new SerializeModelStatePageFilter()));
-                    //options.Conventions.AddFolderApplicationModelConvention(
-                    //   "/PlugIns",
-                    //   model => model.Filters.Add(new SerializeModelStatePageFilter()));
-                    options.Conventions.AddPageApplicationModelConvention(
-                        "/PlugIns/Package",
-                        model => model.Filters.Add(new SerializeModelStatePageFilter()));
+            builder
+                .Services
+                .AddRazorPages(
+                    options =>
+                    {
+                        options.Conventions.AddFolderApplicationModelConvention(
+                            "/Instances",
+                            model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                        //options.Conventions.AddFolderApplicationModelConvention(
+                        //   "/PlugIns",
+                        //   model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                        options.Conventions.AddPageApplicationModelConvention(
+                            "/PlugIns/Package",
+                            model => model.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
             builder
@@ -148,30 +143,7 @@ namespace Shaos
                 _.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "Shaos API",
-                    Description = "",
-                    //TermsOfService = new Uri("https://example.com/terms"),
-                    //Contact = new OpenApiContact
-                    //{
-                    //    Name = "Example Contact",
-                    //    Url = new Uri("https://example.com/contact")
-                    //},
-                    //License = new OpenApiLicense
-                    //{
-                    //    Name = "Example License",
-                    //    Url = new Uri("https://example.com/license")
-                    //}
-                });
-
-                options.EnableAnnotations();
-
-                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Shaos.Api.Model.xml"));
-            });
+            builder.Services.AddOpenApi();
 
             // Application defined services
             builder.Services.AddScoped<IInstanceHostService, InstanceHostService>();
@@ -204,25 +176,17 @@ namespace Shaos
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
 
             var app = builder.Build();
-            var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
             app.MapIdentityApi<IdentityUser>();
 
             app.MapControllers();
 
-            app.UseSwagger();
-            app.UseSwaggerUI(_ =>
-            {
-                foreach (var groupName in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse().Select(_ => _.GroupName))
-                {
-                    _.SwaggerEndpoint($"{groupName}/swagger.json", groupName);
-                }
-            });
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
+
+                app.MapOpenApi("/api/openapi/{documentName}.json").AllowAnonymous();
             }
             else
             {
