@@ -33,27 +33,31 @@ using Shaos.Services;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Validation;
-using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Runtime.CompilerServices;
 
 using ModelPlugIn = Shaos.Repository.Models.PlugIn;
-
 
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/plugins")]
     public class PlugInController : BasePlugInController
     {
-        private const string CreateDescription = "Create a new PlugIn instance in the default state of disabled and inactive";
-        private const string DeleteDescription = "Delete a PlugIn instance, the PlugIn is stopped if its currently running";
-        private const string EnableDescription = "Set the state of a PlugIn, setting enabled to false prevents a PlugIn from being started at start up";
-        private const string GetDescription = "Get the details of a PlugIn by its identifier";
-        private const string GetListDescription = "Get a list of all PlugIns";
+        private const string CreatePlugInDescription = "Create a new PlugIn in the default state of disabled and inactive";
+        private const string CreatePlugInInstanceDescription = "A PlugIn instance is created in the default mode of disabled";
+        private const string DeletePlugInDescription = "Delete a PlugIn instance, the PlugIn is stopped if its currently running";
+        private const string DeletePlugInInstanceDescription = "Deletes a PlugIn Instance for the PlugIn";
+        private const string EnablePlugInInstanceDescription = "Set the state of a PlugIn Instance, setting enabled to false prevents a PlugIn from being started at start up";
+        private const string GetListPlugInDescription = "Get a list of all PlugIns";
+        private const string GetPlugInDescription = "Get the details of a PlugIn by its identifier";
         private const string PlugInIdentifier = "The PlugIn identifier";
         private const string PlugInInstanceIdentifier = "The PlugIn Instance Identifier";
         private const string PluginNameExists = "A PlugIn with the same name exists";
-
+        private const string UpdatePlugInDescription = "Update a PlugIn";
+        private const string UpdatePlugInInstanceDescription = "Update a PlugIn Instance";
+        private const string UploadPackageDescription = "Upload a Package file for a PlugIn. A Package is a zip file that contains the executable and content for a PlugIn";
         private readonly IZipFileValidationService _codeFileValidationService;
 
         public PlugInController(ILogger<PlugInController> logger,
@@ -65,17 +69,16 @@ namespace Shaos.Controllers
         }
 
         [HttpPost]
-        [SwaggerResponse(StatusCodes.Status201Created, PlugInIdentifier, Type = typeof(int))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, InvalidRequest, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status409Conflict, PluginNameExists, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Create a new PlugIn",
-            Description = CreateDescription,
-            OperationId = "CreatePlugIn")]
-        public async Task<ActionResult<int>> CreatePlugInAsync([FromBody, SwaggerParameter("A PlugIn create", Required = true)] CreatePlugIn create,
-                                                               CancellationToken cancellationToken)
+        [EndpointDescription(CreatePlugInDescription)]
+        [EndpointName("CreatePlugIn")]
+        [EndpointSummary("Create a new PlugIn")]
+        [ProducesResponseType<int>(StatusCodes.Status201Created, Description = PlugInIdentifier)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = InvalidRequest)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict, Description = PluginNameExists)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult<int>> CreatePlugInAsync([FromBody, Required, Description("A PlugIn create")] CreatePlugIn create,
+                                                               CancellationToken cancellationToken = default)
         {
             try
             {
@@ -92,17 +95,16 @@ namespace Shaos.Controllers
         }
 
         [HttpPost("{id}/instances")]
-        [SwaggerResponse(StatusCodes.Status201Created, "The PlugIn Instance identifier", Type = typeof(int))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Create a new PlugIn instance",
-            Description = "A PlugIn instance is created in the default mode of disabled",
-            OperationId = "CreatePlugInInstance")]
-        public async Task<ActionResult<int>> CreatePlugInInstanceAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-                                                                       [FromBody, SwaggerParameter("The PlugIn Instance Create", Required = true)] CreatePlugInInstance create,
-                                                                       CancellationToken cancellationToken)
+        [EndpointDescription(CreatePlugInInstanceDescription)]
+        [EndpointName("CreatePlugInInstance")]
+        [EndpointSummary("Create a new PlugIn Instance")]
+        [ProducesResponseType<int>(StatusCodes.Status201Created, Description = "The PlugIn Instance identifier")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, Description = PluginNotFound)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult<int>> CreatePlugInInstanceAsync([FromRoute, Required, Description(PlugInIdentifier), Range(1, int.MaxValue)] int id,
+                                                                       [FromBody, Required, Description("The PlugIn Instance Create")] CreatePlugInInstance create,
+                                                                       CancellationToken cancellationToken = default)
         {
             try
             {
@@ -114,30 +116,26 @@ namespace Shaos.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(
-                    CreateProblemDetails(
-                        HttpStatusCode.NotFound, ex.Message));
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                     ex.Message));
             }
             catch (NameExistsException)
             {
-                return Conflict(
-                    CreateProblemDetails(
-                        HttpStatusCode.Conflict,
-                        $"A PlugInInstance with name [{create.Name}] already exists"));
+                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
+                                                     $"A PlugInInstance with name [{create.Name}] already exists"));
             }
         }
 
         [HttpDelete("{id}")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn will be deleted")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "An instance of the PlugIn is running", Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Delete an existing PlugIn",
-            Description = DeleteDescription,
-            OperationId = "DeletePlugIn")]
-        public async Task<ActionResult> DeletePlugInAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-                                                          CancellationToken cancellationToken)
+        [EndpointDescription(DeletePlugInDescription)]
+        [EndpointName("DeletePlugIn")]
+        [EndpointSummary("Delete an existing PlugIn")]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Description = "The PlugIn will be deleted")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = "An instance of the PlugIn is running")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult> DeletePlugInAsync([FromRoute, Required, Description(PlugInIdentifier), Range(1, int.MaxValue)] int id,
+                                                          CancellationToken cancellationToken = default)
         {
             try
             {
@@ -147,23 +145,21 @@ namespace Shaos.Controllers
             }
             catch (PlugInInstanceRunningException ex)
             {
-                return BadRequest(
-                    CreateProblemDetails(
-                        HttpStatusCode.BadRequest, ex.Message));
+                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                       ex.Message));
             }
         }
 
         [HttpDelete("instances/{id}")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn Instance will be deleted")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "The PlugIn Instance is still running", Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Deletes a PlugIn Instance",
-            Description = "Deletes a PlugIn Instance for the PlugIn",
-            OperationId = "DeletePlugInInstance")]
-        public async Task<ActionResult> DeletePlugInInstanceAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-                                                                  CancellationToken cancellationToken)
+        [EndpointDescription(DeletePlugInInstanceDescription)]
+        [EndpointName("DeletePlugInInstance")]
+        [EndpointSummary("Deletes a PlugIn Instance")]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Description = "The PlugIn Instance will be deleted")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = "The PlugIn Instance is still running")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult> DeletePlugInInstanceAsync([FromRoute, Required, Description(PlugInIdentifier), Range(1, int.MaxValue)] int id,
+                                                                  CancellationToken cancellationToken = default)
         {
             try
             {
@@ -173,23 +169,21 @@ namespace Shaos.Controllers
             }
             catch (PlugInInstanceRunningException ex)
             {
-                return BadRequest(
-                    CreateProblemDetails(
-                        HttpStatusCode.BadRequest, ex.Message));
+                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                       ex.Message));
             }
         }
 
         [HttpGet("{id}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "The PlugIn details", Type = typeof(PlugIn))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get an existing PlugIn by Identifier",
-            Description = GetDescription,
-            OperationId = "GetPlugIn")]
-        public async Task<ActionResult<PlugIn>> GetPlugInAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-                                                               CancellationToken cancellationToken)
+        [EndpointDescription(GetPlugInDescription)]
+        [EndpointName("GetPlugIn")]
+        [EndpointSummary("Get an existing PlugIn by Identifier")]
+        [ProducesResponseType<PlugIn>(StatusCodes.Status200OK, Description = "The PlugIn details")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, Description = PluginNotFound)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult<PlugIn>> GetPlugInAsync([FromRoute, Required, Description(PlugInIdentifier), Range(1, int.MaxValue)] int id,
+                                                               CancellationToken cancellationToken = default)
         {
             var plugIn = await Repository.GetByIdAsync<ModelPlugIn>(id,
                                                                     includeProperties: [],
@@ -206,14 +200,13 @@ namespace Shaos.Controllers
         }
 
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status200OK, "The list of PlugIns in the response", Type = typeof(IList<PlugIn>))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get a list of PlugIns",
-            Description = GetListDescription,
-            OperationId = "GetPlugIns")]
-        public async IAsyncEnumerable<PlugIn> GetPlugInsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+        [EndpointDescription(GetListPlugInDescription)]
+        [EndpointName("GetPlugIns")]
+        [EndpointSummary("Get a list of PlugIns")]
+        [ProducesResponseType<IList<PlugIn>>(StatusCodes.Status200OK, Description = "The list of PlugIns in the response")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async IAsyncEnumerable<PlugIn> GetPlugInsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var plugIns = Repository.GetEnumerableAsync<ModelPlugIn>(includeProperties: [nameof(PlugIn.Instances), nameof(PlugIn.Package)],
                                                                      cancellationToken: cancellationToken);
@@ -225,17 +218,16 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("instances/{id}/enable/{state}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "")]
-        [SwaggerResponse(StatusCodes.Status404NotFound, PluginNotFound)]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Set a PlugIn Instance enabled state",
-            Description = EnableDescription,
-            OperationId = "SetPlugInInstanceEnableState")]
-        public async Task<ActionResult> SetPlugInInstanceEnableStateAsync([FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
-                                                                          [FromRoute, SwaggerParameter("The PlugIn Instance state", Required = true)] bool state,
-                                                                          CancellationToken cancellationToken)
+        [EndpointDescription(EnablePlugInInstanceDescription)]
+        [EndpointName("SetPlugInInstanceEnableState")]
+        [EndpointSummary("Set a PlugIn Instance enabled state")]
+        [ProducesResponseType(StatusCodes.Status200OK, Description = "")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, Description = PluginNotFound)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult> SetPlugInInstanceEnableStateAsync([FromRoute, Required, Description(PlugInInstanceIdentifier), Range(1, int.MaxValue)] int id,
+                                                                          [FromRoute, Required, Description("The PlugIn Instance state")] bool state,
+                                                                          CancellationToken cancellationToken = default)
         {
             try
             {
@@ -252,19 +244,18 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("{id}")]
-        [SwaggerResponse(StatusCodes.Status204NoContent, "The PlugIn was updated successfully")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, InvalidRequest, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound)]
-        [SwaggerResponse(StatusCodes.Status409Conflict, PluginNameExists, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Update a PlugIn",
-            Description = "Update the properties of a PlugIn",
-            OperationId = "UpdatePlugIn")]
-        public async Task<ActionResult<PlugIn>> UpdatePlugInAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
-                                                                  [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugIn update,
-                                                                  CancellationToken cancellationToken)
+        [EndpointDescription(UpdatePlugInDescription)]
+        [EndpointName("UpdatePlugIn")]
+        [EndpointSummary("Update a PlugIn")]
+        [ProducesResponseType(StatusCodes.Status204NoContent, Description = "The PlugIn was updated successfully")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = InvalidRequest)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, Description = IdentifierNotFound)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict, Description = PluginNameExists)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult<PlugIn>> UpdatePlugInAsync([FromRoute, Required, Description(PlugInIdentifier), Range(1, int.MaxValue)] int id,
+                                                                  [FromBody, Required, Description("The PlugIn update")] UpdatePlugIn update,
+                                                                  CancellationToken cancellationToken = default)
         {
             try
             {
@@ -279,7 +270,8 @@ namespace Shaos.Controllers
             }
             catch (NameExistsException)
             {
-                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict, $"A PlugIn with name [{update.Name}] already exists"));
+                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
+                                                     $"A PlugIn with name [{update.Name}] already exists"));
             }
             catch (NotFoundException)
             {
@@ -288,16 +280,15 @@ namespace Shaos.Controllers
         }
 
         [HttpPatch("instances/{id}")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The update was accepted")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Updates a PlugIn Instance",
-            Description = "Update a PlugIn Instance",
-            OperationId = "UpdatePlugInInstance")]
-        public async Task<ActionResult> UpdatePlugInInstanceAsync([FromRoute, SwaggerParameter(PlugInInstanceIdentifier, Required = true)] int id,
-                                                                  [FromBody, SwaggerParameter("The PlugIn update")] UpdatePlugInInstance update,
-                                                                  CancellationToken cancellationToken)
+        [EndpointDescription(UpdatePlugInInstanceDescription)]
+        [EndpointName("UpdatePlugInInstance")]
+        [EndpointSummary("Update a PlugIn Instance")]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Description = "The update was accepted")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult> UpdatePlugInInstanceAsync([FromRoute, Required, Description(PlugInInstanceIdentifier), Range(1, int.MaxValue)] int id,
+                                                                  [FromBody, Required, Description("The PlugIn update")] UpdatePlugInInstance update,
+                                                                  CancellationToken cancellationToken = default)
         {
             try
             {
@@ -311,9 +302,8 @@ namespace Shaos.Controllers
             }
             catch (NameExistsException)
             {
-                return Conflict(
-                    CreateProblemDetails(
-                        HttpStatusCode.Conflict, $"A PlugInInstance with name [{update.Name}] already exists"));
+                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
+                                                     $"A PlugInInstance with name [{update.Name}] already exists"));
             }
             catch (NotFoundException)
             {
@@ -322,18 +312,17 @@ namespace Shaos.Controllers
         }
 
         [HttpPut("{id}/upload")]
-        [SwaggerResponse(StatusCodes.Status202Accepted, "The PlugIn package is uploaded, extracted and verified")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Indicates if there was a problem with the upload file", Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, IdentifierNotFound, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Upload a Package for a PlugIn",
-            Description = "Upload a Package file for a PlugIn. A Package is a zip file that contains the executables and content for a PlugIn",
-            OperationId = "UploadPlugInPackage")]
-        public async Task<ActionResult> UploadPlugInPackageAsync([FromRoute, SwaggerParameter(PlugInIdentifier, Required = true)] int id,
+        [EndpointDescription(UploadPackageDescription)]
+        [EndpointName("UploadPlugInPackage")]
+        [EndpointSummary("Upload a Package for a PlugIn")]
+        [ProducesResponseType(StatusCodes.Status202Accepted, Description = "The PlugIn package is uploaded, extracted and verified")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = "Indicates if there was a problem with the upload file")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, Description = IdentifierNotFound)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public async Task<ActionResult> UploadPlugInPackageAsync([FromRoute, Required, Description(PlugInIdentifier), Range(1, int.MaxValue)] int id,
                                                                  IFormFile formFile,
-                                                                 CancellationToken cancellationToken)
+                                                                 CancellationToken cancellationToken = default)
         {
             if (ValidateFormFile(formFile, out var problemDetails))
             {
@@ -353,38 +342,28 @@ namespace Shaos.Controllers
                 }
                 catch (NotFoundException ex)
                 {
-                    return NotFound(
-                        CreateProblemDetails(
-                            HttpStatusCode.NotFound,
-                            ex.Message));
+                    return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                         ex.Message));
                 }
                 catch (PlugInInstanceRunningException ex)
                 {
-                    return BadRequest(
-                        CreateProblemDetails(
-                            HttpStatusCode.BadRequest,
-                            $"The PlugIn: [{id}] currently has running instances Id: [{ex.Id}]"));
+                    return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                           $"The PlugIn: [{id}] currently has running instances Id: [{ex.Id}]"));
                 }
                 catch (NoValidPlugInAssemblyFoundException)
                 {
-                    return BadRequest(
-                        CreateProblemDetails(
-                            HttpStatusCode.BadRequest,
-                            $"No valid assembly file found [{fileName}]"));
+                    return BadRequest(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                           $"No valid assembly file found [{fileName}]"));
                 }
                 catch (PlugInTypeNotFoundException)
                 {
-                    return BadRequest(
-                        CreateProblemDetails(
-                            HttpStatusCode.BadRequest,
-                            $"No valid [{nameof(IPlugIn)}] implementation found in package file [{fileName}]"));
+                    return BadRequest(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                           $"No valid [{nameof(IPlugIn)}] implementation found in package file [{fileName}]"));
                 }
                 catch (PlugInTypesFoundException)
                 {
-                    return BadRequest(
-                        CreateProblemDetails(
-                            HttpStatusCode.BadRequest,
-                            $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{fileName}]"));
+                    return BadRequest(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                           $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{fileName}]"));
                 }
             }
             else
@@ -393,8 +372,8 @@ namespace Shaos.Controllers
             }
         }
 
-
-        private bool ValidateFormFile(IFormFile formFile, out ProblemDetails? problemDetails)
+        private bool ValidateFormFile(IFormFile formFile,
+                                      out ProblemDetails? problemDetails)
         {
             problemDetails = null;
 
@@ -404,23 +383,28 @@ namespace Shaos.Controllers
             }
             catch (FileContentInvalidException)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] invalid content type");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                      $"File: [{formFile.Name}] invalid content type");
             }
             catch (FileLengthInvalidException)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid length");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                      $"File: [{formFile.Name}] has invalid length");
             }
             catch (FileNameEmptyException)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, "File name is empty");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                      "File name is empty");
             }
             catch (FileNameInvalidExtensionException)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"File: [{formFile.Name}] has invalid file extension");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                      $"File: [{formFile.Name}] has invalid file extension");
             }
             catch (Exception exception)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest, $"Exception occurred check the logs");
+                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
+                                                      $"Exception occurred check the logs");
 
                 Logger.LogError(exception, "Exception occurred");
             }

@@ -26,86 +26,80 @@ using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Services;
 using Shaos.Services.SystemInformation;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace Shaos.Controllers
 {
     [Route("api/v{version:apiVersion}/system")]
     public class SystemController : CoreController
     {
-        private readonly ISystemService _systemService;
         private readonly IAppVersionService _appVersionService;
+        private readonly ISystemService _systemService;
 
         public SystemController(ILogger<SystemController> logger,
                                 ISystemService systemService,
                                 IAppVersionService appVersionService) : base(logger)
         {
-            _systemService = systemService?? throw new ArgumentNullException(nameof(systemService));
+            _systemService = systemService ?? throw new ArgumentNullException(nameof(systemService));
             _appVersionService = appVersionService ?? throw new ArgumentNullException(nameof(appVersionService));
         }
 
+        [HttpGet("environment")]
+        [EndpointDescription("Get the application environment")]
+        [EndpointName("GetApplicationEnvironment")]
+        [EndpointSummary("Get the application environment")]
+        [ProducesResponseType(StatusCodes.Status200OK, Description = "Get the operating system environment information")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public ActionResult GetEnvironment()
+        {
+            return Ok(_systemService.GetEnvironment().ToApi());
+        }
+
+        [HttpGet("os")]
+        [EndpointDescription("Get the host system OS Information details")]
+        [EndpointName("GetOsInformation")]
+        [EndpointSummary("Get the OS information")]
+        [ProducesResponseType(StatusCodes.Status200OK, Description = "Get the operating system information")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public ActionResult GetOsInformation()
+        {
+            return Ok(_systemService.GetOsInformation().ToApi());
+        }
+
+        [HttpGet("process")]
+        [EndpointDescription("Get the Application Process Information")]
+        [EndpointName("GetProcessInformation")]
+        [EndpointSummary("Get the Application Process Information")]
+        [ProducesResponseType(StatusCodes.Status200OK, Description = "Get the application process information")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public ActionResult GetProcessInformation()
+        {
+            return Ok(_systemService.GetProcessInformation().ToApi());
+        }
+
         [HttpGet("version")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Returns the application version")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get the application version number",
-            Description = "Get the application version number",
-            OperationId = "GetVersion")]
+        [EndpointDescription("Get the Application Version Number")]
+        [EndpointName("GetApplicationVersion")]
+        [EndpointSummary("Get the Application Version Number")]
+        [ProducesResponseType(StatusCodes.Status200OK, Description = "Returns the application version")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
         public ActionResult GetVersion()
         {
             return Ok(_appVersionService.Version);
         }
 
         [HttpPost("shutdown")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Shutdown the application host",
-            Description = "Shuts down the application host. The process terminates",
-            OperationId = "ShutdownApplication")]
+        [EndpointDescription("Shuts down the Application Host. The process terminates")]
+        [EndpointName("ShutdownApplication")]
+        [EndpointSummary("Shutdown the Application Host")]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
         public void ShutdownApplication()
         {
             _systemService.ShutdownApplication();
-        }
-
-        [HttpGet("os")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Get the operating system information")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get the Os information",
-            Description = "The Os information details",
-            OperationId = "GetOsInformation")]
-        public ActionResult GetOsInformation()
-        {
-            return Ok(_systemService.GetOsInformation().ToApi());
-        }
-
-        [HttpGet("environment")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Get the operating system environment information")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get the application environment",
-            Description = "The application environment",
-            OperationId = "GetEnvironment")]
-        public ActionResult GetEnvironment()
-        {
-            return Ok(_systemService.GetEnvironment().ToApi());
-        }
-
-        [HttpGet("process")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Get the application process information")]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized, Status401UnauthorizedText, Type = typeof(ProblemDetails))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, Status500InternalServerErrorText, Type = typeof(ProblemDetails))]
-        [SwaggerOperation(
-            Summary = "Get the application process information",
-            Description = "The application process information",
-            OperationId = "GetProcessInformation")]
-        public ActionResult GetProcessInformation()
-        {
-            return Ok(_systemService.GetProcessInformation().ToApi());
         }
     }
 }
