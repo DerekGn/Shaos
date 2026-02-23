@@ -32,7 +32,7 @@ namespace Shaos.Services.Logging
     /// <summary>
     /// A logging configuration service. Used to store and configure logging configuration settings
     /// </summary>
-    public partial class LoggingConfigurationService : ILoggingConfigurationService
+    public class LoggingConfigurationService : ILoggingConfigurationService
     {
         private readonly ILogger<LoggingConfigurationService> _logger;
         private readonly IShaosRepository _repository;
@@ -54,12 +54,12 @@ namespace Shaos.Services.Logging
         public async Task InitialiseLoggingConfigurationAsync(ILoggingConfiguration loggingConfiguration,
                                                               CancellationToken cancellationToken = default)
         {
-            LogInitalisingLoggingConfiguration();
+            _logger.LogInitalisingLoggingConfiguration();
 
             await foreach (var logSwitch in _repository.GetEnumerableAsync<LogLevelSwitch>(cancellationToken))
             {
-                LogUpdatingLogLevelSwitch(logSwitch.Name,
-                                          logSwitch.Level);
+                _logger.LogUpdatingLogLevelSwitch(logSwitch.Name,
+                                                  logSwitch.Level);
 
                 loggingConfiguration.LoggingLevelSwitches[logSwitch.Name].MinimumLevel = logSwitch.Level;
             }
@@ -70,19 +70,12 @@ namespace Shaos.Services.Logging
                                                     LogEventLevel level,
                                                     CancellationToken cancellationToken = default)
         {
-            LogUpdatingLogLevelSwitch(name,
-                                      level);
+            _logger.LogUpdatingLogLevelSwitch(name,
+                                              level);
 
             await _repository.UpsertLogLevelSwitchAsync(name,
                                                         level,
                                                         cancellationToken);
         }
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Initialising logging configuration")]
-        private partial void LogInitalisingLoggingConfiguration();
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Updating LogLevelSwitch [{name}] Level: [{level}]")]
-        private partial void LogUpdatingLogLevelSwitch(string name,
-                                                       LogEventLevel level);
     }
 }
