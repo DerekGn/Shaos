@@ -37,7 +37,7 @@ namespace Shaos.Repository
     /// <summary>
     /// The repository implementation
     /// </summary>
-    public partial class ShaosRepository : IShaosRepository
+    public class ShaosRepository : IShaosRepository
     {
         private readonly ShaosDbContext _context;
         private readonly ILogger<ShaosRepository> _logger;
@@ -86,8 +86,8 @@ namespace Shaos.Repository
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                LogPlugInCreated(plugIn.Id,
-                                 plugIn.Name);
+                _logger.LogPlugInCreated(plugIn.Id,
+                                         plugIn.Name);
 
                 return plugIn.Id;
             });
@@ -101,8 +101,8 @@ namespace Shaos.Repository
             ArgumentNullException.ThrowIfNull(plugIn);
             ArgumentNullException.ThrowIfNull(plugInInformation);
 
-            LogCreatingPackage(plugIn.Id,
-                               plugInInformation);
+            _logger.LogCreatingPackage(plugIn.Id,
+                                       plugInInformation);
 
             plugIn.PlugInInformation = plugInInformation;
 
@@ -317,8 +317,8 @@ namespace Shaos.Repository
             {
                 if (sqliteException.SqliteErrorCode == 0x13)
                 {
-                    LogDuplicatePlugInInstanceName(name,
-                                                   exception);
+                    _logger.LogDuplicatePlugInInstanceName(name,
+                                                           exception);
 
                     throw new NameExistsException(name);
                 }
@@ -338,7 +338,8 @@ namespace Shaos.Repository
             {
                 if (sqliteException.SqliteErrorCode == 0x13)
                 {
-                    LogDuplicatePlugInName(name, exception);
+                    _logger.LogDuplicatePlugInName(name,
+                                                   exception);
 
                     throw new NameExistsException(name);
                 }
@@ -346,21 +347,5 @@ namespace Shaos.Repository
                 throw;
             }
         }
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Creating new package for PlugIn: [{id}] Package: [{plugInInformation}]")]
-        private partial void LogCreatingPackage(int id,
-                                                PlugInInformation plugInInformation);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Duplicate PlugIn Instance Name: [{name}] exists")]
-        private partial void LogDuplicatePlugInInstanceName(string name,
-                                                            Exception exception);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Duplicate PlugIn Name: [{name}] exists")]
-        private partial void LogDuplicatePlugInName(string name,
-                                                    Exception exception);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "PlugIn [{id}] [{name}] Created")]
-        private partial void LogPlugInCreated(int id,
-                                              string name);
     }
 }
