@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Shaos.Services.Extensions;
 using System.Diagnostics;
 
 namespace Shaos.Services.SystemInformation
@@ -31,7 +32,7 @@ namespace Shaos.Services.SystemInformation
     /// <summary>
     /// The <see cref="ISystemService"/> implementation
     /// </summary>
-    public partial class SystemService : ISystemService
+    public class SystemService : ISystemService
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<SystemService> _logger;
@@ -111,7 +112,7 @@ namespace Shaos.Services.SystemInformation
         /// <inheritdoc/>
         public void ShutdownApplication()
         {
-            LogApplicationStopping();
+            _logger.LogApplicationStopping();
 
             _hostApplicationLifetime.StopApplication();
         }
@@ -127,8 +128,5 @@ namespace Shaos.Services.SystemInformation
                 RuntimeIdentifier = global::System.Runtime.InteropServices.RuntimeInformation.RuntimeIdentifier
             };
         }
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stopping Application")]
-        private partial void LogApplicationStopping();
     }
 }

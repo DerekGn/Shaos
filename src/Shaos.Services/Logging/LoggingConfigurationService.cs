@@ -26,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using Serilog.Events;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Extensions;
 
 namespace Shaos.Services.Logging
 {

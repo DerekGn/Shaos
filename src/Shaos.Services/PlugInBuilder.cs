@@ -37,8 +37,8 @@ namespace Shaos.Services
     /// </summary>
     /// <param name="loggerFactory">A <see cref="ILoggerFactory"/> instance</param>
     /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
-    public partial class PlugInBuilder(ILoggerFactory loggerFactory,
-                                       ILogger<PlugInBuilder> logger) : BasePlugInBuilder(logger), IPlugInBuilder
+    public class PlugInBuilder(ILoggerFactory loggerFactory,
+                               ILogger<PlugInBuilder> logger) : BasePlugInBuilder(logger), IPlugInBuilder
     {
         private readonly ILoggerFactory _loggerFactory = loggerFactory;
         private IPlugIn? _plugin;
@@ -65,8 +65,8 @@ namespace Shaos.Services
 
             var plugInType = ResolvePlugInType(assembly);
 
-            LogResolvedPlugIn(plugInType.Name,
-                             assembly.FullName);
+            Logger.LogResolvedPlugIn(plugInType.Name,
+                                     assembly.FullName);
 
             var constructorParameters = GetConstructorParameters(plugInType);
 
@@ -131,7 +131,7 @@ namespace Shaos.Services
                         Type[] typeArgs = { parameterType.GenericTypeArguments[0] };
                         Type loggerType = typeof(Logger<>).MakeGenericType(typeArgs);
 
-                        LogCreatingPlugIn(parameterType.FullName);
+                        Logger.LogCreatingPlugIn(parameterType.FullName);
 
                         result.Add(Activator.CreateInstance(loggerType, _loggerFactory)!);
                     }
@@ -154,12 +154,5 @@ namespace Shaos.Services
 
             return configurationInstance;
         }
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Creating instance of [{fullName}]")]
-        private partial void LogCreatingPlugIn(string? fullName);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved PlugIn: [{name}] from Assembly: [{assembly}]")]
-        private partial void LogResolvedPlugIn(string name,
-                                               string? assembly);
     }
 }

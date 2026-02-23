@@ -40,7 +40,6 @@ using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatPara
 using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
 using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
 using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
-using System.Linq;
 
 namespace Shaos.Services.Runtime.Host
 {
@@ -48,7 +47,7 @@ namespace Shaos.Services.Runtime.Host
     /// A <see cref="IRuntimeDeviceUpdateHandler"/> that stores updates to a database.
     /// Updates are also published to an event queue.
     /// </summary>
-    public partial class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
+    public class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
     {
         private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
@@ -93,17 +92,17 @@ namespace Shaos.Services.Runtime.Host
                         modelParameter.InstanceId = parameter.Id;
                         modelParameter.DeviceId = modelDevice.Id;
                         await repository.AddAsync(modelParameter!);
-                        LogDeviceParameterCreated(id,
-                                                  modelDevice.Name,
-                                                  parameter.Id,
-                                                  parameter.Name);
+                        _logger.LogDeviceParameterCreated(id,
+                                                          modelDevice.Name,
+                                                          parameter.Id,
+                                                          parameter.Name);
                     }
 
                     await repository.SaveChangesAsync();
                 }
                 else
                 {
-                    LogUnableToResolveDevice(id);
+                    _logger.LogUnableToResolveDevice(id);
                 }
             });
         }
@@ -128,15 +127,15 @@ namespace Shaos.Services.Runtime.Host
                         modelDevice.InstanceId = device.Id;
                         modelDevice.PlugInInstanceId = plugInInstance.Id;
                         await repository.AddAsync(modelDevice);
-                        LogDeviceCreated(id,
-                                         device.Name);
+                        _logger.LogDeviceCreated(id,
+                                                 device.Name);
                     }
 
                     await repository.SaveChangesAsync();
                 }
                 else
                 {
-                    LogUnableToResolvePlugIn(id);
+                    _logger.LogUnableToResolvePlugIn(id);
                 }
             });
         }
@@ -148,7 +147,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 foreach (var parameterId in parameterIds)
                 {
-                    LogParameterDelete(parameterId);
+                    _logger.LogParameterDelete(parameterId);
 
                     await repository.DeleteAsync<ModelBaseParameter>(parameterId);
                 }
@@ -164,7 +163,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 foreach (var deviceId in deviceIds)
                 {
-                    LogDeviceDelete(deviceId);
+                    _logger.LogDeviceDelete(deviceId);
 
                     await repository.DeleteAsync<ModelDevice>(deviceId);
                 }
@@ -280,9 +279,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    LogUpdatingParameter(parameter.Id,
-                                         parameter.Name,
-                                         value);
+                    _logger.LogUpdatingParameter(parameter.Id,
+                                                 parameter.Name,
+                                                 value);
 
                     parameter.Value = value;
 
@@ -298,7 +297,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    LogParameterNotFound(id);
+                    _logger.LogParameterNotFound(id);
                 }
             });
         }
@@ -315,9 +314,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    LogUpdatingParameter(parameter.Id,
-                                         parameter.Name,
-                                         value);
+                    _logger.LogUpdatingParameter(parameter.Id,
+                                                 parameter.Name,
+                                                 value);
 
                     parameter.Value = value;
 
@@ -333,7 +332,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    LogParameterNotFound(id);
+                    _logger.LogParameterNotFound(id);
                 }
             });
         }
@@ -350,9 +349,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    LogUpdatingParameter(parameter.Id,
-                                         parameter.Name,
-                                         value);
+                    _logger.LogUpdatingParameter(parameter.Id,
+                                                 parameter.Name,
+                                                 value);
 
                     parameter.Value = value;
 
@@ -368,7 +367,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    LogParameterNotFound(id);
+                    _logger.LogParameterNotFound(id);
                 }
             });
         }
@@ -385,9 +384,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    LogUpdatingParameter(parameter.Id,
-                                         parameter.Name,
-                                         value);
+                    _logger.LogUpdatingParameter(parameter.Id,
+                                                 parameter.Name,
+                                                 value);
 
                     parameter.Value = value;
 
@@ -403,7 +402,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    LogParameterNotFound(id);
+                    _logger.LogParameterNotFound(id);
                 }
             });
         }
@@ -420,9 +419,9 @@ namespace Shaos.Services.Runtime.Host
 
                 if (parameter != null)
                 {
-                    LogUpdatingParameter(parameter.Id,
-                                         parameter.Name,
-                                         value);
+                    _logger.LogUpdatingParameter(parameter.Id,
+                                                 parameter.Name,
+                                                 value);
 
                     parameter.Value = value;
 
@@ -438,7 +437,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    LogParameterNotFound(id);
+                    _logger.LogParameterNotFound(id);
                 }
             });
         }
@@ -454,58 +453,9 @@ namespace Shaos.Services.Runtime.Host
             }
             catch (Exception ex)
             {
-                LogUnhandledException(ex);
+                _logger.LogUnhandledException(ex);
             }
         }
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Unhandled exception occurred")]
-        private partial void LogUnhandledException(Exception ex);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Created Device [{id}] Name: [{name}]")]
-        private partial void LogDeviceCreated(int id,
-                                              string name);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Created Device [{id}] Name: [{deviceName}] Parameter: [{parameterId}] Name: [{parameterName}]")]
-        private partial void LogDeviceCreated(int id,
-                                              string deviceName,
-                                              int parameterId,
-                                              string? parameterName);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Deleting Device Id: [{id}]")]
-        private partial void LogDeviceDelete(int id);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Created Device: [{id}] Name: [{deviceName}] Parameter: [{parameterId}] Name: [{parameterName}]")]
-        private partial void LogDeviceParameterCreated(int id,
-                                                       string deviceName,
-                                                       int parameterId,
-                                                       string? parameterName);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Deleting Parameter Id: [{id}]")]
-        private partial void LogParameterDelete(int id);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Parameter Id: [{Id}] Not Found")]
-        private partial void LogParameterNotFound(int id);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Unable to resolve Device for Id: [{id}]")]
-        private partial void LogUnableToResolveDevice(int id);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Unable to resolve PlugIn for Id: [{id}]")]
-        private partial void LogUnableToResolvePlugIn(int id);
-
-        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
-        private partial void LogUpdatingParameter(int id, string name, string value);
-
-        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
-        private partial void LogUpdatingParameter(int id, string name, int value);
-
-        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
-        private partial void LogUpdatingParameter(int id, string name, uint value);
-
-        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
-        private partial void LogUpdatingParameter(int id, string name, bool value);
-
-        [LoggerMessage(Level = LogLevel.Trace, Message = "Updating parameter Id: [{id}] Name: [{name}] Value: [{value}]")]
-        private partial void LogUpdatingParameter(int id, string name, float value);
 
         private async Task PublishDeviceParameterEventAsync<T>(int id,
                                                                T level,
@@ -537,7 +487,7 @@ namespace Shaos.Services.Runtime.Host
                 }
                 else
                 {
-                    LogUnableToResolveDevice(id);
+                    _logger.LogUnableToResolveDevice(id);
                 }
             });
         }

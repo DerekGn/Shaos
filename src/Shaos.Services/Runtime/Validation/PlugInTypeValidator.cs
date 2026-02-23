@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Sdk;
+using Shaos.Services.Extensions;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Extensions;
 using System.Reflection;
@@ -33,7 +34,7 @@ namespace Shaos.Services.Runtime.Validation
     /// <summary>
     /// A PlugIn type validation
     /// </summary>
-    public partial class PlugInTypeValidator : IPlugInTypeValidator
+    public class PlugInTypeValidator : IPlugInTypeValidator
     {
         private const int AllowedConstructorCount = 1;
         private const int AllowedConstructorParameterCount = 2;
@@ -93,8 +94,8 @@ namespace Shaos.Services.Runtime.Validation
 
             if (constructors.Length != AllowedConstructorCount)
             {
-                LogInvalidConstructorCount(plugInType.Name,
-                                           constructors.Length);
+                _logger.LogInvalidConstructorCount(plugInType.Name,
+                                                   constructors.Length);
 
                 throw new PlugInConstructorsException(
                     $"PlugIn [{plugInType.Name}] contains invalid number of constructors [{constructors.Length}]");
@@ -104,8 +105,8 @@ namespace Shaos.Services.Runtime.Validation
 
             if (parameterInfos.Length > AllowedConstructorParameterCount)
             {
-                LogInvalidConstructorParameterCount(plugInType.Name,
-                                                    parameterInfos.Length);
+                _logger.LogInvalidConstructorParameterCount(plugInType.Name,
+                                                            parameterInfos.Length);
 
                 throw new PlugInConstructorException(
                     $"PlugIn [{plugInType.Name}] constructor contains invalid number of constructor parameters [{parameterInfos.Length}]");
@@ -126,7 +127,7 @@ namespace Shaos.Services.Runtime.Validation
             {
                 var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
 
-                LogInvalidConstuctorParameters(plugInType.Name,
+                _logger.LogInvalidConstuctorParameters(plugInType.Name,
                                                constructorParameterList);
 
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{constructorParameterList}]");
@@ -136,8 +137,8 @@ namespace Shaos.Services.Runtime.Validation
             {
                 var constructorParameterList = String.Join(',', parameterTypes.Select(_ => _.Name));
 
-                LogInvalidConstuctorParameters(plugInType.Name,
-                                               constructorParameterList);
+                _logger.LogInvalidConstuctorParameters(plugInType.Name,
+                                                       constructorParameterList);
 
                 throw new PlugInConstructorException($"PlugIn [{plugInType.Name}] contains an invalid constructor parameters [{constructorParameterList}]");
             }
@@ -150,9 +151,9 @@ namespace Shaos.Services.Runtime.Validation
 
                 if (loggerGenericType != plugInType)
                 {
-                    LogInvalidConstuctorGenericParameters(plugInType.Name,
-                                                          nameof(ILogger),
-                                                          loggerGenericType.Name);
+                    _logger.LogInvalidConstuctorGenericParameters(plugInType.Name,
+                                                                  nameof(ILogger),
+                                                                  loggerGenericType.Name);
 
                     throw new PlugInConstructorException(
                         $"PlugIn [{plugInType.Name}] [{nameof(ILogger)}] parameter invalid generic type parameter [{loggerGenericType.Name}]");
@@ -192,29 +193,6 @@ namespace Shaos.Services.Runtime.Validation
             }
         }
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] contains invalid number of constructors [{length}]")]
-        private partial void LogInvalidConstructorCount(string name,
-                                                        int length);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] contains invalid number of constructor parameters [{length}]")]
-        private partial void LogInvalidConstructorParameterCount(string name,
-                                                                 int length);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] [{type}] parameter invalid generic type parameter [{argument}]")]
-        private partial void LogInvalidConstuctorGenericParameters(string name,
-                                                                   string type,
-                                                                   string argument);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "PlugIn [{name}] contains an invalid constructor parameters [{parameters}]")]
-        private partial void LogInvalidConstuctorParameters(string name,
-                                                            string parameters);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "More than one PlugIn type found in assembly [{fullName}]")]
-        private partial void LogMultiplePlugInTypesFound(string? fullName);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "No PlugIn type found in assembly [{fullName}]")]
-        private partial void LogNoPlugInTypeFound(string? fullName);
-
         private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile,
                                                                              out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
         {
@@ -231,13 +209,13 @@ namespace Shaos.Services.Runtime.Validation
 
                 if (count == 0)
                 {
-                    LogNoPlugInTypeFound(assembly.FullName);
+                    _logger.LogNoPlugInTypeFound(assembly.FullName);
                     throw new PlugInTypeNotFoundException();
                 }
 
                 if (count > 1)
                 {
-                    LogMultiplePlugInTypesFound(assembly.FullName);
+                    _logger.LogMultiplePlugInTypesFound(assembly.FullName);
                     throw new PlugInTypesFoundException(count);
                 }
 
