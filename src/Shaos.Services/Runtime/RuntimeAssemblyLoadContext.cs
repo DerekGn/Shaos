@@ -23,6 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Shaos.Services.Extensions;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -35,7 +36,7 @@ namespace Shaos.Services.Runtime
     /// </summary>
     [ExcludeFromCodeCoverage]
     [DebuggerDisplay("'{Name}' ({AssemblyPath})")]
-    public partial class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
+    public class RuntimeAssemblyLoadContext : AssemblyLoadContext, IRuntimeAssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _assemblyDependencyResolver;
         private readonly ILogger<RuntimeAssemblyLoadContext> _logger;
@@ -75,7 +76,7 @@ namespace Shaos.Services.Runtime
         {
             ArgumentNullException.ThrowIfNull(assemblyName);
 
-            LogAttemptResolveAssembly(assemblyName);
+            _logger.LogAttemptResolveAssembly(assemblyName);
 
             Assembly? assembly = null;
 
@@ -85,7 +86,8 @@ namespace Shaos.Services.Runtime
             }
             catch (FileNotFoundException ex)
             {
-                LogAssemblyNotResolved(assemblyName, ex);
+                _logger.LogAssemblyNotResolved(assemblyName,
+                                               ex);
             }
 
             if (assembly == null)
@@ -94,16 +96,16 @@ namespace Shaos.Services.Runtime
 
                 if (!string.IsNullOrEmpty(assemblyPath))
                 {
-                    LogAssemblyResolved(assemblyName);
+                    _logger.LogAssemblyResolved(assemblyName);
 
                     assembly = LoadFromAssemblyPath(assemblyPath!);
                 }
 
-                LogAssemblyNotResolved(assemblyName);
+                _logger.LogAssemblyNotResolved(assemblyName);
             }
             else
             {
-                LogAssemblyResolvedFromDefault(assemblyName);
+                _logger.LogAssemblyResolvedFromDefault(assemblyName);
             }
 
             return assembly;
@@ -127,21 +129,5 @@ namespace Shaos.Services.Runtime
         {
             return AssemblyLoadContext.GetLoadContext(Assembly.GetExecutingAssembly()) ?? AssemblyLoadContext.Default;
         }
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Assembly not resolved from dependency context [{assemblyName}]")]
-        private partial void LogAssemblyNotResolved(AssemblyName assemblyName);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Assembly not resolved from default context [{assemblyName}]")]
-        private partial void LogAssemblyNotResolved(AssemblyName assemblyName,
-                                                    FileNotFoundException exception);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved Assembly from dependency context [{assemblyName}]")]
-        private partial void LogAssemblyResolved(AssemblyName assemblyName);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Resolved Assembly from default context [{assemblyName}]")]
-        private partial void LogAssemblyResolvedFromDefault(AssemblyName assemblyName);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Attempting to resolve assembly for [{assemblyName}]")]
-        private partial void LogAttemptResolveAssembly(AssemblyName assemblyName);
     }
 }
