@@ -29,7 +29,7 @@ using Shaos.Services.Hosting;
 
 namespace Shaos.Hosting
 {
-    public partial class PlotPublishBackgroundService : BaseBackgroundService
+    public class PlotPublishBackgroundService : BaseBackgroundService
     {
         private readonly IDeviceEventQueue _deviceEventQueue;
         private readonly IHubContext<PlotHub, IPlotHub> _hubContext;

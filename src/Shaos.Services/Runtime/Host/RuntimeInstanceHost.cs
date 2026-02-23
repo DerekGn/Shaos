@@ -37,7 +37,7 @@ namespace Shaos.Services.Runtime.Host
     /// <remarks>
     /// Responsible for the runtime hosting and management of <see cref="RuntimeInstance"/>
     /// </remarks>
-    public partial class RuntimeInstanceHost : IRuntimeInstanceHost
+    public class RuntimeInstanceHost : IRuntimeInstanceHost
     {
         internal readonly List<RuntimeInstance> _executingInstances;
         internal readonly Dictionary<int, RuntimeInstanceLoadContext> _instanceLoadContexts;
@@ -87,8 +87,8 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                LogCreatingInstance(id,
-                                     instanceName);
+                _logger.LogCreatingInstance(id,
+                                            instanceName);
 
                 instance = new RuntimeInstance(id,
                                                plugInId,
@@ -107,7 +107,8 @@ namespace Shaos.Services.Runtime.Host
             }
             else
             {
-                LogInstanceExists(id, instance.Name);
+                _logger.LogInstanceExists(id,
+                                          instance.Name);
 
                 throw new InstanceExistsException(id);
             }
@@ -138,8 +139,8 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State == RuntimeInstanceState.Running)
                 {
-                    LogInstanceAlreadyRunning(id,
-                                              instance.Name);
+                    _logger.LogInstanceAlreadyRunning(id,
+                                                      instance.Name);
 
                     throw new InstanceRunningException(id);
                 }
@@ -159,8 +160,8 @@ namespace Shaos.Services.Runtime.Host
             {
                 if (instance.State == RuntimeInstanceState.Running)
                 {
-                    LogInstanceAlreadyRunning(id,
-                                              instance.Name);
+                    _logger.LogInstanceAlreadyRunning(id,
+                                                      instance.Name);
 
                     throw new InstanceRunningException(id);
                 }
@@ -182,13 +183,13 @@ namespace Shaos.Services.Runtime.Host
 
             return ResolveExecutingInstance(id, (instance) =>
             {
-                LogStoppingInstance(id,
-                                    instance.Name);
+                _logger.LogStoppingInstance(id,
+                                            instance.Name);
 
                 if (instance.State != RuntimeInstanceState.Running)
                 {
-                    LogInstanceNotRunning(id,
-                                          instance.Name);
+                    _logger.LogInstanceNotRunning(id,
+                                                  instance.Name);
                 }
                 else
                 {
@@ -202,29 +203,29 @@ namespace Shaos.Services.Runtime.Host
         internal void UpdateStateOnCompletion(RuntimeInstance instance,
                                               Task antecedent)
         {
-            LogPlugInCompleted(Environment.NewLine,
-                               antecedent.ToLoggingString());
+            _logger.LogPlugInCompleted(Environment.NewLine,
+                                       antecedent.ToLoggingString());
 
             if (antecedent.Status == TaskStatus.RanToCompletion || antecedent.Status == TaskStatus.Canceled)
             {
                 instance.SetComplete();
 
-                LogPlugInInstanceCompleted(instance.Id,
-                                           instance.Name,
-                                           antecedent.Status);
+                _logger.LogPlugInInstanceCompleted(instance.Id,
+                                                   instance.Name,
+                                                   antecedent.Status);
             }
             else if (antecedent.Status == TaskStatus.Faulted)
             {
                 instance.SetFaulted(antecedent.Exception);
 
-                LogPlugInInstanceFaulted(antecedent.Exception,
-                                         instance.Id,
-                                         instance.Name,
-                                         antecedent.Status);
+                _logger.LogPlugInInstanceFaulted(antecedent.Exception,
+                                                 instance.Id,
+                                                 instance.Name,
+                                                 antecedent.Status);
             }
 
-            LogUnloadingInstance(instance.Id,
-                                 instance.Name);
+            _logger.LogUnloadingInstance(instance.Id,
+                                         instance.Name);
 
             instance.ExecutionContext?.Dispose();
 
@@ -251,11 +252,11 @@ namespace Shaos.Services.Runtime.Host
             }
             catch (OperationCanceledException exception)
             {
-                LogPlugInTaskCancelled(exception);
+                _logger.LogPlugInTaskCancelled(exception);
             }
             catch (Exception exception)
             {
-                LogUnhandledException(exception);
+                _logger.LogUnhandledException(exception);
 
                 instance.SetFaulted(exception);
             }
@@ -272,77 +273,6 @@ namespace Shaos.Services.Runtime.Host
             }
         }
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Creating Runtime Instance for Device [{id}] Name: [{name}]")]
-        private partial void LogCreatingInstance(int id,
-                                                 string name);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Runtime execution instance count exceeded. Count: [{count}] Max: [{max}]")]
-        private partial void LogExecutionInstanceCount(int count,
-                                                       int max);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Runtime execution instance Count: [{count}] Max: [{max}]")]
-        private partial void LogExecutionInstanceCountExceeded(int count,
-                                                               int max);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Runtime Instance Id: [{Id}] Name: [{name}] is already running")]
-        private partial void LogInstanceAlreadyRunning(int id,
-                                                       string name);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Runtime Instance Id: [{id}] Name: [{name}] exists")]
-        private partial void LogInstanceExists(int id,
-                                               string name);
-
-        [LoggerMessage(Level = LogLevel.Trace, Message = "Runtime instance: [{id}] Name: [{name}] Not Running")]
-        private partial void LogInstanceNotRunning(int id,
-                                                   string name);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Runtime Instance not stopped within timeout. Id: [{id}] Name: [{name}]")]
-        private partial void LogInstanceNotStoppedWithinTimeOut(int id,
-                                                                string name);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stopped execution. Id: [{id}] Name: [{name}]")]
-        private partial void LogInstanceStopped(int id,
-                                                string name);
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Completed PlugIn Runtime Instance Task: {newLine}{task}")]
-        private partial void LogPlugInCompleted(string newLine,
-                                                string task);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Instance completed. Id: [{id}] Name: [{name}] Task Status: [{status}]")]
-        private partial void LogPlugInInstanceCompleted(int id,
-                                                        string name,
-                                                        TaskStatus status);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Instance completed. Id: [{id}] Name: [{name}] Task Status: [{status}]")]
-        private partial void LogPlugInInstanceFaulted(AggregateException? exception,
-                                                      int id,
-                                                      string name,
-                                                      TaskStatus status);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "PlugIn Task cancelled")]
-        private partial void LogPlugInTaskCancelled(OperationCanceledException exception);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Starting PlugIn Runtime Instance execution Id: [{id}] Name: [{name}]")]
-        private partial void LogStartingInstance(int id,
-                                                 string name);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stopping Runtime Instance: [{id}] Name: [{name}]")]
-        private partial void LogStoppingInstance(int id,
-                                                 string name);
-
-        [LoggerMessage(Level = LogLevel.Error, Message = "Unable to find Runtime Instance Id: [{id}]")]
-        private partial void LogUnableToFindInstance(int id);
-
-        [LoggerMessage(Level = LogLevel.Critical, Message = "An unhandled exception occurred in PlugIn Runtime Instance")]
-        private partial void LogUnhandledException(Exception exception);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Unloading instance execution context for instance: [{id}] Name: [{name}]")]
-        private partial void LogUnloadingInstance(int id,
-                                                  string name);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Unloading instance context for PlugIn: [{plugInId}]")]
-        private partial void LogUnloadingInstance(int plugInId);
-
         [DebuggerStepThrough]
         private T ResolveExecutingInstance<T>(int id,
                                               Func<RuntimeInstance, T> operation)
@@ -352,7 +282,7 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                LogUnableToFindInstance(id);
+                _logger.LogUnableToFindInstance(id);
 
                 throw new InstanceNotFoundException(id);
             }
@@ -371,7 +301,7 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
-                LogUnableToFindInstance(id);
+                _logger.LogUnableToFindInstance(id);
 
                 throw new InstanceNotFoundException(id);
             }
@@ -383,8 +313,8 @@ namespace Shaos.Services.Runtime.Host
 
         private void StartExecutingInstance(RuntimeInstance instance)
         {
-            LogStartingInstance(instance.Id,
-                                instance.Name);
+            _logger.LogStartingInstance(instance.Id,
+                                        instance.Name);
 
             instance.StartExecution(async (cancellationToken) => await ExecutePlugInMethod(instance, cancellationToken),
                                     (antecedent) => UpdateStateOnCompletion(instance, antecedent));
@@ -395,23 +325,24 @@ namespace Shaos.Services.Runtime.Host
 
         private async Task StopExecutingInstanceAsync(RuntimeInstance instance)
         {
-            LogStoppingInstance(instance.Id, instance.Name);
+            _logger.LogStoppingInstance(instance.Id,
+                                        instance.Name);
 
             if (await instance.StopExecutionAsync(_options.Value.TaskStopTimeout))
             {
-                LogInstanceStopped(instance.Id,
-                                   instance.Name);
+                _logger.LogInstanceStopped(instance.Id,
+                                           instance.Name);
             }
             else
             {
-                LogInstanceNotStoppedWithinTimeOut(instance.Id,
-                                                   instance.Name);
+                _logger.LogInstanceNotStoppedWithinTimeOut(instance.Id,
+                                                           instance.Name);
             }
         }
 
         private void UnloadInstanceLoadContext(RuntimeInstance instance)
         {
-            LogUnloadingInstance(instance.PlugInId);
+            _logger.LogUnloadingInstance(instance.PlugInId);
 
             var instanceLoadContext = _instanceLoadContexts.GetValueOrDefault(instance.PlugInId);
 
@@ -427,15 +358,15 @@ namespace Shaos.Services.Runtime.Host
         {
             if (_executingInstances.Count == _options.Value.MaxExecutingInstances)
             {
-                LogExecutionInstanceCountExceeded(_executingInstances.Count,
-                                                  _options.Value.MaxExecutingInstances);
+                _logger.LogExecutionInstanceCountExceeded(_executingInstances.Count,
+                                                          _options.Value.MaxExecutingInstances);
 
                 throw new MaxInstancesRunningException(_executingInstances.Count);
             }
             else
             {
-                LogExecutionInstanceCount(_executingInstances.Count,
-                                          _options.Value.MaxExecutingInstances);
+                _logger.LogExecutionInstanceCount(_executingInstances.Count,
+                                                  _options.Value.MaxExecutingInstances);
             }
         }
     }

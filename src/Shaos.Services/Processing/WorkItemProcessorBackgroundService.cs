@@ -24,7 +24,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog.Events;
+using Shaos.Services.Extensions;
 using Shaos.Services.Hosting;
 using System.Diagnostics;
 
@@ -33,7 +33,7 @@ namespace Shaos.Services.Processing
     /// <summary>
     /// A <see cref="BackgroundService"/> implementation for the asynchronous execution of work items
     /// </summary>
-    public partial class WorkItemProcessorBackgroundService : BaseBackgroundService
+    public class WorkItemProcessorBackgroundService : BaseBackgroundService
     {
         private readonly IWorkItemQueue _workItemQueue;
         private readonly Stopwatch _stopwatch;
@@ -61,11 +61,8 @@ namespace Shaos.Services.Processing
             await workItem(stoppingToken);
             _stopwatch.Stop();
 
-            LogElapsedWorkItem(_stopwatch.Elapsed,
-                            _workItemQueue.Count);
+            Logger.LogElapsedWorkItem(_stopwatch.Elapsed,
+                                      _workItemQueue.Count);
         }
-
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Executed work item Elapsed: [{elapsed}] remaining WorkItems: [{count}]")]
-        private partial void LogElapsedWorkItem(TimeSpan elapsed, int count);
     }
 }
