@@ -28,7 +28,7 @@ using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Logging;
 
-namespace Shaos.Pages.Logging
+namespace Shaos.Pages.System.Logging
 {
     public class OverrideModel : PageModel
     {

@@ -43,7 +43,7 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
-        public int Id { get;set; } = default!;
+        public int Id { get; set; } = default!;
 
         public async Task OnGetAsync(int id,
                                      string sortOrder,
@@ -81,27 +81,27 @@ namespace Shaos.Pages.PlugInInstances
                 filter = _ => _.PlugInId == id;
             }
 
-                switch (sortOrder)
-                {
-                    case NameDescending:
-                        orderBy = _ => _.OrderByDescending(_ => _.Name);
-                        break;
+            switch (sortOrder)
+            {
+                case NameDescending:
+                    orderBy = _ => _.OrderByDescending(_ => _.Name);
+                    break;
 
-                    case nameof(PlugInInstance.Name):
-                        orderBy = _ => _.OrderBy(_ => _.Name);
-                        break;
+                case nameof(PlugInInstance.Name):
+                    orderBy = _ => _.OrderBy(_ => _.Name);
+                    break;
 
-                    case IdentifierDescending:
-                        orderBy = _ => _.OrderByDescending(_ => _.Id);
-                        break;
+                case IdentifierDescending:
+                    orderBy = _ => _.OrderByDescending(_ => _.Id);
+                    break;
 
-                    case nameof(PlugInInstance.Id):
-                        orderBy = _ => _.OrderBy(_ => _.Id);
-                        break;
+                case nameof(PlugInInstance.Id):
+                    orderBy = _ => _.OrderBy(_ => _.Id);
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
+            }
 
             var queryable = _repository.GetQueryable(
                 filter,

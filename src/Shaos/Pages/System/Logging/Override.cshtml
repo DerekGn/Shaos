@@ -1,6 +1,6 @@
 ﻿@page
 @using Serilog.Events
-@model Shaos.Pages.Logging.OverrideModel
+@model Shaos.Pages.System.Logging.OverrideModel
 
 @{
     ViewData["Title"] = "Override";
@@ -14,22 +14,22 @@
     <div class="form-group">
         <dl class="col-md-4">
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.LogLevelSwitch.Name)
+                @Html.DisplayNameFor(_ => _.LogLevelSwitch.Name)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.LogLevelSwitch.Name)
+                @Html.DisplayFor(_ => _.LogLevelSwitch.Name)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.LogLevelSwitch.CreatedDate)
+                @Html.DisplayNameFor(_ => _.LogLevelSwitch.CreatedDate)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.LogLevelSwitch.CreatedDate)
+                @Html.DisplayFor(_ => _.LogLevelSwitch.CreatedDate)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.LogLevelSwitch.UpdatedDate)
+                @Html.DisplayNameFor(_ => _.LogLevelSwitch.UpdatedDate)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.LogLevelSwitch.UpdatedDate)
+                @Html.DisplayFor(_ => _.LogLevelSwitch.UpdatedDate)
             </dd>
         </dl>
     </div>

@@ -1,0 +1,70 @@
+﻿@page
+@model Shaos.Pages.System.Information.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>System Information</h1>
+
+<h2>Operating System Information</h2>
+
+<table class="table">
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.FrameworkDescription)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.FrameworkDescription)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.OsArchitecture)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.OsArchitecture)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.OsDescription)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.OsDescription)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.ProcessArchitecture)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.ProcessArchitecture)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.RuntimeIdentifier)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.RuntimeIdentifier)</td>
+    </tr>
+</table>
+
+<h2>Process Information</h2>
+
+<table class="table">
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.BasePriority)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.BasePriority)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.HandleCount)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.HandleCount)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.MaxWorkingSet)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.MaxWorkingSet)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.MinWorkingSet)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.MinWorkingSet)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.NonpagedSystemMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.NonpagedSystemMemorySize)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.PagedMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.PagedMemorySize)</td>
+    </tr>
+</table>
+
+@* 
+<h2>Os Information</h2>
+
+<h2>Process Information</h2>
+
+<h2>Shutdown</h2>
+ *@

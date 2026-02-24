@@ -1,5 +1,5 @@
 ﻿@page
-@model Shaos.Pages.Logging.IndexModel
+@model Shaos.Pages.System.Logging.IndexModel
 
 @{
     ViewData["Title"] = "Index";
@@ -24,10 +24,10 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Key)
+                    @Html.DisplayFor(_ => item.Key)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Value.MinimumLevel)
+                    @Html.DisplayFor(_ => item.Value.MinimumLevel)
                 </td>
                 <td>
                     <a asp-page="./Override" asp-route-id="@item.Key" class="btn btn-sm btn-primary" title="Override Logging">
