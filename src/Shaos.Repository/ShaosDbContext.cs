@@ -26,6 +26,7 @@ using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.EntityTypeConfigurations;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices;
+using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Repository
 {
@@ -40,19 +41,44 @@ namespace Shaos.Repository
         {
         }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="BaseParameter"/> instances
+        /// </summary>
+        public DbSet<BaseParameter> BaseParameters { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="BaseParameterValue"/> instances
+        /// </summary>
+        public DbSet<BaseParameterValue> BaseParameterValues { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="DashboardParameter"/> instances
+        /// </summary>
+        public DbSet<DashboardParameter> DashboardParameters { get; set; }
+
+        /// <summary>
+        /// The set of <see cref="Device"/> instances
+        /// </summary>
         public DbSet<Device> Devices { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="LogLevelSwitch"/> instances
+        /// </summary>
         public DbSet<LogLevelSwitch> LogLevelSwitches { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="PlugInInformation"/> instances
+        /// </summary>
         public DbSet<PlugInInformation> PlugInInformations { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="PlugInInstance"/> instances
+        /// </summary>
         public DbSet<PlugInInstance> PlugInInstances { get; set; }
 
-        /// <inheritdoc/>>
+        /// <summary>
+        /// The set of <see cref="PlugIn"/> instances
+        /// </summary>
         public DbSet<PlugIn> PlugIns { get; set; }
 
         /// <inheritdoc/>>
