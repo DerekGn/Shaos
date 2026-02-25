@@ -30,7 +30,7 @@
                    asp-route-id="@Model.Id"
                    asp-route-sortOrder="@Model.IdSort"
                    asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].Id)
+                    @Html.DisplayNameFor(_ => _.List[0].Id)
                 </a>
             </th>
             <th>
@@ -38,17 +38,17 @@
                    asp-route-id="@Model.Id"
                    asp-route-sortOrder="@Model.NameSort"
                    asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].Name)
+                    @Html.DisplayNameFor(_ => _.List[0].Name)
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].InstanceId)
+                @Html.DisplayNameFor(_ => _.List[0].InstanceId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].CreatedDate)
+                @Html.DisplayNameFor(_ => _.List[0].CreatedDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].UpdatedDate)
+                @Html.DisplayNameFor(_ => _.List[0].UpdatedDate)
             </th>
             <th></th>
         </tr>
@@ -57,19 +57,19 @@
 @foreach (var item in Model.List) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Id)
+                @Html.DisplayFor(_ => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(_ => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InstanceId)
+                @Html.DisplayFor(_ => item.InstanceId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
+                @Html.DisplayFor(_ => item.CreatedDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UpdatedDate)
+                @Html.DisplayFor(_ => item.UpdatedDate)
             </td>
             <td>
                 <a asp-page="/Parameters/Index" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Devices">

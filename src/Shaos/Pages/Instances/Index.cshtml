@@ -27,32 +27,32 @@
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.IdSort"
                    asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].Id)
+                    @Html.DisplayNameFor(_ => _.List[0].Id)
                 </a>
             </th>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
                    asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].Name)
+                    @Html.DisplayNameFor(_ => _.List[0].Name)
                 </a>
             </th>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.StateSort"
                    asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].State)
+                    @Html.DisplayNameFor(_ => _.List[0].State)
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].StartTime)
+                @Html.DisplayNameFor(_ => _.List[0].StartTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].StopTime)
+                @Html.DisplayNameFor(_ => _.List[0].StopTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].RunningTime)
+                @Html.DisplayNameFor(_ => _.List[0].RunningTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].Exception)
+                @Html.DisplayNameFor(_ => _.List[0].Exception)
             </th>
             <th></th>
         </tr>
@@ -62,25 +62,25 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                    @Html.DisplayFor(_ => item.Id)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(_ => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.State)
+                    @Html.DisplayFor(_ => item.State)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.StartTime)
+                    @Html.DisplayFor(_ => item.StartTime)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.StopTime)
+                    @Html.DisplayFor(_ => item.StopTime)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.RunningTime)
+                    @Html.DisplayFor(_ => item.RunningTime)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Exception)
+                    @Html.DisplayFor(_ => item.Exception)
                 </td>
                 <td>
                     <form method="post">

@@ -37,17 +37,17 @@
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.IdSort"
                    asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].Id)
+                    @Html.DisplayNameFor(_ => _.List[0].Id)
                 </a>
             </th>
             <th>
                 <a asp-page="./Index" asp-route-sortOrder="@Model.NameSort"
                    asp-route-currentFilter="@Model.CurrentFilter">
-                    @Html.DisplayNameFor(model => model.List[0].Name)
+                    @Html.DisplayNameFor(_ => _.List[0].Name)
                 </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].Description)
+                @Html.DisplayNameFor(_ => _.List[0].Description)
             </th>
             <th>
                 Package
@@ -59,10 +59,10 @@
                 Instances
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].CreatedDate)
+                @Html.DisplayNameFor(_ => _.List[0].CreatedDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.List[0].UpdatedDate)
+                @Html.DisplayNameFor(_ => _.List[0].UpdatedDate)
             </th>
             <th></th>
         </tr>
@@ -73,13 +73,13 @@
             var instancesDisabled = item.PlugInInformation == null ? "disabled" : "";
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                    @Html.DisplayFor(_ => item.Id)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(_ => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    @Html.DisplayFor(_ => item.Description)
                 </td>
                 <td>
                     @(item.PlugInInformation != null ? item.PlugInInformation.PackageFileName : "Unassigned")
@@ -88,13 +88,13 @@
                     @(item.PlugInInformation != null ? item.PlugInInformation.AssemblyVersion : "Unassigned")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Instances.Count)
+                    @Html.DisplayFor(_ => item.Instances.Count)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                    @Html.DisplayFor(_ => item.CreatedDate)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UpdatedDate)
+                    @Html.DisplayFor(_ => item.UpdatedDate)
                 </td>
                 <td>
                     <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Delete PlugIn">

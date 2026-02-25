@@ -1,0 +1,139 @@
+﻿@page
+@model Shaos.Pages.System.Information.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>System Information</h1>
+
+<h2>Operating System Information</h2>
+
+<table class="table container-fluid">
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.FrameworkDescription)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.FrameworkDescription)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.OsArchitecture)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.OsArchitecture)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.OsDescription)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.OsDescription)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.ProcessArchitecture)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.ProcessArchitecture)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.OsInformation.RuntimeIdentifier)</th>
+        <td>@Html.DisplayFor(_ => _.OsInformation.RuntimeIdentifier)</td>
+    </tr>
+</table>
+
+<h2>Process Information</h2>
+
+<table class="table container-fluid">
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.BasePriority)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.BasePriority)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.HandleCount)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.HandleCount)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.MaxWorkingSet)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.MaxWorkingSet)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.MinWorkingSet)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.MinWorkingSet)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.NonpagedSystemMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.NonpagedSystemMemorySize)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.PagedMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.PagedMemorySize)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.PagedSystemMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.PagedSystemMemorySize)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.PeakPagedMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.PeakPagedMemorySize)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.PeakWorkingSet)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.PeakWorkingSet)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.PrivateMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.PrivateMemorySize)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.ProcessName)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.ProcessName)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.ProcessorAffinity)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.ProcessorAffinity)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.StartTime)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.StartTime)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.ThreadsCount)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.ThreadsCount)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.TotalProcessorTime)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.TotalProcessorTime)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.UserProcessorTime)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.UserProcessorTime)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.ProcessInformation.VirtualMemorySize)</th>
+        <td>@Html.DisplayFor(_ => _.ProcessInformation.VirtualMemorySize)</td>
+    </tr>
+</table>
+
+<h2>System Environment</h2>
+
+<table class="table container-fluid">
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.SystemEnvironment.Is64BitOperatingSystem)</th>
+        <td>@Html.DisplayFor(_ => _.SystemEnvironment.Is64BitOperatingSystem)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.SystemEnvironment.Is64BitProcess)</th>
+        <td>@Html.DisplayFor(_ => _.SystemEnvironment.Is64BitProcess)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.SystemEnvironment.IsPrivilegedProcess)</th>
+        <td>@Html.DisplayFor(_ => _.SystemEnvironment.IsPrivilegedProcess)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.SystemEnvironment.MachineName)</th>
+        <td>@Html.DisplayFor(_ => _.SystemEnvironment.MachineName)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.SystemEnvironment.OSVersion)</th>
+        <td>@Html.DisplayFor(_ => _.SystemEnvironment.OSVersion)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.SystemEnvironment.ProcessId)</th>
+        <td>@Html.DisplayFor(_ => _.SystemEnvironment.ProcessId)</td>
+    </tr>
+    <tr>
+        <th>@Html.DisplayNameFor(_ => _.SystemEnvironment.WorkingSet)</th>
+        <td>@Html.DisplayFor(_ => _.SystemEnvironment.WorkingSet)</td>
+    </tr>
+</table>

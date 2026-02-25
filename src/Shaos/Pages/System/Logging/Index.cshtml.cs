@@ -28,7 +28,7 @@ using Serilog.Core;
 using Shaos.Repository.Models;
 using Shaos.Services.Logging;
 
-namespace Shaos.Pages.Logging
+namespace Shaos.Pages.System.Logging
 {
     public class IndexModel : PageModel
     {
@@ -40,7 +40,7 @@ namespace Shaos.Pages.Logging
         }
 
         [BindProperty]
-        public IReadOnlyDictionary<string, LoggingLevelSwitch> LoggingLevelSwitches { get;set; } = default!;
+        public IReadOnlyDictionary<string, LoggingLevelSwitch> LoggingLevelSwitches { get; set; } = default!;
 
         [BindProperty]
         public IList<LogLevelSwitch> LogLevelSwitches { get; set; } = default!;

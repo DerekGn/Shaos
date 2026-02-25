@@ -120,13 +120,13 @@ namespace Shaos
                     {
                         options.Conventions.AddFolderApplicationModelConvention(
                             "/Instances",
-                            model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                            _ => _.Filters.Add(new SerializeModelStatePageFilter()));
                         //options.Conventions.AddFolderApplicationModelConvention(
                         //   "/PlugIns",
-                        //   model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                        //   _ => _.Filters.Add(new SerializeModelStatePageFilter()));
                         options.Conventions.AddPageApplicationModelConvention(
                             "/PlugIns/Package",
-                            model => model.Filters.Add(new SerializeModelStatePageFilter()));
+                            _ => _.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
             builder
