@@ -31,7 +31,7 @@ namespace Shaos.Services.Extensions
         public static partial void LogAssemblyResolvedFromDefault(this ILogger logger,
                                                                   AssemblyName assemblyName);
 
-        [LoggerMessage(Level = LogLevel.Warning,
+        [LoggerMessage(Level = LogLevel.Information,
             Message = "Attaching event handlers to PlugIn Instance Id: [{id}] Name: [{name}]")]
         public static partial void LogAttachEventHandlers(this ILogger logger,
                                                           int id,
@@ -165,15 +165,15 @@ namespace Shaos.Services.Extensions
 
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "Runtime execution instance count exceeded. Count: [{count}] Max: [{max}]")]
-        public static partial void LogExecutionInstanceCount(this ILogger logger,
-                                                             int count,
-                                                             int max);
-
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Runtime execution instance Count: [{count}] Max: [{max}]")]
         public static partial void LogExecutionInstanceCountExceeded(this ILogger logger,
                                                                      int count,
                                                                      int max);
+
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Runtime execution instance Count: [{count}] Max: [{max}]")]
+        public static partial void LogExecutionInstanceCount(this ILogger logger,
+                                                             int count,
+                                                             int max);
 
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Extracting package: [{sourcePath}] to [{targetPath}]")]
