@@ -6,12 +6,15 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Dashboard Parameters</h1>
-
+<h1>Dashboard Configuration</h1>
 <hr />
-
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" title="Create" class="btn btn-sm btn-primary">
+        <span>
+            <svg bootstrap-icon="Plus" width="24" height="24" aria-label="Create"></svg>
+        </span>
+        Create
+    </a>
 </p>
 
 <table class="table">
@@ -30,22 +33,31 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.DashboardParameter) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Label)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedDate)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.DashboardParameter)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Label)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedDate)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Edit">
+                        <span>
+                            <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Edit"></svg>
+                        </span>
+                    </a>
+                    <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Delete">
+                        <span>
+                            <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
