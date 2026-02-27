@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
@@ -32,6 +34,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The last boolean value
         /// </summary>
+        [Required]
         public bool Value { get; set; }
 
         /// <summary>

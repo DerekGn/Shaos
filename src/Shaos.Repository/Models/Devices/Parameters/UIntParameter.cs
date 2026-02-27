@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
@@ -42,7 +44,8 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The current value
         /// </summary>
-        public uint Value { get; set; }
+        [Required]
+        public required uint Value { get; set; }
 
         /// <summary>
         /// The set of <see cref="UIntParameterValue"/> previous values

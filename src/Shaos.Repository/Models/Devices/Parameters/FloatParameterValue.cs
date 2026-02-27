@@ -37,11 +37,11 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The parent <see cref="FloatParameter"/>
         /// </summary>
-        public required FloatParameter Parameter { get; set; }
+        public FloatParameter Parameter { get; set; } = null!;
 
         /// <summary>
         /// The parent <see cref="BaseParameter"/> identifier
         /// </summary>
-        public required int ParameterId { get; set; }
+        public int ParameterId { get; set; }
     }
 }

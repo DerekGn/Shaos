@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
@@ -32,16 +34,19 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The maximum value for this <see cref="IntParameter"/>
         /// </summary>
+        [Required]
         public int Max { get; set; }
 
         /// <summary>
         /// The minimum value for this <see cref="IntParameter"/>
         /// </summary>
+        [Required]
         public int Min { get; set; }
 
         /// <summary>
         /// The current value
         /// </summary>
+        [Required]
         public int Value { get; set; }
 
         /// <summary>

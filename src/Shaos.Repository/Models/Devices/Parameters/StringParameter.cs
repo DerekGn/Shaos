@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
@@ -32,7 +34,9 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The current value
         /// </summary>
-        public string? Value { get; set; }
+        [MaxLength(255)]
+        [Required]
+        public required string Value { get; set; }
 
         /// <summary>
         /// The set of <see cref="StringParameterValue"/> previous values

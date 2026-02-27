@@ -23,7 +23,7 @@
 */
 
 using Shaos.Repository.Models.Devices.Parameters;
-using Shaos.Sdk.Devices;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models.Devices
 {
@@ -32,9 +32,6 @@ namespace Shaos.Repository.Models.Devices
     /// </summary>
     public class Device : BaseEntity
     {
-        private const string BatteryLevelName = "Battery Level";
-        private const string SignalLevelName = "Signal Level";
-
         /// <summary>
         /// The <see cref="Sdk.Devices.Device"/> identifier
         /// </summary>
@@ -43,6 +40,8 @@ namespace Shaos.Repository.Models.Devices
         /// <summary>
         /// The <see cref="Device"/> instance name
         /// </summary>
+        [MaxLength(64)]
+        [Required]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
@@ -53,11 +52,11 @@ namespace Shaos.Repository.Models.Devices
         /// <summary>
         /// The parent <see cref="PlugInInstance"/>
         /// </summary>
-        public PlugInInstance? PlugInInstance { get; set; } = null;
+        public PlugInInstance PlugInInstance { get; set; } = null!;
 
         /// <summary>
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
-        public int? PlugInInstanceId { get; set; } = null;
+        public int PlugInInstanceId { get; set; }
     }
 }

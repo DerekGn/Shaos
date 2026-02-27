@@ -23,6 +23,7 @@
 */
 
 using Shaos.Sdk.Devices.Parameters;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models.Devices.Parameters
 {
@@ -34,16 +35,18 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The parent <see cref="Device"/>
         /// </summary>
-        public Device? Device { get; set; }
+        public Device Device { get; set; } = null!;
 
         /// <summary>
         /// The parent <see cref="Device"/> identifier
         /// </summary>
-        public int? DeviceId { get; set; }
+        public int DeviceId { get; set; }
 
         /// <summary>
         /// The <see cref="BaseParameter"/> name
         /// </summary>
+        [MaxLength(100)]
+        [Required]
         public required string Name { get; set; }
 
         /// <summary>
@@ -59,6 +62,8 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The <see cref="BaseParameter"/> units
         /// </summary>
+        [MaxLength(20)]
+        [Required]
         public required string Units { get; set; }
     }
 }
