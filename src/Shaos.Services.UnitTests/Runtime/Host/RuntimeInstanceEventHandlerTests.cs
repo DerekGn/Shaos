@@ -115,7 +115,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestDevicesListChangedDeviceAdded()
         {
-            var plugInInstance = new PlugInInstance();
+            var plugInInstance = CreatePlugInInstance();
 
             SetupCommonMocks();
 

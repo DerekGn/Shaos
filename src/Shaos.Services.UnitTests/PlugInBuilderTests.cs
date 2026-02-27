@@ -135,7 +135,8 @@ namespace Shaos.Services.UnitTests
 
             var plugInInstance = new PlugInInstance()
             {
-                Id = 3
+                Id = 3,
+                Name = "name",
             };
 
             plugInInstance.Devices.Add(device);

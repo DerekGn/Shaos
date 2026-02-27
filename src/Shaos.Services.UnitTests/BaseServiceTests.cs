@@ -39,23 +39,41 @@ namespace Shaos.Services.UnitTests
             MockRepository = new Mock<IShaosRepository>();
         }
 
+        internal static PlugInInformation CreatePlugInInformation(bool hasConfiguration = false,
+                                                                  bool hasLogger = false)
+        {
+            return new PlugInInformation()
+            {
+                AssemblyFileName = "AssemblyFileName",
+                AssemblyVersion = "1.0.0",
+                Directory = "Directory",
+                HasConfiguration = hasConfiguration,
+                HasLogger = hasLogger,
+                PackageFileName = "PackageFileName",
+                TypeName = "TypeName"
+            };
+        }
+
+        internal static PlugInInstance CreatePlugInInstance()
+        {
+            return new PlugInInstance()
+            {
+                Id = 1,
+                Enabled = true,
+                Name = "Test"
+            };
+        }
+
         protected void SetupPlugInInstanceGetByIdAsync()
         {
             var plugIn = new PlugIn()
             {
                 Description = "Test",
                 Name = "Test",
-                PlugInInformation = new PlugInInformation()
-                {
-                    HasConfiguration = true
-                }
+                PlugInInformation = CreatePlugInInformation()
             };
 
-            var plugInInstance = new PlugInInstance()
-            {
-                Configuration = "configuration",
-                PlugIn = plugIn
-            };
+            var plugInInstance = CreatePlugInInstance();
 
             MockRepository
                 .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),

@@ -284,7 +284,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             ModelStringParameter parameter = new ModelStringParameter()
             {
                 Name = "name",
-                Units = string.Empty
+                Units = string.Empty,
+                Value = string.Empty
             };
 
             MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelStringParameter, bool>>>(),
@@ -308,12 +309,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
-            CancellationToken cancellationToken = default(CancellationToken);
-
             ModelUIntParameter parameter = new ModelUIntParameter()
             {
                 Name = "name",
-                Units = string.Empty
+                Units = string.Empty,
+                Value = 1
             };
 
             MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelUIntParameter, bool>>>(),
@@ -324,8 +324,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        10u,
-                                                                       DateTime.UtcNow,
-                                                                       cancellationToken);
+                                                                       DateTime.UtcNow);
+                                                                       //TestContext.Current.CancellationToken);
 
             Assert.Single(parameter.Values);
 

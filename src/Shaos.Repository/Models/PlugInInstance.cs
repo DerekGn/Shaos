@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models.Devices;
 using Shaos.Sdk;
 using System.ComponentModel.DataAnnotations;

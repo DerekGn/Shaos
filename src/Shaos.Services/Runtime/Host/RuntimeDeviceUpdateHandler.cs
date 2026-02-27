@@ -270,7 +270,7 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      uint value,
                                                      DateTime timeStamp,
-                                                     CancellationToken cancellationToken)
+                                                     CancellationToken cancellationToken = default)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -305,7 +305,7 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      bool value,
                                                      DateTime timeStamp,
-                                                     CancellationToken cancellationToken)
+                                                     CancellationToken cancellationToken = default)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -340,7 +340,7 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      float value,
                                                      DateTime timeStamp,
-                                                     CancellationToken cancellationToken)
+                                                     CancellationToken cancellationToken = default)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -375,7 +375,7 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      string value,
                                                      DateTime timestamp,
-                                                     CancellationToken cancellationToken)
+                                                     CancellationToken cancellationToken = default)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -410,7 +410,7 @@ namespace Shaos.Services.Runtime.Host
         internal async Task SaveParameterChangeAsync(int id,
                                                      int value,
                                                      DateTime timeStamp,
-                                                     CancellationToken cancellationToken)
+                                                     CancellationToken cancellationToken = default)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
@@ -460,7 +460,7 @@ namespace Shaos.Services.Runtime.Host
         private async Task PublishDeviceParameterEventAsync<T>(int id,
                                                                T level,
                                                                DateTime timeStamp,
-                                                               CancellationToken cancellationToken)
+                                                               CancellationToken cancellationToken = default)
         {
             await _deviceEventQueue.EnqueueAsync(new DeviceParameterUpdatedEvent<T>()
             {

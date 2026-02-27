@@ -23,7 +23,6 @@
 */
 
 using Microsoft.EntityFrameworkCore;
-using Shaos.Repository.EntityTypeConfigurations;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices;
 
@@ -69,12 +68,6 @@ namespace Shaos.Repository
             });
 
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
-
-        /// <inheritdoc/>>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PlugInEntityTypeConfiguration).Assembly);
         }
     }
 }

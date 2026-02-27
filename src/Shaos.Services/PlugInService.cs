@@ -85,7 +85,7 @@ namespace Shaos.Services
             var plugIn = new PlugIn()
             {
                 Description = plugInTypeInformation.Description,
-                Name = plugInTypeInformation.Name,
+                Name = plugInTypeInformation.Name
             };
 
             plugIn.PlugInInformation = new PlugInInformation()
@@ -96,7 +96,8 @@ namespace Shaos.Services
                 HasConfiguration = plugInTypeInformation.HasConfiguration,
                 HasLogger = plugInTypeInformation.HasLogger,
                 PackageFileName = packageFileName,
-                PlugIn = plugIn
+                PlugIn = plugIn,
+                TypeName = plugInTypeInformation.TypeName
             };
 
             await _repository.CreatePlugInAsync(plugIn,
@@ -445,9 +446,11 @@ namespace Shaos.Services
                 {
                     AssemblyFileName = assemblyFileName,
                     AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString(),
-                    PackageFileName = packagFileName,
+                    Directory = string.Empty,
                     HasConfiguration = plugInTypeInformation.HasConfiguration,
-                    HasLogger = plugInTypeInformation.HasLogger
+                    HasLogger = plugInTypeInformation.HasLogger,
+                    PackageFileName = packagFileName,
+                    TypeName = plugInTypeInformation.TypeName
                 };
 
                 await _repository.CreatePlugInInformationAsync(plugIn,
