@@ -22,8 +22,10 @@
 * SOFTWARE.
 */
 
+using Microsoft.EntityFrameworkCore;
 using Shaos.Repository.Models.Devices;
 using Shaos.Sdk;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -32,6 +34,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// Represents a configured instance of a <see cref="PlugIn"/>
     /// </summary>
+    [Index(nameof(Name), IsUnique = true)]
     public class PlugInInstance : PlugInChildBase
     {
         /// <summary>
@@ -42,7 +45,9 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The description of the <see cref="PlugInInstance"/>
         /// </summary>
-        public string Description { get; set; } = string.Empty;
+        [MaxLength(100)]
+        [Required]
+        public required string Description { get; set; }
 
         /// <summary>
         /// Indicates if the <see cref="PlugInInstance"/> is enabled
@@ -52,7 +57,9 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The name of this <see cref="PlugInInstance"/>
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        [MaxLength(40)]
+        [Required]
+        public required string Name { get; set; }
 
         /// <summary>
         /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>

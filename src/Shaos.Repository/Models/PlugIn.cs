@@ -22,17 +22,23 @@
 * SOFTWARE.
 */
 
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Repository.Models
 {
     /// <summary>
     /// Represents a PlugIn entity
     /// </summary>
+    [Index(nameof(Name), IsUnique = true)]
     public class PlugIn : BaseEntity
     {
         /// <summary>
         /// The description of this <see cref="PlugIn"/>
         /// </summary>
-        public required string Description { get; set; } = string.Empty;
+        [MaxLength(100)]
+        [Required]
+        public required string Description { get; set; }
 
         /// <summary>
         /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugInInstance"/>
@@ -42,7 +48,9 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The name of this <see cref="PlugIn"/>
         /// </summary>
-        public required string Name { get; set; } = string.Empty;
+        [MaxLength(40)]
+        [Required]
+        public required string Name { get; set; }
 
         /// <summary>
         /// The set of <see cref="PlugInInformation"/> associated with this <see cref="PlugIn"/>

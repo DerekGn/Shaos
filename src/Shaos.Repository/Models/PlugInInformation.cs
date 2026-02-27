@@ -23,6 +23,7 @@
 */
 
 using Shaos.Sdk;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -36,32 +37,42 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The fully qualified path to the PlugIn assembly
         /// </summary>
-        public string AssemblyFileName { get; set; } = string.Empty;
+        [MaxLength(40)]
+        [Required]
+        public required string AssemblyFileName { get; set; }
 
         /// <summary>
         /// The version of the <see cref="PlugInInformation"/>
         /// </summary>
+        [MaxLength(10)]
+        [Required]
         public string AssemblyVersion { get; set; } = string.Empty;
 
         /// <summary>
         /// The folder where the PlugIn was extracted too.
         /// </summary>
-        public string Directory { get; set; } = string.Empty;
+        [MaxLength(32)]
+        [Required]
+        public required string Directory { get; set; } = string.Empty;
 
         /// <summary>
         /// Indicates if the <see cref="PlugInInformation"/> <see cref="IPlugIn"/> has a configuration constructor argument
         /// </summary>
+        [Required]
         public bool HasConfiguration { get; set; }
 
         /// <summary>
         /// Indicates if the <see cref="PlugInInformation"/> <see cref="IPlugIn"/> has a logger constructor argument
         /// </summary>
+        [Required]
         public bool HasLogger { get; set; }
 
         /// <summary>
         /// The file name of the PlugIn package
         /// </summary>
-        public string PackageFileName { get; set; } = string.Empty;
+        [MaxLength(40)]
+        [Required]
+        public required string PackageFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// The parent <see cref="IPlugIn"/>
@@ -76,6 +87,8 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The type name of the type that implements the <see cref="IPlugIn"/> interface
         /// </summary>
+        [MaxLength(100)]
+        [Required]
         public string TypeName { get; set; } = string.Empty;
 
         /// <inheritdoc/>

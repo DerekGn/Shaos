@@ -78,7 +78,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                                      It.IsAny<bool>(),
                                                      It.IsAny<List<string>>(),
                                                      It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ModelDevice());
+                .ReturnsAsync(new ModelDevice()
+                {
+                    Name = "test"
+                });
 
             SdkBoolParameter parameter = new(1,
                                              false,
