@@ -51,6 +51,12 @@ namespace Shaos.Repository.EntityTypeConfigurations
             builder
                 .Property(_ => _.Units)
                 .HasMaxLength(20);
+
+            builder
+                .HasOne(_ => _.DashboardParameter)
+                .WithOne(_ => _.Parameter)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
         }
     }
 }

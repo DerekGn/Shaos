@@ -1,0 +1,63 @@
+﻿@page
+@model Shaos.Pages.System.Dashboard.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Dashboard Configuration</h1>
+<hr />
+<p>
+    <a asp-page="Create" title="Create" class="btn btn-sm btn-primary">
+        <span>
+            <svg bootstrap-icon="Plus" width="24" height="24" aria-label="Create"></svg>
+        </span>
+        Create
+    </a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DashboardParameter[0].Label)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DashboardParameter[0].CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DashboardParameter[0].UpdatedDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.DashboardParameter)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Label)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdatedDate)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Edit">
+                        <span>
+                            <svg bootstrap-icon="PencilSquare" width="24" height="24" aria-label="Edit"></svg>
+                        </span>
+                    </a>
+                    <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Delete">
+                        <span>
+                            <svg bootstrap-icon="Trash" width="24" height="24" aria-label="Delete"></svg>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
