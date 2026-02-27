@@ -32,7 +32,6 @@ using Shaos.Services.Logging;
 using Shaos.Testing.Shared;
 using Shaos.Testing.Shared.Extensions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Logging
 {
@@ -42,7 +41,7 @@ namespace Shaos.Services.UnitTests.Logging
         private readonly Mock<ILoggingConfiguration> _mockLoggingConfiguration;
         private readonly Mock<IShaosRepository> _mockRepository;
 
-        public LoggingConfigurationServiceTests(ITestOutputHelper output) : base(output)
+        public LoggingConfigurationServiceTests()
         {
             _mockRepository = new Mock<IShaosRepository>();
             _mockLoggingConfiguration = new Mock<ILoggingConfiguration>();
@@ -76,14 +75,16 @@ namespace Shaos.Services.UnitTests.Logging
                 .Setup(_ => _.LoggingLevelSwitches)
                 .Returns(dictionary);
 
-            await _loggingConfigurationService.InitialiseLoggingConfigurationAsync(_mockLoggingConfiguration.Object);
+            await _loggingConfigurationService.InitialiseLoggingConfigurationAsync(_mockLoggingConfiguration.Object,
+                                                                                   TestContext.Current.CancellationToken);
         }
 
         [Fact]
         public async Task TestUpdateLogLevelSwitchAsync()
         {
             await _loggingConfigurationService.UpdateLogLevelSwitchAsync("test",
-                                                                         LogEventLevel.Information);
+                                                                         LogEventLevel.Information,
+                                                                         TestContext.Current.CancellationToken);
 
             _mockRepository.Verify(_ => _.UpsertLogLevelSwitchAsync(It.IsAny<string>(),
                                                                     It.IsAny<LogEventLevel>(),

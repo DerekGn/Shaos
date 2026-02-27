@@ -33,7 +33,6 @@ using Shaos.Services.Processing;
 using Shaos.Services.Runtime.Host;
 using System.Linq.Expressions;
 using Xunit;
-using Xunit.Abstractions;
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
 using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
@@ -55,7 +54,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IWorkItemQueue> _mockWorkItemQueue;
         private readonly RuntimeDeviceUpdateHandler _runtimeDeviceUpdateHandler;
 
-        public RuntimeDeviceUpdateHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public RuntimeDeviceUpdateHandlerTests()
         {
             _mockDevicecEventQueue = new Mock<IDeviceEventQueue>();
             _mockServiceProvider = new Mock<IServiceProvider>();
@@ -162,7 +161,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
-            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, true, DateTime.UtcNow);
+            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
+                                                                       true,
+                                                                       DateTime.UtcNow,
+                                                                       TestContext.Current.CancellationToken);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
@@ -172,7 +174,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
-            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, 5.0f, DateTime.UtcNow);
+            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
+                                                                       5.0f,
+                                                                       DateTime.UtcNow,
+                                                                       TestContext.Current.CancellationToken);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
@@ -182,7 +187,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
-            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, -10, DateTime.UtcNow);
+            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
+                                                                       -10,
+                                                                       DateTime.UtcNow,
+                                                                       TestContext.Current.CancellationToken);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }
@@ -191,8 +199,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public async Task TestSaveParameterChangeAsyncInternal()
         {
             SetupServiceScopeFactory();
-
-            CancellationToken cancellationToken = default(CancellationToken);
 
             ModelFloatParameter parameter = new ModelFloatParameter()
             {
@@ -209,7 +215,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        4.6f,
                                                                        DateTime.UtcNow,
-                                                                       cancellationToken);
+                                                                       TestContext.Current.CancellationToken);
 
             Assert.Single(parameter.Values);
 
@@ -220,8 +226,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public async Task TestSaveParameterChangeAsyncInternalBool()
         {
             SetupServiceScopeFactory();
-
-            CancellationToken cancellationToken = default(CancellationToken);
 
             ModelBoolParameter parameter = new ModelBoolParameter()
             {
@@ -238,7 +242,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        true,
                                                                        DateTime.UtcNow,
-                                                                       cancellationToken);
+                                                                       TestContext.Current.CancellationToken);
 
             Assert.Single(parameter.Values);
 
@@ -249,8 +253,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public async Task TestSaveParameterChangeAsyncInternalInt()
         {
             SetupServiceScopeFactory();
-
-            CancellationToken cancellationToken = default(CancellationToken);
 
             ModelIntParameter parameter = new ModelIntParameter()
             {
@@ -267,7 +269,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        -10,
                                                                        DateTime.UtcNow,
-                                                                       cancellationToken);
+                                                                       TestContext.Current.CancellationToken);
 
             Assert.Single(parameter.Values);
 
@@ -278,8 +280,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public async Task TestSaveParameterChangeAsyncInternalString()
         {
             SetupServiceScopeFactory();
-
-            CancellationToken cancellationToken = default(CancellationToken);
 
             ModelStringParameter parameter = new ModelStringParameter()
             {
@@ -296,7 +296,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        "value",
                                                                        DateTime.UtcNow,
-                                                                       cancellationToken);
+                                                                       TestContext.Current.CancellationToken);
 
             Assert.Single(parameter.Values);
 
@@ -307,8 +307,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         public async Task TestSaveParameterChangeAsyncInternalUInt()
         {
             SetupServiceScopeFactory();
-
-            CancellationToken cancellationToken = default(CancellationToken);
 
             ModelUIntParameter parameter = new ModelUIntParameter()
             {
@@ -325,7 +323,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        10u,
                                                                        DateTime.UtcNow,
-                                                                       cancellationToken);
+                                                                       TestContext.Current.CancellationToken);
 
             Assert.Single(parameter.Values);
 
@@ -339,7 +337,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        "name",
-                                                                       DateTime.UtcNow);
+                                                                       DateTime.UtcNow,
+                                                                       TestContext.Current.CancellationToken);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(),
                                                         It.IsAny<CancellationToken>()));
@@ -350,7 +349,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupServiceScopeFactory();
 
-            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1, 10u, DateTime.UtcNow);
+            await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
+                                                                       10u,
+                                                                       DateTime.UtcNow,
+                                                                       TestContext.Current.CancellationToken);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
         }

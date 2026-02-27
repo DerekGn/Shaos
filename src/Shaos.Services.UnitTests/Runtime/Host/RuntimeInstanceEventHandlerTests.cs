@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Models;
@@ -32,7 +31,6 @@ using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Runtime.Host;
 using Xunit;
-using Xunit.Abstractions;
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
 using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
 using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
@@ -57,7 +55,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IRuntimeDeviceUpdateHandler> _mockRuntimeDeviceUpdateHandler;
         private readonly RuntimeInstanceEventHandler _runtimeInstanceEventHandler;
 
-        public RuntimeInstanceEventHandlerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        public RuntimeInstanceEventHandlerTests()
         {
             _mockDevice = new Mock<IDevice>();
             _mockChildObservableListDevices = new Mock<IChildObservableList<IPlugIn, IDevice>>();

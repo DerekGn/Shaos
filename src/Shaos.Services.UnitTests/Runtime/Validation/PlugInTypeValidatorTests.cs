@@ -31,7 +31,6 @@ using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime.Validation
 {
@@ -42,12 +41,9 @@ namespace Shaos.Services.UnitTests.Runtime.Validation
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly PlugInTypeValidator _pluginTypeValidator;
 
-        public PlugInTypeValidatorTests(
-            ITestOutputHelper output,
-            TestFixture fixture) : base(output)
+        public PlugInTypeValidatorTests(TestFixture testFixture)
         {
-            _fixture = fixture;
-
+            _fixture = testFixture;
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
 
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();

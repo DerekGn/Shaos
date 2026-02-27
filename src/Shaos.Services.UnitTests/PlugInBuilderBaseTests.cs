@@ -25,7 +25,6 @@
 using Microsoft.Extensions.Logging;
 using Shaos.Services.Runtime;
 using Shaos.Testing.Shared;
-using Xunit.Abstractions;
 using Xunit;
 using Shaos.Services.UnitTests.Fixtures;
 
@@ -36,8 +35,7 @@ namespace Shaos.Services.UnitTests
         internal readonly UnloadingWeakReference<RuntimeAssemblyLoadContext> _unloadingWeakReference;
         internal readonly TestFixture _fixture;
 
-        protected PlugInBuilderBaseTests(ITestOutputHelper outputHelper,
-                                         TestFixture fixture) : base(outputHelper)
+        protected PlugInBuilderBaseTests(TestFixture fixture)
         {
             _fixture = fixture;
 

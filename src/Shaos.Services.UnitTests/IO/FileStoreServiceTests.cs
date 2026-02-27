@@ -28,7 +28,6 @@ using Shaos.Services.IO;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.IO
 {
@@ -37,8 +36,7 @@ namespace Shaos.Services.UnitTests.IO
         private readonly FileStoreService _fileStoreService;
         private readonly TestFixture _fixture;
 
-        public FileStoreServiceTests(ITestOutputHelper output,
-                                     TestFixture fixture) : base(output)
+        public FileStoreServiceTests(TestFixture fixture)
         {
             _fixture = fixture;
 
@@ -58,7 +56,8 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestDeletePackage()
         {
-            var packageFile = Path.Combine(_fixture.PackageDirectory, _fixture.PackageFileInvalidPath.ToString());
+            var packageFile = Path.Combine(_fixture.PackageDirectory,
+                                           _fixture.PackageFileInvalidPath.ToString());
             
             _fileStoreService.DeletePackage(_fixture.PackageFileInvalid);
 
@@ -117,7 +116,7 @@ namespace Shaos.Services.UnitTests.IO
 
             var filename = Path.Combine(_fixture.PackageDirectory, "Test.text");
 
-            await _fileStoreService.WritePackageAsync(filename, memoryStream);
+            await _fileStoreService.WritePackageAsync(filename, memoryStream, TestContext.Current.CancellationToken);
 
             Assert.True(File.Exists(filename));
         }

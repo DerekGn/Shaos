@@ -46,7 +46,8 @@ namespace Shaos.Services.UnitTests.Eventing
                 UserIdentifier = "user"
             };
 
-            await _deviceEventQueue.EnqueueAsync(@event);
+            await _deviceEventQueue.EnqueueAsync(@event,
+                                                 TestContext.Current.CancellationToken);
 
             Assert.Equal(1, _deviceEventQueue.Count);
         }
@@ -61,9 +62,10 @@ namespace Shaos.Services.UnitTests.Eventing
                 UserIdentifier = "user"
             };
 
-            await _deviceEventQueue.EnqueueAsync(@event);
+            await _deviceEventQueue.EnqueueAsync(@event,
+                                                 TestContext.Current.CancellationToken);
 
-            var result = await _deviceEventQueue.DequeueAsync();
+            var result = await _deviceEventQueue.DequeueAsync(TestContext.Current.CancellationToken);
 
             Assert.NotNull(result);
             Assert.Equal(0, _deviceEventQueue.Count);

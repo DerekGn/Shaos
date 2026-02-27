@@ -24,7 +24,6 @@
 
 using Shaos.Repository.Models;
 using Shaos.Services.Runtime.Host;
-using Xunit.Abstractions;
 
 namespace Shaos.Testing.Shared
 {
@@ -33,12 +32,13 @@ namespace Shaos.Testing.Shared
         private readonly AutoResetEvent _autoResetEvent;
         private RuntimeInstanceState _waitingState;
 
-        protected BaseRuntimeServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        protected BaseRuntimeServiceTests()
         {
             _autoResetEvent = new AutoResetEvent(false);
         }
 
-        protected internal static void SetUpPlugInTypes(out PlugIn plugIn, out PlugInInstance plugInInstance)
+        protected internal static void SetUpPlugInTypes(out PlugIn plugIn,
+                                                        out PlugInInstance plugInInstance)
         {
             plugIn = new PlugIn()
             {
@@ -55,7 +55,8 @@ namespace Shaos.Testing.Shared
             };
         }
 
-        protected internal void RuntimeServiceInstanceStateChanged(object? sender, RuntimeInstanceStateEventArgs e)
+        protected internal void RuntimeServiceInstanceStateChanged(object? sender,
+                                                                   RuntimeInstanceStateEventArgs e)
         {
             if (e.State == _waitingState)
             {
