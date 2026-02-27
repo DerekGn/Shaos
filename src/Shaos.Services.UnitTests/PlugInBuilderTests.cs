@@ -29,7 +29,6 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Test.PlugIn;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests
 {
@@ -37,8 +36,7 @@ namespace Shaos.Services.UnitTests
     {
         private readonly PlugInBuilder _builder;
 
-        public PlugInBuilderTests(ITestOutputHelper output,
-                                  TestFixture fixture) : base(output, fixture)
+        public PlugInBuilderTests(TestFixture fixture) : base(fixture)
         {
             _builder = new PlugInBuilder(LoggerFactory!,
                                          LoggerFactory!.CreateLogger<PlugInBuilder>());

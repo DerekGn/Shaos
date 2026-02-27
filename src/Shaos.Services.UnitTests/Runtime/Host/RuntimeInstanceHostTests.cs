@@ -32,7 +32,6 @@ using Shaos.Services.Runtime.Host;
 using Shaos.Services.UnitTests.Fixtures;
 using Shaos.Testing.Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Runtime.Host
 {
@@ -49,11 +48,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private RuntimeInstanceState _waitingState;
 
-        public RuntimeInstanceHostTests(ITestOutputHelper output, TestFixture fixture) : base(output)
+        public RuntimeInstanceHostTests()
         {
-            ArgumentNullException.ThrowIfNull(output);
-            ArgumentNullException.ThrowIfNull(fixture);
-
             _mockPlugIn = new Mock<IPlugIn>();
             _mockRuntimeAssemblyLoadContext = new Mock<IRuntimeAssemblyLoadContext>();
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
@@ -224,7 +220,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             SetupExecutingInstance(RuntimeInstanceState.Running);
 
-            Assert.Throws<InstanceRunningException>(() => _instanceHost.StartInstance(1, _mockPlugIn.Object));
+            Assert.Throws<InstanceRunningException>(() => _instanceHost.StartInstance(1,
+                                                                                      _mockPlugIn.Object));
         }
 
         [Fact]
@@ -320,7 +317,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         {
             do
             {
-                OutputHelper.WriteLine("Executing Waiting Task");
+                Console.WriteLine("Executing Waiting Task");
 
                 await Task.Delay(100, cancellationToken);
             }
