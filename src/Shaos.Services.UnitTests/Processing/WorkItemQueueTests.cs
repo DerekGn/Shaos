@@ -42,9 +42,9 @@ namespace Shaos.Services.UnitTests.Processing
             await _workItemQueue.EnqueueAsync((token) =>
             {
                 return Task.CompletedTask;
-            });
+            }, TestContext.Current.CancellationToken);
 
-            var result = await _workItemQueue.DequeueAsync();
+            var result = await _workItemQueue.DequeueAsync(TestContext.Current.CancellationToken);
 
             Assert.NotNull(result);
             Assert.Equal(0, _workItemQueue.Count);
@@ -56,7 +56,7 @@ namespace Shaos.Services.UnitTests.Processing
             await _workItemQueue.EnqueueAsync((token) =>
             {
                 return Task.CompletedTask;
-            });
+            }, TestContext.Current.CancellationToken);
 
             Assert.Equal(1, _workItemQueue.Count);
         }

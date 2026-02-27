@@ -27,7 +27,6 @@ using Moq;
 using Shaos.Services.Processing;
 using Shaos.Testing.Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Processing
 {
@@ -36,7 +35,7 @@ namespace Shaos.Services.UnitTests.Processing
         private readonly TestWorkItemProcessorBackgroundService _backgroundService;
         private readonly Mock<IWorkItemQueue> _mockWorkItemQueue;
 
-        public WorkItemProcessorBackgroundServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        public WorkItemProcessorBackgroundServiceTests()
         {
             _mockWorkItemQueue = new Mock<IWorkItemQueue>();
 

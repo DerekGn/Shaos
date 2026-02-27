@@ -28,7 +28,6 @@ using Moq;
 using Shaos.Services.SystemInformation;
 using Shaos.Testing.Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.SystemInformation
 {
@@ -37,7 +36,7 @@ namespace Shaos.Services.UnitTests.SystemInformation
         private readonly Mock<IHostApplicationLifetime> _mockHostApplicationLifetime;
         private readonly SystemService _systemService;
 
-        public SystemServiceTests(ITestOutputHelper output) : base(output)
+        public SystemServiceTests()
         {
             _mockHostApplicationLifetime = new Mock<IHostApplicationLifetime>();
 

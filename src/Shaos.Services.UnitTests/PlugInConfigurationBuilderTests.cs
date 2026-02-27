@@ -29,7 +29,6 @@ using Shaos.Services.Runtime;
 using Shaos.Test.PlugIn;
 using Shaos.Testing.Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests
 {
@@ -40,7 +39,7 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IRuntimeAssemblyLoadContextFactory> _mockRuntimeAssemblyLoadContextFactory;
         private readonly PlugInConfigurationBuilder _plugInConfigurationBuiilder;
 
-        public PlugInConfigurationBuilderTests(ITestOutputHelper output) : base(output)
+        public PlugInConfigurationBuilderTests()
         {
             _mockRuntimeAssemblyLoadContextFactory = new Mock<IRuntimeAssemblyLoadContextFactory>();
             _mockFileStoreService = new Mock<IFileStoreService>();

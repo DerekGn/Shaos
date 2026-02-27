@@ -25,7 +25,6 @@
 using Shaos.Services.Json;
 using Shaos.Testing.Shared;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests.Json
 {
@@ -33,7 +32,7 @@ namespace Shaos.Services.UnitTests.Json
     {
         private const string TestGuid = "89b3c108-081d-4a47-95eb-38a4ab648cf6";
 
-        public Utf8JsonSerializerTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        public Utf8JsonSerializerTests()
         {
         }
 

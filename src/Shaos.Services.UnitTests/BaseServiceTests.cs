@@ -26,7 +26,6 @@ using Moq;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Testing.Shared;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests
 {
@@ -34,7 +33,7 @@ namespace Shaos.Services.UnitTests
     {
         protected readonly Mock<IShaosRepository> MockRepository;
 
-        protected BaseServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        protected BaseServiceTests()
         {
             MockRepository = new Mock<IShaosRepository>();
         }
