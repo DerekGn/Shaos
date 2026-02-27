@@ -25,34 +25,30 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
-using Xunit.Abstractions;
 
 namespace Shaos.Testing.Shared
 {
     public abstract class BaseTests
     {
-        protected BaseTests(ITestOutputHelper outputHelper)
+        protected BaseTests()
         {
             var serviceCollection = new ServiceCollection()
-                .AddLogging((builder) => {
-                    builder.AddXUnit(outputHelper);
-                    builder.SetMinimumLevel(LogLevel.Debug);
-                }).AddOptions();
+                .AddLogging(_ => _.SetMinimumLevel(LogLevel.Debug))
+                .AddOptions();
 
-            ServiceProvider = serviceCollection.BuildServiceProvider();
+            ServiceProvider = serviceCollection
+                .BuildServiceProvider();
 
-            LoggerFactory = ServiceProvider.GetService<ILoggerFactory>();
+            LoggerFactory = ServiceProvider
+                .GetService<ILoggerFactory>();
 
             AssemblyDirectory = Path
                 .GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location);
-
-            OutputHelper = outputHelper;
         }
 
         public string? AssemblyDirectory { get; }
         public ILoggerFactory? LoggerFactory { get; }
-        public ITestOutputHelper OutputHelper { get; }
         public ServiceProvider ServiceProvider { get; }
     }
 }

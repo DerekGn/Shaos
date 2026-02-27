@@ -7,11 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.*" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.*" />
     <PackageReference Include="Shaos.Sdk" Version="0.10.1-beta" />
-    <PackageReference Include="xunit.abstractions" Version="2.*" />
   </ItemGroup>
 
     <ItemGroup>

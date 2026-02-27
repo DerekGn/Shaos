@@ -26,24 +26,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Models;
-using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Exceptions;
 using Shaos.Services.Runtime.Host;
 using Shaos.Test.PlugIn;
-using Shaos.Testing.Shared.Extensions;
-using System.Linq.Expressions;
 using System.Reflection;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Shaos.Services.UnitTests
 {
     public class InstanceHostServiceTest : BaseServiceTests
     {
-        private const string AssemblyPath = "AssemblyPath";
         private const string configurationValue = "configuration";
         private const string InstanceName = "Test";
         private readonly InstanceHostService _instanceHostService;
@@ -56,7 +51,7 @@ namespace Shaos.Services.UnitTests
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
 
-        public InstanceHostServiceTest(ITestOutputHelper outputHelper) : base(outputHelper)
+        public InstanceHostServiceTest()
         {
             _mockFileStoreService = new Mock<IFileStoreService>();
             _mockInstanceEventHandler = new Mock<IRuntimeInstanceEventHandler>();
@@ -80,7 +75,8 @@ namespace Shaos.Services.UnitTests
         public async Task TestLoadInstanceConfigurationPlugInInstanceNotFoundExceptionAsync()
         {
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(
-                async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
+                async () => await _instanceHostService.LoadInstanceConfigurationAsync(1,
+                                                                                      TestContext.Current.CancellationToken));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
@@ -95,7 +91,8 @@ namespace Shaos.Services.UnitTests
 
             SetupConfigurationLoad();
 
-            var result = await _instanceHostService.LoadInstanceConfigurationAsync(1);
+            var result = await _instanceHostService.LoadInstanceConfigurationAsync(1,
+                                                                                   TestContext.Current.CancellationToken);
 
             Assert.NotNull(result);
         }
@@ -116,7 +113,8 @@ namespace Shaos.Services.UnitTests
             });
 
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotConfiguredException>(
-                async () => await _instanceHostService.LoadInstanceConfigurationAsync(1));
+                async () => await _instanceHostService.LoadInstanceConfigurationAsync(1,
+                                                                                      TestContext.Current.CancellationToken));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
@@ -145,7 +143,8 @@ namespace Shaos.Services.UnitTests
 
             SetupServiceScopeFactory();
 
-            await _instanceHostService.StartInstanceAsync(1);
+            await _instanceHostService.StartInstanceAsync(1,
+                                                          TestContext.Current.CancellationToken);
 
             _mockInstanceHost
                 .Verify(_ => _.InstanceExists(1));
@@ -175,7 +174,8 @@ namespace Shaos.Services.UnitTests
             });
 
             var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(
-                async () => await _instanceHostService.StartInstanceAsync(1));
+                async () => await _instanceHostService.StartInstanceAsync(1,
+                                                                          TestContext.Current.CancellationToken));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
@@ -189,7 +189,8 @@ namespace Shaos.Services.UnitTests
                 .Returns(false);
 
             var exception = await Assert.ThrowsAsync<InstanceNotFoundException>(
-                async () => await _instanceHostService.StartInstanceAsync(1));
+                async () => await _instanceHostService.StartInstanceAsync(1,
+                                                                          TestContext.Current.CancellationToken));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
@@ -304,7 +305,8 @@ namespace Shaos.Services.UnitTests
                 .Returns(true);
 
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotConfiguredException>(
-                async () => await _instanceHostService.StartInstanceAsync(1));
+                async () => await _instanceHostService.StartInstanceAsync(1,
+                                                                          TestContext.Current.CancellationToken));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
@@ -320,7 +322,8 @@ namespace Shaos.Services.UnitTests
             SetupPlugInInstanceGetByIdAsync((PlugInInstance)null!);
 
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(
-                async () => await _instanceHostService.StartInstanceAsync(1));
+                async () => await _instanceHostService.StartInstanceAsync(1,
+                                                                          TestContext.Current.CancellationToken));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
@@ -360,7 +363,9 @@ namespace Shaos.Services.UnitTests
 
             SetupConfigurationLoad();
 
-            await _instanceHostService.UpdateInstanceConfigurationAsync(1, collection);
+            await _instanceHostService.UpdateInstanceConfigurationAsync(1,
+                                                                        collection,
+                                                                        TestContext.Current.CancellationToken);
 
             MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
@@ -374,7 +379,9 @@ namespace Shaos.Services.UnitTests
             ];
 
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(
-                async () => await _instanceHostService.UpdateInstanceConfigurationAsync(1, collection));
+                async () => await _instanceHostService.UpdateInstanceConfigurationAsync(1,
+                                                                                        collection,
+                                                                                        TestContext.Current.CancellationToken));
 
             Assert.NotNull(exception);
             Assert.Equal(1, exception.Id);
