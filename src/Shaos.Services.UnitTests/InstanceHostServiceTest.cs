@@ -85,7 +85,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestLoadInstanceConfigurationWithConfigurationAsync()
         {
-            SetupPlugInInstanceGetByIdAsync();
+            SetupPlugInInstanceGetByIdAsync(true);
 
             SetupInstanceLoadContext();
 
@@ -267,7 +267,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                PlugInInformation = CreatePlugInInformation()
+                PlugInInformation = CreatePlugInInformation(true)
             };
 
             var plugInInstance = CreatePlugInInstance();

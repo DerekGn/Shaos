@@ -63,16 +63,17 @@ namespace Shaos.Services.UnitTests
             };
         }
 
-        protected void SetupPlugInInstanceGetByIdAsync()
+        protected void SetupPlugInInstanceGetByIdAsync(bool hasConfiguration = false)
         {
             var plugIn = new PlugIn()
             {
                 Description = "Test",
                 Name = "Test",
-                PlugInInformation = CreatePlugInInformation()
+                PlugInInformation = CreatePlugInInformation(hasConfiguration)
             };
 
             var plugInInstance = CreatePlugInInstance();
+            plugInInstance.PlugIn = plugIn;
 
             MockRepository
                 .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),

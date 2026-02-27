@@ -321,7 +321,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestLoadPlugInInstanceConfigurationOkAsync()
         {
-            SetupPlugInInstanceGetByIdAsync();
+            SetupPlugInInstanceGetByIdAsync(true);
 
             _mockPlugConfigurationBuilder.Setup(_ => _.LoadConfiguration(It.IsAny<string>(),
                                                                          It.IsAny<string>(),
