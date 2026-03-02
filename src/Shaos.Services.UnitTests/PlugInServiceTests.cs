@@ -476,12 +476,13 @@ namespace Shaos.Services.UnitTests
                     Times.Never);
         }
 
-        [Fact(Skip = "Refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackageSuccessAsync()
         {
             MemoryStream stream = new MemoryStream();
 
             var plugIn = SetupPlugInGetByIdAsync();
+            plugIn.PlugInInformation = null;
 
             plugIn.Instances.Add(new PlugInInstance()
             {
