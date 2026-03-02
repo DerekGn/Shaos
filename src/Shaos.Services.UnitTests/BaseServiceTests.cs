@@ -44,16 +44,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                PlugInInformation = new PlugInInformation()
-                {
-                    HasConfiguration = true
-                }
-            };
-
-            var plugInInstance = new PlugInInstance()
-            {
-                Configuration = "configuration",
-                PlugIn = plugIn
+                PlugInInformation = CreatePlugInInformation(true)
             };
 
             MockRepository
@@ -61,7 +52,8 @@ namespace Shaos.Services.UnitTests
                                                            It.IsAny<bool>(),
                                                            It.IsAny<List<string>?>(),
                                                            It.IsAny<CancellationToken>()))
-                .ReturnsAsync(plugInInstance);
+                .ReturnsAsync(CreatePlugInInstance(plugIn,
+                                                   "configuration"));
         }
 
         protected void SetupPlugInInstanceGetByIdAsync(PlugInInstance plugInInstance)
@@ -86,6 +78,29 @@ namespace Shaos.Services.UnitTests
         protected void VerifySaveAsync()
         {
             MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+        }
+
+        internal static PlugInInformation CreatePlugInInformation(bool hasConfiguration = false)
+        {
+            return new PlugInInformation()
+            {
+                AssemblyFileName = "assemblyfilename",
+                Directory = "directory",
+                HasConfiguration = hasConfiguration,
+                PackageFileName = "packagefilename"
+            };
+        }
+
+        internal static PlugInInstance CreatePlugInInstance(PlugIn? plugIn,
+                                                            string? configuration = null)
+        {
+            return new PlugInInstance()
+            {
+                Configuration = configuration,
+                Description = "description",
+                Name = "name",
+                PlugIn = plugIn
+            };
         }
     }
 }
