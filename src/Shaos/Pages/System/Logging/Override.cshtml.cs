@@ -62,7 +62,8 @@ namespace Shaos.Pages.System.Logging
             {
                 LogLevelSwitch = new LogLevelSwitch()
                 {
-                    Name = id
+                    Name = id,
+                    Level = LogLevelSwitch.Level
                 };
             }
             else

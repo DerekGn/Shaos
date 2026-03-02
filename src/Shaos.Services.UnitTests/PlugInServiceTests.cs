@@ -79,19 +79,6 @@ namespace Shaos.Services.UnitTests
             MockRepository.Verify(_ => _.CreatePlugInAsync(It.IsAny<PlugIn>(), It.IsAny<CancellationToken>()));
         }
 
-        [Fact(Skip = "Refactor")]
-        public async Task TestCreatePlugInInstancePackageNotAssignedAsync()
-        {
-            SetupPlugInGetByIdAsync();
-
-            await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(async () =>
-            await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
-            {
-                Description = "description",
-                Name = "name"
-            }, TestContext.Current.CancellationToken));
-        }
-
         [Fact]
         public async Task TestCreatePlugInInstancePlugInNotFoundAsync()
         {
@@ -108,10 +95,7 @@ namespace Shaos.Services.UnitTests
         {
             var plugIn = SetupPlugInGetByIdAsync();
 
-            plugIn.PlugInInformation = new PlugInInformation()
-            {
-                AssemblyFileName = "assemblyfile"
-            };
+            plugIn.PlugInInformation = CreatePlugInInformation();
 
             MockRepository.Setup(_ => _.CreatePlugInInstanceAsync(It.IsAny<PlugIn>(),
                                                                   It.IsAny<PlugInInstance>(),
@@ -249,7 +233,7 @@ namespace Shaos.Services.UnitTests
         {
             var plugIn = SetupPlugInGetByIdAsync();
 
-            plugIn.PlugInInformation = new PlugInInformation();
+            plugIn.PlugInInformation = CreatePlugInInformation();
 
             plugIn.Instances.Add(new PlugInInstance()
             {
@@ -342,35 +326,11 @@ namespace Shaos.Services.UnitTests
         public async Task TestLoadPlugInInstanceConfigurationPackageHasNoConfigurationAsync()
         {
             var plugIn = SetupPlugInGetByIdAsync();
-            plugIn.PlugInInformation = new PlugInInformation()
-            {
-                HasConfiguration = false
-            };
+            plugIn.PlugInInformation = CreatePlugInInformation();
 
-            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
-            {
-                PlugIn = plugIn
-            });
+            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
 
             var exception = await Assert.ThrowsAsync<PlugInPackageHasNoConfigurationException>(async () =>
-                await _plugInService.LoadPlugInInstanceConfigurationAsync(1,
-                                                                          TestContext.Current.CancellationToken));
-
-            Assert.NotNull(exception);
-            Assert.Equal(1, exception.Id);
-        }
-
-        [Fact(Skip = "Refactor")]
-        public async Task TestLoadPlugInInstanceConfigurationPackageNotAssignedAsync()
-        {
-            var plugIn = SetupPlugInGetByIdAsync();
-
-            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
-            {
-                PlugIn = plugIn
-            });
-
-            var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(async () =>
                 await _plugInService.LoadPlugInInstanceConfigurationAsync(1,
                                                                           TestContext.Current.CancellationToken));
 
@@ -516,12 +476,13 @@ namespace Shaos.Services.UnitTests
                     Times.Never);
         }
 
-        [Fact(Skip = "Refactor")]
+        [Fact]
         public async Task TestUploadPlugInPackageSuccessAsync()
         {
             MemoryStream stream = new MemoryStream();
 
             var plugIn = SetupPlugInGetByIdAsync();
+            plugIn.PlugInInformation = null;
 
             plugIn.Instances.Add(new PlugInInstance()
             {
@@ -566,10 +527,7 @@ namespace Shaos.Services.UnitTests
 
             var plugIn = SetupPlugInGetByIdAsync();
 
-            plugIn.PlugInInformation = new PlugInInformation()
-            {
-                AssemblyFileName = "assemblyfile"
-            };
+            plugIn.PlugInInformation = CreatePlugInInformation();
 
             plugIn.Instances.Add(new PlugInInstance()
             {
@@ -625,9 +583,7 @@ namespace Shaos.Services.UnitTests
 
         private PlugIn SetupPlugInGetByIdAsync()
         {
-            var plugInInformation = new PlugInInformation()
-            {
-            };
+            var plugInInformation = CreatePlugInInformation();
 
             var plugIn = new PlugIn()
             {

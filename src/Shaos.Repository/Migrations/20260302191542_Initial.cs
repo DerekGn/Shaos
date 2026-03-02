@@ -17,8 +17,8 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     Level = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -49,8 +49,8 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    AssemblyFileName = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
-                    AssemblyVersion = table.Column<string>(type: "TEXT", nullable: false),
+                    AssemblyFileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    AssemblyVersion = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     Directory = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
                     HasConfiguration = table.Column<bool>(type: "INTEGER", nullable: false),
                     HasLogger = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -78,7 +78,7 @@ namespace Shaos.Repository.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Configuration = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -123,7 +123,7 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
@@ -150,8 +150,7 @@ namespace Shaos.Repository.Migrations
                         name: "FK_BaseParameter_Devices_DeviceId",
                         column: x => x.DeviceId,
                         principalTable: "Devices",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

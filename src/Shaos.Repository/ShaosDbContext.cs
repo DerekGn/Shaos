@@ -74,7 +74,7 @@ namespace Shaos.Repository
         /// <inheritdoc/>>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PlugInEntityTypeConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(BaseParameterEntityTypeConfiguration).Assembly);
         }
     }
 }
