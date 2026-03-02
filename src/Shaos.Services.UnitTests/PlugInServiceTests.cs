@@ -79,19 +79,6 @@ namespace Shaos.Services.UnitTests
             MockRepository.Verify(_ => _.CreatePlugInAsync(It.IsAny<PlugIn>(), It.IsAny<CancellationToken>()));
         }
 
-        [Fact(Skip = "Refactor")]
-        public async Task TestCreatePlugInInstancePackageNotAssignedAsync()
-        {
-            SetupPlugInGetByIdAsync();
-
-            await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(async () =>
-            await _plugInService.CreatePlugInInstanceAsync(1, new PlugInInstance()
-            {
-                Description = "description",
-                Name = "name"
-            }, TestContext.Current.CancellationToken));
-        }
-
         [Fact]
         public async Task TestCreatePlugInInstancePlugInNotFoundAsync()
         {
@@ -344,21 +331,6 @@ namespace Shaos.Services.UnitTests
             SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
 
             var exception = await Assert.ThrowsAsync<PlugInPackageHasNoConfigurationException>(async () =>
-                await _plugInService.LoadPlugInInstanceConfigurationAsync(1,
-                                                                          TestContext.Current.CancellationToken));
-
-            Assert.NotNull(exception);
-            Assert.Equal(1, exception.Id);
-        }
-
-        [Fact(Skip = "Refactor")]
-        public async Task TestLoadPlugInInstanceConfigurationPackageNotAssignedAsync()
-        {
-            var plugIn = SetupPlugInGetByIdAsync();
-
-            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
-
-            var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(async () =>
                 await _plugInService.LoadPlugInInstanceConfigurationAsync(1,
                                                                           TestContext.Current.CancellationToken));
 
