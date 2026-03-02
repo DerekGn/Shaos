@@ -445,9 +445,10 @@ namespace Shaos.Services
                 {
                     AssemblyFileName = assemblyFileName,
                     AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString(),
-                    PackageFileName = packagFileName,
+                    Directory = plugInTypeInformation.Directory,
                     HasConfiguration = plugInTypeInformation.HasConfiguration,
-                    HasLogger = plugInTypeInformation.HasLogger
+                    HasLogger = plugInTypeInformation.HasLogger,
+                    PackageFileName = packagFileName
                 };
 
                 await _repository.CreatePlugInInformationAsync(plugIn,

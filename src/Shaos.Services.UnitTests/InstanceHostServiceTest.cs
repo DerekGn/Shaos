@@ -104,13 +104,10 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                PlugInInformation = new PlugInInformation()
+                PlugInInformation = CreatePlugInInformation()
             };
 
-            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
-            {
-                PlugIn = plugIn
-            });
+            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
 
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotConfiguredException>(
                 async () => await _instanceHostService.LoadInstanceConfigurationAsync(1,
@@ -127,17 +124,14 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                PlugInInformation = new PlugInInformation()
+                PlugInInformation = CreatePlugInInformation()
             };
 
             _mockInstanceHost
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
                 .Returns(true);
 
-            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
-            {
-                PlugIn = plugIn
-            });
+            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
 
             SetupInstanceLoadContext();
 
@@ -168,10 +162,7 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
                 .Returns(true);
 
-            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
-            {
-                PlugIn = plugIn
-            });
+            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
 
             var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(
                 async () => await _instanceHostService.StartInstanceAsync(1,
@@ -204,19 +195,10 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                PlugInInformation = new PlugInInformation()
-                {
-                    AssemblyFileName = "AssemblyFile",
-                    HasConfiguration = true
-                }
+                PlugInInformation = CreatePlugInInformation(true)
             };
 
-            var plugInInstance = new PlugInInstance()
-            {
-                Id = 1,
-                Enabled = true,
-                Configuration = configurationValue
-            };
+            var plugInInstance = CreatePlugInInstance(plugIn);
 
 #warning TODO
             //await TestStartInstance(plugIn, plugInInstance);
@@ -234,18 +216,10 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                PlugInInformation = new PlugInInformation()
-                {
-                    AssemblyFileName = "AssemblyFile",
-                    HasConfiguration = true
-                }
+                PlugInInformation = CreatePlugInInformation(true)
             };
 
-            var plugInInstance = new PlugInInstance()
-            {
-                Id = 1,
-                Enabled = true
-            };
+            var plugInInstance = CreatePlugInInstance(plugIn);
 
             //await TestStartInstance(plugIn, plugInInstance);
 
@@ -262,18 +236,10 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
-                PlugInInformation = new PlugInInformation()
-                {
-                    AssemblyFileName = "AssemblyFile",
-                    HasConfiguration = true
-                }
+                PlugInInformation = CreatePlugInInformation(true)
             };
 
-            var plugInInstance = new PlugInInstance()
-            {
-                Id = 1,
-                Configuration = configurationValue
-            };
+            var plugInInstance = CreatePlugInInstance(plugIn, configurationValue);
 
             //await TestStartInstance(plugIn, plugInInstance);
 
@@ -289,16 +255,10 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
-                PlugInInformation = new PlugInInformation()
-                {
-                    HasConfiguration = true
-                }
+                PlugInInformation = CreatePlugInInformation(true)
             };
 
-            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
-            {
-                PlugIn = plugIn
-            });
+            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
 
             _mockInstanceHost
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
