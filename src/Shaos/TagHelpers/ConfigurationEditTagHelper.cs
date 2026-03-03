@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -31,7 +30,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace Shaos.TagHelpers
 {
     [HtmlTargetElement("config-edit", TagStructure = TagStructure.NormalOrSelfClosing)]
-    public class ConfigEditTagHelper(IHtmlGenerator generator) : TagHelper
+    public class ConfigurationEditTagHelper(IHtmlGenerator generator) : TagHelper
     {
         private const string DivTag = "div";
 
@@ -113,10 +112,9 @@ namespace Shaos.TagHelpers
                 { "value", modelExpression.Model.ToString()?.ToLower()}
             };
 
-            var tagContext = new TagHelperContext(
-                attributes,
-                new Dictionary<object, object>(),
-                Guid.NewGuid().ToString());
+            var tagContext = new TagHelperContext(attributes,
+                                                  new Dictionary<object, object>(),
+                                                  Guid.NewGuid().ToString());
 
             tagHelper.Init(tagContext);
             tagHelper.Process(tagContext, tagOutput);
@@ -124,7 +122,7 @@ namespace Shaos.TagHelpers
             return tagOutput;
         }
 
-        private IHtmlContent GenerateValidation(ModelExpression modelExpression)
+        private TagBuilder GenerateValidation(ModelExpression modelExpression)
         {
             return _generator.GenerateValidationMessage(
                 ViewContext,

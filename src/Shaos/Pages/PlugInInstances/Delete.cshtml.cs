@@ -25,15 +25,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Shaos.Repository;
 using Shaos.Repository.Models;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class DeleteModel : PageModel
     {
-        private readonly Repository.ShaosDbContext _context;
+        private readonly ShaosDbContext _context;
 
-        public DeleteModel(Repository.ShaosDbContext context)
+        public DeleteModel(ShaosDbContext context)
         {
             _context = context;
         }

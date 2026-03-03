@@ -138,13 +138,8 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-<<<<<<<< HEAD:src/Shaos.Repository/Migrations/20260225203539_Initial.cs
                     DashboardParameterId = table.Column<int>(type: "INTEGER", nullable: true),
-                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
-========
                     DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
->>>>>>>> 2881e7dd81c0ae901b6f12bc0f18e0a065157a25:src/Shaos.Repository/Migrations/20260302191542_Initial.cs
                     InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: false),

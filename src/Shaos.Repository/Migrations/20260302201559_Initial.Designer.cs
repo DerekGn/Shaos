@@ -11,11 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-<<<<<<<< HEAD:src/Shaos.Repository/Migrations/20260225203539_Initial.Designer.cs
-    [Migration("20260225203539_Initial")]
-========
-    [Migration("20260302191542_Initial")]
->>>>>>>> 2881e7dd81c0ae901b6f12bc0f18e0a065157a25:src/Shaos.Repository/Migrations/20260302191542_Initial.Designer.cs
+    [Migration("20260302201559_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -23,7 +19,6 @@ namespace Shaos.Repository.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
-<<<<<<<< HEAD:src/Shaos.Repository/Migrations/20260225203539_Initial.Designer.cs
 
             modelBuilder.Entity("Shaos.Repository.Models.DashboardParameter", b =>
                 {
@@ -46,8 +41,6 @@ namespace Shaos.Repository.Migrations
 
                     b.ToTable("DashboardParameters");
                 });
-========
->>>>>>>> 2881e7dd81c0ae901b6f12bc0f18e0a065157a25:src/Shaos.Repository/Migrations/20260302191542_Initial.Designer.cs
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
                 {
@@ -88,14 +81,10 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
-<<<<<<<< HEAD:src/Shaos.Repository/Migrations/20260225203539_Initial.Designer.cs
                     b.Property<int?>("DashboardParameterId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DeviceId")
-========
                     b.Property<int?>("DeviceId")
->>>>>>>> 2881e7dd81c0ae901b6f12bc0f18e0a065157a25:src/Shaos.Repository/Migrations/20260302191542_Initial.Designer.cs
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Discriminator")
