@@ -27,12 +27,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace Shaos.TagHelpers
 {
     // You may need to install the Microsoft.AspNetCore.Razor.Runtime package into your project
-    [HtmlTargetElement("tag-name")]
+    [HtmlTargetElement("dashboard-parameters")]
     public class DashboardParametersTagHelper : TagHelper
     {
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override void Process(TagHelperContext context,
+                                     TagHelperOutput output)
         {
-
         }
     }
 }
