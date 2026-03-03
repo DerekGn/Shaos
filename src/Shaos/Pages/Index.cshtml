@@ -5,14 +5,4 @@
     int rowCount = Model.DashboardParameters.Count / Model.Columns;
 }
 
-<div class="container-fluid">
-    @for (int i = 0; i < rowCount; i++)
-    {
-        <div class="row">
-            @for (int j = 0; j < Model.Columns; j++)
-            {
-                <div class="col">@Model.DashboardParameters[j].Label</div>
-            }
-        </div>
-    }
-</div>
+<dashboard-parameters asp-for="@Model.DashboardParameters"></dashboard-parameters>

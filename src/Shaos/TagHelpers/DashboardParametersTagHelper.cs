@@ -22,17 +22,53 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Shaos.Repository.Models;
 
 namespace Shaos.TagHelpers
 {
-    // You may need to install the Microsoft.AspNetCore.Razor.Runtime package into your project
-    [HtmlTargetElement("dashboard-parameters")]
+    [HtmlTargetElement("dashboard-parameters", TagStructure = TagStructure.NormalOrSelfClosing)]
     public class DashboardParametersTagHelper : TagHelper
     {
+        private readonly IConfiguration _configuration;
+        private readonly IHtmlGenerator _generator;
+        private readonly ILogger<DashboardParametersTagHelper> _logger;
+
+        public DashboardParametersTagHelper(ILogger<DashboardParametersTagHelper> logger,
+                                            IConfiguration configuration,
+                                            IHtmlGenerator generator)
+        {
+            _generator = generator;
+            _logger = logger;
+            _configuration = configuration;
+        }
+
+        [HtmlAttributeName("asp-for")]
+        public ModelExpression For { get; set; }
+
         public override void Process(TagHelperContext context,
                                      TagHelperOutput output)
         {
+            CreateDivContainer(output);
+
+            if (For.Model is IList<DashboardParameter> parameters)
+            {
+                foreach (var parameter in parameters)
+                {
+                }
+            }
+            else
+            {
+                _logger.LogWarning($"Model is not of type. {nameof(IList<DashboardParameter>)}");
+            }
+        }
+
+        private static void CreateDivContainer(TagHelperOutput output)
+        {
+            output.Attributes.Add("class", "container-fluid");
+            output.TagName = "div";
+            output.TagMode = TagMode.StartTagAndEndTag;
         }
     }
 }
