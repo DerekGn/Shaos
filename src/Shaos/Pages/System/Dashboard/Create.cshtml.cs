@@ -22,22 +22,42 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
+using Shaos.Repository.Models;
 
-namespace Shaos.TagHelpers
+namespace Shaos.Pages.System.Dashboard
 {
-    [HtmlTargetElement(Attributes = nameof(Condition))]
-    public class ConditionTagHelper : TagHelper
+    public class CreateModel : PageModel
     {
-        public bool Condition { get; set; }
+        private readonly ShaosDbContext _context;
 
-        public override void Process(TagHelperContext context,
-                                     TagHelperOutput output)
+        public CreateModel(ShaosDbContext context)
         {
-            if (!Condition)
+            _context = context;
+        }
+
+        public IActionResult OnGet()
+        {
+            return Page();
+        }
+
+        [BindProperty]
+        public DashboardItem DashboardItem { get; set; } = default!;
+
+        // For more information, see https://aka.ms/RazorPagesCRUD.
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
             {
-                output.SuppressOutput();
+                return Page();
             }
+
+            _context.DashboardItems.Add(DashboardItem);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
         }
     }
 }

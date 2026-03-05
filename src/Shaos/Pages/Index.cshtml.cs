@@ -23,10 +23,33 @@
 */
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Shaos.Repository;
+using Shaos.Repository.Models;
 
 namespace Shaos.Pages
 {
     public class IndexModel : PageModel
     {
+        private readonly IConfiguration _configuration;
+        private readonly ShaosDbContext _context;
+
+        public IndexModel(IConfiguration configuration,
+                          ShaosDbContext context)
+        {
+            _configuration = configuration;
+            _context = context;
+        }
+
+        public int Columns { get; set; } = default!;
+
+        public IList<DashboardItem> DashboardItems { get; set; } = default!;
+
+        public async Task OnGetAsync()
+        {
+            Columns = _configuration.GetValue("DashboardColumns", 5);
+
+            DashboardItems = await _context.DashboardItems.ToListAsync();
+        }
     }
 }

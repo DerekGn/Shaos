@@ -28,52 +28,69 @@ using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.Pages.System.Dashboard
 {
-    public class DeleteModel : PageModel
+    public class EditModel : PageModel
     {
         private readonly ShaosDbContext _context;
 
-        public DeleteModel(ShaosDbContext context)
+        public EditModel(ShaosDbContext context)
         {
             _context = context;
         }
 
         [BindProperty]
-        public PlugInInstance PlugInInstance { get; set; } = default!;
+        public DashboardItem DashboardItem { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id,
-                                                    CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            var plugininstance = await _context.PlugInInstances.FirstOrDefaultAsync(m => m.Id == id, cancellationToken: cancellationToken);
-
-            if (plugininstance == null)
+            if (id == null)
             {
-                ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
-            }
-            else
-            {
-                PlugInInstance = plugininstance;
+                return NotFound();
             }
 
+            var dashboardItem =  await _context.DashboardItems.FirstOrDefaultAsync(m => m.Id == id);
+            if (dashboardItem == null)
+            {
+                return NotFound();
+            }
+            DashboardItem = dashboardItem;
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more information, see https://aka.ms/RazorPagesCRUD.
+        public async Task<IActionResult> OnPostAsync()
         {
-            var plugininstance = await _context.PlugInInstances.FindAsync(id);
-            if (plugininstance == null)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
+                return Page();
             }
-            else
+
+            _context.Attach(DashboardItem).State = EntityState.Modified;
+
+            try
             {
-                PlugInInstance = plugininstance;
-                _context.PlugInInstances.Remove(PlugInInstance);
                 await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DashboardItemExists(DashboardItem.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
             return RedirectToPage("./Index");
+        }
+
+        private bool DashboardItemExists(int id)
+        {
+            return _context.DashboardItems.Any(e => e.Id == id);
         }
     }
 }

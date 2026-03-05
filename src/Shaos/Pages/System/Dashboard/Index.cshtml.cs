@@ -22,41 +22,27 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices.Parameters
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Shaos.Repository;
+using Shaos.Repository.Models;
+
+namespace Shaos.Pages.System.Dashboard
 {
-    /// <summary>
-    /// Represents a boolean parameter
-    /// </summary>
-    public class BoolParameter : BaseParameter
+    public class IndexModel : PageModel
     {
-        /// <summary>
-        /// The last boolean value
-        /// </summary>
-        public bool Value { get; set; }
+        private readonly ShaosDbContext _context;
 
-        /// <summary>
-        /// The set of <see cref="BoolParameterValue"/> previous values
-        /// </summary>
-        public List<BoolParameterValue> Values { get; set; } = [];
-
-        /// <summary>
-        /// Update the value and add a new value entry
-        /// </summary>
-        /// <param name="value">The updated value</param>
-        /// <param name="timestamp">The timestamp</param>
-        public void UpdateValue(bool value,
-                                DateTime timestamp)
+        public IndexModel(ShaosDbContext context)
         {
-            Value = value;
-            TimeStamp = timestamp;
+            _context = context;
+        }
 
-            Values.Add(new BoolParameterValue()
-            {
-                Parameter = this,
-                ParameterId = Id,
-                TimeStamp = timestamp,
-                Value = value
-            });
+        public IList<DashboardItem> DashboardItem { get;set; } = default!;
+
+        public async Task OnGetAsync()
+        {
+            DashboardItem = await _context.DashboardItems.ToListAsync();
         }
     }
 }

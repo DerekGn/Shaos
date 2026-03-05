@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -23,36 +23,57 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Shaos.Repository.Exceptions;
-using Shaos.Services;
-using Shaos.Services.IO;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Shaos.Repository;
+using Shaos.Repository.Models;
 
-namespace Shaos.Pages.PlugIns
+namespace Shaos.Pages.System.Dashboard
 {
-    public class CreatePackageInformationModel : BasePackageInformationModel
+    public class DeleteModel : PageModel
     {
-        public CreatePackageInformationModel(IPlugInService plugInService,
-                                             IFileStoreService fileStoreService) : base(fileStoreService, plugInService)
+        private readonly ShaosDbContext _context;
+
+        public DeleteModel(ShaosDbContext context)
         {
+            _context = context;
         }
 
-        public async Task<IActionResult> OnPostSaveAsync(string packageFileName,
-                                                         string plugInDirectory,
-                                                         string plugInAssemblyFile,
-                                                         CancellationToken cancellationToken = default)
+        [BindProperty]
+        public DashboardItem DashboardItem { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            try
+            if (id == null)
             {
-                await PlugInService.CreatePlugInAsync(packageFileName,
-                                                      plugInDirectory,
-                                                      plugInAssemblyFile,
-                                                      cancellationToken);
+                return NotFound();
             }
-            catch (NameExistsException ex)
+
+            var dashboardItem = await _context.DashboardItems.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (dashboardItem is not null)
             {
-                ModelState.AddModelError(string.Empty, $"PlugIn Name: [{ex.Name}] already exists");
+                DashboardItem = dashboardItem;
 
                 return Page();
+            }
+
+            return NotFound();
+        }
+
+        public async Task<IActionResult> OnPostAsync(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var dashboardItem = await _context.DashboardItems.FindAsync(id);
+            if (dashboardItem != null)
+            {
+                DashboardItem = dashboardItem;
+                _context.DashboardItems.Remove(DashboardItem);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

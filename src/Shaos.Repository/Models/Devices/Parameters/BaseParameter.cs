@@ -32,6 +32,16 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public abstract class BaseParameter : BaseEntity
     {
         /// <summary>
+        /// The associated <see cref="DashboardItem"/>
+        /// </summary>
+        public DashboardItem? DashboardItem { get; set; }
+
+        /// <summary>
+        /// The associated <see cref="DashboardItem"/> identifier
+        /// </summary>
+        public int? DashboardItemId { get; set; }
+
+        /// <summary>
         /// The parent <see cref="Device"/>
         /// </summary>
         public Device? Device { get; set; }
@@ -42,14 +52,14 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public int? DeviceId { get; set; }
 
         /// <summary>
+        /// The <see cref="BaseParameter"/> identifier.
+        /// </summary>
+        public int InstanceId { get; set; }
+
+        /// <summary>
         /// The <see cref="BaseParameter"/> name
         /// </summary>
         public required string Name { get; set; }
-
-        /// <summary>
-        /// The <see cref="Sdk.Devices.Parameters.BaseParameter"/> identifier.
-        /// </summary>
-        public int InstanceId { get; set; }
 
         /// <summary>
         /// The <see cref="ParameterType"/>
@@ -57,8 +67,13 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public ParameterType? ParameterType { get; set; }
 
         /// <summary>
+        /// The update value time stamp
+        /// </summary>
+        public DateTime TimeStamp { get; set; }
+
+        /// <summary>
         /// The <see cref="BaseParameter"/> units
         /// </summary>
-        public required string Units { get; set; }
+        public string? Units { get; set; }
     }
 }

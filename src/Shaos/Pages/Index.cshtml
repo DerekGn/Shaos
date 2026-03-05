@@ -1,5 +1,110 @@
 ﻿@page
-@model IndexModel
+@model Shaos.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Dashboard";
+    int rowCount = Model.DashboardItems.Count / Model.Columns;
 }
+
+<dashboard-items asp-for="@Model.DashboardItems"></dashboard-items>
+
+@* <div class="container-fluid my-1 border">
+    <div class="row my-1 border">
+        <div class="container-fluid my-1 border">
+            <div class="col my-1 border">Parameter</div>
+            <div class="col my-1 border">
+                <button type="button" class="btn btn-primary active">Primary</button>
+            </div>
+        </div>
+        <div class="container-fluid">
+        </div>
+        <div class="container-fluid">
+
+        </div>
+    </div>
+</div> *@
+
+<div class="container-fluid p-auto">
+    <div class="container-fluid p-auto border">
+        <div class="row p-auto">
+            <div class="col">
+                <div class="col border">Parameter Label</div>
+                <div class="col border">Parameter Value</div>
+                <div class="col border">Parameter Date</div>
+            </div>
+            <div class="col position-relative">
+                <div class="col border position-absolute top-50 start-50 translate-middle">
+                    <button type="button" class="btn btn-primary active">Primary</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid p-auto border">
+        <div class="row p-auto">
+            <div class="col">
+                <div class="col border">Parameter Label</div>
+                <div class="col border">Parameter Value</div>
+                <div class="col border">Parameter Date</div>
+            </div>
+            <div class="col position-relative">
+                <div class="col border position-absolute top-50 start-50 translate-middle">
+                    <button type="button" class="btn btn-primary active">Primary</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@* <div class="row p-0 border">
+    <div class="col p-0 border">
+        <div class="container p-0 border">
+            <div class="row p-0">
+                <div class="col">
+                    <div class="col border">Parameter Label</div>
+                    <div class="col border">Parameter Value</div>
+                    <div class="col border">Parameter Date</div>
+                </div>
+                <div class="col position-relative">
+                    <div class="col border position-absolute top-50 start-50 translate-middle">
+                        <button type="button" class="btn btn-primary active ">Primary</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col p-0 border">
+        <div class="container p-0 border">
+            <div class="row p-0">
+                <div class="col">
+                    <div class="col border">Parameter Label</div>
+                    <div class="col border">Parameter Value</div>
+                    <div class="col border">Parameter Date</div>
+                </div>
+                <div class="col position-relative">
+                    <div class="col border position-absolute top-50 start-50 translate-middle">
+                        <button type="button" class="btn btn-primary active ">Primary</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row p-0 border">
+    <div class="col p-0 border">
+        <div class="container p-0 border">
+            <div class="row p-0">
+                <div class="col">
+                    <div class="col border">Parameter Label</div>
+                    <div class="col border">Parameter Value</div>
+                    <div class="col border">Parameter Date</div>
+                </div>
+                <div class="col position-relative">
+                    <div class="col border position-absolute top-50 start-50 translate-middle">
+                        <button type="button" class="btn btn-primary active ">Primary</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> *@

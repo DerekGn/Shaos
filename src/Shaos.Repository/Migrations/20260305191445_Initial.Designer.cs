@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20260302191542_Initial")]
+    [Migration("20260305191445_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -19,6 +19,28 @@ namespace Shaos.Repository.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
+
+            modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DashboardItems");
+                });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
                 {
@@ -59,6 +81,9 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("DashboardItemId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("DeviceId")
                         .HasColumnType("INTEGER");
 
@@ -78,8 +103,10 @@ namespace Shaos.Repository.Migrations
                     b.Property<int>("ParameterType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Units")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
@@ -88,9 +115,12 @@ namespace Shaos.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DashboardItemId")
+                        .IsUnique();
+
                     b.HasIndex("DeviceId");
 
-                    b.ToTable("BaseParameter");
+                    b.ToTable("BaseParameters");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("BaseParameter");
 
@@ -113,7 +143,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BaseParameterValue");
+                    b.ToTable("BaseParameterValues");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("BaseParameterValue");
 
@@ -296,7 +326,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<float>("Value")
                         .HasColumnType("REAL");
 
-                    b.ToTable("BaseParameter", t =>
+                    b.ToTable("BaseParameters", t =>
                         {
                             t.Property("Value")
                                 .HasColumnName("FloatParameter_Value");
@@ -318,7 +348,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<int>("Value")
                         .HasColumnType("INTEGER");
 
-                    b.ToTable("BaseParameter", t =>
+                    b.ToTable("BaseParameters", t =>
                         {
                             t.Property("Max")
                                 .HasColumnName("IntParameter_Max");
@@ -342,7 +372,7 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
-                    b.ToTable("BaseParameter", t =>
+                    b.ToTable("BaseParameters", t =>
                         {
                             t.Property("Value")
                                 .HasColumnName("StringParameter_Value");
@@ -364,7 +394,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<uint>("Value")
                         .HasColumnType("INTEGER");
 
-                    b.ToTable("BaseParameter", t =>
+                    b.ToTable("BaseParameters", t =>
                         {
                             t.Property("Max")
                                 .HasColumnName("UIntParameter_Max");
@@ -406,7 +436,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasIndex("ParameterId");
 
-                    b.ToTable("BaseParameterValue", t =>
+                    b.ToTable("BaseParameterValues", t =>
                         {
                             t.Property("ParameterId")
                                 .HasColumnName("FloatParameterValue_ParameterId");
@@ -430,7 +460,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasIndex("ParameterId");
 
-                    b.ToTable("BaseParameterValue", t =>
+                    b.ToTable("BaseParameterValues", t =>
                         {
                             t.Property("ParameterId")
                                 .HasColumnName("IntParameterValue_ParameterId");
@@ -454,7 +484,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasIndex("ParameterId");
 
-                    b.ToTable("BaseParameterValue", t =>
+                    b.ToTable("BaseParameterValues", t =>
                         {
                             t.Property("ParameterId")
                                 .HasColumnName("StringParameterValue_ParameterId");
@@ -478,7 +508,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasIndex("ParameterId");
 
-                    b.ToTable("BaseParameterValue", t =>
+                    b.ToTable("BaseParameterValues", t =>
                         {
                             t.Property("ParameterId")
                                 .HasColumnName("UIntParameterValue_ParameterId");
@@ -501,9 +531,16 @@ namespace Shaos.Repository.Migrations
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BaseParameter", b =>
                 {
+                    b.HasOne("Shaos.Repository.Models.DashboardItem", "DashboardItem")
+                        .WithOne("Parameter")
+                        .HasForeignKey("Shaos.Repository.Models.Devices.Parameters.BaseParameter", "DashboardItemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
                         .WithMany("Parameters")
                         .HasForeignKey("DeviceId");
+
+                    b.Navigation("DashboardItem");
 
                     b.Navigation("Device");
                 });
@@ -580,6 +617,11 @@ namespace Shaos.Repository.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Parameter");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
+                {
                     b.Navigation("Parameter");
                 });
 
