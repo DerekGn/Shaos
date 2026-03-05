@@ -3,9 +3,9 @@
 namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// A dashboard parameter
+    /// A dashboard item
     /// </summary>
-    public class DashboardParameter : BaseEntity
+    public class DashboardItem : BaseEntity
     {
         /// <summary>
         /// The parameter dashboard label

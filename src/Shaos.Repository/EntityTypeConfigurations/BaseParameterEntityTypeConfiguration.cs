@@ -53,7 +53,7 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .HasMaxLength(20);
 
             builder
-                .HasOne(_ => _.DashboardParameter)
+                .HasOne(_ => _.DashboardItem)
                 .WithOne(_ => _.Parameter)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);

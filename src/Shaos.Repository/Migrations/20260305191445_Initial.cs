@@ -12,7 +12,7 @@ namespace Shaos.Repository.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DashboardParameters",
+                name: "DashboardItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -23,7 +23,7 @@ namespace Shaos.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DashboardParameters", x => x.Id);
+                    table.PrimaryKey("PK_DashboardItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -138,11 +138,12 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DashboardParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    DashboardItemId = table.Column<int>(type: "INTEGER", nullable: true),
                     DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
                     InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
                     Value = table.Column<bool>(type: "INTEGER", nullable: true),
@@ -163,9 +164,9 @@ namespace Shaos.Repository.Migrations
                 {
                     table.PrimaryKey("PK_BaseParameters", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BaseParameters_DashboardParameters_DashboardParameterId",
-                        column: x => x.DashboardParameterId,
-                        principalTable: "DashboardParameters",
+                        name: "FK_BaseParameters_DashboardItems_DashboardItemId",
+                        column: x => x.DashboardItemId,
+                        principalTable: "DashboardItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -230,9 +231,9 @@ namespace Shaos.Repository.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseParameters_DashboardParameterId",
+                name: "IX_BaseParameters_DashboardItemId",
                 table: "BaseParameters",
-                column: "DashboardParameterId",
+                column: "DashboardItemId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -316,7 +317,7 @@ namespace Shaos.Repository.Migrations
                 name: "BaseParameters");
 
             migrationBuilder.DropTable(
-                name: "DashboardParameters");
+                name: "DashboardItems");
 
             migrationBuilder.DropTable(
                 name: "Devices");

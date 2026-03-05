@@ -52,9 +52,9 @@ namespace Shaos.Repository
         public DbSet<BaseParameterValue> BaseParameterValues { get; set; }
 
         /// <summary>
-        /// The set of <see cref="DashboardParameter"/> instances
+        /// The set of <see cref="DashboardItem"/> instances
         /// </summary>
-        public DbSet<DashboardParameter> DashboardParameters { get; set; }
+        public DbSet<DashboardItem> DashboardItems { get; set; }
 
         /// <summary>
         /// The set of <see cref="Device"/> instances

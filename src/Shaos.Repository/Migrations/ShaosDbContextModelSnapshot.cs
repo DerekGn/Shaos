@@ -17,7 +17,7 @@ namespace Shaos.Repository.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
 
-            modelBuilder.Entity("Shaos.Repository.Models.DashboardParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,7 +36,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DashboardParameters");
+                    b.ToTable("DashboardItems");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
@@ -78,7 +78,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("DashboardParameterId")
+                    b.Property<int?>("DashboardItemId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("DeviceId")
@@ -100,6 +100,9 @@ namespace Shaos.Repository.Migrations
                     b.Property<int>("ParameterType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Units")
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
@@ -109,7 +112,7 @@ namespace Shaos.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DashboardParameterId")
+                    b.HasIndex("DashboardItemId")
                         .IsUnique();
 
                     b.HasIndex("DeviceId");
@@ -525,16 +528,16 @@ namespace Shaos.Repository.Migrations
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BaseParameter", b =>
                 {
-                    b.HasOne("Shaos.Repository.Models.DashboardParameter", "DashboardParameter")
+                    b.HasOne("Shaos.Repository.Models.DashboardItem", "DashboardItem")
                         .WithOne("Parameter")
-                        .HasForeignKey("Shaos.Repository.Models.Devices.Parameters.BaseParameter", "DashboardParameterId")
+                        .HasForeignKey("Shaos.Repository.Models.Devices.Parameters.BaseParameter", "DashboardItemId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
                         .WithMany("Parameters")
                         .HasForeignKey("DeviceId");
 
-                    b.Navigation("DashboardParameter");
+                    b.Navigation("DashboardItem");
 
                     b.Navigation("Device");
                 });
@@ -614,7 +617,7 @@ namespace Shaos.Repository.Migrations
                     b.Navigation("Parameter");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.DashboardParameter", b =>
+            modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
                 {
                     b.Navigation("Parameter");
                 });

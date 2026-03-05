@@ -40,7 +40,7 @@ namespace Shaos.Pages.System.Dashboard
         }
 
         [BindProperty]
-        public DashboardParameter DashboardParameter { get; set; } = default!;
+        public DashboardItem DashboardItem { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -49,12 +49,12 @@ namespace Shaos.Pages.System.Dashboard
                 return NotFound();
             }
 
-            var dashboardparameter =  await _context.DashboardParameters.FirstOrDefaultAsync(m => m.Id == id);
-            if (dashboardparameter == null)
+            var dashboardItem =  await _context.DashboardItems.FirstOrDefaultAsync(m => m.Id == id);
+            if (dashboardItem == null)
             {
                 return NotFound();
             }
-            DashboardParameter = dashboardparameter;
+            DashboardItem = dashboardItem;
             return Page();
         }
 
@@ -67,7 +67,7 @@ namespace Shaos.Pages.System.Dashboard
                 return Page();
             }
 
-            _context.Attach(DashboardParameter).State = EntityState.Modified;
+            _context.Attach(DashboardItem).State = EntityState.Modified;
 
             try
             {
@@ -75,7 +75,7 @@ namespace Shaos.Pages.System.Dashboard
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DashboardParameterExists(DashboardParameter.Id))
+                if (!DashboardItemExists(DashboardItem.Id))
                 {
                     return NotFound();
                 }
@@ -88,9 +88,9 @@ namespace Shaos.Pages.System.Dashboard
             return RedirectToPage("./Index");
         }
 
-        private bool DashboardParameterExists(int id)
+        private bool DashboardItemExists(int id)
         {
-            return _context.DashboardParameters.Any(e => e.Id == id);
+            return _context.DashboardItems.Any(e => e.Id == id);
         }
     }
 }

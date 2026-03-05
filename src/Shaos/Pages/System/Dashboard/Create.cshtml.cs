@@ -44,7 +44,7 @@ namespace Shaos.Pages.System.Dashboard
         }
 
         [BindProperty]
-        public DashboardParameter DashboardParameter { get; set; } = default!;
+        public DashboardItem DashboardItem { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
@@ -54,7 +54,7 @@ namespace Shaos.Pages.System.Dashboard
                 return Page();
             }
 
-            _context.DashboardParameters.Add(DashboardParameter);
+            _context.DashboardItems.Add(DashboardItem);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

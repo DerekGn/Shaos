@@ -1,17 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Extensions;
 using Shaos.Repository.Models;
 
 namespace Shaos.Repository.EntityTypeConfigurations
 {
     /// <summary>
-    /// The <see cref="DashboardParameter"/> EF configuration
+    /// The <see cref="DashboardItem"/> EF configuration
     /// </summary>
-    public class DashboardParameterEntityTypeConfiguration : IEntityTypeConfiguration<DashboardParameter>
+    public class DashboardItemEntityTypeConfiguration : IEntityTypeConfiguration<DashboardItem>
     {
         /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<DashboardParameter> builder)
+        public void Configure(EntityTypeBuilder<DashboardItem> builder)
         {
             builder
                 .Property(_ => _.Id);

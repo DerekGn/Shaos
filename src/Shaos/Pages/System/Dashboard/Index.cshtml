@@ -21,19 +21,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.DashboardParameter[0].Label)
+                @Html.DisplayNameFor(model => model.DashboardItem[0].Label)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DashboardParameter[0].CreatedDate)
+                @Html.DisplayNameFor(model => model.DashboardItem[0].CreatedDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DashboardParameter[0].UpdatedDate)
+                @Html.DisplayNameFor(model => model.DashboardItem[0].UpdatedDate)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.DashboardParameter)
+        @foreach (var item in Model.DashboardItem)
         {
             <tr>
                 <td>

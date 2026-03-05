@@ -38,11 +38,11 @@ namespace Shaos.Pages.System.Dashboard
             _context = context;
         }
 
-        public IList<DashboardParameter> DashboardParameter { get;set; } = default!;
+        public IList<DashboardItem> DashboardItem { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            DashboardParameter = await _context.DashboardParameters.ToListAsync();
+            DashboardItem = await _context.DashboardItems.ToListAsync();
         }
     }
 }

@@ -43,13 +43,13 @@ namespace Shaos.Pages
 
         public int Columns { get; set; } = default!;
 
-        public IList<DashboardParameter> DashboardParameters { get; set; } = default!;
+        public IList<DashboardItem> DashboardItems { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
             Columns = _configuration.GetValue("DashboardColumns", 5);
 
-            DashboardParameters = await _context.DashboardParameters.ToListAsync();
+            DashboardItems = await _context.DashboardItems.ToListAsync();
         }
     }
 }

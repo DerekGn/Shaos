@@ -40,7 +40,7 @@ namespace Shaos.Pages.System.Dashboard
         }
 
         [BindProperty]
-        public DashboardParameter DashboardParameter { get; set; } = default!;
+        public DashboardItem DashboardItem { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -49,11 +49,11 @@ namespace Shaos.Pages.System.Dashboard
                 return NotFound();
             }
 
-            var dashboardparameter = await _context.DashboardParameters.FirstOrDefaultAsync(m => m.Id == id);
+            var dashboardItem = await _context.DashboardItems.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (dashboardparameter is not null)
+            if (dashboardItem is not null)
             {
-                DashboardParameter = dashboardparameter;
+                DashboardItem = dashboardItem;
 
                 return Page();
             }
@@ -68,11 +68,11 @@ namespace Shaos.Pages.System.Dashboard
                 return NotFound();
             }
 
-            var dashboardparameter = await _context.DashboardParameters.FindAsync(id);
-            if (dashboardparameter != null)
+            var dashboardItem = await _context.DashboardItems.FindAsync(id);
+            if (dashboardItem != null)
             {
-                DashboardParameter = dashboardparameter;
-                _context.DashboardParameters.Remove(DashboardParameter);
+                DashboardItem = dashboardItem;
+                _context.DashboardItems.Remove(DashboardItem);
                 await _context.SaveChangesAsync();
             }
 
