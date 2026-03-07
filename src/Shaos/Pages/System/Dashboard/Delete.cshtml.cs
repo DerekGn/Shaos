@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
@@ -32,24 +31,26 @@ namespace Shaos.Pages.System.Dashboard
 {
     public class DeleteModel : PageModel
     {
-        private readonly ShaosDbContext _context;
+        private readonly IShaosRepository _repository;
 
-        public DeleteModel(ShaosDbContext context)
+        public DeleteModel(IShaosRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [BindProperty]
         public DashboardItem DashboardItem { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id,
+                                                    CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dashboardItem = await _context.DashboardItems.FirstOrDefaultAsync(m => m.Id == id);
+            var dashboardItem = await _repository.GetFirstOrDefaultAsync<DashboardItem>(_ => _.Id == id,
+                                                                                        cancellationToken: cancellationToken);
 
             if (dashboardItem is not null)
             {
@@ -61,20 +62,16 @@ namespace Shaos.Pages.System.Dashboard
             return NotFound();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int? id,
+                                                     CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dashboardItem = await _context.DashboardItems.FindAsync(id);
-            if (dashboardItem != null)
-            {
-                DashboardItem = dashboardItem;
-                _context.DashboardItems.Remove(DashboardItem);
-                await _context.SaveChangesAsync();
-            }
+            await _repository.DeleteAsync<DashboardItem>(id.Value,
+                                                         cancellationToken);
 
             return RedirectToPage("./Index");
         }

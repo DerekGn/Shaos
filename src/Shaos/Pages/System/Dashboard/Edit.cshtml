@@ -15,11 +15,11 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="DashboardItem.Label" class="control-label"></label>
-                <input asp-for="DashboardItem.Label" class="form-control" />
-                <span asp-validation-for="DashboardItem.Label" class="text-danger"></span>
+                <label asp-for="Item.Label" class="control-label"></label>
+                <input asp-for="Item.Label" class="form-control" />
+                <span asp-validation-for="Item.Label" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="DashboardItem.Id" />
+            <input type="hidden" asp-for="Item.Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-sm btn-success" />
                 <a asp-page="./Index" class="btn btn-sm btn-primary">Cancel</a>

@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Serilog.Events;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
@@ -52,15 +53,12 @@ namespace Shaos.Repository
                                CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
-        /// Create a new <see cref="PlugInInformation"/> instance
+        /// Attach a <see cref="EntityEntry{TEntity}"/> to the context
         /// </summary>
-        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="PlugInInformation"/></param>
-        /// <param name="plugInInformation">The <see cref="PlugInInformation"/> instance to associate the <see cref="PlugIn"/></param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>The <see cref="PlugInInformation"/> identifier</returns>
-        Task<int> CreatePlugInInformationAsync(PlugIn plugIn,
-                                               PlugInInformation plugInInformation,
-                                               CancellationToken cancellationToken = default);
+        /// <typeparam name="T">The <see cref="BaseEntity"/></typeparam>
+        /// <param name="item">The <see cref="BaseEntity"/> to attach</param>
+        /// <returns>A <see cref="EntityEntry{TEntity}"/></returns>
+        EntityEntry<T> Attach<T>(T item) where T : BaseEntity;
 
         /// <summary>
         /// Create a new <see cref="PlugIn"/> instance
@@ -72,6 +70,17 @@ namespace Shaos.Repository
         /// <exception cref="NameExistsException">Thrown if an existing <see cref="PlugIn"/> has the same name</exception>
         Task<int> CreatePlugInAsync(PlugIn plugIn,
                                     CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Create a new <see cref="PlugInInformation"/> instance
+        /// </summary>
+        /// <param name="plugIn">The <see cref="PlugIn"/> instance to associate the <see cref="PlugInInformation"/></param>
+        /// <param name="plugInInformation">The <see cref="PlugInInformation"/> instance to associate the <see cref="PlugIn"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The <see cref="PlugInInformation"/> identifier</returns>
+        Task<int> CreatePlugInInformationAsync(PlugIn plugIn,
+                                               PlugInInformation plugInInformation,
+                                               CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a new <see cref="PlugInInstance"/> instance
@@ -95,6 +104,18 @@ namespace Shaos.Repository
         /// <returns>The number of rows deleted</returns>
         Task DeleteAsync<T>(int id,
                             CancellationToken cancellationToken = default) where T : BaseEntity;
+
+        /// <summary>
+        /// Get the set of <see cref="BaseEntity"/> derived types
+        /// </summary>
+        /// <typeparam name="T">The <see cref="BaseEntity"/></typeparam>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="BaseEntity"/></param>
+        /// <param name="includeProperties">The list of child properties to include in the query</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>The <see cref="IList{T}"/></returns>
+        Task<IList<T>> GetAsync<T>(bool withNoTracking = true,
+                                   List<string>? includeProperties = null,
+                                   CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
         /// Get a <see cref="BaseEntity"/> instance by identifier

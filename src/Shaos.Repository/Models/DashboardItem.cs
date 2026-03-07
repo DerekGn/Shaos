@@ -13,8 +13,8 @@ namespace Shaos.Repository.Models
         public required string Label { get; set; } = string.Empty;
 
         /// <summary>
-        /// The parameter data to display
+        /// The parameter
         /// </summary>
-        public BaseParameter? Parameter { get; set; }
+        public BaseParameter? Parameter { get; set; } = null;
     }
 }

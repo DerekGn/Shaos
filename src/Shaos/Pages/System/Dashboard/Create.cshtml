@@ -13,11 +13,16 @@
 <div class="row">
     <div class="col-md-4">
         <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="DashboardItem.Label" class="control-label"></label>
                 <input asp-for="DashboardItem.Label" class="form-control" />
+                <select asp-for="DashboardItem.Parameter.Id" class="form-control"
+                        asp-items="@Model.ParametersList">
+                    <option value="">-- Select Parameter --</option>
+                </select>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <span asp-validation-for="DashboardItem.Label" class="text-danger"></span>
+                <span asp-validation-for="DashboardItem.Parameter" class="text-danger" />
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-sm btn-success">

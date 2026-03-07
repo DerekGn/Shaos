@@ -23,28 +23,27 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Shaos.Extensions;
+using Shaos.Pages.System.Dashboard.Model;
 using Shaos.Repository;
-using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.System.Dashboard
 {
-    public class CreateModel : PageModel
+    public class CreateModel : DashboardParameterPageModel
     {
-        private readonly ShaosDbContext _context;
-
-        public CreateModel(ShaosDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult OnGet()
-        {
-            return Page();
-        }
+        public CreateModel(IShaosRepository repository) : base(repository) { }
 
         [BindProperty]
-        public DashboardItem DashboardItem { get; set; } = default!;
+        public DashboardItemModel DashboardItem { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            PopulateParametersDropDownList();
+
+            return Page();
+        }
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
@@ -54,8 +53,21 @@ namespace Shaos.Pages.System.Dashboard
                 return Page();
             }
 
-            _context.DashboardItems.Add(DashboardItem);
-            await _context.SaveChangesAsync();
+            var parameterId = DashboardItem.Parameter.Id;
+
+            var parameter = await Repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == parameterId);
+
+            if (parameter == null)
+            {
+                ModelState.AddModelError("NotFound", $"Parameter: [{parameterId}] was not found");
+            }
+            else
+            {
+                var dashboardItem = DashboardItem.FromModel();
+                dashboardItem.Parameter = parameter;
+                await Repository.AddAsync(dashboardItem);
+                await Repository.SaveChangesAsync();
+            }
 
             return RedirectToPage("./Index");
         }

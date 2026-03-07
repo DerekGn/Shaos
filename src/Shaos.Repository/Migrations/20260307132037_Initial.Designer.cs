@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20260305191445_Initial")]
+    [Migration("20260307132037_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

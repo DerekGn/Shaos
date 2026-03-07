@@ -23,59 +23,60 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
 namespace Shaos.Pages.System.Dashboard
 {
-    public class EditModel : PageModel
+    public class EditModel : DashboardParameterPageModel
     {
-        private readonly ShaosDbContext _context;
-
-        public EditModel(ShaosDbContext context)
-        {
-            _context = context;
-        }
+        public EditModel(IShaosRepository repository) : base(repository) { }
 
         [BindProperty]
-        public DashboardItem DashboardItem { get; set; } = default!;
+        public DashboardItem Item { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id,
+                                                    CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var dashboardItem =  await _context.DashboardItems.FirstOrDefaultAsync(m => m.Id == id);
+            var dashboardItem =  await Repository.GetFirstOrDefaultAsync<DashboardItem>(_ => _.Id == id,
+                                                                                        includeProperties: [nameof(DashboardItem.Parameter)],
+                                                                                        cancellationToken: cancellationToken);
             if (dashboardItem == null)
             {
                 return NotFound();
             }
-            DashboardItem = dashboardItem;
+
+            Item = dashboardItem;
+
+            PopulateParametersDropDownList(Item.Parameter.Id);
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(DashboardItem).State = EntityState.Modified;
+            Repository.Attach(Item).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await Repository.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DashboardItemExists(DashboardItem.Id))
+                if (!await DashboardItemExistsAsync(Item.Id,
+                                                    cancellationToken))
                 {
                     return NotFound();
                 }
@@ -88,9 +89,11 @@ namespace Shaos.Pages.System.Dashboard
             return RedirectToPage("./Index");
         }
 
-        private bool DashboardItemExists(int id)
+        private Task<bool> DashboardItemExistsAsync(int id,
+                                                    CancellationToken cancellationToken)
         {
-            return _context.DashboardItems.Any(e => e.Id == id);
+            return Repository.AnyAsync<DashboardItem>(_ => _.Id == id,
+                                                      cancellationToken);
         }
     }
 }

@@ -24,6 +24,7 @@
 
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using Serilog.Events;
 using Shaos.Repository.Exceptions;
@@ -72,6 +73,12 @@ namespace Shaos.Repository
             return await _context
                 .Set<T>()
                 .AnyAsync(predicate, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public EntityEntry<T> Attach<T>(T item) where T : BaseEntity
+        {
+            return _context.Attach<T>(item);
         }
 
         /// <inheritdoc/>
@@ -135,6 +142,17 @@ namespace Shaos.Repository
                                    CancellationToken cancellationToken = default) where T : BaseEntity
         {
             return _context.Set<T>().DeleteAsync(id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IList<T>> GetAsync<T>(bool withNoTracking = true,
+                                                List<string>? includeProperties = null,
+                                                CancellationToken cancellationToken = default) where T : BaseEntity
+        {
+            return await _context
+                .Set<T>()
+                .GetQueryable(withNoTracking, includeProperties: includeProperties)
+                .ToListAsync(cancellationToken);
         }
 
         /// <inheritdoc/>

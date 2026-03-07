@@ -31,18 +31,20 @@ namespace Shaos.Pages.System.Dashboard
 {
     public class IndexModel : PageModel
     {
-        private readonly ShaosDbContext _context;
+        private readonly IShaosRepository _repository;
 
-        public IndexModel(ShaosDbContext context)
+        public IndexModel(IShaosRepository _repository)
         {
-            _context = context;
+            this._repository = _repository;
         }
 
-        public IList<DashboardItem> DashboardItem { get;set; } = default!;
+        public IList<DashboardItem> DashboardItems { get;set; } = default!;
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(CancellationToken cancellationToken)
         {
-            DashboardItem = await _context.DashboardItems.ToListAsync();
+            DashboardItems = await _repository
+                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
+                                         cancellationToken: cancellationToken);
         }
     }
 }

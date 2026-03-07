@@ -2,26 +2,9 @@
 @model Shaos.Pages.IndexModel
 @{
     ViewData["Title"] = "Dashboard";
-    int rowCount = Model.DashboardItems.Count / Model.Columns;
 }
 
 <dashboard-items asp-for="@Model.DashboardItems"></dashboard-items>
-
-@* <div class="container-fluid my-1 border">
-    <div class="row my-1 border">
-        <div class="container-fluid my-1 border">
-            <div class="col my-1 border">Parameter</div>
-            <div class="col my-1 border">
-                <button type="button" class="btn btn-primary active">Primary</button>
-            </div>
-        </div>
-        <div class="container-fluid">
-        </div>
-        <div class="container-fluid">
-
-        </div>
-    </div>
-</div> *@
 
 <div class="container-fluid p-auto">
     <div class="container-fluid p-auto border">
