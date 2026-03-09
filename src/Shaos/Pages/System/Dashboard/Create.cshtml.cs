@@ -46,7 +46,7 @@ namespace Shaos.Pages.System.Dashboard
         }
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -55,7 +55,9 @@ namespace Shaos.Pages.System.Dashboard
 
             var parameterId = DashboardItem.Parameter.Id;
 
-            var parameter = await Repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == parameterId);
+            var parameter = await Repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == parameterId,
+                                                                                   withNoTracking: false,
+                                                                                   cancellationToken: cancellationToken);
 
             if (parameter == null)
             {
@@ -65,8 +67,8 @@ namespace Shaos.Pages.System.Dashboard
             {
                 var dashboardItem = DashboardItem.FromModel();
                 dashboardItem.Parameter = parameter;
-                await Repository.AddAsync(dashboardItem);
-                await Repository.SaveChangesAsync();
+                await Repository.AddAsync(dashboardItem, cancellationToken);
+                await Repository.SaveChangesAsync(cancellationToken);
             }
 
             return RedirectToPage("./Index");

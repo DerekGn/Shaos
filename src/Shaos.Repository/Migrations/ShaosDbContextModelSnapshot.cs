@@ -75,6 +75,9 @@ namespace Shaos.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("CanWrite")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 

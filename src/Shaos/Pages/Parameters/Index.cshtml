@@ -47,6 +47,9 @@
                 @Html.DisplayNameFor(_ => _.List[0].InstanceId)
             </th>
             <th>
+                @Html.DisplayNameFor(_ => _.List[0].CanWrite)
+            </th>
+            <th>
                 @Html.DisplayName("Type")
             </th>
             <th>
@@ -73,6 +76,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(_ => item.InstanceId)
+                </td>
+                <td>
+                    @Html.DisplayFor(_ => item.CanWrite)
                 </td>
                 @if (item is BoolParameter boolParameter)
                 {

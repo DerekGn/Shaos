@@ -23,7 +23,6 @@
 */
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 

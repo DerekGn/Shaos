@@ -32,6 +32,11 @@ namespace Shaos.Repository.Models.Devices.Parameters
     public abstract class BaseParameter : BaseEntity
     {
         /// <summary>
+        /// Indicates if the parameter can be written
+        /// </summary>
+        public bool CanWrite { get; set; }
+
+        /// <summary>
         /// The associated <see cref="DashboardItem"/>
         /// </summary>
         public DashboardItem? DashboardItem { get; set; }

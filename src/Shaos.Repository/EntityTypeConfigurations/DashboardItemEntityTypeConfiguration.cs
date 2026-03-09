@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
+using System.Reflection.Metadata;
 
 namespace Shaos.Repository.EntityTypeConfigurations
 {
@@ -19,6 +21,12 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .Property(_ => _.Label)
                 .HasMaxLength(100)
                 .IsRequired();
+
+            builder
+                .HasOne(_ => _.Parameter)
+                .WithOne(_ => _.DashboardItem)
+                .HasForeignKey<BaseParameter>(_ => _.DashboardItemId)
+                .IsRequired(false);
         }
     }
 }
