@@ -53,6 +53,10 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .HasMaxLength(20);
 
             builder
+                .HasIndex(_ => new { _.Id, _.DashboardItemId })
+                .IsUnique(true);
+
+            builder
                 .HasOne(_ => _.DashboardItem)
                 .WithOne(_ => _.Parameter)
                 .OnDelete(DeleteBehavior.Cascade)

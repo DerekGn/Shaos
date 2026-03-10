@@ -169,7 +169,7 @@ namespace Shaos.Repository.Migrations
                         column: x => x.DashboardItemId,
                         principalTable: "DashboardItems",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_BaseParameters_Devices_DeviceId",
                         column: x => x.DeviceId,
@@ -243,6 +243,12 @@ namespace Shaos.Repository.Migrations
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BaseParameters_Id_DashboardItemId",
+                table: "BaseParameters",
+                columns: new[] { "Id", "DashboardItemId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BaseParameterValues_FloatParameterValue_ParameterId",
                 table: "BaseParameterValues",
                 column: "FloatParameterValue_ParameterId");
@@ -266,6 +272,12 @@ namespace Shaos.Repository.Migrations
                 name: "IX_BaseParameterValues_UIntParameterValue_ParameterId",
                 table: "BaseParameterValues",
                 column: "UIntParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DashboardItems_Label",
+                table: "DashboardItems",
+                column: "Label",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_PlugInInstanceId",

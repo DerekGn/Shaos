@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20260309190302_Initial")]
+    [Migration("20260310131022_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -38,6 +38,9 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Label")
+                        .IsUnique();
 
                     b.ToTable("DashboardItems");
                 });
@@ -122,6 +125,9 @@ namespace Shaos.Repository.Migrations
                         .IsUnique();
 
                     b.HasIndex("DeviceId");
+
+                    b.HasIndex("Id", "DashboardItemId")
+                        .IsUnique();
 
                     b.ToTable("BaseParameters");
 
@@ -537,7 +543,7 @@ namespace Shaos.Repository.Migrations
                     b.HasOne("Shaos.Repository.Models.DashboardItem", "DashboardItem")
                         .WithOne("Parameter")
                         .HasForeignKey("Shaos.Repository.Models.Devices.Parameters.BaseParameter", "DashboardItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
                         .WithMany("Parameters")
