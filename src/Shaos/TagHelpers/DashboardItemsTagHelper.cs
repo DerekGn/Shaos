@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -92,55 +91,31 @@ namespace Shaos.TagHelpers
             return builder;
         }
 
-        private static TagBuilder CreateItemAttributes(DashboardItem parameter)
+        private static TagBuilder CreateItemAttributes(DashboardItem item)
         {
             TagBuilder builder = new TagBuilder(DivTag);
             builder.Attributes.Add(ClassAttribute, ColumnClass);
-            builder.InnerHtml.AppendHtml(CreateItemAttributeLabel(parameter.Label));
+            builder.InnerHtml.AppendHtml(CreateItemAttributeLabel(item.Label));
             builder.InnerHtml.AppendHtml(CreateItemAttributeLabel("Value"));
             builder.InnerHtml.AppendHtml(CreateItemAttributeLabel("Date"));
             return builder;
         }
 
-        private static TagBuilder CreateItemControl(DashboardItem parameter)
+        private static TagBuilder CreateItemControl(DashboardItem item)
         {
             TagBuilder builder = new TagBuilder(DivTag);
             builder.Attributes.Add(ClassAttribute, "col position-relative");
-            builder.InnerHtml.AppendHtml(CreateItemParameterControl(parameter.Parameter!));
+            builder.InnerHtml.AppendHtml(CreateItemParameterControl(item.Parameter!));
             return builder;
         }
 
-        private static TagBuilder CreateItemDivRow(DashboardItem parameter)
+        private static TagBuilder CreateItemDivRow(DashboardItem item)
         {
             TagBuilder builder = new TagBuilder(DivTag);
             builder.Attributes.Add(ClassAttribute, "row p-auto");
-            builder.InnerHtml.AppendHtml(CreateItemAttributes(parameter));
-            builder.InnerHtml.AppendHtml(CreateItemControl(parameter));
+            builder.InnerHtml.AppendHtml(CreateItemAttributes(item));
+            builder.InnerHtml.AppendHtml(CreateItemControl(item));
             return builder;
-        }
-
-        private static TagBuilder CreateItemParameterControl(BaseParameter parameter)
-        {
-            TagBuilder? builder = null;
-
-            var type = parameter.GetType();
-
-            switch (type)
-            {
-                case Type _ when type == typeof(BoolParameter):
-                    builder = CreateItemParameterBoolControl((BoolParameter) parameter);
-                    break;
-                case Type _ when type == typeof(FloatParameter):
-                    break;
-                case Type _ when type == typeof(IntParameter):
-                    break;
-                case Type _ when type == typeof(StringParameter):
-                    break;
-                case Type _ when type == typeof(UIntParameter):
-                    break;
-            }
-
-            return builder!;
         }
 
         private static TagBuilder CreateItemParameterBoolControl(BoolParameter parameter)
@@ -157,6 +132,67 @@ namespace Shaos.TagHelpers
             builder.Attributes.Add(ClassAttribute, "btn btn-primary active");
             builder.Attributes.Add("type", "button");
             builder.InnerHtml.Append("Primary");
+            return builder;
+        }
+
+        private static TagBuilder CreateItemParameterControl(BaseParameter parameter)
+        {
+            TagBuilder? builder = null;
+
+            var type = parameter.GetType();
+
+            switch (type)
+            {
+                case Type _ when type == typeof(BoolParameter):
+                    builder = CreateItemParameterBoolControl((BoolParameter)parameter);
+                    break;
+
+                case Type _ when type == typeof(FloatParameter):
+                    builder = CreateItemParameterFloatControl((FloatParameter)parameter);
+                    break;
+
+                case Type _ when type == typeof(IntParameter):
+                    builder = CreateItemParameterIntControl((IntParameter)parameter);
+                    break;
+
+                case Type _ when type == typeof(StringParameter):
+                    builder = CreateItemParameterStringControl((StringParameter)parameter);
+                    break;
+
+                case Type _ when type == typeof(UIntParameter):
+                    builder = CreateItemParameterUIntControl((UIntParameter)parameter);
+                    break;
+            }
+
+            return builder!;
+        }
+
+        private static TagBuilder? CreateItemParameterFloatControl(FloatParameter parameter)
+        {
+            TagBuilder builder = new TagBuilder(DivTag);
+            builder.Attributes.Add(ClassAttribute, "col border position-absolute top-50 start-50 translate-middle");
+
+            return builder;
+        }
+
+        private static TagBuilder? CreateItemParameterIntControl(IntParameter parameter)
+        {
+            TagBuilder builder = new TagBuilder(DivTag);
+            builder.Attributes.Add(ClassAttribute, "col border position-absolute top-50 start-50 translate-middle");
+            return builder;
+        }
+
+        private static TagBuilder? CreateItemParameterStringControl(StringParameter parameter)
+        {
+            TagBuilder builder = new TagBuilder(DivTag);
+            builder.Attributes.Add(ClassAttribute, "col border position-absolute top-50 start-50 translate-middle");
+            return builder;
+        }
+
+        private static TagBuilder? CreateItemParameterUIntControl(UIntParameter parameter)
+        {
+            TagBuilder builder = new TagBuilder(DivTag);
+            builder.Attributes.Add(ClassAttribute, "col border position-absolute top-50 start-50 translate-middle");
             return builder;
         }
 
