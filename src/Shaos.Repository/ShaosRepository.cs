@@ -234,7 +234,14 @@ namespace Shaos.Repository
         /// <inheritdoc/>
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                return await _context.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is SqliteException { SqliteErrorCode: 19 })
+            {
+                throw new DuplicateEntityException("A duplicate entity was detected.", ex);
+            }
         }
 
         /// <inheritdoc/>

@@ -4,40 +4,143 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<dashboard-items asp-for="@Model.DashboardItems"></dashboard-items>
+@* <dashboard-items asp-for="@Model.DashboardItems"></dashboard-items> *@
 
-<div class="container-fluid p-auto">
-    <div class="container-fluid p-auto border">
-        <div class="row p-auto">
-            <div class="col">
-                <div class="col border">Parameter Label</div>
-                <div class="col border">Parameter Value</div>
-                <div class="col border">Parameter Date</div>
+<div class="container-fluid p-auto border">
+    @foreach (var item in Model.DashboardItems)
+    {
+        <div class="row p-auto border">
+            <div class="col-auto border">
+                <table class="border">
+                    <tbody class="border">
+                        <tr class="col-auto border">
+                            <td class="col-auto border">
+                                <span>
+                                    <svg bootstrap-icon="ToggleOn" width="24" height="24" aria-label="Devices"></svg>
+                                </span>
+                            </td>
+                            <td class="col-auto border">@item.Label</td>
+                            <td class="col-auto border"><span>2025-11-11 21:24:55</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="col position-relative">
-                <div class="col border position-absolute top-50 start-50 translate-middle">
-                    <button type="button" class="btn btn-primary active">Primary</button>
-                </div>
+            <div class="col-auto border">
+                <table class="border">
+                    <tbody class="border">
+                        <tr class="col-auto border">
+                            <td class="col-auto border">
+                                <span>
+                                    <svg bootstrap-icon="ToggleOn" width="24" height="24" aria-label="Devices"></svg>
+                                </span>
+                            </td>
+                            <td class="col-auto border">@item.Label</td>
+                            <td class="col-auto border"><span>2025-11-11 21:24:55</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-    <div class="container-fluid p-auto border">
-        <div class="row p-auto">
-            <div class="col">
-                <div class="col border">Parameter Label</div>
-                <div class="col border">Parameter Value</div>
-                <div class="col border">Parameter Date</div>
-            </div>
-            <div class="col position-relative">
-                <div class="col border position-absolute top-50 start-50 translate-middle">
-                    <button type="button" class="btn btn-primary active">Primary</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    }
 </div>
 
+@* <div class="container-fluid p-auto">
 
+@foreach (var item in Model.DashboardItems)
+    {
+        <div class="container-fluid p-auto">
+            <div class="row p-auto">
+                <div class="col-2">
+                    <div>
+                        <table class="table">
+                            <tr>
+                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span>
+                                            <svg bootstrap-icon="CardList" width="24" height="24" aria-label="Devices"></svg>
+                                        </span>
+                                    </td>
+                                    <td>@item.Label</td>
+                                    <td><span>Off</span></td>
+                                    <td><span>2025-11-11 21:24:55</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div>
+                        <table class="table">
+                            <tr>
+                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span>
+                                            <svg bootstrap-icon="CardList" width="24" height="24" aria-label="Devices"></svg>
+                                        </span>
+                                    </td>
+                                    <td>@item.Label</td>
+                                    <td><span>Off</span></td>
+                                    <td><span>2025-11-11 21:24:55</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @* <div class="col p-auto">
+                    <div class="col border">@Html.DisplayNameFor(_ => item.Label)</div>
+                    <div class="col border">Value</div>
+                    <div class="col border">@Html.DisplayNameFor(_ => item.Parameter!.UpdatedDate)</div>
+                </div>
+                <div class="col p-auto">
+                    <div class="col border">@item.Label</div>
+                    <div class="col border">true</div>
+                    <div class="col border">@item.UpdatedDate</div>
+                </div>
+                <div class="col position-relative">
+                    <div class="col border position-absolute top-50 start-50 translate-middle">
+                        <button type="button" class="btn btn-primary active">Primary</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div> *@
+
+@* <div class="container-fluid p-auto">
+    <div class="container-fluid p-auto border">
+        <div class="row p-auto">
+            <div class="col">
+                <div class="col border">Parameter Label</div>
+                <div class="col border">Parameter Value</div>
+                <div class="col border">Parameter Date</div>
+            </div>
+            <div class="col position-relative">
+                <div class="col border position-absolute top-50 start-50 translate-middle">
+                    <button type="button" class="btn btn-primary active">Primary</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid p-auto border">
+        <div class="row p-auto">
+            <div class="col">
+                <div class="col border">Parameter Label</div>
+                <div class="col border">Parameter Value</div>
+                <div class="col border">Parameter Date</div>
+            </div>
+            <div class="col position-relative">
+                <div class="col border position-absolute top-50 start-50 translate-middle">
+                    <button type="button" class="btn btn-primary active">Primary</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> *@
 
 @* <div class="row p-0 border">
     <div class="col p-0 border">

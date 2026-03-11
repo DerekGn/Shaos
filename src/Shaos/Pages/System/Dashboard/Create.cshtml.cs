@@ -23,15 +23,15 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shaos.Extensions;
 using Shaos.Pages.System.Dashboard.Model;
 using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.System.Dashboard
 {
-    public class CreateModel : DashboardParameterPageModel
+    public class CreateModel : DashboardItemPageModel
     {
         public CreateModel(IShaosRepository repository) : base(repository) { }
 
@@ -68,7 +68,17 @@ namespace Shaos.Pages.System.Dashboard
                 var dashboardItem = DashboardItem.FromModel();
                 dashboardItem.Parameter = parameter;
                 await Repository.AddAsync(dashboardItem, cancellationToken);
-                await Repository.SaveChangesAsync(cancellationToken);
+
+                try
+                {
+                    await Repository.SaveChangesAsync(cancellationToken);
+                }
+                catch (DuplicateEntityException)
+                {
+                    ModelState.AddModelError(string.Empty, $"Dashboard Item already exists. Label: {DashboardItem.Label} Name: {parameter.Name}");
+
+                    return Page();
+                }
             }
 
             return RedirectToPage("./Index");

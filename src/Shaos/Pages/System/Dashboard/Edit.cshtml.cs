@@ -29,7 +29,7 @@ using Shaos.Repository.Models;
 
 namespace Shaos.Pages.System.Dashboard
 {
-    public class EditModel : DashboardParameterPageModel
+    public class EditModel : DashboardItemPageModel
     {
         public EditModel(IShaosRepository repository) : base(repository) { }
 

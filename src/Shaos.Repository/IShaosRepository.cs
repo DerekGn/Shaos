@@ -193,6 +193,7 @@ namespace Shaos.Repository
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The number of changes mad to the database</returns>
+        /// <exception cref="DuplicateEntityException">Thrown when a duplicate row was attempted to be created</exception>
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>

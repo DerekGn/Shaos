@@ -22,33 +22,32 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Shaos.Repository;
-using Shaos.Repository.Models.Devices.Parameters;
+using Shaos.Repository.Models;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Pages.System.Dashboard
+namespace Shaos.Repository.Exceptions
 {
-    public class DashboardParameterPageModel : PageModel
+    /// <summary>
+    /// An exception that is thrown when an <see cref="BaseEntity"/> type cannot be found in the repository
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public class DuplicateEntityException : Exception
     {
-        internal protected readonly IShaosRepository Repository;
-
-        public DashboardParameterPageModel(IShaosRepository repository)
+        /// <summary>
+        /// Create an instance of <see cref="DuplicateEntityException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        public DuplicateEntityException(string message) : base(message)
         {
-            Repository = repository;
         }
 
-        public SelectList? ParametersList { get; set; } = default;
-
-        public void PopulateParametersDropDownList(object selectedParameter = null!)
+        /// <summary>
+        /// Create and instance of <see cref="DuplicateEntityException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        /// <param name="inner">The inner <see cref="Exception"/></param>
+        public DuplicateEntityException(string message, Exception inner) : base(message, inner)
         {
-            var parametersQuery = Repository.GetQueryable<BaseParameter>().OrderBy(_ => _.Name);
-
-            ParametersList = new SelectList(parametersQuery.AsNoTracking(),
-                                            nameof(BaseParameter.Id),
-                                            nameof(BaseParameter.Name),
-                                            selectedParameter);
         }
     }
 }
