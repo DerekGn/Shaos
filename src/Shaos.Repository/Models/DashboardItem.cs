@@ -23,7 +23,6 @@
 */
 
 using Shaos.Repository.Models.Devices.Parameters;
-using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models
 {
@@ -41,5 +40,10 @@ namespace Shaos.Repository.Models
         /// The parameter
         /// </summary>
         public BaseParameter? Parameter { get; set; } = null;
+
+        /// <summary>
+        /// The parameter identifier
+        /// </summary>
+        public int? ParameterId { get; set; }
     }
 }

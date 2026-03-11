@@ -24,8 +24,12 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shaos.Extensions;
+using Shaos.Pages.System.Dashboard.Model;
 using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.System.Dashboard
 {
@@ -34,7 +38,7 @@ namespace Shaos.Pages.System.Dashboard
         public EditModel(IShaosRepository repository) : base(repository) { }
 
         [BindProperty]
-        public DashboardItem Item { get; set; } = default!;
+        public DashboardItemModel Item { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id,
                                                     CancellationToken cancellationToken = default)
@@ -52,37 +56,58 @@ namespace Shaos.Pages.System.Dashboard
                 return NotFound();
             }
 
-            Item = dashboardItem;
+            Item = dashboardItem.ToModel();
 
-            PopulateParametersDropDownList(Item.Parameter.Id);
+            PopulateParametersDropDownList(Item.Parameter!.Id);
             return Page();
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> OnPostAsync(int? id,
+                                                     CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            Repository.Attach(Item).State = EntityState.Modified;
+            var parameterId = Item.Parameter!.Id;
 
-            try
+            var parameter = await Repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == parameterId,
+                                                                                   withNoTracking: false,
+                                                                                   cancellationToken: cancellationToken);
+            if (parameter == null)
             {
-                await Repository.SaveChangesAsync(cancellationToken);
+                ModelState.AddModelError("NotFound", $"Parameter: [{parameterId}] was not found");
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!await DashboardItemExistsAsync(Item.Id,
-                                                    cancellationToken))
+                var dashboardItem = Item.FromModel();
+                dashboardItem.Parameter = parameter;
+                Repository.Attach(dashboardItem).State = EntityState.Modified;
+
+                try
                 {
-                    return NotFound();
+                    int count = await Repository.SaveChangesAsync(cancellationToken);
                 }
-                else
+                catch (DuplicateEntityException)
                 {
-                    throw;
+                    ModelState.AddModelError(string.Empty, $"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
+
+                    return Page();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await DashboardItemExistsAsync(Item.Id,
+                                                        cancellationToken))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
 

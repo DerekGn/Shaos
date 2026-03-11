@@ -37,11 +37,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public bool CanWrite { get; set; }
 
         /// <summary>
-        /// The associated <see cref="DashboardItem"/>
-        /// </summary>
-        public DashboardItem? DashboardItem { get; set; }
-
-        /// <summary>
         /// The associated <see cref="DashboardItem"/> identifier
         /// </summary>
         public int? DashboardItemId { get; set; }
@@ -80,5 +75,10 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The <see cref="BaseParameter"/> units
         /// </summary>
         public string? Units { get; set; }
+
+        /// <summary>
+        /// The set of dashboard items
+        /// </summary>
+        public ICollection<DashboardItem> DashboardItems { get; } = [];
     }
 }

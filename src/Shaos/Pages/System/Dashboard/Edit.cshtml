@@ -17,11 +17,19 @@
             <div class="form-group">
                 <label asp-for="Item.Label" class="control-label"></label>
                 <input asp-for="Item.Label" class="form-control" />
+                <select asp-for="Item.Parameter.Id" class="form-control"
+                        asp-items="@Model.ParametersList">
+                    <option value="">-- Select Parameter --</option>
+                </select>
                 <span asp-validation-for="Item.Label" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Item.Id" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-sm btn-success" />
+                <button type="submit" class="btn btn-sm btn-success">
+                    <span>
+                        <svg bootstrap-icon="Floppy" width="18" height="18" aria-label="Save"></svg>
+                    </span>
+                </button>
                 <a asp-page="./Index" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>

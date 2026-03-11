@@ -36,7 +36,7 @@ namespace Shaos.Pages.System.Dashboard
         public CreateModel(IShaosRepository repository) : base(repository) { }
 
         [BindProperty]
-        public DashboardItemModel DashboardItem { get; set; } = default!;
+        public DashboardItemModel Item { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -53,7 +53,7 @@ namespace Shaos.Pages.System.Dashboard
                 return Page();
             }
 
-            var parameterId = DashboardItem.Parameter.Id;
+            var parameterId = Item.Parameter!.Id;
 
             var parameter = await Repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == parameterId,
                                                                                    withNoTracking: false,
@@ -65,7 +65,7 @@ namespace Shaos.Pages.System.Dashboard
             }
             else
             {
-                var dashboardItem = DashboardItem.FromModel();
+                var dashboardItem = Item.FromModel();
                 dashboardItem.Parameter = parameter;
                 await Repository.AddAsync(dashboardItem, cancellationToken);
 
@@ -75,7 +75,7 @@ namespace Shaos.Pages.System.Dashboard
                 }
                 catch (DuplicateEntityException)
                 {
-                    ModelState.AddModelError(string.Empty, $"Dashboard Item already exists. Label: {DashboardItem.Label} Name: {parameter.Name}");
+                    ModelState.AddModelError(string.Empty, $"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
 
                     return Page();
                 }

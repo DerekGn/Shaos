@@ -25,7 +25,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Shaos.Repository.Models;
-using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Repository.EntityTypeConfigurations
 {
@@ -48,13 +47,6 @@ namespace Shaos.Repository.EntityTypeConfigurations
             builder
                 .HasIndex(_ => _.Label)
                 .IsUnique();
-
-            builder
-                .HasOne(_ => _.Parameter)
-                .WithOne(_ => _.DashboardItem)
-                .HasForeignKey<BaseParameter>(_ => _.DashboardItemId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .IsRequired(false);
         }
     }
 }

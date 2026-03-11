@@ -57,8 +57,9 @@ namespace Shaos.Repository.EntityTypeConfigurations
                 .IsUnique(true);
 
             builder
-                .HasOne(_ => _.DashboardItem)
+                .HasMany(_ => _.DashboardItems)
                 .WithOne(_ => _.Parameter)
+                .HasForeignKey(_ => _.ParameterId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
         }

@@ -15,7 +15,7 @@ namespace Shaos.Repository.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.4");
 
             modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
                 {
@@ -31,6 +31,9 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ParameterId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("TEXT");
 
@@ -38,6 +41,8 @@ namespace Shaos.Repository.Migrations
 
                     b.HasIndex("Label")
                         .IsUnique();
+
+                    b.HasIndex("ParameterId");
 
                     b.ToTable("DashboardItems");
                 });
@@ -117,9 +122,6 @@ namespace Shaos.Repository.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DashboardItemId")
-                        .IsUnique();
 
                     b.HasIndex("DeviceId");
 
@@ -526,6 +528,16 @@ namespace Shaos.Repository.Migrations
                     b.HasDiscriminator().HasValue("UIntParameterValue");
                 });
 
+            modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
+                {
+                    b.HasOne("Shaos.Repository.Models.Devices.Parameters.BaseParameter", "Parameter")
+                        .WithMany("DashboardItems")
+                        .HasForeignKey("ParameterId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Parameter");
+                });
+
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
                 {
                     b.HasOne("Shaos.Repository.Models.PlugInInstance", "PlugInInstance")
@@ -537,16 +549,9 @@ namespace Shaos.Repository.Migrations
 
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BaseParameter", b =>
                 {
-                    b.HasOne("Shaos.Repository.Models.DashboardItem", "DashboardItem")
-                        .WithOne("Parameter")
-                        .HasForeignKey("Shaos.Repository.Models.Devices.Parameters.BaseParameter", "DashboardItemId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Shaos.Repository.Models.Devices.Device", "Device")
                         .WithMany("Parameters")
                         .HasForeignKey("DeviceId");
-
-                    b.Navigation("DashboardItem");
 
                     b.Navigation("Device");
                 });
@@ -626,14 +631,14 @@ namespace Shaos.Repository.Migrations
                     b.Navigation("Parameter");
                 });
 
-            modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
-                {
-                    b.Navigation("Parameter");
-                });
-
             modelBuilder.Entity("Shaos.Repository.Models.Devices.Device", b =>
                 {
                     b.Navigation("Parameters");
+                });
+
+            modelBuilder.Entity("Shaos.Repository.Models.Devices.Parameters.BaseParameter", b =>
+                {
+                    b.Navigation("DashboardItems");
                 });
 
             modelBuilder.Entity("Shaos.Repository.Models.PlugIn", b =>
