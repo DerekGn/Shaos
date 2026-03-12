@@ -54,9 +54,11 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// </summary>
         /// <param name="value">The updated value</param>
         /// <param name="timestamp">The timestamp</param>
-        public void UpdateValue(uint value, DateTime timestamp)
+        public void UpdateValue(uint value,
+                                DateTime timestamp)
         {
             Value = value;
+            TimeStamp = timestamp;
 
             Values.Add(new UIntParameterValue()
             {
