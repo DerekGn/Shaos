@@ -27,52 +27,51 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
-namespace Shaos.Pages.PlugInInstances
+namespace Shaos.Pages.System.Dashboard
 {
-    public class EditModel : PageModel
+    public class DeleteModel : PageModel
     {
         private readonly IShaosRepository _repository;
 
-        public EditModel(IShaosRepository repository)
+        public DeleteModel(IShaosRepository repository)
         {
-            ArgumentNullException.ThrowIfNull(repository);
-
             _repository = repository;
         }
 
         [BindProperty]
-        public PlugInInstance PlugInInstance { get; set; } = default!;
+        public DashboardItem DashboardItem { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int id,
+        public async Task<IActionResult> OnGetAsync(int? id,
                                                     CancellationToken cancellationToken = default)
         {
-            var plugininstance = await _repository.GetByIdAsync<PlugInInstance>(id,
-                                                                                cancellationToken: cancellationToken);
-
-            if (plugininstance == null)
+            if (id == null)
             {
-                ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
-            }
-            else
-            {
-                PlugInInstance = plugininstance;
+                return NotFound();
             }
 
-            return Page();
-        }
+            var dashboardItem = await _repository.GetFirstOrDefaultAsync<DashboardItem>(_ => _.Id == id,
+                                                                                        cancellationToken: cancellationToken);
 
-        public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
-        {
-            if (!ModelState.IsValid)
+            if (dashboardItem is not null)
             {
+                DashboardItem = dashboardItem;
+
                 return Page();
             }
 
-            await _repository.UpdatePlugInInstanceAsync(PlugInInstance.Id,
-                                                        PlugInInstance.Enabled,
-                                                        PlugInInstance.Name,
-                                                        PlugInInstance.Description,
-                                                        cancellationToken);
+            return NotFound();
+        }
+
+        public async Task<IActionResult> OnPostAsync(int? id,
+                                                     CancellationToken cancellationToken = default)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            await _repository.DeleteAsync<DashboardItem>(id.Value,
+                                                         cancellationToken);
 
             return RedirectToPage("./Index");
         }

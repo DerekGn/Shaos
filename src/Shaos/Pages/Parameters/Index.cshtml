@@ -7,6 +7,8 @@
 
 <h1>Device Parameters</h1>
 
+<hr />
+
 @{
     var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
 }
@@ -45,6 +47,9 @@
                 @Html.DisplayNameFor(_ => _.List[0].InstanceId)
             </th>
             <th>
+                @Html.DisplayNameFor(_ => _.List[0].CanWrite)
+            </th>
+            <th>
                 @Html.DisplayName("Type")
             </th>
             <th>
@@ -71,6 +76,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(_ => item.InstanceId)
+                </td>
+                <td>
+                    @Html.DisplayFor(_ => item.CanWrite)
                 </td>
                 @if (item is BoolParameter boolParameter)
                 {

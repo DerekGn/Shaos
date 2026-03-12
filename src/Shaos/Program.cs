@@ -32,6 +32,7 @@ using Shaos.Extensions;
 using Shaos.Filters;
 using Shaos.Hosting;
 using Shaos.Hubs;
+using Shaos.Options;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.Eventing;
@@ -106,6 +107,10 @@ namespace Shaos
             builder
                 .Services
                 .AddDbContext<ShaosDbContext>(options => options.UseSqlite(connectionString));
+
+            builder
+                .Services
+                .Configure<ApplicationOptions>(builder.Configuration.GetSection(nameof(ApplicationOptions)));
 
             builder.Services.AddApiVersioning(_ =>
             {

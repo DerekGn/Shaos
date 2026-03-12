@@ -22,36 +22,32 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models.Devices;
+using Shaos.Repository.Models;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Repository.Exceptions
 {
     /// <summary>
-    /// The <see cref="Device"/> EF configuration
+    /// An exception that is thrown when an <see cref="BaseEntity"/> type cannot be found in the repository
     /// </summary>
-    public class DeviceEntityTypeConfiguration : IEntityTypeConfiguration<Device>
+    [ExcludeFromCodeCoverage]
+    public class DuplicateEntityException : Exception
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<Device> builder)
+        /// <summary>
+        /// Create an instance of <see cref="DuplicateEntityException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        public DuplicateEntityException(string message) : base(message)
         {
-            builder
-                .HasKey(_ => _.Id);
+        }
 
-            builder
-                .Property(_ => _.Name)
-                .HasMaxLength(64)
-                .IsRequired();
-
-            builder
-                .HasOne(_ => _.PlugInInstance)
-                .WithMany(_ => _.Devices);
-
-            builder
-                .HasMany(_ => _.Parameters)
-                .WithOne(_ => _.Device)
-                .IsRequired();
+        /// <summary>
+        /// Create and instance of <see cref="DuplicateEntityException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        /// <param name="inner">The inner <see cref="Exception"/></param>
+        public DuplicateEntityException(string message, Exception inner) : base(message, inner)
+        {
         }
     }
 }

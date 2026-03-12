@@ -24,18 +24,18 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using Shaos.Repository;
 using Shaos.Repository.Models;
 
 namespace Shaos.Pages.PlugInInstances
 {
     public class DeleteModel : PageModel
     {
-        private readonly Repository.ShaosDbContext _context;
+        private readonly IShaosRepository _repository;
 
-        public DeleteModel(Repository.ShaosDbContext context)
+        public DeleteModel(IShaosRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [BindProperty]
@@ -44,7 +44,8 @@ namespace Shaos.Pages.PlugInInstances
         public async Task<IActionResult> OnGetAsync(int? id,
                                                     CancellationToken cancellationToken = default)
         {
-            var plugininstance = await _context.PlugInInstances.FirstOrDefaultAsync(m => m.Id == id, cancellationToken: cancellationToken);
+            var plugininstance = await _repository.GetFirstOrDefaultAsync<PlugInInstance>(_ => _.Id == id,
+                                                                                          cancellationToken: cancellationToken);
 
             if (plugininstance == null)
             {
@@ -58,9 +59,11 @@ namespace Shaos.Pages.PlugInInstances
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int? id,
+                                                     CancellationToken cancellationToken = default)
         {
-            var plugininstance = await _context.PlugInInstances.FindAsync(id);
+            var plugininstance = await _repository.GetFirstOrDefaultAsync<PlugInInstance>(_ => _.Id == id,
+                                                                                          cancellationToken: cancellationToken);
             if (plugininstance == null)
             {
                 ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
@@ -68,8 +71,8 @@ namespace Shaos.Pages.PlugInInstances
             else
             {
                 PlugInInstance = plugininstance;
-                _context.PlugInInstances.Remove(PlugInInstance);
-                await _context.SaveChangesAsync();
+                await _repository.DeleteAsync<PlugInInstance>(plugininstance.Id,
+                                                              cancellationToken);
             }
 
             return RedirectToPage("./Index");

@@ -22,36 +22,28 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
 using Shaos.Repository.Models;
 
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Pages.System.Dashboard
 {
-    /// <summary>
-    /// The <see cref="PlugInInstance"/> configuration
-    /// </summary>
-    public class PlugInInstanceEntityTypeConfiguration : IEntityTypeConfiguration<PlugInInstance>
+    public class IndexModel : PageModel
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<PlugInInstance> builder)
+        private readonly IShaosRepository _repository;
+
+        public IndexModel(IShaosRepository _repository)
         {
-            builder
-                .HasKey(_ => _.Id);
+            this._repository = _repository;
+        }
 
-            builder
-                .Property(_ => _.Name)
-                .HasMaxLength(ModelConstants.MaxFileNameLength)
-                .IsRequired();
+        public IList<DashboardItem> DashboardItems { get;set; } = default!;
 
-            builder
-               .Property(_ => _.Description)
-               .HasMaxLength(ModelConstants.MaxDescriptionLength)
-               .IsRequired(false);
-
-            builder
-               .HasIndex(_ => _.Name)
-               .IsUnique(true);
+        public async Task OnGetAsync(CancellationToken cancellationToken)
+        {
+            DashboardItems = await _repository
+                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
+                                         cancellationToken: cancellationToken);
         }
     }
 }

@@ -23,10 +23,27 @@
 */
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Repository;
+using Shaos.Repository.Models;
 
 namespace Shaos.Pages
 {
     public class IndexModel : PageModel
     {
+        private readonly IShaosRepository _repository;
+
+        public IndexModel(IShaosRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public IList<DashboardItem> DashboardItems { get; set; } = default!;
+
+        public async Task OnGetAsync(CancellationToken cancellationToken = default)
+        {
+            DashboardItems = await _repository
+                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
+                                         cancellationToken: cancellationToken);
+        }
     }
 }

@@ -22,35 +22,28 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// The <see cref="LogLevelSwitch"/> EF configuration
+    /// A dashboard item
     /// </summary>
-    public class LogLevelSwitchEntityTypeConfiguration : IEntityTypeConfiguration<LogLevelSwitch>
+    public class DashboardItem : BaseEntity
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<LogLevelSwitch> builder)
-        {
-            builder
-                .HasKey(_ => _.Id);
+        /// <summary>
+        /// The parameter dashboard label
+        /// </summary>
+        public required string Label { get; set; } = string.Empty;
 
-            builder
-                .Property(_ => _.Name)
-                .IsRequired()
-                .HasMaxLength(ModelConstants.MaxFileNameLength);
+        /// <summary>
+        /// The parameter
+        /// </summary>
+        public BaseParameter? Parameter { get; set; } = null;
 
-            builder
-               .HasIndex(_ => _.Name)
-               .IsUnique(true);
-
-            builder
-                .Property(_ => _.Level)
-                .IsRequired();
-        }
+        /// <summary>
+        /// The parameter identifier
+        /// </summary>
+        public int? ParameterId { get; set; }
     }
 }

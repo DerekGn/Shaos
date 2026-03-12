@@ -22,23 +22,29 @@
 * SOFTWARE.
 */
 
+using Microsoft.EntityFrameworkCore;
 using Serilog.Events;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models
 {
     /// <summary>
     /// A log level switch entity
     /// </summary>
+    [Index(nameof(Name), IsUnique = true)]
     public class LogLevelSwitch : BaseEntity
     {
         /// <summary>
-        /// The name of this <see cref="LogLevelSwitch"/>
-        /// </summary>
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>
         /// The current <see cref="LogEventLevel"/>
         /// </summary>
-        public LogEventLevel Level { get; set; }
+        [Required]
+        public required LogEventLevel Level { get; set; }
+
+        /// <summary>
+        /// The name of this <see cref="LogLevelSwitch"/>
+        /// </summary>
+        [MaxLength(40)]
+        [Required]
+        public required string Name { get; set; }
     }
 }

@@ -22,47 +22,33 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models;
+using Shaos.Repository;
+using Shaos.Repository.Models.Devices.Parameters;
 
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Pages.System.Dashboard
 {
-    /// <summary>
-    /// The <see cref="PlugIn"/> configuration
-    /// </summary>
-    public class PlugInEntityTypeConfiguration : IEntityTypeConfiguration<PlugIn>
+    public class DashboardItemPageModel : PageModel
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<PlugIn> builder)
+        internal protected readonly IShaosRepository Repository;
+
+        public DashboardItemPageModel(IShaosRepository repository)
         {
-            builder
-                .HasKey(_ => _.Id);
+            Repository = repository;
+        }
 
-            builder
-                .HasIndex(_ => _.Name)
-                .IsUnique(true);
+        public SelectList? ParametersList { get; set; } = default;
 
-            builder
-                .Property(_ => _.Name)
-                .HasMaxLength(ModelConstants.MaxFileNameLength)
-                .IsRequired();
+        public void PopulateParametersDropDownList(object selectedParameter = null!)
+        {
+            var parametersQuery = Repository.GetQueryable<BaseParameter>().OrderBy(_ => _.Name);
 
-            builder
-                .Property(_ => _.Description)
-                .HasMaxLength(ModelConstants.MaxDescriptionLength)
-                .IsRequired();
-
-            builder
-                .HasOne(_ => _.PlugInInformation)
-                .WithOne(_ => _.PlugIn)
-                .IsRequired();
-
-            builder
-               .HasMany(_ => _.Instances)
-               .WithOne(_ => _.PlugIn)
-               .HasForeignKey(_ => _.PlugInId)
-               .IsRequired(false);
+            ParametersList = new SelectList(parametersQuery.AsNoTracking(),
+                                            nameof(BaseParameter.Id),
+                                            nameof(BaseParameter.Name),
+                                            selectedParameter);
         }
     }
 }

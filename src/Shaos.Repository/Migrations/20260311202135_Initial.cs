@@ -17,8 +17,8 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     Level = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -49,8 +49,8 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    AssemblyFileName = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
-                    AssemblyVersion = table.Column<string>(type: "TEXT", nullable: false),
+                    AssemblyFileName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    AssemblyVersion = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     Directory = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
                     HasConfiguration = table.Column<bool>(type: "INTEGER", nullable: false),
                     HasLogger = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -78,7 +78,7 @@ namespace Shaos.Repository.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Configuration = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -118,16 +118,19 @@ namespace Shaos.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BaseParameter",
+                name: "BaseParameters",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    DeviceId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    CanWrite = table.Column<bool>(type: "INTEGER", nullable: false),
+                    DashboardItemId = table.Column<int>(type: "INTEGER", nullable: true),
+                    DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
                     InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
-                    Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
                     Value = table.Column<bool>(type: "INTEGER", nullable: true),
                     Max = table.Column<float>(type: "REAL", nullable: true),
@@ -145,17 +148,16 @@ namespace Shaos.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BaseParameter", x => x.Id);
+                    table.PrimaryKey("PK_BaseParameters", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BaseParameter_Devices_DeviceId",
+                        name: "FK_BaseParameters_Devices_DeviceId",
                         column: x => x.DeviceId,
                         principalTable: "Devices",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "BaseParameterValue",
+                name: "BaseParameterValues",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -175,68 +177,107 @@ namespace Shaos.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BaseParameterValue", x => x.Id);
+                    table.PrimaryKey("PK_BaseParameterValues", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BaseParameterValue_BaseParameter_FloatParameterValue_ParameterId",
+                        name: "FK_BaseParameterValues_BaseParameters_FloatParameterValue_ParameterId",
                         column: x => x.FloatParameterValue_ParameterId,
-                        principalTable: "BaseParameter",
+                        principalTable: "BaseParameters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BaseParameterValue_BaseParameter_IntParameterValue_ParameterId",
+                        name: "FK_BaseParameterValues_BaseParameters_IntParameterValue_ParameterId",
                         column: x => x.IntParameterValue_ParameterId,
-                        principalTable: "BaseParameter",
+                        principalTable: "BaseParameters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BaseParameterValue_BaseParameter_ParameterId",
+                        name: "FK_BaseParameterValues_BaseParameters_ParameterId",
                         column: x => x.ParameterId,
-                        principalTable: "BaseParameter",
+                        principalTable: "BaseParameters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BaseParameterValue_BaseParameter_StringParameterValue_ParameterId",
+                        name: "FK_BaseParameterValues_BaseParameters_StringParameterValue_ParameterId",
                         column: x => x.StringParameterValue_ParameterId,
-                        principalTable: "BaseParameter",
+                        principalTable: "BaseParameters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BaseParameterValue_BaseParameter_UIntParameterValue_ParameterId",
+                        name: "FK_BaseParameterValues_BaseParameters_UIntParameterValue_ParameterId",
                         column: x => x.UIntParameterValue_ParameterId,
-                        principalTable: "BaseParameter",
+                        principalTable: "BaseParameters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DashboardItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Label = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    ParameterId = table.Column<int>(type: "INTEGER", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DashboardItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DashboardItems_BaseParameters_ParameterId",
+                        column: x => x.ParameterId,
+                        principalTable: "BaseParameters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseParameter_DeviceId",
-                table: "BaseParameter",
+                name: "IX_BaseParameters_DeviceId",
+                table: "BaseParameters",
                 column: "DeviceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseParameterValue_FloatParameterValue_ParameterId",
-                table: "BaseParameterValue",
+                name: "IX_BaseParameters_Id_DashboardItemId",
+                table: "BaseParameters",
+                columns: new[] { "Id", "DashboardItemId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BaseParameterValues_FloatParameterValue_ParameterId",
+                table: "BaseParameterValues",
                 column: "FloatParameterValue_ParameterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseParameterValue_IntParameterValue_ParameterId",
-                table: "BaseParameterValue",
+                name: "IX_BaseParameterValues_IntParameterValue_ParameterId",
+                table: "BaseParameterValues",
                 column: "IntParameterValue_ParameterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseParameterValue_ParameterId",
-                table: "BaseParameterValue",
+                name: "IX_BaseParameterValues_ParameterId",
+                table: "BaseParameterValues",
                 column: "ParameterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseParameterValue_StringParameterValue_ParameterId",
-                table: "BaseParameterValue",
+                name: "IX_BaseParameterValues_StringParameterValue_ParameterId",
+                table: "BaseParameterValues",
                 column: "StringParameterValue_ParameterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseParameterValue_UIntParameterValue_ParameterId",
-                table: "BaseParameterValue",
+                name: "IX_BaseParameterValues_UIntParameterValue_ParameterId",
+                table: "BaseParameterValues",
                 column: "UIntParameterValue_ParameterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DashboardItems_Label",
+                table: "DashboardItems",
+                column: "Label",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DashboardItems_ParameterId",
+                table: "DashboardItems",
+                column: "ParameterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_PlugInInstanceId",
@@ -277,7 +318,10 @@ namespace Shaos.Repository.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BaseParameterValue");
+                name: "BaseParameterValues");
+
+            migrationBuilder.DropTable(
+                name: "DashboardItems");
 
             migrationBuilder.DropTable(
                 name: "LogLevelSwitches");
@@ -286,7 +330,7 @@ namespace Shaos.Repository.Migrations
                 name: "PlugInInformations");
 
             migrationBuilder.DropTable(
-                name: "BaseParameter");
+                name: "BaseParameters");
 
             migrationBuilder.DropTable(
                 name: "Devices");

@@ -36,9 +36,9 @@ namespace Shaos.Pages.Instances
         private readonly IRuntimeInstanceHost _instanceHost;
         private readonly IInstanceHostService _instanceHostService;
 
-        public IndexModel(IRuntimeInstanceHost instanceHost,
-                          IConfiguration configuration,
-                          IInstanceHostService instanceHostService)
+        public IndexModel(IInstanceHostService instanceHostService,
+                          IRuntimeInstanceHost instanceHost,
+                          IConfiguration configuration)
         {
             _instanceHost = instanceHost;
             _configuration = configuration;
