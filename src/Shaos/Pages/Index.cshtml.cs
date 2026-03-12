@@ -37,11 +37,11 @@ namespace Shaos.Pages
             _repository = repository;
         }
 
-        public IList<DashboardItem> DashboardItems { get; set; } = default!;
+        public IList<DashboardItem> Items { get; set; } = default!;
 
         public async Task OnGetAsync(CancellationToken cancellationToken = default)
         {
-            DashboardItems = await _repository
+            Items = await _repository
                 .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
                                          cancellationToken: cancellationToken);
         }

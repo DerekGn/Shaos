@@ -283,15 +283,8 @@ namespace Shaos.Services.Runtime.Host
                                                  parameter.Name,
                                                  value);
 
-                    parameter.Value = value;
-
-                    parameter.Values.Add(new IntParameterValue()
-                    {
-                        Parameter = parameter,
-                        ParameterId = parameter.Id,
-                        TimeStamp = timeStamp,
-                        Value = value
-                    });
+                    parameter.UpdateValue(value,
+                                          timeStamp);
 
                     await repository.SaveChangesAsync(cancellationToken);
                 }
@@ -304,7 +297,7 @@ namespace Shaos.Services.Runtime.Host
 
         internal async Task SaveParameterChangeToRepositoryAsync(int id,
                                                                  string value,
-                                                                 DateTime timestamp,
+                                                                 DateTime timeStamp,
                                                                  CancellationToken cancellationToken)
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
@@ -318,15 +311,8 @@ namespace Shaos.Services.Runtime.Host
                                                  parameter.Name,
                                                  value);
 
-                    parameter.Value = value;
-
-                    parameter.Values.Add(new StringParameterValue()
-                    {
-                        Parameter = parameter,
-                        ParameterId = parameter.Id,
-                        TimeStamp = timestamp,
-                        Value = value
-                    });
+                    parameter.UpdateValue(value,
+                                          timeStamp);
 
                     await repository.SaveChangesAsync(cancellationToken);
                 }
@@ -353,15 +339,8 @@ namespace Shaos.Services.Runtime.Host
                                                  parameter.Name,
                                                  value);
 
-                    parameter.Value = value;
-
-                    parameter.Values.Add(new FloatParameterValue()
-                    {
-                        Parameter = parameter,
-                        ParameterId = parameter.Id,
-                        TimeStamp = timeStamp,
-                        Value = value
-                    });
+                    parameter.UpdateValue(value,
+                                          timeStamp);
 
                     await repository.SaveChangesAsync(cancellationToken);
                 }
@@ -388,15 +367,8 @@ namespace Shaos.Services.Runtime.Host
                                                  parameter.Name,
                                                  value);
 
-                    parameter.Value = value;
-
-                    parameter.Values.Add(new UIntParameterValue()
-                    {
-                        Parameter = parameter,
-                        ParameterId = parameter.Id,
-                        TimeStamp = timeStamp,
-                        Value = value
-                    });
+                    parameter.UpdateValue(value,
+                                          timeStamp);
 
                     await repository.SaveChangesAsync(cancellationToken);
                 }
@@ -423,15 +395,8 @@ namespace Shaos.Services.Runtime.Host
                                                  parameter.Name,
                                                  value);
 
-                    parameter.Value = value;
-
-                    parameter.Values.Add(new BoolParameterValue()
-                    {
-                        Parameter = parameter,
-                        ParameterId = parameter.Id,
-                        TimeStamp = timeStamp,
-                        Value = value
-                    });
+                    parameter.UpdateValue(value,
+                                          timeStamp);
 
                     await repository.SaveChangesAsync(cancellationToken);
                 }

@@ -3,3 +3,33 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th>
+                Last Updated
+            </th>
+            <th>
+                Current Value
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Label)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Parameter!.TimeStamp)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
