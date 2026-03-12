@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,28 +22,28 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Repository;
-using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 
-namespace Shaos.Pages
+namespace Shaos.Repository.Models
 {
-    public class IndexModel : PageModel
+    /// <summary>
+    /// A dashboard item
+    /// </summary>
+    public class DashboardItem : BaseEntity
     {
-        private readonly IShaosRepository _repository;
+        /// <summary>
+        /// The parameter dashboard label
+        /// </summary>
+        public required string Label { get; set; } = string.Empty;
 
-        public IndexModel(IShaosRepository repository)
-        {
-            _repository = repository;
-        }
+        /// <summary>
+        /// The parameter
+        /// </summary>
+        public BaseParameter? Parameter { get; set; } = null;
 
-        public IList<DashboardItem> DashboardItems { get; set; } = default!;
-
-        public async Task OnGetAsync(CancellationToken cancellationToken = default)
-        {
-            DashboardItems = await _repository
-                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
-                                         cancellationToken: cancellationToken);
-        }
+        /// <summary>
+        /// The parameter identifier
+        /// </summary>
+        public int? ParameterId { get; set; }
     }
 }

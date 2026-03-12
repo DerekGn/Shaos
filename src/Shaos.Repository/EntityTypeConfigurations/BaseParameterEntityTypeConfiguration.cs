@@ -51,6 +51,17 @@ namespace Shaos.Repository.EntityTypeConfigurations
             builder
                 .Property(_ => _.Units)
                 .HasMaxLength(20);
+
+            builder
+                .HasIndex(_ => new { _.Id, _.DashboardItemId })
+                .IsUnique(true);
+
+            builder
+                .HasMany(_ => _.DashboardItems)
+                .WithOne(_ => _.Parameter)
+                .HasForeignKey(_ => _.ParameterId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
         }
     }
 }

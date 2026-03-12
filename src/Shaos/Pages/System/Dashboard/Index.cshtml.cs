@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -26,20 +26,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
-namespace Shaos.Pages
+namespace Shaos.Pages.System.Dashboard
 {
     public class IndexModel : PageModel
     {
         private readonly IShaosRepository _repository;
 
-        public IndexModel(IShaosRepository repository)
+        public IndexModel(IShaosRepository _repository)
         {
-            _repository = repository;
+            this._repository = _repository;
         }
 
-        public IList<DashboardItem> DashboardItems { get; set; } = default!;
+        public IList<DashboardItem> DashboardItems { get;set; } = default!;
 
-        public async Task OnGetAsync(CancellationToken cancellationToken = default)
+        public async Task OnGetAsync(CancellationToken cancellationToken)
         {
             DashboardItems = await _repository
                 .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],

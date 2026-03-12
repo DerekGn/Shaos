@@ -22,22 +22,32 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Razor.TagHelpers;
+using Shaos.Repository.Models;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.TagHelpers
+namespace Shaos.Repository.Exceptions
 {
-    [HtmlTargetElement(Attributes = nameof(Condition))]
-    public class ConditionTagHelper : TagHelper
+    /// <summary>
+    /// An exception that is thrown when an <see cref="BaseEntity"/> type cannot be found in the repository
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public class DuplicateEntityException : Exception
     {
-        public bool Condition { get; set; }
-
-        public override void Process(TagHelperContext context,
-                                     TagHelperOutput output)
+        /// <summary>
+        /// Create an instance of <see cref="DuplicateEntityException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        public DuplicateEntityException(string message) : base(message)
         {
-            if (!Condition)
-            {
-                output.SuppressOutput();
-            }
+        }
+
+        /// <summary>
+        /// Create and instance of <see cref="DuplicateEntityException"/>
+        /// </summary>
+        /// <param name="message">An associated message</param>
+        /// <param name="inner">The inner <see cref="Exception"/></param>
+        public DuplicateEntityException(string message, Exception inner) : base(message, inner)
+        {
         }
     }
 }

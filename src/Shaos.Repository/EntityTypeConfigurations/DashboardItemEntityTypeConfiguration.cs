@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,28 +22,31 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Repository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Shaos.Repository.Models;
 
-namespace Shaos.Pages
+namespace Shaos.Repository.EntityTypeConfigurations
 {
-    public class IndexModel : PageModel
+    /// <summary>
+    /// The <see cref="DashboardItem"/> EF configuration
+    /// </summary>
+    public class DashboardItemEntityTypeConfiguration : IEntityTypeConfiguration<DashboardItem>
     {
-        private readonly IShaosRepository _repository;
-
-        public IndexModel(IShaosRepository repository)
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<DashboardItem> builder)
         {
-            _repository = repository;
-        }
+            builder
+                .Property(_ => _.Id);
 
-        public IList<DashboardItem> DashboardItems { get; set; } = default!;
+            builder
+                .Property(_ => _.Label)
+                .HasMaxLength(100)
+                .IsRequired();
 
-        public async Task OnGetAsync(CancellationToken cancellationToken = default)
-        {
-            DashboardItems = await _repository
-                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
-                                         cancellationToken: cancellationToken);
+            builder
+                .HasIndex(_ => _.Label)
+                .IsUnique();
         }
     }
 }

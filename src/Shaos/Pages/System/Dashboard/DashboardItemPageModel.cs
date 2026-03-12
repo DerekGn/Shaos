@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -23,27 +23,32 @@
 */
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
-using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices.Parameters;
 
-namespace Shaos.Pages
+namespace Shaos.Pages.System.Dashboard
 {
-    public class IndexModel : PageModel
+    public class DashboardItemPageModel : PageModel
     {
-        private readonly IShaosRepository _repository;
+        internal protected readonly IShaosRepository Repository;
 
-        public IndexModel(IShaosRepository repository)
+        public DashboardItemPageModel(IShaosRepository repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
-        public IList<DashboardItem> DashboardItems { get; set; } = default!;
+        public SelectList? ParametersList { get; set; } = default;
 
-        public async Task OnGetAsync(CancellationToken cancellationToken = default)
+        public void PopulateParametersDropDownList(object selectedParameter = null!)
         {
-            DashboardItems = await _repository
-                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
-                                         cancellationToken: cancellationToken);
+            var parametersQuery = Repository.GetQueryable<BaseParameter>().OrderBy(_ => _.Name);
+
+            ParametersList = new SelectList(parametersQuery.AsNoTracking(),
+                                            nameof(BaseParameter.Id),
+                                            nameof(BaseParameter.Name),
+                                            selectedParameter);
         }
     }
 }
