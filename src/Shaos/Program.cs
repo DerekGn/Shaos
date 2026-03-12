@@ -67,6 +67,8 @@ namespace Shaos
 
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.AddOpenTelemetry();
+
             builder.Services.AddSerilog((serviceProvider, loggerConfiguration) =>
             {
                 loggingConfiguration.Configure(configuration, loggerConfiguration);
