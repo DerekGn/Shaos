@@ -124,13 +124,12 @@ namespace Shaos.TagHelpers
 
         private TagBuilder GenerateValidation(ModelExpression modelExpression)
         {
-            return _generator.GenerateValidationMessage(
-                ViewContext,
-                modelExpression.ModelExplorer,
-                modelExpression.Name,
-                null,
-                null,
-                new { @class = "text-danger field-validation-valid" });
+            return _generator.GenerateValidationMessage(ViewContext,
+                                                        modelExpression.ModelExplorer,
+                                                        modelExpression.Name,
+                                                        null,
+                                                        null,
+                                                        new { @class = "text-danger field-validation-valid" });
         }
     }
 }
