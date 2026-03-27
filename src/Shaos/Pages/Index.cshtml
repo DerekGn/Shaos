@@ -89,7 +89,7 @@
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => uintParameter.Value)
+                                            @Html.DisplayFor(model => uintParameter.Value, "uint", new { HtmlID = "project-name" })
                                         }
                                         break;
                                     default:
