@@ -38,11 +38,14 @@
                                         var boolParameter = (BoolParameter)item.Parameter;
                                         if (boolParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => boolParameter.Value, "bool")
+                                            @Html.EditorFor(model => boolParameter.Value,
+                                                            "bool")
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => boolParameter.Value)
+                                            @Html.DisplayFor(model => boolParameter.Value,
+                                                             "bool", 
+                                                             new { HtmlId = boolParameter.Id })
                                         }
                                         break;
                                     case Type _ when type == typeof(FloatParameter):
@@ -56,7 +59,7 @@
                                         {
                                             @Html.DisplayFor(model => floatParameter.Value,
                                                             "float",
-                                                            new { HtmlID = floatParameter.Id })
+                                                            new { HtmlId = floatParameter.Id })
                                         }
                                         break;
                                     case Type _ when type == typeof(IntParameter):
@@ -70,7 +73,7 @@
                                         {
                                             @Html.DisplayFor(model => intParameter.Value,
                                                              "int", 
-                                                             new { HtmlID = intParameter.Id })
+                                                             new { HtmlId = intParameter.Id })
                                         }
                                         break;
                                     case Type _ when type == typeof(StringParameter):
@@ -83,7 +86,7 @@
                                         {
                                             @Html.DisplayFor(model => stringParameter.Value,
                                                              "string",
-                                                             new { HtmlID = stringParameter.Id })
+                                                             new { HtmlId = stringParameter.Id })
                                         }
                                         break;
                                     case Type _ when type == typeof(UIntParameter):
@@ -97,7 +100,7 @@
                                         {
                                             @Html.DisplayFor(model => uintParameter.Value, 
                                                              "uint", 
-                                                             new { HtmlID = uintParameter.Id })
+                                                             new { HtmlId = uintParameter.Id })
                                         }
                                         break;
                                     default:
@@ -111,7 +114,9 @@
                         }
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Parameter!.TimeStamp, new { @id = "id", @class = "name", @readonly = "readonly" })
+                        @Html.DisplayFor(modelItem => item.Parameter!.TimeStamp,
+                                         "DateTime",
+                                         new { HtmlId = item.Parameter!.Id })
                     </td>
                 </tr>
             }
