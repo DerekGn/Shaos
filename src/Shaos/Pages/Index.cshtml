@@ -54,7 +54,9 @@
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => floatParameter.Value)
+                                            @Html.DisplayFor(model => floatParameter.Value,
+                                                            "float",
+                                                            new { HtmlID = floatParameter.Id })
                                         }
                                         break;
                                     case Type _ when type == typeof(IntParameter):
@@ -66,7 +68,9 @@
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => intParameter.Value)
+                                            @Html.DisplayFor(model => intParameter.Value,
+                                                             "int", 
+                                                             new { HtmlID = intParameter.Id })
                                         }
                                         break;
                                     case Type _ when type == typeof(StringParameter):
@@ -77,7 +81,9 @@
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => stringParameter.Value)
+                                            @Html.DisplayFor(model => stringParameter.Value,
+                                                             "string",
+                                                             new { HtmlID = stringParameter.Id })
                                         }
                                         break;
                                     case Type _ when type == typeof(UIntParameter):
@@ -89,7 +95,9 @@
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => uintParameter.Value, "uint", new { HtmlID = "project-name" })
+                                            @Html.DisplayFor(model => uintParameter.Value, 
+                                                             "uint", 
+                                                             new { HtmlID = uintParameter.Id })
                                         }
                                         break;
                                     default:
