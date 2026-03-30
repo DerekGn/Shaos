@@ -202,7 +202,7 @@ namespace Shaos.Services.UnitTests
                 PlugInInformation = CreatePlugInInformation(true)
             };
 
-            var plugInInstance = CreatePlugInInstance(plugIn);
+            var plugInInstance = CreatePlugInInstance(plugIn, configurationValue);
             plugInInstance.Enabled = true;
 
             await TestStartInstance(plugIn, plugInInstance);
@@ -400,10 +400,10 @@ namespace Shaos.Services.UnitTests
             ];
 
             var instance = new RuntimeInstance(1,
-                                        2,
-                                        InstanceName,
-                                        "assemblyPath",
-                                        true);
+                                               2,
+                                               InstanceName,
+                                               "assemblyPath",
+                                               true);
 
             MockRepository.Setup(_ => _.GetEnumerableAsync<PlugIn>(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
                                                                    It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
