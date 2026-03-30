@@ -26,7 +26,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Eventing;
@@ -419,6 +418,8 @@ namespace Shaos.Services.Runtime.Host
             catch (Exception ex)
             {
                 _logger.LogUnhandledException(ex);
+
+                throw;
             }
         }
 

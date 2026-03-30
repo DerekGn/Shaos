@@ -144,13 +144,12 @@ namespace Shaos.Services.Extensions
             switch (type)
             {
                 case Type _ when type == typeof(Sdk.Devices.Parameters.BoolParameter):
+                    var boolParameter = (Sdk.Devices.Parameters.BoolParameter)parameter;
                     result = new BoolParameter()
                     {
-                        Name = parameter.Name,
-                        ParameterType = parameter.ParameterType,
                         InstanceId = parameter.Id,
-                        Units = parameter.Units,
-                        Value = ((Sdk.Devices.Parameters.BoolParameter)parameter).Value
+                        Name = parameter.Name,
+                        Value = boolParameter.Value
                     };
                     break;
 
@@ -158,12 +157,10 @@ namespace Shaos.Services.Extensions
                     var floatParameter = (Sdk.Devices.Parameters.FloatParameter)parameter;
                     result = new FloatParameter()
                     {
+                        InstanceId = parameter.Id,
                         Max = floatParameter.Max,
                         Min = floatParameter.Min,
                         Name = parameter.Name,
-                        ParameterType = parameter.ParameterType,
-                        InstanceId = parameter.Id,
-                        Units = parameter.Units,
                         Value = floatParameter.Value
                     };
                     break;
@@ -175,21 +172,16 @@ namespace Shaos.Services.Extensions
                         Max = intParameter.Max,
                         Min = intParameter.Min,
                         Name = parameter.Name,
-                        ParameterType = parameter.ParameterType,
-                        InstanceId = parameter.Id,
-                        Units = parameter.Units,
                         Value = intParameter.Value
                     };
                     break;
 
                 case Type _ when type == typeof(Sdk.Devices.Parameters.StringParameter):
+                    var stringParameter = (Sdk.Devices.Parameters.StringParameter)parameter;
                     result = new StringParameter()
                     {
                         Name = parameter.Name,
-                        ParameterType = parameter.ParameterType,
-                        InstanceId = parameter.Id,
-                        Units = parameter.Units,
-                        Value = ((Sdk.Devices.Parameters.StringParameter)parameter).Value
+                        Value = stringParameter.Value
                     };
                     break;
 
@@ -200,12 +192,17 @@ namespace Shaos.Services.Extensions
                         Max = uIntParameter.Max,
                         Min = uIntParameter.Min,
                         Name = parameter.Name,
-                        ParameterType = parameter.ParameterType,
-                        InstanceId = parameter.Id,
-                        Units = parameter.Units,
                         Value = uIntParameter.Value
                     };
                     break;
+            }
+
+            if (result is not null)
+            {
+                result.InstanceId = parameter.Id;
+                result.CanWrite = parameter.CanWrite;
+                result.ParameterType = parameter.ParameterType;
+                result.Units = parameter.Units;
             }
 
             return result!;
