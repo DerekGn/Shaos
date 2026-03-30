@@ -128,7 +128,7 @@ namespace Shaos.Repository.Migrations
                     DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
                     InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    ParameterType = table.Column<int>(type: "INTEGER", nullable: false),
+                    ParameterType = table.Column<int>(type: "INTEGER", nullable: true),
                     TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),

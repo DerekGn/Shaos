@@ -1,5 +1,125 @@
 ﻿@page
+@using Shaos.Repository.Models.Devices.Parameters
 @model Shaos.Pages.IndexModel
 @{
     ViewData["Title"] = "Dashboard";
 }
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th>
+                Value
+            </th>
+            <th>
+                Updated
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <form method="post">
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Label)
+                    </td>
+                    <td>
+                        @{
+                            if (item.Parameter is not null)
+                            {
+                                var type = item.Parameter!.GetType();
+
+                                switch (type)
+                                {
+                                    case Type _ when type == typeof(BoolParameter):
+                                        var boolParameter = (BoolParameter)item.Parameter;
+                                        if (boolParameter.CanWrite)
+                                        {
+                                            @Html.EditorFor(model => boolParameter.Value,
+                                                            "bool")
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(model => boolParameter.Value,
+                                                             "bool", 
+                                                             new { HtmlId = boolParameter.Id })
+                                        }
+                                        break;
+                                    case Type _ when type == typeof(FloatParameter):
+                                        var floatParameter = (FloatParameter)item.Parameter;
+                                        if (floatParameter.CanWrite)
+                                        {
+                                            @Html.EditorFor(model => floatParameter.Value,
+                                                new { htmlAttributes = new { min = floatParameter.Min, max = floatParameter.Max } })
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(model => floatParameter.Value,
+                                                            "float",
+                                                            new { HtmlId = floatParameter.Id })
+                                        }
+                                        break;
+                                    case Type _ when type == typeof(IntParameter):
+                                        var intParameter = (IntParameter)item.Parameter;
+                                        if (intParameter.CanWrite)
+                                        {
+                                            @Html.EditorFor(model => intParameter.Value,
+                                                new { htmlAttributes = new { min = intParameter.Min, max = intParameter.Max } })
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(model => intParameter.Value,
+                                                             "int", 
+                                                             new { HtmlId = intParameter.Id })
+                                        }
+                                        break;
+                                    case Type _ when type == typeof(StringParameter):
+                                        var stringParameter = (StringParameter)item.Parameter;
+                                        if (stringParameter.CanWrite)
+                                        {
+                                            @Html.EditorFor(model => stringParameter.Value)
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(model => stringParameter.Value,
+                                                             "string",
+                                                             new { HtmlId = stringParameter.Id })
+                                        }
+                                        break;
+                                    case Type _ when type == typeof(UIntParameter):
+                                        var uintParameter = (UIntParameter)item.Parameter;
+                                        if (uintParameter.CanWrite)
+                                        {
+                                            @Html.EditorFor(model => uintParameter.Value,
+                                                new { htmlAttributes = new { min = uintParameter.Min, max = uintParameter.Max } })
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(model => uintParameter.Value, 
+                                                             "uint", 
+                                                             new { HtmlId = uintParameter.Id })
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                <p style="color:red;">Parameter is null</p>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Parameter!.TimeStamp,
+                                         "DateTime",
+                                         new { HtmlId = item.Parameter!.Id })
+                    </td>
+                </tr>
+            }
+        </form>
+    </tbody>
+</table>

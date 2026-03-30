@@ -36,6 +36,7 @@ namespace Shaos.Test.PlugIn
     [PlugInDescription("Name", "Description")]
     public class TestPlugIn : PlugInBase
     {
+        private const string Units = "units";
         private readonly TestPlugInConfiguration _configuration;
         private readonly ILogger<TestPlugIn> _logger;
 
@@ -57,13 +58,16 @@ namespace Shaos.Test.PlugIn
 
             await CreateDevicesAsync();
 
-            var freqParameter = (IntParameter)Devices.First().Parameters.First();
-            var batteryParameter = (UIntParameter)Devices.First().Parameters.Skip(1).First();
-            var signalParameter = (IntParameter)Devices.First().Parameters.Skip(2).First();
-
-            int freq = 0;
-            int signal = 0;
-            uint battery = 0;
+            var boolParameter = (BoolParameter)Devices.First().Parameters.First();
+            var boolWriteParameter = (BoolParameter)Devices.First().Parameters.Skip(1).First();
+            var floatParameter = (FloatParameter)Devices.First().Parameters.Skip(2).First();
+            var floatWriteParameter = (FloatParameter)Devices.First().Parameters.Skip(3).First();
+            var intParameter = (IntParameter)Devices.First().Parameters.Skip(4).First();
+            var intWriteParameter = (IntParameter)Devices.First().Parameters.Skip(5).First();
+            var stringParameter = (StringParameter)Devices.First().Parameters.Skip(6).First();
+            var stringWriteParameter = (StringParameter)Devices.First().Parameters.Skip(7).First();
+            var uintParameter = (UIntParameter)Devices.First().Parameters.Skip(8).First();
+            var uintWriteParameter = (UIntParameter)Devices.First().Parameters.Skip(9).First();
 
             do
             {
@@ -72,9 +76,10 @@ namespace Shaos.Test.PlugIn
                                        nameof(TestPlugIn),
                                        nameof(ExecuteAsync));
 
-                await freqParameter.NotifyValueChangedAsync(IncrementLimit(ref freq, 0, 50));
-                await batteryParameter.NotifyValueChangedAsync(IncrementLimit(ref battery, 0, 100));
-                await signalParameter.NotifyValueChangedAsync(DecrementLimit(ref signal, -100, 0));
+                await boolParameter.NotifyValueChangedAsync(!boolParameter.Value);
+                await boolWriteParameter.NotifyValueChangedAsync(!boolParameter.Value);
+                //await floatParameter.NotifyValueChangedAsync();
+                //await floatWriteParameter.NotifyValueChangedAsync();
 
             } while (!cancellationToken.IsCancellationRequested);
 
@@ -83,23 +88,11 @@ namespace Shaos.Test.PlugIn
                                    nameof(ExecuteAsync));
         }
 
-        private static int DecrementLimit(ref int value,
-                                          int lower,
-                                          int upper)
-        {
-            if (--value < lower)
-            {
-                value = upper;
-            }
-
-            return value;
-        }
-
         private static int IncrementLimit(ref int value,
                                           int lower,
                                           int upper)
         {
-            if(++value > upper)
+            if (++value > upper)
             {
                 value = lower;
             }
@@ -125,27 +118,63 @@ namespace Shaos.Test.PlugIn
             {
                 List<IBaseParameter> baseParameters =
                 [
-                    new IntParameter(11,
+                    new BoolParameter(1,
+                                      false,
+                                      "Test bool parameter",
+                                      Units),
+                    new BoolParameter(2,
+                                      false,
+                                      "Test write bool parameter",
+                                      Units,
+                                      WriteBool),
+                    new FloatParameter(3,
+                                       1.0f,
+                                       0,
+                                       10,
+                                       "Test float parameter",
+                                       Units),
+                    new FloatParameter(4,
+                                       1.0f,
+                                       0,
+                                       10,
+                                       "Test write float parameter",
+                                       Units,
+                                       WriteFloat),
+                    new IntParameter(5,
                                      0,
                                      0,
                                      10,
-                                     "Test Parameter",
-                                     "Units",
-                                     ParameterType.Frequency),
-                    new UIntParameter(12,
+                                     "Test int parameter",
+                                     Units),
+                    new IntParameter(6,
                                      0,
                                      0,
-                                     100,
-                                     "Battery Level",
-                                     "%",
-                                     ParameterType.Level),
-                    new IntParameter(13,
+                                     10,
+                                     "Test write int parameter",
+                                     Units,
+                                     WriteInt),
+                    new StringParameter(7,
+                                     "",
+                                     "Test string parameter",
+                                     Units),
+                    new StringParameter(8,
+                                     "",
+                                     "Test write string parameter",
+                                     Units,
+                                     WriteString),
+                    new UIntParameter(9,
                                      0,
-                                     -100,
                                      0,
-                                     "Signal Level",
-                                     string.Empty,
-                                     ParameterType.Rssi)
+                                     10,
+                                     "Test uint parameter",
+                                     Units),
+                    new UIntParameter(10,
+                                     0,
+                                     0,
+                                     10,
+                                     "Test write uint parameter",
+                                     Units,
+                                     WriteUInt),
                 ];
 
                 var device = new Device(10,
@@ -154,6 +183,26 @@ namespace Shaos.Test.PlugIn
 
                 await Devices.AddAsync(device);
             }
+        }
+
+        private async Task WriteBool(int id, bool value)
+        {
+        }
+
+        private async Task WriteFloat(int id, float value)
+        {
+        }
+
+        private async Task WriteInt(int id, int value)
+        {
+        }
+
+        private async Task WriteString(int id, string value)
+        {
+        }
+
+        private async Task WriteUInt(int id, uint value)
+        {
         }
     }
 }

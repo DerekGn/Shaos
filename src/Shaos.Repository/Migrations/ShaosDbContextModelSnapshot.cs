@@ -15,7 +15,7 @@ namespace Shaos.Repository.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.4");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
 
             modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
                 {
@@ -108,7 +108,7 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ParameterType")
+                    b.Property<int?>("ParameterType")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("TimeStamp")

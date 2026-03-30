@@ -46,7 +46,7 @@ namespace Shaos.Repository.EntityTypeConfigurations
 
             builder
                 .Property(_ => _.ParameterType)
-                .IsRequired();
+                .IsRequired(false);
 
             builder
                 .Property(_ => _.Units)
