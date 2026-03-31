@@ -31,7 +31,6 @@ using Shaos.Data;
 using Shaos.Extensions;
 using Shaos.Filters;
 using Shaos.Hosting;
-using Shaos.Hubs;
 using Shaos.Options;
 using Shaos.Repository;
 using Shaos.Services;
@@ -143,7 +142,6 @@ namespace Shaos
                     .RequireAuthenticatedUser()
                     .Build());
 
-            builder.Services.AddSignalR();
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {
                 _.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -172,10 +170,10 @@ namespace Shaos
             builder.Services.AddSingleton<ISystemService, SystemService>();
             builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItemQueue(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
+            builder.Services.AddSingleton<IServerSideEventsService, ServerSideEventsService>();
 
             builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorHostedService>();
-            builder.Services.AddHostedService<PlotPublishBackgroundService>();
             builder.Services.AddHostedService<WorkItemProcessorBackgroundService>();
 
             builder.Services.AddMemoryCache();
@@ -210,8 +208,6 @@ namespace Shaos
             app.UseAuthorization();
 
             app.MapRazorPages();
-            app.MapHub<RuntimeHub>($"/{nameof(RuntimeHub).ToCamelCase()}");
-            app.MapHub<PlotHub>($"/{nameof(PlotHub).ToCamelCase()}");
 
             app.Run();
         }

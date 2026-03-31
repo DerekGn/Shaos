@@ -23,7 +23,6 @@
 */
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using System.Net;
@@ -36,6 +35,7 @@ namespace Shaos.Controllers
     //[Authorize(AuthenticationSchemes = ApiAuthenticationScheme.AuthenticationSchemes)]
     public abstract class CoreController : ControllerBase
     {
+        internal const string Status400BadRequestText = "The ";
         internal const string Status401UnauthorizedText = "The bear token is invalid";
         internal const string Status500InternalServerErrorText = "Indicates that the server was unable to process the request";
         internal const string InvalidRequest = "Indicates that the request syntax is invalid";

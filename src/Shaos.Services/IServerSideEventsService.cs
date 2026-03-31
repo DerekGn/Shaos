@@ -22,11 +22,17 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Http;
+using Shaos.Services.Eventing;
 
-namespace Shaos.Hubs
+namespace Shaos.Services
 {
-    public class RuntimeHub : Hub
+    public interface IServerSideEventsService
     {
+        void AddContext(HttpContext context);
+
+        Task BroadcastEventAsync(BaseEvent baseEvent);
+
+        void RemoveContext(HttpContext context);
     }
 }

@@ -22,40 +22,16 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.SignalR;
-
-namespace Shaos.Hubs
+namespace Shaos.Services
 {
     /// <summary>
-    /// The plot hub interface
+    /// Server side events options
     /// </summary>
-    public interface IPlotHub
+    public class ServerSideEventOptions
     {
         /// <summary>
-        /// Start a subscription publish
+        /// The heartbeat interval for connection keep alive
         /// </summary>
-        /// <param name="id">The parameter identifier to start publishing updates</param>
-        Task StartAsync(int id);
-
-        /// <summary>
-        /// Stop a subscription publish
-        /// </summary>
-        /// <param name="id">The parameter identifier to stop publishing updates</param>
-        Task StopAsync(int id);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(int value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(uint value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(bool value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(float value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(string value, DateTime timeStamp);
+        public TimeSpan HeartBeatInterval { get; init; } = TimeSpan.FromSeconds(10);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using System.Net;
 using System.Reflection;
 
 namespace Shaos.Services.Extensions
@@ -163,17 +164,17 @@ namespace Shaos.Services.Extensions
             Message = "Event items collection empty")]
         public static partial void LogEventItemsEmpty(this ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Warning,
-            Message = "Runtime execution instance count exceeded. Count: [{count}] Max: [{max}]")]
-        public static partial void LogExecutionInstanceCountExceeded(this ILogger logger,
-                                                                     int count,
-                                                                     int max);
-
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Runtime execution instance Count: [{count}] Max: [{max}]")]
         public static partial void LogExecutionInstanceCount(this ILogger logger,
                                                              int count,
                                                              int max);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Runtime execution instance count exceeded. Count: [{count}] Max: [{max}]")]
+        public static partial void LogExecutionInstanceCountExceeded(this ILogger logger,
+                                                                     int count,
+                                                                     int max);
 
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Extracting package: [{sourcePath}] to [{targetPath}]")]
@@ -185,6 +186,11 @@ namespace Shaos.Services.Extensions
             Message = "Found running instance [{plugInInstanceId}]")]
         public static partial void LogFoundRunningInstance(this ILogger logger,
                                                            int plugInInstanceId);
+
+        [LoggerMessage(Level = LogLevel.Debug,
+            Message = "Sending heartbeat to [{IpAddress}]")]
+        public static partial void LogHeartbeatSend(this ILogger logger,
+                                                    IPAddress IpAddress);
 
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Initialising logging configuration")]
