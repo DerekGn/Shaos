@@ -22,12 +22,14 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Services.SystemInformation;
 
 namespace Shaos.Pages.System.Information
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly ISystemService _systemService;

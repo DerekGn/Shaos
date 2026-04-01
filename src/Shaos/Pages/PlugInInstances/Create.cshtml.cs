@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository.Exceptions;
@@ -30,6 +31,7 @@ using Shaos.Services;
 
 namespace Shaos.Pages.PlugInInstances
 {
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly IPlugInService _plugInService;
