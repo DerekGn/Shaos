@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Services.Exceptions;
@@ -30,6 +31,7 @@ using Shaos.Services.Validation;
 
 namespace Shaos.Pages.PlugIns
 {
+    [Authorize]
     public partial class PackageUploadModel : PageModel
     {
         private readonly IFileStoreService _fileStoreService;

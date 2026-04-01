@@ -136,13 +136,6 @@ namespace Shaos
                             _ => _.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
-            builder
-                .Services
-                .AddAuthorizationBuilder()
-                .SetFallbackPolicy(new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build());
-
             builder.Services.AddSignalR();
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {

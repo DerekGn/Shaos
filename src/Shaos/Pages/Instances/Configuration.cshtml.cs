@@ -22,12 +22,14 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Services;
 
 namespace Shaos.Pages.Instances
 {
+    [Authorize]
     public class ConfigurationModel : PageModel
     {
         private readonly IInstanceHostService _instanceHostService;

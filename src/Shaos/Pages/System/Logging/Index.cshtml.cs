@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Serilog.Core;
@@ -30,6 +31,7 @@ using Shaos.Services.Logging;
 
 namespace Shaos.Pages.System.Logging
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly ILoggingConfiguration _loggingConfiguration;

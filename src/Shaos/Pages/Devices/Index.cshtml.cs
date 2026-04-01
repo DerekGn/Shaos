@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Paging;
 using Shaos.Repository;
@@ -30,6 +31,7 @@ using System.Linq.Expressions;
 
 namespace Shaos.Pages.Devices
 {
+    [Authorize]
     public class IndexModel : PaginatedModel<Device>
     {
         private readonly IConfiguration _configuration;

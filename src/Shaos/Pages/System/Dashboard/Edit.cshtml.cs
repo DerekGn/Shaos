@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shaos.Extensions;
@@ -33,6 +34,7 @@ using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.System.Dashboard
 {
+    [Authorize]
     public class EditModel : DashboardItemPageModel
     {
         public EditModel(IShaosRepository repository) : base(repository) { }
