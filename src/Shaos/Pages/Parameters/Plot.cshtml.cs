@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Exceptions;
@@ -31,6 +32,7 @@ using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.Parameters
 {
+    [Authorize]
     public class PlotModel : PageModel
     {
         private readonly IShaosRepository _repository;

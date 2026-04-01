@@ -22,12 +22,14 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
 namespace Shaos.Pages.System.Dashboard
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly IShaosRepository _repository;

@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Pages.System.Dashboard.Model;
@@ -31,6 +32,7 @@ using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.System.Dashboard
 {
+    [Authorize]
     public class CreateModel : DashboardItemPageModel
     {
         public CreateModel(IShaosRepository repository) : base(repository) { }

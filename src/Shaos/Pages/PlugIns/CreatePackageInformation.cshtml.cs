@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Repository.Exceptions;
 using Shaos.Services;
@@ -29,6 +30,7 @@ using Shaos.Services.IO;
 
 namespace Shaos.Pages.PlugIns
 {
+    [Authorize]
     public class CreatePackageInformationModel : BasePackageInformationModel
     {
         public CreatePackageInformationModel(IPlugInService plugInService,

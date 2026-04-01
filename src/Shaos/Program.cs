@@ -135,13 +135,6 @@ namespace Shaos
                             _ => _.Filters.Add(new SerializeModelStatePageFilter()));
                 });
 
-            builder
-                .Services
-                .AddAuthorizationBuilder()
-                .SetFallbackPolicy(new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build());
-
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {
                 _.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
