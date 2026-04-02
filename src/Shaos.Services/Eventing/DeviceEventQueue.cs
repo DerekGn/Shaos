@@ -27,37 +27,37 @@ using System.Threading.Channels;
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The device event queue
+    /// The event queue
     /// </summary>
-    public class DeviceEventQueue : IDeviceEventQueue
+    public class EventQueue : IEventQueue
     {
-        private readonly Channel<BaseDeviceEvent> _queue;
+        private readonly Channel<BaseEvent> _queue;
 
         /// <summary>
-        /// Create an instance of a <see cref="DeviceEventQueue"/>
+        /// Create an instance of a <see cref="EventQueue"/>
         /// </summary>
         /// <param name="capacity">The event queue capacity</param>
-        public DeviceEventQueue(int capacity)
+        public EventQueue(int capacity)
         {
             BoundedChannelOptions options = new(capacity)
             {
                 FullMode = BoundedChannelFullMode.Wait
             };
 
-            _queue = Channel.CreateBounded<BaseDeviceEvent>(options);
+            _queue = Channel.CreateBounded<BaseEvent>(options);
         }
 
         /// <inheritdoc/>
         public int Count => _queue.Reader.Count;
 
         /// <inheritdoc/>
-        public async Task<BaseDeviceEvent> DequeueAsync(CancellationToken cancellationToken = default)
+        public async Task<BaseEvent> DequeueAsync(CancellationToken cancellationToken = default)
         {
             return await _queue.Reader.ReadAsync(cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task EnqueueAsync(BaseDeviceEvent @event,
+        public async Task EnqueueAsync(BaseEvent @event,
                                        CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(@event);

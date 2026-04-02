@@ -22,15 +22,37 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Extensions
+using Shaos.Services;
+using Shaos.Services.Eventing;
+
+namespace Shaos.Hosting
 {
-    public static class HttpContextExtensions
+    public class ApplicationEventsService : BackgroundService
     {
-        public static void AddServerSideEventsHeaders(this HttpContext httpContext)
+        private readonly IEventQueue _eventQueue;
+        private readonly ILogger<ApplicationEventsService> _logger;
+        private readonly IServerSideEventsService _serverSideEventsService;
+
+        public ApplicationEventsService(IEventQueue eventQueue,
+                                        ILogger<ApplicationEventsService> logger,
+                                        IServerSideEventsService serverSideEventsService)
         {
-            httpContext.Response.Headers.Append("Content-Type", "text/event-stream");
-            httpContext.Response.Headers.Append("Cache-Control", "no-cache");
-            httpContext.Response.Headers.Append("Connection", "keep-alive");
+            _eventQueue = eventQueue;
+            _logger = logger;
+            _serverSideEventsService = serverSideEventsService;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            await PublishEventAsync(stoppingToken);
+        }
+
+        private async Task PublishEventAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await _serverSideEventsService.BroadcastEventAsync(await _eventQueue.DequeueAsync(stoppingToken));
+            }
         }
     }
 }

@@ -58,7 +58,8 @@ namespace Shaos.Services.Processing
         }
 
         /// <inheritdoc/>
-        public async Task EnqueueAsync(Func<CancellationToken, Task> workItem, CancellationToken cancellationToken = default)
+        public async Task EnqueueAsync(Func<CancellationToken, Task> workItem,
+                                       CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(workItem);
 

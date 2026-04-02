@@ -23,12 +23,10 @@
 */
 
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shaos.Data;
-using Shaos.Extensions;
 using Shaos.Filters;
 using Shaos.Hosting;
 using Shaos.Options;
@@ -152,7 +150,7 @@ namespace Shaos
             builder.Services.AddScoped<IShaosRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
-            builder.Services.AddSingleton<IDeviceEventQueue>(InitDeviceEventQueue(builder.Configuration));
+            builder.Services.AddSingleton<IEventQueue>(InitEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
@@ -160,11 +158,12 @@ namespace Shaos
             builder.Services.AddSingleton<IRuntimeDeviceUpdateHandler, RuntimeDeviceUpdateHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
+            builder.Services.AddSingleton<IServerSideEventsService, ServerSideEventsService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
             builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItemQueue(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
-            builder.Services.AddSingleton<IServerSideEventsService, ServerSideEventsService>();
 
+            builder.Services.AddHostedService<ApplicationEventsService>();
             builder.Services.AddHostedService<InitialisationHostService>();
             builder.Services.AddHostedService<MonitorHostedService>();
             builder.Services.AddHostedService<WorkItemProcessorBackgroundService>();
@@ -205,14 +204,14 @@ namespace Shaos
             app.Run();
         }
 
-        private static DeviceEventQueue InitDeviceEventQueue(ConfigurationManager configuration)
+        private static EventQueue InitEventQueue(ConfigurationManager configuration)
         {
-            if (!int.TryParse(configuration["DeviceEventQueueCapacity"], out var queueCapacity))
+            if (!int.TryParse(configuration["EventQueueCapacity"], out var queueCapacity))
             {
                 queueCapacity = 100;
             }
 
-            return new DeviceEventQueue(queueCapacity);
+            return new EventQueue(queueCapacity);
         }
 
         private static WorkItemQueue InitWorkItemQueue(ConfigurationManager configuration)

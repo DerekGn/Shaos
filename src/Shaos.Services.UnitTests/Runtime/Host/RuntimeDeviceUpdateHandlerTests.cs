@@ -47,7 +47,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeDeviceUpdateHandlerTests : BaseServiceTests
     {
-        private readonly Mock<IDeviceEventQueue> _mockDevicecEventQueue;
+        private readonly Mock<IEventQueue> _mockEventQueue;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
@@ -56,7 +56,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         public RuntimeDeviceUpdateHandlerTests()
         {
-            _mockDevicecEventQueue = new Mock<IDeviceEventQueue>();
+            _mockEventQueue = new Mock<IEventQueue>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
@@ -64,8 +64,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _runtimeDeviceUpdateHandler = new RuntimeDeviceUpdateHandler(LoggerFactory!.CreateLogger<RuntimeDeviceUpdateHandler>(),
                                                                          _mockServiceScopeFactory.Object,
-                                                                         _mockDevicecEventQueue.Object,
-                                                                         _mockWorkItemQueue.Object);
+                                                                         _mockWorkItemQueue.Object,
+                                                                         _mockEventQueue.Object);
         }
 
         [Fact]

@@ -25,19 +25,28 @@
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// A device parameter update event
+    /// A event queue.
     /// </summary>
-    /// <typeparam name="T">The device parameter value</typeparam>
-    public record DeviceParameterUpdatedEvent<T> : BaseDeviceEvent
+    public interface IEventQueue
     {
         /// <summary>
-        /// The parameter value
+        /// The number of events queued for processing.
         /// </summary>
-        public required T Value { get; init; }
+        int Count { get; }
 
         /// <summary>
-        /// The parameter update timestamp
+        /// Dequeue a <see cref="BaseEvent"/> instance.
         /// </summary>
-        public DateTime Timestamp { get; init; }
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A dequeued <see cref="BaseEvent"/></returns>
+        Task<BaseEvent> DequeueAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Enqueue a <see cref="BaseEvent"/> instance.
+        /// </summary>
+        /// <param name="event">The <see cref="BaseEvent"/> to enqueue.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task EnqueueAsync(BaseEvent @event,
+                          CancellationToken cancellationToken = default);
     }
 }

@@ -64,6 +64,8 @@ namespace Shaos.Services
         {
             await ExecuteConnectedClientsOperationAsync(async (context) =>
             {
+                _logger.LogBroadcastingEvent(baseEvent.GetType(), context.Connection.RemoteIpAddress);
+
                 await context.Response.WriteAsync(JsonSerializer.Serialize<BaseEvent>(baseEvent));
                 await context.Response.Body.FlushAsync();
             });
@@ -112,7 +114,7 @@ namespace Shaos.Services
         {
             await ExecuteConnectedClientsOperationAsync(async (context) =>
             {
-                if(DateTime.UtcNow.Subtract(_lastEventPush) < _options.Value.HeartBeatInterval)
+                if(DateTime.UtcNow.Subtract(_lastEventPush) >= _options.Value.HeartBeatInterval)
                 {
                     _logger.LogHeartbeatSend(context.Connection.RemoteIpAddress);
                     

@@ -25,18 +25,19 @@
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// A device parameter subscription event
+    /// A device parameter update event
     /// </summary>
-    public record DeviceParameterSubscriptionEvent : BaseDeviceEvent
+    /// <typeparam name="T">The device parameter value</typeparam>
+    public record ParameterUpdatedEvent<T> : BaseDeviceEvent
     {
         /// <summary>
-        /// The subscription state
+        /// The parameter value
         /// </summary>
-        public DeviceSubscriptionState State { get; init; }
+        public required T Value { get; init; }
 
         /// <summary>
-        /// The user identifier 
+        /// The parameter update timestamp
         /// </summary>
-        public required string UserIdentifier { get; init; }
+        public DateTime Timestamp { get; init; }
     }
 }

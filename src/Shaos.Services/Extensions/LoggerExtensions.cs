@@ -66,8 +66,14 @@ namespace Shaos.Services.Extensions
         public static partial void LogAttemptResolveAssembly(this ILogger logger,
                                                              AssemblyName assemblyName);
 
+        [LoggerMessage(Level = LogLevel.Debug,
+            Message = "Broadcasting event: [{eventType}] To: [{IpAddress}]")]
+        public static partial void LogBroadcastingEvent(this ILogger logger,
+                                                        Type eventType,
+                                                        IPAddress ipAddress);
+
         [LoggerMessage(Level = LogLevel.Information,
-            Message = "Creating Runtime Instance for Device [{id}] Name: [{name}]")]
+                    Message = "Creating Runtime Instance for Device [{id}] Name: [{name}]")]
         public static partial void LogCreatingInstance(this ILogger logger,
                                                        int id,
                                                        string name);

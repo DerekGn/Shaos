@@ -27,7 +27,7 @@ namespace Shaos.Services.Eventing
     /// <summary>
     /// The base device event
     /// </summary>
-    public abstract record BaseDeviceEvent
+    public abstract record BaseDeviceEvent : BaseEvent
     {
         /// <summary>
         /// The device parameter identifier
