@@ -23,8 +23,10 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Shaos.Extensions;
 using Shaos.Services;
+using Shaos.Services.Eventing;
+using System.Net.ServerSentEvents;
+using System.Runtime.CompilerServices;
 
 namespace Shaos.Controllers
 {
@@ -48,19 +50,24 @@ namespace Shaos.Controllers
         [EndpointSummary("")]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
-        public async Task Get()
+        public IResult Get(CancellationToken cancellationToken)
         {
             var context = _httpContextAccessor.HttpContext;
 
-            if (context is not null)
+            try
             {
-                context.AddServerSideEventsHeaders();
-
-                _serverSideEventsService.AddContext(context);
-
-                context.RequestAborted.WaitHandle.WaitOne();
-
-                _serverSideEventsService.RemoveContext(context);
+                if (context is not null)
+                {
+                    return TypedResults.ServerSentEvents<SseItem<BaseEvent>>(_serverSideEventsService.AwaitEventAsync(context.Connection.Id, cancellationToken));
+                }
+                else
+                {
+                    return TypedResults.BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.InternalServerError();
             }
         }
     }

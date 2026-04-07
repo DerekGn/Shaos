@@ -22,17 +22,16 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Http;
 using Shaos.Services.Eventing;
+using System.Net.ServerSentEvents;
 
 namespace Shaos.Services
 {
     public interface IServerSideEventsService
     {
-        void AddContext(HttpContext context);
+        IAsyncEnumerable<SseItem<BaseEvent>> AwaitEventAsync(string id,
+                                                             CancellationToken cancellationToken);
 
         Task BroadcastEventAsync(BaseEvent baseEvent);
-
-        void RemoveContext(HttpContext context);
     }
 }

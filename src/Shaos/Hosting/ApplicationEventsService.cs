@@ -44,11 +44,6 @@ namespace Shaos.Hosting
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await PublishEventAsync(stoppingToken);
-        }
-
-        private async Task PublishEventAsync(CancellationToken stoppingToken)
-        {
             while (!stoppingToken.IsCancellationRequested)
             {
                 await _serverSideEventsService.BroadcastEventAsync(await _eventQueue.DequeueAsync(stoppingToken));

@@ -22,106 +22,56 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Shaos.Services.Eventing;
-using Shaos.Services.Extensions;
 using System.Collections.Concurrent;
-using System.Text.Json;
-using System.Timers;
+using System.Net.ServerSentEvents;
+using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
 {
     public class ServerSideEventsService : IServerSideEventsService
     {
-        private readonly ConcurrentDictionary<HttpContext, bool> _clientContexts = new();
-        private readonly SemaphoreSlim _semaphore;
-        private readonly System.Timers.Timer _timer;
         private readonly ILogger<ServerSideEventsService> _logger;
-        private readonly IOptions<ServerSideEventOptions> _options;
-        private DateTime _lastEventPush;
+        private readonly ConcurrentDictionary<string, IEventQueue> _subscriberQueues;
 
-        public ServerSideEventsService(ILogger<ServerSideEventsService> logger,
-                                       IOptions<ServerSideEventOptions> options)
+        public ServerSideEventsService(ILogger<ServerSideEventsService> logger)
         {
-            _semaphore = new SemaphoreSlim(1);
-            _timer = new System.Timers.Timer(options.Value.HeartBeatInterval);
-            _timer.Elapsed += OnTimedEvent;
-            _timer.Enabled = true;
             _logger = logger;
-            _options = options;
+            _subscriberQueues = new ConcurrentDictionary<string, IEventQueue>();
         }
 
-        /// <inheritdoc />
-        public void AddContext(HttpContext context)
+        /// <inheritdoc/>
+        public async IAsyncEnumerable<SseItem<BaseEvent>> AwaitEventAsync(string id,
+                                                                          [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            _clientContexts.TryAdd(context, true);
+            _subscriberQueues.TryAdd(id, new EventQueue(10));
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var baseEvent = await _subscriberQueues[id].DequeueAsync(cancellationToken);
+
+                yield return new SseItem<BaseEvent>(baseEvent)
+                {
+                    ReconnectionInterval = TimeSpan.FromMinutes(1)
+                };
+            }
+
+            //yield return new(await _subscriberQueues[id].DequeueAsync(cancellationToken))
+            //{
+            //    ReconnectionInterval = TimeSpan.FromSeconds(1)
+            //};
+
+            _subscriberQueues.TryRemove(id, out var _);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public async Task BroadcastEventAsync(BaseEvent baseEvent)
         {
-            await ExecuteConnectedClientsOperationAsync(async (context) =>
+            foreach (var item in _subscriberQueues.Values)
             {
-                _logger.LogBroadcastingEvent(baseEvent.GetType(), context.Connection.RemoteIpAddress);
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize<BaseEvent>(baseEvent));
-                await context.Response.Body.FlushAsync();
-            });
-        }
-
-        /// <inheritdoc />
-        public void RemoveContext(HttpContext context)
-        {
-            _clientContexts.TryRemove(context, out _);
-        }
-
-        private async Task ExecuteConnectedClientsOperationAsync(Func<HttpContext, Task> operation)
-        {
-            try
-            {
-                await _semaphore.WaitAsync();
-
-                var disconnectedClients = new List<HttpContext>();
-
-                foreach (var context in _clientContexts.Keys)
-                {
-                    if (context.RequestAborted.IsCancellationRequested)
-                    {
-                        disconnectedClients.Add(context);
-                    }
-                    else
-                    {
-                        await operation(context);
-                    }
-                }
-
-                foreach (var context in disconnectedClients)
-                {
-                    RemoveContext(context);
-                }
-
-                _lastEventPush = DateTime.UtcNow;
+                await item.EnqueueAsync(baseEvent);
             }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        private async void OnTimedEvent(object? sender, ElapsedEventArgs e)
-        {
-            await ExecuteConnectedClientsOperationAsync(async (context) =>
-            {
-                if(DateTime.UtcNow.Subtract(_lastEventPush) >= _options.Value.HeartBeatInterval)
-                {
-                    _logger.LogHeartbeatSend(context.Connection.RemoteIpAddress);
-                    
-                    await context.Response.WriteAsync(": heartbeat");
-                    await context.Response.Body.FlushAsync();
-                }
-            });
         }
     }
 }
