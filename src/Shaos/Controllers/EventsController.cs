@@ -27,7 +27,6 @@ using Shaos.Services;
 using Shaos.Services.Eventing;
 using System.Net;
 using System.Net.ServerSentEvents;
-using System.Runtime.CompilerServices;
 
 namespace Shaos.Controllers
 {
@@ -48,12 +47,14 @@ namespace Shaos.Controllers
         }
 
         [HttpGet()]
-        [EndpointDescription("")]
-        [EndpointName("")]
-        [EndpointSummary("")]
+        [EndpointDescription("Gets a stream of application events")]
+        [EndpointName("StreamEvents")]
+        [EndpointSummary("Access application event stream")]
+        [ProducesResponseType(typeof(SseItem<BaseEvent>), StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = Status400BadRequestText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
-        public IResult Get(CancellationToken cancellationToken)
+        public IResult StreamEventsAsync(CancellationToken cancellationToken)
         {
             var context = _httpContextAccessor.HttpContext;
 
@@ -61,8 +62,8 @@ namespace Shaos.Controllers
             {
                 if (context is not null)
                 {
-                    return TypedResults.ServerSentEvents<SseItem<BaseEvent>>(_serverSideEventsService.StreamEventsAsync(context.Connection.Id,
-                                                                                                                        cancellationToken));
+                    return TypedResults.ServerSentEvents<BaseEvent>(_serverSideEventsService.StreamEventsAsync(context.Connection.Id,
+                                                                                                               cancellationToken));
                 }
                 else
                 {
