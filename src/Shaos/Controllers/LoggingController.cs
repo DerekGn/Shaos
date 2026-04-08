@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Serilog.Events;
 using Shaos.DataAnnotations;
+using Shaos.Services.Extensions;
 using Shaos.Services.Logging;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -60,17 +61,29 @@ namespace Shaos.Controllers
         [EndpointName("SetLogLevelSwitch")]
         [EndpointSummary("Set a log level switch level")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = Status400BadRequestText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
         public async Task<IActionResult> SetLogLevelSwitches([LogLevelSwitchName, Description("The log level switch name")] string name,
                                                              [Required, Description("The log level")] LogEventLevel level,
                                                              CancellationToken cancellationToken = default)
         {
-            _loggingConfiguration.LoggingLevelSwitches[name].MinimumLevel = level;
+            var sanitizedName = name.Sanitize();
 
-            await _loggingConfigurationService.UpdateLogLevelSwitchAsync(name, level, cancellationToken);
+            if(_loggingConfiguration.LoggingLevelSwitches.TryGetValue(sanitizedName, out var loggingLevelSwitch))
+            {
+                loggingLevelSwitch.MinimumLevel = level;
 
-            return Accepted();
+                await _loggingConfigurationService.UpdateLogLevelSwitchAsync(sanitizedName,
+                                                                             level,
+                                                                             cancellationToken);
+
+                return Accepted();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

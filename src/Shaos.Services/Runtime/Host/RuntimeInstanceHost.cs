@@ -87,12 +87,14 @@ namespace Shaos.Services.Runtime.Host
 
             if (instance == null)
             {
+                var name = instanceName.Sanitize();
+
                 _logger.LogCreatingInstance(id,
-                                            instanceName);
+                                            name);
 
                 instance = new RuntimeInstance(id,
                                                plugInId,
-                                               instanceName,
+                                               name,
                                                assemblyPath,
                                                configurable);
 
