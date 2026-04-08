@@ -51,9 +51,16 @@ namespace Shaos.Services.Eventing
         public int Count => _queue.Reader.Count;
 
         /// <inheritdoc/>
-        public async Task<BaseEvent> DequeueAsync(CancellationToken cancellationToken = default)
+        public async Task<BaseEvent?> DequeueAsync(CancellationToken cancellationToken = default)
         {
-            return await _queue.Reader.ReadAsync(cancellationToken);
+            try
+            {
+                return await _queue.Reader.ReadAsync(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc/>

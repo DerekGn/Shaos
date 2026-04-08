@@ -22,16 +22,26 @@
 * SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
+using Shaos.Services.Eventing;
+using Shaos.Services.Exceptions;
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Extensions
 {
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<bool>), BaseEventTypeNames.BooleanTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<float>), BaseEventTypeNames.FloatTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<int>), BaseEventTypeNames.IntTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<uint>), BaseEventTypeNames.UIntTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<string>), BaseEventTypeNames.StringTypeName)]
-    public abstract record BaseEvent
+    internal static class BaseEventExtensions
     {
+        public static string GetEventName(this BaseEvent @event)
+        {
+            var type = @event.GetType();
+
+            return type switch
+            {
+                Type _ when type == typeof(ParameterUpdatedEvent<bool>) => BaseEventTypeNames.BooleanTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<float>) => BaseEventTypeNames.FloatTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<int>) => BaseEventTypeNames.IntTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<uint>) => BaseEventTypeNames.UIntTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<string>) => BaseEventTypeNames.StringTypeName,
+                _ => throw new UnmappedEventTypeNameException(type.Name)
+            };
+        }
     }
 }

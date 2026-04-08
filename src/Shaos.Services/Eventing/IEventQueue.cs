@@ -39,7 +39,7 @@ namespace Shaos.Services.Eventing
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>A dequeued <see cref="BaseEvent"/></returns>
-        Task<BaseEvent> DequeueAsync(CancellationToken cancellationToken = default);
+        Task<BaseEvent?> DequeueAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Enqueue a <see cref="BaseEvent"/> instance.

@@ -22,16 +22,17 @@
 * SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Exceptions
 {
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<bool>), BaseEventTypeNames.BooleanTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<float>), BaseEventTypeNames.FloatTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<int>), BaseEventTypeNames.IntTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<uint>), BaseEventTypeNames.UIntTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<string>), BaseEventTypeNames.StringTypeName)]
-    public abstract record BaseEvent
+    /// <summary>
+    /// An exception that is thrown when an event type was not mapped
+    /// </summary>
+    /// <param name="name"></param>
+    public class UnmappedEventTypeNameException(string name) : Exception
     {
+        /// <summary>
+        /// The unmapped event type name
+        /// </summary>
+        public string Name { get; } = name;
     }
 }

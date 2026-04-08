@@ -24,6 +24,7 @@
 
 using Microsoft.Extensions.Logging;
 using Shaos.Services.Eventing;
+using Shaos.Services.Extensions;
 using System.Collections.Concurrent;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
@@ -42,27 +43,33 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<SseItem<BaseEvent>> AwaitEventAsync(string id,
-                                                                          [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync(string id,
+                                                                            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            _subscriberQueues.TryAdd(id, new EventQueue(10));
-
-            while (!cancellationToken.IsCancellationRequested)
+            try
             {
-                var baseEvent = await _subscriberQueues[id].DequeueAsync(cancellationToken);
+                _subscriberQueues.TryAdd(id, new EventQueue(10));
 
-                yield return new SseItem<BaseEvent>(baseEvent)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    ReconnectionInterval = TimeSpan.FromMinutes(1)
-                };
+                    var baseEvent = await _subscriberQueues[id].DequeueAsync(cancellationToken);
+
+                    if(baseEvent is not null)
+                    {
+                        yield return new SseItem<BaseEvent>(baseEvent, baseEvent.GetEventName())
+                        {
+                            EventId = Guid.NewGuid().ToString(),
+                            ReconnectionInterval = TimeSpan.FromMinutes(1)
+                        };
+                    }
+                }
+
+                _logger.EventStreamingComplete(id);
             }
-
-            //yield return new(await _subscriberQueues[id].DequeueAsync(cancellationToken))
-            //{
-            //    ReconnectionInterval = TimeSpan.FromSeconds(1)
-            //};
-
-            _subscriberQueues.TryRemove(id, out var _);
+            finally
+            {
+                _subscriberQueues.TryRemove(id, out var _);
+            }
         }
 
         /// <inheritdoc/>

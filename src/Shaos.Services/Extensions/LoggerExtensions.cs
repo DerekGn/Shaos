@@ -8,7 +8,12 @@ namespace Shaos.Services.Extensions
     internal static partial class LoggerExtensions
     {
         [LoggerMessage(Level = LogLevel.Information,
-            Message = "Stopping Application")]
+            Message = "Event streaming completed for ConnectionId: [{ConnectionId}]")]
+        public static partial void EventStreamingComplete(this ILogger logger,
+                                                          string connectionId);
+
+        [LoggerMessage(Level = LogLevel.Information,
+                    Message = "Stopping Application")]
         public static partial void LogApplicationStopping(this ILogger logger);
 
         [LoggerMessage(Level = LogLevel.Debug,

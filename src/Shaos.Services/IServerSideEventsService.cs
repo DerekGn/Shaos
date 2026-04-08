@@ -29,8 +29,8 @@ namespace Shaos.Services
 {
     public interface IServerSideEventsService
     {
-        IAsyncEnumerable<SseItem<BaseEvent>> AwaitEventAsync(string id,
-                                                             CancellationToken cancellationToken);
+        IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync(string id,
+                                                               CancellationToken cancellationToken);
 
         Task BroadcastEventAsync(BaseEvent baseEvent);
     }

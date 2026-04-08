@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Services;
 using Shaos.Services.Eventing;
+using System.Net;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
 
@@ -33,6 +34,7 @@ namespace Shaos.Controllers
     [Route("api/v{version:apiVersion}/events")]
     public class EventsController : CoreController
     {
+        private readonly ILogger<EventsController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IServerSideEventsService _serverSideEventsService;
 
@@ -40,6 +42,7 @@ namespace Shaos.Controllers
                                 IHttpContextAccessor httpContextAccessor,
                                 IServerSideEventsService serverSideEventsService) : base(logger)
         {
+            _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _serverSideEventsService = serverSideEventsService;
         }
@@ -58,16 +61,31 @@ namespace Shaos.Controllers
             {
                 if (context is not null)
                 {
-                    return TypedResults.ServerSentEvents<SseItem<BaseEvent>>(_serverSideEventsService.AwaitEventAsync(context.Connection.Id, cancellationToken));
+                    return TypedResults.ServerSentEvents<SseItem<BaseEvent>>(_serverSideEventsService.StreamEventsAsync(context.Connection.Id,
+                                                                                                                        cancellationToken));
                 }
                 else
                 {
-                    return TypedResults.BadRequest();
+                    _logger.LogError("HttpContext is null");
+
+                    return TypedResults.BadRequest(new ProblemDetails()
+                    {
+                        Status = (int)HttpStatusCode.BadRequest,
+                        Title = "HttpContext is null",
+                        Detail = "The request cannot be processed because the HttpContext is null."
+                    });
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                return TypedResults.InternalServerError();
+                _logger.LogError(exception, "An error occurred while processing the events stream");
+
+                return TypedResults.Problem(new ProblemDetails()
+                {
+                    Status = (int)HttpStatusCode.BadRequest,
+                    Title = "An error occurred while processing the events stream",
+                    Detail = "An unexpected error occurred while processing the events stream. Please try again later."
+                });
             }
         }
     }
