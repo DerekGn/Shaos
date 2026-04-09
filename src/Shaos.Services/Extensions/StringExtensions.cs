@@ -24,7 +24,7 @@
 
 namespace Shaos.Services.Extensions
 {
-    internal static class StringExtensions
+    public static class StringExtensions
     {
         public static bool CreateDirectory(this string value)
         {
@@ -62,6 +62,11 @@ namespace Shaos.Services.Extensions
         public static bool IsEmptyOrWhiteSpace(this string value)
         {
             return string.IsNullOrWhiteSpace(value);
+        }
+
+        public static string Sanitize(this string value)
+        {
+            return value.Replace(Environment.NewLine, string.Empty);
         }
     }
 }
