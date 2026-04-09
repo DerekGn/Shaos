@@ -44,4 +44,8 @@
             <_Parameter1>$(MSBuildProjectName).UnitTests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\Shared\EditorTemplates\" />
+    </ItemGroup>
 </Project>

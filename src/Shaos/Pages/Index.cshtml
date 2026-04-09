@@ -38,108 +38,56 @@
                                         var boolParameter = (BoolParameter)item.Parameter;
                                         if (boolParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => boolParameter.Value,
-                                                            "bool",
-                                                            new
-                                                            {
-                                                                HtmlId = boolParameter.Id
-                                                            })
+                                            @Html.EditorFor(model => boolParameter);
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => boolParameter.Value,
-                                                             "bool",
-                                                             new
-                                                             {
-                                                                 HtmlId = boolParameter.Id
-                                                             })
+                                            @Html.DisplayFor(model => boolParameter)
                                         }
                                         break;
                                     case Type _ when type == typeof(FloatParameter):
                                         var floatParameter = (FloatParameter)item.Parameter;
                                         if (floatParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => floatParameter.Value,
-                                                            "float",
-                                                            new
-                                                            {
-                                                                HtmlId = floatParameter.Id,
-                                                                htmlAttributes = new { min = floatParameter.Min, max = floatParameter.Max } 
-                                                            })
+                                            @Html.EditorFor(model => floatParameter)
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => floatParameter.Value,
-                                                            "float",
-                                                            new
-                                                            {
-                                                                HtmlId = floatParameter.Id
-                                                            })
+                                            @Html.DisplayFor(model => floatParameter.Value)
                                         }
                                         break;
                                     case Type _ when type == typeof(IntParameter):
                                         var intParameter = (IntParameter)item.Parameter;
                                         if (intParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => intParameter.Value,
-                                                            "int",
-                                                            new
-                                                            {
-                                                                HtmlId = intParameter.Id,
-                                                                htmlAttributes = new { min = intParameter.Min, max = intParameter.Max }
-                                                            })
+                                            @Html.EditorFor(model => intParameter.Value)
                                             }
                                         else
                                         {
-                                            @Html.DisplayFor(model => intParameter.Value,
-                                                             "int",
-                                                             new
-                                                             {
-                                                                 HtmlId = intParameter.Id
-                                                             })
+                                            @Html.DisplayFor(model => intParameter.Value)
                                         }
                                         break;
                                     case Type _ when type == typeof(StringParameter):
                                         var stringParameter = (StringParameter)item.Parameter;
                                         if (stringParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => stringParameter.Value,
-                                                            "string",
-                                                            new
-                                                            {
-                                                                HtmlId = stringParameter.Id
-                                                            })
+                                            @Html.EditorFor(model => stringParameter.Value)
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => stringParameter.Value,
-                                                             "string",
-                                                             new
-                                                             {
-                                                                 HtmlId = stringParameter.Id
-                                                             })
+                                            @Html.DisplayFor(model => stringParameter.Value)
                                         }
                                         break;
                                     case Type _ when type == typeof(UIntParameter):
                                         var uintParameter = (UIntParameter)item.Parameter;
+
                                         if (uintParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => uintParameter.Value,
-                                                            "uint",
-                                                            new
-                                                            {
-                                                                HtmlId = uintParameter.Id,
-                                                                htmlAttributes = new { min = uintParameter.Min, max = uintParameter.Max } 
-                                                            })
+                                            @Html.EditorFor(model => uintParameter.Value)
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => uintParameter.Value,
-                                                             "uint",
-                                                             new
-                                                             {
-                                                                 HtmlId = uintParameter.Id
-                                                             })
+                                            @Html.DisplayFor(model => uintParameter.Value)
                                         }
                                         break;
                                     default:
