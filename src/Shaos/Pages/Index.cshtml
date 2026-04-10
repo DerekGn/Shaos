@@ -53,29 +53,29 @@
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => floatParameter.Value)
+                                            @Html.DisplayFor(model => floatParameter)
                                         }
                                         break;
                                     case Type _ when type == typeof(IntParameter):
                                         var intParameter = (IntParameter)item.Parameter;
                                         if (intParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => intParameter.Value)
+                                            @Html.EditorFor(model => intParameter)
                                             }
                                         else
                                         {
-                                            @Html.DisplayFor(model => intParameter.Value)
+                                            @Html.DisplayFor(model => intParameter)
                                         }
                                         break;
                                     case Type _ when type == typeof(StringParameter):
                                         var stringParameter = (StringParameter)item.Parameter;
                                         if (stringParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => stringParameter.Value)
+                                            @Html.EditorFor(model => stringParameter)
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => stringParameter.Value)
+                                            @Html.DisplayFor(model => stringParameter)
                                         }
                                         break;
                                     case Type _ when type == typeof(UIntParameter):
@@ -83,11 +83,11 @@
 
                                         if (uintParameter.CanWrite)
                                         {
-                                            @Html.EditorFor(model => uintParameter.Value)
+                                            @Html.EditorFor(model => uintParameter)
                                         }
                                         else
                                         {
-                                            @Html.DisplayFor(model => uintParameter.Value)
+                                            @Html.DisplayFor(model => uintParameter)
                                         }
                                         break;
                                     default:
