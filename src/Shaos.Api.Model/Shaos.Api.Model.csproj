@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.*" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.*" />
-    <PackageReference Include="Shaos.Sdk" Version="0.10.1-beta" />
+    <PackageReference Include="Shaos.Sdk" Version="0.10.2-beta" />
   </ItemGroup>
 
   <ItemGroup>

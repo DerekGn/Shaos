@@ -22,48 +22,31 @@
 * SOFTWARE.
 */
 
-using System.Threading.Channels;
-
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The device event queue
+    /// A event queue.
     /// </summary>
-    public class DeviceEventQueue : IDeviceEventQueue
+    public interface IEventQueue
     {
-        private readonly Channel<BaseDeviceEvent> _queue;
+        /// <summary>
+        /// The number of events queued for processing.
+        /// </summary>
+        int Count { get; }
 
         /// <summary>
-        /// Create an instance of a <see cref="DeviceEventQueue"/>
+        /// Dequeue a <see cref="BaseEvent"/> instance.
         /// </summary>
-        /// <param name="capacity">The event queue capacity</param>
-        public DeviceEventQueue(int capacity)
-        {
-            BoundedChannelOptions options = new(capacity)
-            {
-                FullMode = BoundedChannelFullMode.Wait
-            };
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A dequeued <see cref="BaseEvent"/></returns>
+        Task<BaseEvent?> DequeueAsync(CancellationToken cancellationToken = default);
 
-            _queue = Channel.CreateBounded<BaseDeviceEvent>(options);
-        }
-
-        /// <inheritdoc/>
-        public int Count => _queue.Reader.Count;
-
-        /// <inheritdoc/>
-        public async Task<BaseDeviceEvent> DequeueAsync(CancellationToken cancellationToken = default)
-        {
-            return await _queue.Reader.ReadAsync(cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public async Task EnqueueAsync(BaseDeviceEvent @event,
-                                       CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(@event);
-
-            await _queue.Writer.WriteAsync(@event,
-                                           cancellationToken);
-        }
+        /// <summary>
+        /// Enqueue a <see cref="BaseEvent"/> instance.
+        /// </summary>
+        /// <param name="event">The <see cref="BaseEvent"/> to enqueue.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task EnqueueAsync(BaseEvent @event,
+                          CancellationToken cancellationToken = default);
     }
 }

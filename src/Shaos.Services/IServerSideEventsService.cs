@@ -22,11 +22,16 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.SignalR;
+using Shaos.Services.Eventing;
+using System.Net.ServerSentEvents;
 
-namespace Shaos.Hubs
+namespace Shaos.Services
 {
-    public class RuntimeHub : Hub
+    public interface IServerSideEventsService
     {
+        IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync(string id,
+                                                               CancellationToken cancellationToken);
+
+        Task BroadcastEventAsync(BaseEvent baseEvent);
     }
 }

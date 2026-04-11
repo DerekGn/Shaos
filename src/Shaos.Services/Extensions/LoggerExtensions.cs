@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using System.Net;
 using System.Reflection;
 
 namespace Shaos.Services.Extensions
@@ -7,7 +8,12 @@ namespace Shaos.Services.Extensions
     internal static partial class LoggerExtensions
     {
         [LoggerMessage(Level = LogLevel.Information,
-            Message = "Stopping Application")]
+            Message = "Event streaming completed for ConnectionId: [{ConnectionId}]")]
+        public static partial void EventStreamingComplete(this ILogger logger,
+                                                          string connectionId);
+
+        [LoggerMessage(Level = LogLevel.Information,
+                    Message = "Stopping Application")]
         public static partial void LogApplicationStopping(this ILogger logger);
 
         [LoggerMessage(Level = LogLevel.Debug,
@@ -65,8 +71,14 @@ namespace Shaos.Services.Extensions
         public static partial void LogAttemptResolveAssembly(this ILogger logger,
                                                              AssemblyName assemblyName);
 
+        [LoggerMessage(Level = LogLevel.Debug,
+            Message = "Broadcasting event: [{eventType}] To: [{IpAddress}]")]
+        public static partial void LogBroadcastingEvent(this ILogger logger,
+                                                        Type eventType,
+                                                        IPAddress ipAddress);
+
         [LoggerMessage(Level = LogLevel.Information,
-            Message = "Creating Runtime Instance for Device [{id}] Name: [{name}]")]
+                    Message = "Creating Runtime Instance for Device [{id}] Name: [{name}]")]
         public static partial void LogCreatingInstance(this ILogger logger,
                                                        int id,
                                                        string name);
@@ -163,17 +175,17 @@ namespace Shaos.Services.Extensions
             Message = "Event items collection empty")]
         public static partial void LogEventItemsEmpty(this ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Warning,
-            Message = "Runtime execution instance count exceeded. Count: [{count}] Max: [{max}]")]
-        public static partial void LogExecutionInstanceCountExceeded(this ILogger logger,
-                                                                     int count,
-                                                                     int max);
-
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Runtime execution instance Count: [{count}] Max: [{max}]")]
         public static partial void LogExecutionInstanceCount(this ILogger logger,
                                                              int count,
                                                              int max);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Runtime execution instance count exceeded. Count: [{count}] Max: [{max}]")]
+        public static partial void LogExecutionInstanceCountExceeded(this ILogger logger,
+                                                                     int count,
+                                                                     int max);
 
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Extracting package: [{sourcePath}] to [{targetPath}]")]
@@ -185,6 +197,11 @@ namespace Shaos.Services.Extensions
             Message = "Found running instance [{plugInInstanceId}]")]
         public static partial void LogFoundRunningInstance(this ILogger logger,
                                                            int plugInInstanceId);
+
+        [LoggerMessage(Level = LogLevel.Debug,
+            Message = "Sending heartbeat to [{IpAddress}]")]
+        public static partial void LogHeartbeatSend(this ILogger logger,
+                                                    IPAddress IpAddress);
 
         [LoggerMessage(Level = LogLevel.Information,
             Message = "Initialising logging configuration")]

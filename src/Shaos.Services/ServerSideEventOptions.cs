@@ -22,20 +22,16 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services
 {
     /// <summary>
-    /// The device subscription state
+    /// Server side events options
     /// </summary>
-    public enum DeviceSubscriptionState
+    public class ServerSideEventOptions
     {
         /// <summary>
-        /// Subscribe to a device parameter
+        /// The heartbeat interval for connection keep alive
         /// </summary>
-        Subscribe,
-        /// <summary>
-        /// Unsubscribe from the device parameter
-        /// </summary>
-        Unsubscribe
+        public TimeSpan HeartBeatInterval { get; init; } = TimeSpan.FromSeconds(10);
     }
 }

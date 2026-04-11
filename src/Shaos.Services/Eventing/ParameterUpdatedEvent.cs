@@ -22,40 +22,22 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.SignalR;
-
-namespace Shaos.Hubs
+namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The plot hub interface
+    /// A device parameter update event
     /// </summary>
-    public interface IPlotHub
+    /// <typeparam name="T">The device parameter value</typeparam>
+    public record ParameterUpdatedEvent<T> : BaseDeviceEvent
     {
         /// <summary>
-        /// Start a subscription publish
+        /// The parameter value
         /// </summary>
-        /// <param name="id">The parameter identifier to start publishing updates</param>
-        Task StartAsync(int id);
+        public required T Value { get; init; }
 
         /// <summary>
-        /// Stop a subscription publish
+        /// The parameter update timestamp
         /// </summary>
-        /// <param name="id">The parameter identifier to stop publishing updates</param>
-        Task StopAsync(int id);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(int value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(uint value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(bool value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(float value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(string value, DateTime timeStamp);
+        public DateTime Timestamp { get; init; }
     }
 }

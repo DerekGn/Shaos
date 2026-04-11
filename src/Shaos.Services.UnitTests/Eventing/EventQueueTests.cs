@@ -27,48 +27,48 @@ using Xunit;
 
 namespace Shaos.Services.UnitTests.Eventing
 {
-    public class DeviceEventQueueTests
+    public class EventQueueTests
     {
-        private readonly DeviceEventQueue _deviceEventQueue;
+        private readonly EventQueue _eventQueue;
 
-        public DeviceEventQueueTests()
+        public EventQueueTests()
         {
-            _deviceEventQueue = new DeviceEventQueue(10);
+            _eventQueue = new EventQueue(10);
         }
 
         [Fact]
         public async Task TestEnqueueAsync()
         {
-            DeviceParameterSubscriptionEvent @event = new()
+            ParameterUpdatedEvent<int> @event = new()
             {
                 ParameterId = 1,
-                State = DeviceSubscriptionState.Subscribe,
-                UserIdentifier = "user"
+                Timestamp = DateTime.UtcNow,
+                Value = 1
             };
 
-            await _deviceEventQueue.EnqueueAsync(@event,
+            await _eventQueue.EnqueueAsync(@event,
                                                  TestContext.Current.CancellationToken);
 
-            Assert.Equal(1, _deviceEventQueue.Count);
+            Assert.Equal(1, _eventQueue.Count);
         }
 
         [Fact]
         public async Task TestDequeueAsync()
         {
-            DeviceParameterSubscriptionEvent @event = new()
+            ParameterUpdatedEvent<int> @event = new()
             {
-                ParameterId = 1,
-                State = DeviceSubscriptionState.Subscribe,
-                UserIdentifier = "user"
+                ParameterId= 1,
+                Timestamp = DateTime.UtcNow,
+                Value = 1
             };
 
-            await _deviceEventQueue.EnqueueAsync(@event,
+            await _eventQueue.EnqueueAsync(@event,
                                                  TestContext.Current.CancellationToken);
 
-            var result = await _deviceEventQueue.DequeueAsync(TestContext.Current.CancellationToken);
+            var result = await _eventQueue.DequeueAsync(TestContext.Current.CancellationToken);
 
             Assert.NotNull(result);
-            Assert.Equal(0, _deviceEventQueue.Count);
+            Assert.Equal(0, _eventQueue.Count);
         }
     }
 }

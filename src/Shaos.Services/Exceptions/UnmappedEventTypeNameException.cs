@@ -22,22 +22,17 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// A device parameter update event
+    /// An exception that is thrown when an event type was not mapped
     /// </summary>
-    /// <typeparam name="T">The device parameter value</typeparam>
-    public record DeviceParameterUpdatedEvent<T> : BaseDeviceEvent
+    /// <param name="name"></param>
+    public class UnmappedEventTypeNameException(string name) : Exception
     {
         /// <summary>
-        /// The parameter value
+        /// The unmapped event type name
         /// </summary>
-        public required T Value { get; init; }
-
-        /// <summary>
-        /// The parameter update timestamp
-        /// </summary>
-        public DateTime Timestamp { get; init; }
+        public string Name { get; } = name;
     }
 }

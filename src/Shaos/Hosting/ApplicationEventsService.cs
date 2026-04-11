@@ -22,16 +22,32 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+using Shaos.Services;
+using Shaos.Services.Eventing;
+
+namespace Shaos.Hosting
 {
-    /// <summary>
-    /// The base device event
-    /// </summary>
-    public abstract record BaseDeviceEvent : BaseEvent
+    public class ApplicationEventsService : BackgroundService
     {
-        /// <summary>
-        /// The device parameter identifier
-        /// </summary>
-        public int ParameterId { get; init; }
+        private readonly IEventQueue _eventQueue;
+        private readonly ILogger<ApplicationEventsService> _logger;
+        private readonly IServerSideEventsService _serverSideEventsService;
+
+        public ApplicationEventsService(IEventQueue eventQueue,
+                                        ILogger<ApplicationEventsService> logger,
+                                        IServerSideEventsService serverSideEventsService)
+        {
+            _eventQueue = eventQueue;
+            _logger = logger;
+            _serverSideEventsService = serverSideEventsService;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await _serverSideEventsService.BroadcastEventAsync(await _eventQueue.DequeueAsync(stoppingToken));
+            }
+        }
     }
 }

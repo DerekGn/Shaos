@@ -48,7 +48,7 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
     {
-        private readonly IDeviceEventQueue _deviceEventQueue;
+        private readonly IEventQueue _eventQueue;
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IWorkItemQueue _workItemQueue;
@@ -58,17 +58,17 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="serviceScopeFactory">A <see cref="_serviceScopeFactory"/> instance</param>
-        /// <param name="deviceEventQueue">The device event queue</param>
         /// <param name="workItemQueue">The <see cref="IWorkItemQueue"/> instance</param>
+        /// <param name="eventQueue">The <see cref="IEventQueue"/> instance for publishing events</param>
         public RuntimeDeviceUpdateHandler(ILogger<RuntimeDeviceUpdateHandler> logger,
                                           IServiceScopeFactory serviceScopeFactory,
-                                          IDeviceEventQueue deviceEventQueue,
-                                          IWorkItemQueue workItemQueue)
+                                          IWorkItemQueue workItemQueue,
+                                          IEventQueue eventQueue)
         {
             _logger = logger;
             _serviceScopeFactory = serviceScopeFactory;
-            _deviceEventQueue = deviceEventQueue;
             _workItemQueue = workItemQueue;
+            _eventQueue = eventQueue;
         }
 
         /// <inheritdoc/>
@@ -424,13 +424,13 @@ namespace Shaos.Services.Runtime.Host
         }
 
         private async Task PublishDeviceParameterEventAsync<T>(int id,
-                                                               T level,
+                                                               T value,
                                                                DateTime timeStamp,
                                                                CancellationToken cancellationToken)
         {
-            await _deviceEventQueue.EnqueueAsync(new DeviceParameterUpdatedEvent<T>()
+            await _eventQueue.EnqueueAsync(new ParameterUpdatedEvent<T>()
             {
-                Value = level,
+                Value = value,
                 ParameterId = id,
                 Timestamp = timeStamp
             }, cancellationToken);
