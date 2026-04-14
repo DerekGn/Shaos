@@ -37,6 +37,18 @@ namespace Shaos.Repository.EntityTypeConfigurations
         public void Configure(EntityTypeBuilder<UIntParameter> builder)
         {
             builder
+                .Property(_ => _.Max)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.Min)
+                .IsRequired();
+
+            builder
+                .Property(_ => _.Step)
+                .IsRequired();
+
+            builder
                 .Property(_ => _.Value)
                 .IsRequired();
 

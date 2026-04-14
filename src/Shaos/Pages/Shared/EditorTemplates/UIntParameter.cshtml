@@ -2,4 +2,7 @@
 
 @model UIntParameter
 
-<input id="@Model.Id" type="range" class="form-range" min="@Model.Min" max="@Model.Max" step="1" />
+<div class="row">
+    <input class="col-sm form-range" id="@Model.Id" type="range" min="@Model.Min" max="@Model.Max" step="@Model.Step" value="@Model.Value" />
+    <div class="col-sm">@Model.Value</div>
+</div>
