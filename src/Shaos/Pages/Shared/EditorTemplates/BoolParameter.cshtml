@@ -2,6 +2,12 @@
 
 @model BoolParameter
 
-<div class="mb-3 form-check form-switch">
-    <input id="@(Model.Id)" class="form-check-input" type="checkbox" role="switch">
+<div class="row">
+    <div class="col-sm-1">@Model.Value</div>
+    <div class="col-sm-2">
+        <div class="col-sm form-check form-switch">
+            <input id="@(Model.Id)" class="form-check-input" type="checkbox" role="switch" {@Model.Value ? checked : }>
+        </div>
+    </div>
+    <div class="col-sm-3">@Model.UpdatedDate</div>
 </div>

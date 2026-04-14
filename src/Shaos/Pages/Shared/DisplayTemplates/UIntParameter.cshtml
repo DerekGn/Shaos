@@ -2,4 +2,8 @@
 
 @model UIntParameter
 
-<span id="@(Model.Id)">@Model.Value</span>
+<div class="row">
+    <div class="col-sm-1">@Model.Value</div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-3">@Model.UpdatedDate</div>
+</div>

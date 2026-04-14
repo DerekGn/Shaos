@@ -6,18 +6,15 @@
 }
 
 <table class="table">
-    <thead>
+   @*  <thead>
         <tr>
             <th>
             </th>
             <th>
                 Value
             </th>
-            <th>
-                Updated
-            </th>
         </tr>
-    </thead>
+    </thead> *@
     <tbody>
         <form method="post">
             @foreach (var item in Model.Items)
@@ -99,11 +96,6 @@
                                 <p style="color:red;">Parameter is null</p>
                             }
                         }
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Parameter!.TimeStamp,
-                                         "DateTime",
-                                         new { HtmlId = item.Parameter!.Id })
                     </td>
                 </tr>
             }

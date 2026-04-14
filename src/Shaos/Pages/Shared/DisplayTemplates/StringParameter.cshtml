@@ -1,4 +1,8 @@
 ﻿@using Shaos.Repository.Models.Devices.Parameters
+
 @model StringParameter
 
-<span id="@Model.Id">@Model.Value</span>
+<div class="row">
+    <div class="col-sm-3">@Model.Value</div>
+    <div class="col-sm-3">@Model.UpdatedDate</div>
+</div>
