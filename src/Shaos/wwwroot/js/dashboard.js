@@ -8,12 +8,9 @@ window.onload = function () {
         console.debug('parameter-updated-event-bool');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById('bool-' + parameter.parameterId);
-        const dateTime = document.getElementById('datetime-' + parameter.parameterId);
+        const element = document.getElementById(parameter.parameterId);
 
-        if (element !== null)
-        {
-            element.checked = parameter.value;
+        if (element != null) {
         }
     });
 
@@ -21,13 +18,9 @@ window.onload = function () {
         console.debug('parameter-updated-event-float');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById('float-' + parameter.parameterId);
-        const dateTime = document.getElementById('datetime-' + parameter.parameterId);
+        const element = document.getElementById(parameter.parameterId);
 
-        if (element !== null) {
-            //if (element.nodeName == ) {
-
-            //}
+        if (element != null) {
         }
     });
 
@@ -35,10 +28,9 @@ window.onload = function () {
         console.debug('parameter-updated-event-int');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById('int-' + parameter.parameterId);
-        const dateTime = document.getElementById('datetime-' + parameter.parameterId);
+        const element = document.getElementById(parameter.parameterId);
 
-        if (element !== null) {
+        if (element != null) {
         }
     });
 
@@ -46,10 +38,9 @@ window.onload = function () {
         console.debug('parameter-updated-event-string');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById('string-' + parameter.parameterId);
-        const dateTime = document.getElementById('datetime-' + parameter.parameterId);
+        const element = document.getElementById(parameter.parameterId);
 
-        if (element !== null) {
+        if (element != null) {
         }
     });
 
@@ -57,10 +48,9 @@ window.onload = function () {
         console.debug('parameter-updated-event-uint');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById('uint-' + parameter.parameterId);
-        const dateTime = document.getElementById('datetime-' + parameter.parameterId);
+        const element = document.getElementById(parameter.parameterId);
 
-        if (element !== null) {
+        if (element != null) {
         }
     });
 
