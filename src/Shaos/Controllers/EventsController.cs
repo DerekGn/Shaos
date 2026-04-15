@@ -23,6 +23,7 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
+using Shaos.Extensions;
 using Shaos.Services;
 using Shaos.Services.Eventing;
 using System.Net;
@@ -62,12 +63,13 @@ namespace Shaos.Controllers
             {
                 if (context is not null)
                 {
-                    return TypedResults.ServerSentEvents<BaseEvent>(_serverSideEventsService.StreamEventsAsync(context.Connection.Id,
-                                                                                                               cancellationToken));
+                    _logger.EventStreamingStarted(context.Connection.Id);
+
+                    return TypedResults.ServerSentEvents<BaseEvent>(_serverSideEventsService.StreamEventsAsync(cancellationToken));
                 }
                 else
                 {
-                    _logger.LogError("HttpContext is null");
+                    _logger.HttpContextNull();
 
                     return TypedResults.BadRequest(new ProblemDetails()
                     {
@@ -79,7 +81,7 @@ namespace Shaos.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "An error occurred while processing the events stream");
+                _logger.LogUnhandledException(exception);
 
                 return TypedResults.Problem(new ProblemDetails()
                 {
