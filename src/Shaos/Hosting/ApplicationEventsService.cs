@@ -46,7 +46,12 @@ namespace Shaos.Hosting
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await _serverSideEventsService.BroadcastEventAsync(await _eventQueue.DequeueAsync(stoppingToken));
+                var baseEvent = await _eventQueue.DequeueAsync(stoppingToken);
+
+                if (baseEvent is not null)
+                {
+                    await _serverSideEventsService.BroadcastEventAsync(baseEvent);
+                }
             }
         }
     }
