@@ -30,8 +30,13 @@ namespace Shaos.Services
     public class ServerSideEventOptions
     {
         /// <summary>
-        /// The heartbeat interval for connection keep alive
+        /// The event queue capacity
         /// </summary>
-        public TimeSpan HeartBeatInterval { get; init; } = TimeSpan.FromSeconds(10);
+        public int EventQueueCapacity { get; set; } = 100;
+
+        /// <summary>
+        /// The server side event reconnect interval
+        /// </summary>
+        public TimeSpan ReconnectInterval { get; set; } = TimeSpan.FromSeconds(60);
     }
 }

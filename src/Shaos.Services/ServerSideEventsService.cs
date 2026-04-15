@@ -23,9 +23,9 @@
 */
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Shaos.Services.Eventing;
 using Shaos.Services.Extensions;
-using System.Collections.Concurrent;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
 
@@ -33,51 +33,85 @@ namespace Shaos.Services
 {
     public class ServerSideEventsService : IServerSideEventsService
     {
+        private readonly IList<IEventQueue> _eventQueues;
         private readonly ILogger<ServerSideEventsService> _logger;
-        private readonly ConcurrentDictionary<string, IEventQueue> _subscriberQueues;
+        private readonly IOptions<ServerSideEventOptions> _options;
+        private readonly SemaphoreSlim _semaphore;
 
-        public ServerSideEventsService(ILogger<ServerSideEventsService> logger)
+        public ServerSideEventsService(ILogger<ServerSideEventsService> logger,
+                                       IOptions<ServerSideEventOptions> options)
         {
             _logger = logger;
-            _subscriberQueues = new ConcurrentDictionary<string, IEventQueue>();
-        }
-
-        /// <inheritdoc/>
-        public async IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync(string id,
-                                                                            [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            try
-            {
-                _subscriberQueues.TryAdd(id, new EventQueue(10));
-
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    var baseEvent = await _subscriberQueues[id].DequeueAsync(cancellationToken);
-
-                    if(baseEvent is not null)
-                    {
-                        yield return new SseItem<BaseEvent>(baseEvent, baseEvent.GetEventName())
-                        {
-                            EventId = Guid.NewGuid().ToString(),
-                            ReconnectionInterval = TimeSpan.FromMinutes(1)
-                        };
-                    }
-                }
-
-                _logger.EventStreamingComplete(id);
-            }
-            finally
-            {
-                _subscriberQueues.TryRemove(id, out var _);
-            }
+            _options = options;
+            _semaphore = new SemaphoreSlim(1);
+            _eventQueues = new List<IEventQueue>();
         }
 
         /// <inheritdoc/>
         public async Task BroadcastEventAsync(BaseEvent baseEvent)
         {
-            foreach (var item in _subscriberQueues.Values)
+            await AccessClientQueuesAsync(() =>
             {
-                await item.EnqueueAsync(baseEvent);
+                foreach (var queue in _eventQueues)
+                {
+                    queue.EnqueueAsync(baseEvent);
+                }
+            });
+        }
+
+        /// <inheritdoc/>
+        public async IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            EventQueue? eventQueue = null;
+
+            try
+            {
+                eventQueue = new EventQueue(_options.Value.EventQueueCapacity);
+
+                await AccessClientQueuesAsync(async () =>
+                {
+                    _eventQueues.Add(eventQueue);
+                });
+
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    var baseEvent = await eventQueue.DequeueAsync(cancellationToken);
+
+                    if (baseEvent is not null)
+                    {
+                        yield return new SseItem<BaseEvent>(baseEvent, baseEvent.GetEventName())
+                        {
+                            EventId = Guid.NewGuid().ToString(),
+                            ReconnectionInterval = _options.Value.ReconnectInterval
+                        };
+                    }
+                }
+
+                _logger.EventStreamingComplete();
+            }
+            finally
+            {
+                if (eventQueue is not null)
+                {
+                    await AccessClientQueuesAsync(async () =>
+                    {
+                        _eventQueues.Remove(eventQueue);
+                    });
+                }
+            }
+        }
+
+        private async Task AccessClientQueuesAsync(Action action)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                action();
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }
