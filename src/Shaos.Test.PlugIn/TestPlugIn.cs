@@ -58,6 +58,10 @@ namespace Shaos.Test.PlugIn
 
             await CreateDevicesAsync();
 
+            float floatValue = 1;
+            int intValue = 1;
+            uint uintValue = 1;
+
             var boolParameter = (BoolParameter)Devices.First().Parameters.First();
             var boolWriteParameter = (BoolParameter)Devices.First().Parameters.Skip(1).First();
             var floatParameter = (FloatParameter)Devices.First().Parameters.Skip(2).First();
@@ -78,8 +82,13 @@ namespace Shaos.Test.PlugIn
 
                 await boolParameter.NotifyValueChangedAsync(!boolParameter.Value);
                 await boolWriteParameter.NotifyValueChangedAsync(!boolParameter.Value);
-                //await floatParameter.NotifyValueChangedAsync();
-                //await floatWriteParameter.NotifyValueChangedAsync();
+                await floatParameter.NotifyValueChangedAsync(IncrementLimit(ref floatValue, 1.0f, 10.0f));
+                await floatWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref floatValue, 1.0f, 10.0f));
+                await intParameter.NotifyValueChangedAsync(IncrementLimit(ref intValue, 1, 10));
+                await intWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref intValue, 1, 10));
+
+                await uintParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
+                await uintWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
 
             } while (!cancellationToken.IsCancellationRequested);
 
@@ -103,6 +112,18 @@ namespace Shaos.Test.PlugIn
         private static uint IncrementLimit(ref uint value,
                                            uint lower,
                                            uint upper)
+        {
+            if (++value > upper)
+            {
+                value = lower;
+            }
+
+            return value;
+        }
+
+        private static float IncrementLimit(ref float value,
+                                            float lower,
+                                            float upper)
         {
             if (++value > upper)
             {
