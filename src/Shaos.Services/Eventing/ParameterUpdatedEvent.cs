@@ -39,5 +39,8 @@ namespace Shaos.Services.Eventing
         /// The parameter update timestamp
         /// </summary>
         public DateTime Timestamp { get; init; }
+
+
+        public bool CanWrite { get; init; }
     }
 }

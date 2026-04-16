@@ -1,6 +1,7 @@
 ﻿"use strict";
 
 const eventSource = new EventSource('/api/v1/events');
+const elementCount = 3;
 
 window.onload = function () {
 
@@ -10,7 +11,10 @@ window.onload = function () {
         const parameter = JSON.parse(event.data);
         const element = document.getElementById(parameter.parameterId);
 
-        if (element != null) {
+        if (element != null && element.children.length == elementCount) {
+            element.children[0].innerHTML = parameter.value;
+            element.children[1].children[0].children[0].checked = parameter.value;
+            element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
         }
     });
 
@@ -20,7 +24,13 @@ window.onload = function () {
         const parameter = JSON.parse(event.data);
         const element = document.getElementById(parameter.parameterId);
 
-        if (element != null) {
+        if (element != null && element.children.length == elementCount) {
+            element.children[0].innerHTML = parameter.value;
+            element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
+
+            if (parameter.canWrite) {
+
+            }
         }
     });
 
@@ -30,7 +40,13 @@ window.onload = function () {
         const parameter = JSON.parse(event.data);
         const element = document.getElementById(parameter.parameterId);
 
-        if (element != null) {
+        if (element != null && element.children.length == elementCount) {
+            element.children[0].innerHTML = parameter.value;
+            element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
+
+            if (parameter.canWrite) {
+
+            }
         }
     });
 
@@ -40,7 +56,13 @@ window.onload = function () {
         const parameter = JSON.parse(event.data);
         const element = document.getElementById(parameter.parameterId);
 
-        if (element != null) {
+        if (element != null && element.children.length == elementCount) {
+            element.children[0].innerHTML = parameter.value;
+            element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
+
+            if (parameter.canWrite) {
+
+            }
         }
     });
 
@@ -50,7 +72,13 @@ window.onload = function () {
         const parameter = JSON.parse(event.data);
         const element = document.getElementById(parameter.parameterId);
 
-        if (element != null) {
+        if (element != null && element.children.length == elementCount) {
+            element.children[0].innerHTML = parameter.value;
+            element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
+
+            if (parameter.canWrite) {
+
+            }
         }
     });
 

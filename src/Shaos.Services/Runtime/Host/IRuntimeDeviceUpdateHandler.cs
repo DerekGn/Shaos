@@ -67,9 +67,11 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
+        /// <param name="canWrite">Indicates if the parameter value can be written too</param>
         /// <param name="timestamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id,
                                       int value,
+                                      bool canWrite,
                                       DateTime timestamp);
 
         /// <summary>
@@ -77,9 +79,11 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
+        /// <param name="canWrite">Indicates if the parameter value can be written too</param>
         /// <param name="timestamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id,
                                       string value,
+                                      bool canWrite,
                                       DateTime timestamp);
 
         /// <summary>
@@ -87,9 +91,11 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
+        /// <param name="canWrite">Indicates if the parameter value can be written too</param>
         /// <param name="timestamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id,
                                       float value,
+                                      bool canWrite,
                                       DateTime timestamp);
 
         /// <summary>
@@ -97,9 +103,11 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
+        /// <param name="canWrite">Indicates if the parameter value can be written too</param>
         /// <param name="timestamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id,
                                       bool value,
+                                      bool canWrite,
                                       DateTime timestamp);
 
         /// <summary>
@@ -107,9 +115,11 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The parameter id</param>
         /// <param name="value">The updated value</param>
+        /// <param name="canWrite">Indicates if the parameter value can be written too</param>
         /// <param name="timestamp">The timestamp</param>
         Task SaveParameterChangeAsync(int id,
                                       uint value,
+                                      bool canWrite,
                                       DateTime timestamp);
     }
 }

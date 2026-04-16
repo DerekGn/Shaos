@@ -26,6 +26,9 @@ using System.Text.Json.Serialization;
 
 namespace Shaos.Services.Eventing
 {
+    /// <summary>
+    /// The base event type
+    /// </summary>
     [JsonDerivedType(typeof(ParameterUpdatedEvent<bool>), BaseEventTypeNames.BooleanTypeName)]
     [JsonDerivedType(typeof(ParameterUpdatedEvent<float>), BaseEventTypeNames.FloatTypeName)]
     [JsonDerivedType(typeof(ParameterUpdatedEvent<int>), BaseEventTypeNames.IntTypeName)]
