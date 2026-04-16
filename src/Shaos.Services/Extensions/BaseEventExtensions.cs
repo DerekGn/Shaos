@@ -22,39 +22,26 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models.Devices.Parameters;
+using Shaos.Services.Eventing;
+using Shaos.Services.Exceptions;
 
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Services.Extensions
 {
-    /// <summary>
-    /// The <see cref="BaseParameter"/> EF configuration
-    /// </summary>
-    public class UIntEntityTypeConfiguration : IEntityTypeConfiguration<UIntParameter>
+    internal static class BaseEventExtensions
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<UIntParameter> builder)
+        public static string GetEventName(this BaseEvent @event)
         {
-            builder
-                .Property(_ => _.Max)
-                .IsRequired();
+            var type = @event.GetType();
 
-            builder
-                .Property(_ => _.Min)
-                .IsRequired();
-
-            builder
-                .Property(_ => _.Step)
-                .IsRequired();
-
-            builder
-                .Property(_ => _.Value)
-                .IsRequired();
-
-            builder
-                .HasMany(_ => _.Values)
-                .WithOne(_ => _.Parameter);
+            return type switch
+            {
+                Type _ when type == typeof(ParameterUpdatedEvent<bool>) => BaseEventTypeNames.BooleanTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<float>) => BaseEventTypeNames.FloatTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<int>) => BaseEventTypeNames.IntTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<uint>) => BaseEventTypeNames.UIntTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<string>) => BaseEventTypeNames.StringTypeName,
+                _ => throw new UnmappedEventTypeNameException(type.Name)
+            };
         }
     }
 }

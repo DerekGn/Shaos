@@ -22,48 +22,25 @@
 * SOFTWARE.
 */
 
-using System.Threading.Channels;
-
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The device event queue
+    /// A device parameter update event
     /// </summary>
-    public class DeviceEventQueue : IDeviceEventQueue
+    /// <typeparam name="T">The device parameter value</typeparam>
+    public record ParameterUpdatedEvent<T> : BaseDeviceEvent
     {
-        private readonly Channel<BaseDeviceEvent> _queue;
+        /// <summary>
+        /// The parameter value
+        /// </summary>
+        public required T Value { get; init; }
 
         /// <summary>
-        /// Create an instance of a <see cref="DeviceEventQueue"/>
+        /// The parameter update timestamp
         /// </summary>
-        /// <param name="capacity">The event queue capacity</param>
-        public DeviceEventQueue(int capacity)
-        {
-            BoundedChannelOptions options = new(capacity)
-            {
-                FullMode = BoundedChannelFullMode.Wait
-            };
+        public DateTime Timestamp { get; init; }
 
-            _queue = Channel.CreateBounded<BaseDeviceEvent>(options);
-        }
 
-        /// <inheritdoc/>
-        public int Count => _queue.Reader.Count;
-
-        /// <inheritdoc/>
-        public async Task<BaseDeviceEvent> DequeueAsync(CancellationToken cancellationToken = default)
-        {
-            return await _queue.Reader.ReadAsync(cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        public async Task EnqueueAsync(BaseDeviceEvent @event,
-                                       CancellationToken cancellationToken = default)
-        {
-            ArgumentNullException.ThrowIfNull(@event);
-
-            await _queue.Writer.WriteAsync(@event,
-                                           cancellationToken);
-        }
+        public bool CanWrite { get; init; }
     }
 }

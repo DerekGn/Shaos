@@ -22,31 +22,21 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services
 {
     /// <summary>
-    /// A device event queue.
+    /// Server side events options
     /// </summary>
-    public interface IDeviceEventQueue
+    public class ServerSideEventOptions
     {
         /// <summary>
-        /// The number of events queued for processing.
+        /// The event queue capacity
         /// </summary>
-        int Count { get; }
+        public int EventQueueCapacity { get; set; } = 100;
 
         /// <summary>
-        /// Dequeue a <see cref="BaseDeviceEvent"/> instance.
+        /// The server side event reconnect interval
         /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>A dequeued <see cref="BaseDeviceEvent"/></returns>
-        Task<BaseDeviceEvent> DequeueAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Enqueue a <see cref="BaseDeviceEvent"/> instance.
-        /// </summary>
-        /// <param name="event">The <see cref="BaseDeviceEvent"/> to enqueue.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task EnqueueAsync(BaseDeviceEvent @event,
-                          CancellationToken cancellationToken = default);
+        public TimeSpan ReconnectInterval { get; set; } = TimeSpan.FromSeconds(60);
     }
 }

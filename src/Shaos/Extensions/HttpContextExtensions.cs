@@ -22,39 +22,15 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models.Devices.Parameters;
-
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Extensions
 {
-    /// <summary>
-    /// The <see cref="BaseParameter"/> EF configuration
-    /// </summary>
-    public class UIntEntityTypeConfiguration : IEntityTypeConfiguration<UIntParameter>
+    public static class HttpContextExtensions
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<UIntParameter> builder)
+        public static void AddServerSideEventsHeaders(this HttpContext httpContext)
         {
-            builder
-                .Property(_ => _.Max)
-                .IsRequired();
-
-            builder
-                .Property(_ => _.Min)
-                .IsRequired();
-
-            builder
-                .Property(_ => _.Step)
-                .IsRequired();
-
-            builder
-                .Property(_ => _.Value)
-                .IsRequired();
-
-            builder
-                .HasMany(_ => _.Values)
-                .WithOne(_ => _.Parameter);
+            httpContext.Response.Headers.Append("Content-Type", "text/event-stream");
+            httpContext.Response.Headers.Append("Cache-Control", "no-cache");
+            httpContext.Response.Headers.Append("Connection", "keep-alive");
         }
     }
 }

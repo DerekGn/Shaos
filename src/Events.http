@@ -1,0 +1,5 @@
+# Update configuration to match application configuration
+@HostAddress = https://localhost:7000
+
+GET {{HostAddress}}/api/v1/events
+Accept: text/event-stream

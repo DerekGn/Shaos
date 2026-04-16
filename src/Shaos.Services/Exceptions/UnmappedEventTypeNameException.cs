@@ -22,11 +22,17 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.SignalR;
-
-namespace Shaos.Hubs
+namespace Shaos.Services.Exceptions
 {
-    public class RuntimeHub : Hub
+    /// <summary>
+    /// An exception that is thrown when an event type was not mapped
+    /// </summary>
+    /// <param name="name"></param>
+    public class UnmappedEventTypeNameException(string name) : Exception
     {
+        /// <summary>
+        /// The unmapped event type name
+        /// </summary>
+        public string Name { get; } = name;
     }
 }

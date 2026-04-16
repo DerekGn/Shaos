@@ -22,40 +22,37 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.SignalR;
+using Shaos.Services;
+using Shaos.Services.Eventing;
 
-namespace Shaos.Hubs
+namespace Shaos.Hosting
 {
-    /// <summary>
-    /// The plot hub interface
-    /// </summary>
-    public interface IPlotHub
+    public class ApplicationEventsService : BackgroundService
     {
-        /// <summary>
-        /// Start a subscription publish
-        /// </summary>
-        /// <param name="id">The parameter identifier to start publishing updates</param>
-        Task StartAsync(int id);
+        private readonly IEventQueue _eventQueue;
+        private readonly ILogger<ApplicationEventsService> _logger;
+        private readonly IServerSideEventsService _serverSideEventsService;
 
-        /// <summary>
-        /// Stop a subscription publish
-        /// </summary>
-        /// <param name="id">The parameter identifier to stop publishing updates</param>
-        Task StopAsync(int id);
+        public ApplicationEventsService(IEventQueue eventQueue,
+                                        ILogger<ApplicationEventsService> logger,
+                                        IServerSideEventsService serverSideEventsService)
+        {
+            _eventQueue = eventQueue;
+            _logger = logger;
+            _serverSideEventsService = serverSideEventsService;
+        }
 
-        [HubMethodName("update")]
-        Task UpdateAsync(int value, DateTime timeStamp);
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var baseEvent = await _eventQueue.DequeueAsync(stoppingToken);
 
-        [HubMethodName("update")]
-        Task UpdateAsync(uint value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(bool value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(float value, DateTime timeStamp);
-
-        [HubMethodName("update")]
-        Task UpdateAsync(string value, DateTime timeStamp);
+                if (baseEvent is not null)
+                {
+                    await _serverSideEventsService.BroadcastEventAsync(baseEvent);
+                }
+            }
+        }
     }
 }

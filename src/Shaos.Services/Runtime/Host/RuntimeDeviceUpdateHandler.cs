@@ -48,7 +48,7 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
     {
-        private readonly IDeviceEventQueue _deviceEventQueue;
+        private readonly IEventQueue _eventQueue;
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IWorkItemQueue _workItemQueue;
@@ -58,17 +58,17 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="logger">A <see cref="ILogger{TCategoryName}"/> instance</param>
         /// <param name="serviceScopeFactory">A <see cref="_serviceScopeFactory"/> instance</param>
-        /// <param name="deviceEventQueue">The device event queue</param>
         /// <param name="workItemQueue">The <see cref="IWorkItemQueue"/> instance</param>
+        /// <param name="eventQueue">The <see cref="IEventQueue"/> instance for publishing events</param>
         public RuntimeDeviceUpdateHandler(ILogger<RuntimeDeviceUpdateHandler> logger,
                                           IServiceScopeFactory serviceScopeFactory,
-                                          IDeviceEventQueue deviceEventQueue,
-                                          IWorkItemQueue workItemQueue)
+                                          IWorkItemQueue workItemQueue,
+                                          IEventQueue eventQueue)
         {
             _logger = logger;
             _serviceScopeFactory = serviceScopeFactory;
-            _deviceEventQueue = deviceEventQueue;
             _workItemQueue = workItemQueue;
+            _eventQueue = eventQueue;
         }
 
         /// <inheritdoc/>
@@ -174,25 +174,7 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    int value,
-                                                   DateTime timestamp)
-        {
-            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
-            {
-                await SaveParameterChangeToRepositoryAsync(id,
-                                                           value,
-                                                           timestamp,
-                                                           cancellationToken);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                      value,
-                                                      timestamp,
-                                                      cancellationToken);
-            });
-        }
-
-        /// <inheritdoc/>
-        public async Task SaveParameterChangeAsync(int id,
-                                                   string value,
+                                                   bool canWrite,
                                                    DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
@@ -204,6 +186,28 @@ namespace Shaos.Services.Runtime.Host
 
                 await PublishDeviceParameterEventAsync(id,
                                                        value,
+                                                       canWrite,
+                                                       timestamp,
+                                                       cancellationToken);
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveParameterChangeAsync(int id,
+                                                   string value,
+                                                   bool canWrite,
+                                                   DateTime timestamp)
+        {
+            await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
+            {
+                await SaveParameterChangeToRepositoryAsync(id,
+                                                           value,
+                                                           timestamp,
+                                                           cancellationToken);
+
+                await PublishDeviceParameterEventAsync(id,
+                                                       value,
+                                                       canWrite,
                                                        timestamp,
                                                        cancellationToken);
             });
@@ -212,6 +216,7 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    float value,
+                                                   bool canWrite,
                                                    DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
@@ -222,15 +227,17 @@ namespace Shaos.Services.Runtime.Host
                                                            cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
-                                                      value,
-                                                      timestamp,
-                                                      cancellationToken);
+                                                       value,
+                                                       canWrite,
+                                                       timestamp,
+                                                       cancellationToken);
             });
         }
 
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    bool value,
+                                                   bool canWrite,
                                                    DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
@@ -241,15 +248,17 @@ namespace Shaos.Services.Runtime.Host
                                                            cancellationToken);
 
                 await PublishDeviceParameterEventAsync(id,
-                                                      value,
-                                                      timestamp,
-                                                      cancellationToken);
+                                                       value,
+                                                       canWrite,
+                                                       timestamp,
+                                                       cancellationToken);
             });
         }
 
         /// <inheritdoc/>
         public async Task SaveParameterChangeAsync(int id,
                                                    uint value,
+                                                   bool canWrite,
                                                    DateTime timestamp)
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
@@ -261,6 +270,7 @@ namespace Shaos.Services.Runtime.Host
 
                 await PublishDeviceParameterEventAsync(id,
                                                       value,
+                                                      canWrite,
                                                       timestamp,
                                                       cancellationToken);
             });
@@ -424,15 +434,17 @@ namespace Shaos.Services.Runtime.Host
         }
 
         private async Task PublishDeviceParameterEventAsync<T>(int id,
-                                                               T level,
+                                                               T value,
+                                                               bool canWrite,
                                                                DateTime timeStamp,
                                                                CancellationToken cancellationToken)
         {
-            await _deviceEventQueue.EnqueueAsync(new DeviceParameterUpdatedEvent<T>()
+            await _eventQueue.EnqueueAsync(new ParameterUpdatedEvent<T>()
             {
-                Value = level,
+                CanWrite = canWrite,
                 ParameterId = id,
-                Timestamp = timeStamp
+                Timestamp = timeStamp,
+                Value = value
             }, cancellationToken);
         }
     }

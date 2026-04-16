@@ -25,17 +25,28 @@
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The device subscription state
+    /// A event queue.
     /// </summary>
-    public enum DeviceSubscriptionState
+    public interface IEventQueue
     {
         /// <summary>
-        /// Subscribe to a device parameter
+        /// The number of events queued for processing.
         /// </summary>
-        Subscribe,
+        int Count { get; }
+
         /// <summary>
-        /// Unsubscribe from the device parameter
+        /// Dequeue a <see cref="BaseEvent"/> instance.
         /// </summary>
-        Unsubscribe
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A dequeued <see cref="BaseEvent"/></returns>
+        Task<BaseEvent?> DequeueAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Enqueue a <see cref="BaseEvent"/> instance.
+        /// </summary>
+        /// <param name="event">The <see cref="BaseEvent"/> to enqueue.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task EnqueueAsync(BaseEvent @event,
+                          CancellationToken cancellationToken = default);
     }
 }

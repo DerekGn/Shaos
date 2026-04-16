@@ -22,21 +22,19 @@
 * SOFTWARE.
 */
 
+using System.Text.Json.Serialization;
+
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// A device parameter subscription event
+    /// The base event type
     /// </summary>
-    public record DeviceParameterSubscriptionEvent : BaseDeviceEvent
+    [JsonDerivedType(typeof(ParameterUpdatedEvent<bool>), BaseEventTypeNames.BooleanTypeName)]
+    [JsonDerivedType(typeof(ParameterUpdatedEvent<float>), BaseEventTypeNames.FloatTypeName)]
+    [JsonDerivedType(typeof(ParameterUpdatedEvent<int>), BaseEventTypeNames.IntTypeName)]
+    [JsonDerivedType(typeof(ParameterUpdatedEvent<uint>), BaseEventTypeNames.UIntTypeName)]
+    [JsonDerivedType(typeof(ParameterUpdatedEvent<string>), BaseEventTypeNames.StringTypeName)]
+    public abstract record BaseEvent
     {
-        /// <summary>
-        /// The subscription state
-        /// </summary>
-        public DeviceSubscriptionState State { get; init; }
-
-        /// <summary>
-        /// The user identifier 
-        /// </summary>
-        public required string UserIdentifier { get; init; }
     }
 }

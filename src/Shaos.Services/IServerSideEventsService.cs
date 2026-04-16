@@ -22,22 +22,15 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
-{
-    /// <summary>
-    /// A device parameter update event
-    /// </summary>
-    /// <typeparam name="T">The device parameter value</typeparam>
-    public record DeviceParameterUpdatedEvent<T> : BaseDeviceEvent
-    {
-        /// <summary>
-        /// The parameter value
-        /// </summary>
-        public required T Value { get; init; }
+using Shaos.Services.Eventing;
+using System.Net.ServerSentEvents;
 
-        /// <summary>
-        /// The parameter update timestamp
-        /// </summary>
-        public DateTime Timestamp { get; init; }
+namespace Shaos.Services
+{
+    public interface IServerSideEventsService
+    {
+        IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync(CancellationToken cancellationToken);
+
+        Task BroadcastEventAsync(BaseEvent baseEvent);
     }
 }

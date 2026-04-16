@@ -101,6 +101,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
+                                                                           parameter.CanWrite,
                                                                            e.TimeStamp);
             });
         }
@@ -112,6 +113,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
+                                                                           parameter.CanWrite,
                                                                            e.TimeStamp);
             });
         }
@@ -123,6 +125,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
+                                                                           parameter.CanWrite,
                                                                            e.TimeStamp);
             });
         }
@@ -134,6 +137,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
+                                                                           parameter.CanWrite,
                                                                            e.TimeStamp);
             });
         }
@@ -145,17 +149,9 @@ namespace Shaos.Services.Runtime.Host
             {
                 await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
                                                                            e.Value,
+                                                                           parameter.CanWrite,
                                                                            e.TimeStamp);
             });
-        }
-
-        private static async Task ExecuteDeviceOperationAsync(object sender,
-                                                              Func<IDevice, Task> operation)
-        {
-            if (sender is IDevice device)
-            {
-                await operation(device);
-            }
         }
 
         private void AttachDeviceAndParameters(IDevice device)
