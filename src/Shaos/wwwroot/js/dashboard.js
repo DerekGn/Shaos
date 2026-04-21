@@ -29,7 +29,7 @@ window.onload = function () {
             element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
 
             if (parameter.canWrite) {
-
+                element.children[1].children[0].value = parameter.value;
             }
         }
     });
@@ -45,7 +45,7 @@ window.onload = function () {
             element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
 
             if (parameter.canWrite) {
-
+                element.children[1].children[0].value = parameter.value;
             }
         }
     });
@@ -57,12 +57,15 @@ window.onload = function () {
         const element = document.getElementById(parameter.parameterId);
 
         if (element != null && element.children.length == elementCount) {
-            element.children[0].innerHTML = parameter.value;
-            element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
 
-            if (parameter.canWrite) {
+            startIndex = 0;
 
+            if (element.canWrite) {
+                startIndex = 1;
             }
+
+            element.children[startIndex].innerHTML = parameter.value;
+            element.children[startIndex+1].innerHTML = new Date(parameter.timestamp).toLocaleString();
         }
     });
 
@@ -77,7 +80,7 @@ window.onload = function () {
             element.children[2].innerHTML = new Date(parameter.timestamp).toLocaleString();
 
             if (parameter.canWrite) {
-
+                element.children[1].children[0].value = parameter.value;
             }
         }
     });

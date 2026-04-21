@@ -86,7 +86,8 @@ namespace Shaos.Test.PlugIn
                 await floatWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref floatValue, 1.0f, 10.0f));
                 await intParameter.NotifyValueChangedAsync(IncrementLimit(ref intValue, 1, 10));
                 await intWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref intValue, 1, 10));
-
+                await stringParameter.NotifyValueChangedAsync(intValue.ToString());
+                await stringWriteParameter.NotifyValueChangedAsync(intValue.ToString());
                 await uintParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
                 await uintWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
 
