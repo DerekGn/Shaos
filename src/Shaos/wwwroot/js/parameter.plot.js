@@ -37,30 +37,50 @@ window.onload = function () {
         console.debug('parameter-updated-event-bool');
 
         const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
     eventSource.addEventListener('parameter-updated-event-float', (event) => {
         console.debug('parameter-updated-event-float');
 
         const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
     eventSource.addEventListener('parameter-updated-event-int', (event) => {
         console.debug('parameter-updated-event-int');
 
         const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
     eventSource.addEventListener('parameter-updated-event-string', (event) => {
         console.debug('parameter-updated-event-string');
 
         const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
     eventSource.addEventListener('parameter-updated-event-uint', (event) => {
         console.debug('parameter-updated-event-uint');
 
         const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
     eventSource.onerror = (err) => {
@@ -71,4 +91,22 @@ window.onload = function () {
     eventSource.onopen = () => {
         console.log('Connection to server opened.');
     };
+
+    function plotParameterValue(value, timestamp) {
+        chart.data.labels.push(timestamp);
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data.push(value);
+        });
+
+        chart.update();
+
+        // this limit should be configurable
+        if (chart.data.labels.length > 10) {
+            chart.data.labels.splice(0, 1);
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.splice(0, 1);
+            });
+            chart.update();
+        }
+    }
 }

@@ -40,7 +40,9 @@ namespace Shaos.Services.Eventing
         /// </summary>
         public DateTime Timestamp { get; init; }
 
-
+        /// <summary>
+        /// Indicates if the parameter can be written too
+        /// </summary>
         public bool CanWrite { get; init; }
     }
 }
