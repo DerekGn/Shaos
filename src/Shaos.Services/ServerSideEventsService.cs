@@ -33,7 +33,7 @@ namespace Shaos.Services
 {
     public class ServerSideEventsService : IServerSideEventsService
     {
-        private readonly IList<IEventQueue> _eventQueues;
+        private readonly List<IEventQueue> _eventQueues;
         private readonly ILogger<ServerSideEventsService> _logger;
         private readonly IOptions<ServerSideEventOptions> _options;
         private readonly SemaphoreSlim _semaphore;
