@@ -47,7 +47,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeDeviceUpdateHandlerTests : BaseServiceTests
     {
-        private readonly Mock<IDeviceEventQueue> _mockDevicecEventQueue;
+        private readonly Mock<IEventQueue> _mockEventQueue;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
@@ -56,7 +56,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         public RuntimeDeviceUpdateHandlerTests()
         {
-            _mockDevicecEventQueue = new Mock<IDeviceEventQueue>();
+            _mockEventQueue = new Mock<IEventQueue>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
@@ -64,8 +64,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             _runtimeDeviceUpdateHandler = new RuntimeDeviceUpdateHandler(LoggerFactory!.CreateLogger<RuntimeDeviceUpdateHandler>(),
                                                                          _mockServiceScopeFactory.Object,
-                                                                         _mockDevicecEventQueue.Object,
-                                                                         _mockWorkItemQueue.Object);
+                                                                         _mockWorkItemQueue.Object,
+                                                                         _mockEventQueue.Object);
         }
 
         [Fact]
@@ -166,6 +166,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        true,
+                                                                       true,
                                                                        DateTime.UtcNow);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(),
@@ -179,6 +180,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        5.0f,
+                                                                       true,
                                                                        DateTime.UtcNow);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
@@ -191,6 +193,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        -10,
+                                                                       true,
                                                                        DateTime.UtcNow);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));
@@ -338,6 +341,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        "name",
+                                                                       true,
                                                                        DateTime.UtcNow);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(),
@@ -351,6 +355,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(1,
                                                                        10u,
+                                                                       true,
                                                                        DateTime.UtcNow);
 
             _mockWorkItemQueue.Verify(_ => _.EnqueueAsync(It.IsAny<Func<CancellationToken, Task>>(), It.IsAny<CancellationToken>()));

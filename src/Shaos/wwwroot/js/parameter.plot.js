@@ -1,5 +1,7 @@
 ﻿"use strict";
 
+const eventSource = new EventSource('/api/v1/events');
+
 const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const chart = new Chart(ctx, {
@@ -29,57 +31,82 @@ const chart = new Chart(ctx, {
     }
 });
 
-var startButton = document.getElementById("start");
-var stopButton = document.getElementById("stop");
-var connection = new signalR
-    .HubConnectionBuilder()
-    .withUrl("/plotHub")
-    .build();
-
 window.onload = function () {
 
-    stopButton.disabled = true;
+    eventSource.addEventListener('parameter-updated-event-bool', (event) => {
+        console.debug('parameter-updated-event-bool');
 
-    connection.start().then(function () {
-        console.log("Connected");
-    }).catch(function (err) {
-        return console.error(err.toString());
+        const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
-    startButton.addEventListener("click", function () {
-        connection.invoke("start", settings.id).catch(function (err) {
-            return console.error(err.toString());
-        });
+    eventSource.addEventListener('parameter-updated-event-float', (event) => {
+        console.debug('parameter-updated-event-float');
 
-        startButton.disabled = true;
-        stopButton.disabled = false;
+        const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
-    stopButton.addEventListener("click", function () {
-        connection.invoke("stop", settings.id).catch(function (err) {
-            return console.error(err.toString());
-        });
+    eventSource.addEventListener('parameter-updated-event-int', (event) => {
+        console.debug('parameter-updated-event-int');
 
-        startButton.disabled = false;
-        stopButton.disabled = true;
-    });
-}
+        const parameter = JSON.parse(event.data);
 
-connection.on("update", function (value, timestamp) {
-
-    chart.data.labels.push(timestamp);
-    chart.data.datasets.forEach((dataset) => {
-        dataset.data.push(value);
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
     });
 
-    chart.update();
+    eventSource.addEventListener('parameter-updated-event-string', (event) => {
+        console.debug('parameter-updated-event-string');
 
-    // this limit should be configurable
-    if (chart.data.labels.length > 10) {
-        chart.data.labels.splice(0, 1);
+        const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
+    });
+
+    eventSource.addEventListener('parameter-updated-event-uint', (event) => {
+        console.debug('parameter-updated-event-uint');
+
+        const parameter = JSON.parse(event.data);
+
+        if (parameter.Id == settings.Id) {
+            plotParameterValue(parameter.value, parameter.timestamp);
+        }
+    });
+
+    eventSource.onerror = (err) => {
+        console.error('EventSource failed:', err);
+        eventSource.close();
+    };
+
+    eventSource.onopen = () => {
+        console.log('Connection to server opened.');
+    };
+
+    function plotParameterValue(value, timestamp) {
+        chart.data.labels.push(timestamp);
         chart.data.datasets.forEach((dataset) => {
-            dataset.data.splice(0, 1);
+            dataset.data.push(value);
         });
+
         chart.update();
+
+        // this limit should be configurable
+        if (chart.data.labels.length > 10) {
+            chart.data.labels.splice(0, 1);
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.splice(0, 1);
+            });
+            chart.update();
+        }
     }
-});
+}

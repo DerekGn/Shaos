@@ -22,39 +22,27 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shaos.Repository.Models.Devices.Parameters;
-
-namespace Shaos.Repository.EntityTypeConfigurations
+namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The <see cref="BaseParameter"/> EF configuration
+    /// A device parameter update event
     /// </summary>
-    public class UIntEntityTypeConfiguration : IEntityTypeConfiguration<UIntParameter>
+    /// <typeparam name="T">The device parameter value</typeparam>
+    public record ParameterUpdatedEvent<T> : BaseDeviceEvent
     {
-        /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<UIntParameter> builder)
-        {
-            builder
-                .Property(_ => _.Max)
-                .IsRequired();
+        /// <summary>
+        /// The parameter value
+        /// </summary>
+        public required T Value { get; init; }
 
-            builder
-                .Property(_ => _.Min)
-                .IsRequired();
+        /// <summary>
+        /// The parameter update timestamp
+        /// </summary>
+        public DateTime Timestamp { get; init; }
 
-            builder
-                .Property(_ => _.Step)
-                .IsRequired();
-
-            builder
-                .Property(_ => _.Value)
-                .IsRequired();
-
-            builder
-                .HasMany(_ => _.Values)
-                .WithOne(_ => _.Parameter);
-        }
+        /// <summary>
+        /// Indicates if the parameter can be written too
+        /// </summary>
+        public bool CanWrite { get; init; }
     }
 }

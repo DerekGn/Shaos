@@ -3,14 +3,6 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
-      "library": "@microsoft/signalr@latest",
-      "destination": "wwwroot/js/signalr/",
-      "files": [
-        "dist/browser/signalr.js",
-        "dist/browser/signalr.min.js"
-      ]
-    },
-    {
       "library": "chart.js@latest",
       "destination": "wwwroot/lib/chart.js"
     }

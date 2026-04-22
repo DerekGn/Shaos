@@ -16,12 +16,12 @@
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.*" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.*" />
         <PackageReference Include="Moq" Version="4.*" />
-        <PackageReference Include="Shaos.Sdk" Version="0.10.1-beta" />
+        <PackageReference Include="Shaos.Sdk" Version="0.10.2-beta" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.*">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="8.*">
+        <PackageReference Include="coverlet.collector" Version="10.*">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>

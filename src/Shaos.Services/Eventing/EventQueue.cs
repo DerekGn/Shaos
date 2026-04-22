@@ -24,46 +24,53 @@
 
 using System.Threading.Channels;
 
-namespace Shaos.Services.Processing
+namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The <see cref="IWorkItemQueue"/>
+    /// The event queue
     /// </summary>
-    public class WorkItemQueue : IWorkItemQueue
+    public class EventQueue : IEventQueue
     {
-        private readonly Channel<Func<CancellationToken, Task>> _queue;
+        private readonly Channel<BaseEvent> _queue;
 
         /// <summary>
-        /// Create an instance of a <see cref="WorkItemQueue"/>
+        /// Create an instance of a <see cref="EventQueue"/>
         /// </summary>
-        /// <param name="capacity">The item queue capacity</param>
-        public WorkItemQueue(int capacity)
+        /// <param name="capacity">The event queue capacity</param>
+        public EventQueue(int capacity)
         {
             BoundedChannelOptions options = new(capacity)
             {
                 FullMode = BoundedChannelFullMode.Wait
             };
-            _queue = Channel.CreateBounded<Func<CancellationToken, Task>>(options);
+
+            _queue = Channel.CreateBounded<BaseEvent>(options);
         }
 
         /// <inheritdoc/>
         public int Count => _queue.Reader.Count;
 
         /// <inheritdoc/>
-        public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken = default)
+        public async Task<BaseEvent?> DequeueAsync(CancellationToken cancellationToken = default)
         {
-            Func<CancellationToken, Task>? workItem = await _queue.Reader.ReadAsync(cancellationToken);
-
-            return workItem;
+            try
+            {
+                return await _queue.Reader.ReadAsync(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc/>
-        public async Task EnqueueAsync(Func<CancellationToken, Task> workItem,
+        public async Task EnqueueAsync(BaseEvent @event,
                                        CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNull(workItem);
+            ArgumentNullException.ThrowIfNull(@event);
 
-            await _queue.Writer.WriteAsync(workItem, cancellationToken);
+            await _queue.Writer.WriteAsync(@event,
+                                           cancellationToken);
         }
     }
 }

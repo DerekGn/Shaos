@@ -40,6 +40,11 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public int Min { get; set; }
 
         /// <summary>
+        /// The step value for the <see cref="IntParameter"/>
+        /// </summary>
+        public int Step { get; set; }
+
+        /// <summary>
         /// The current value
         /// </summary>
         public int Value { get; set; }

@@ -22,20 +22,21 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services
 {
     /// <summary>
-    /// The device subscription state
+    /// Server side events options
     /// </summary>
-    public enum DeviceSubscriptionState
+    public class ServerSideEventOptions
     {
         /// <summary>
-        /// Subscribe to a device parameter
+        /// The event queue capacity
         /// </summary>
-        Subscribe,
+        public int EventQueueCapacity { get; set; } = 100;
+
         /// <summary>
-        /// Unsubscribe from the device parameter
+        /// The server side event reconnect interval
         /// </summary>
-        Unsubscribe
+        public TimeSpan ReconnectInterval { get; set; } = TimeSpan.FromSeconds(60);
     }
 }

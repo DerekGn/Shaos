@@ -58,6 +58,10 @@ namespace Shaos.Test.PlugIn
 
             await CreateDevicesAsync();
 
+            float floatValue = 1;
+            int intValue = 1;
+            uint uintValue = 1;
+
             var boolParameter = (BoolParameter)Devices.First().Parameters.First();
             var boolWriteParameter = (BoolParameter)Devices.First().Parameters.Skip(1).First();
             var floatParameter = (FloatParameter)Devices.First().Parameters.Skip(2).First();
@@ -78,8 +82,14 @@ namespace Shaos.Test.PlugIn
 
                 await boolParameter.NotifyValueChangedAsync(!boolParameter.Value);
                 await boolWriteParameter.NotifyValueChangedAsync(!boolParameter.Value);
-                //await floatParameter.NotifyValueChangedAsync();
-                //await floatWriteParameter.NotifyValueChangedAsync();
+                await floatParameter.NotifyValueChangedAsync(IncrementLimit(ref floatValue, 1.0f, 10.0f));
+                await floatWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref floatValue, 1.0f, 10.0f));
+                await intParameter.NotifyValueChangedAsync(IncrementLimit(ref intValue, 1, 10));
+                await intWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref intValue, 1, 10));
+                await stringParameter.NotifyValueChangedAsync(intValue.ToString());
+                await stringWriteParameter.NotifyValueChangedAsync(intValue.ToString());
+                await uintParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
+                await uintWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
 
             } while (!cancellationToken.IsCancellationRequested);
 
@@ -112,6 +122,18 @@ namespace Shaos.Test.PlugIn
             return value;
         }
 
+        private static float IncrementLimit(ref float value,
+                                            float lower,
+                                            float upper)
+        {
+            if (++value > upper)
+            {
+                value = lower;
+            }
+
+            return value;
+        }
+
         private async Task CreateDevicesAsync()
         {
             if (!Devices.Any(_ => _.Name == "TestDevice"))
@@ -131,12 +153,14 @@ namespace Shaos.Test.PlugIn
                                        1.0f,
                                        0,
                                        10,
+                                       0.1f,
                                        "Test float parameter",
                                        Units),
                     new FloatParameter(4,
                                        1.0f,
                                        0,
                                        10,
+                                       0.1f,
                                        "Test write float parameter",
                                        Units,
                                        WriteFloat),
@@ -144,12 +168,14 @@ namespace Shaos.Test.PlugIn
                                      0,
                                      0,
                                      10,
+                                     1,
                                      "Test int parameter",
                                      Units),
                     new IntParameter(6,
                                      0,
                                      0,
                                      10,
+                                     1,
                                      "Test write int parameter",
                                      Units,
                                      WriteInt),
@@ -166,12 +192,14 @@ namespace Shaos.Test.PlugIn
                                      0,
                                      0,
                                      10,
+                                     1,
                                      "Test uint parameter",
                                      Units),
                     new UIntParameter(10,
                                      0,
                                      0,
                                      10,
+                                     1,
                                      "Test write uint parameter",
                                      Units,
                                      WriteUInt),

@@ -22,31 +22,15 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Extensions
 {
-    /// <summary>
-    /// A device event queue.
-    /// </summary>
-    public interface IDeviceEventQueue
+    public static class HttpContextExtensions
     {
-        /// <summary>
-        /// The number of events queued for processing.
-        /// </summary>
-        int Count { get; }
-
-        /// <summary>
-        /// Dequeue a <see cref="BaseDeviceEvent"/> instance.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>A dequeued <see cref="BaseDeviceEvent"/></returns>
-        Task<BaseDeviceEvent> DequeueAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Enqueue a <see cref="BaseDeviceEvent"/> instance.
-        /// </summary>
-        /// <param name="event">The <see cref="BaseDeviceEvent"/> to enqueue.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task EnqueueAsync(BaseDeviceEvent @event,
-                          CancellationToken cancellationToken = default);
+        public static void AddServerSideEventsHeaders(this HttpContext httpContext)
+        {
+            httpContext.Response.Headers.Append("Content-Type", "text/event-stream");
+            httpContext.Response.Headers.Append("Cache-Control", "no-cache");
+            httpContext.Response.Headers.Append("Connection", "keep-alive");
+        }
     }
 }

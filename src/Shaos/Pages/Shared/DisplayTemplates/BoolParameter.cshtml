@@ -1,0 +1,14 @@
+﻿@using Shaos.Extensions
+@using Shaos.Repository.Models.Devices.Parameters
+
+@model BoolParameter
+
+<div id="@Model.Id" class="row">
+    <div class="col-sm-1">@Model.Value</div>
+    <div class="col-sm-2">
+        <div class="col-sm form-check form-switch">
+            <input id="@(Model.Id)" class="form-check-input" type="checkbox" role="switch" disabled @Model.Value.ToChecked()>
+        </div>
+    </div>
+    <div class="col-sm-3">@Model.UpdatedDate</div>
+</div>
