@@ -24,8 +24,16 @@
 
 namespace Shaos.Services.Extensions
 {
+    /// <summary>
+    /// A set of string extension methods
+    /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Create a directory for the specified value
+        /// </summary>
+        /// <param name="value">The directory to create</param>
+        /// <returns><see langword="true"/> if the path was created else <see langword="false"/> if the directory already existed</returns>
         public static bool CreateDirectory(this string value)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(value);
@@ -40,6 +48,10 @@ namespace Shaos.Services.Extensions
             return result;
         }
 
+        /// <summary>
+        /// Deletes all files and subdirectories from a directory
+        /// </summary>
+        /// <param name="value">The path to the directory</param>
         public static void EmptyDirectory(this string value)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(value);
@@ -59,11 +71,21 @@ namespace Shaos.Services.Extensions
             }
         }
 
+        /// <summary>
+        /// Indicates if a string is null, empty or whitespace
+        /// </summary>
+        /// <param name="value">The string value to check</param>
+        /// <returns><see langword="true"/> if the string is null, empty or whitespace</returns>
         public static bool IsEmptyOrWhiteSpace(this string value)
         {
             return string.IsNullOrWhiteSpace(value);
         }
 
+        /// <summary>
+        /// Sanitize a string value
+        /// </summary>
+        /// <param name="value">The value to Sanitize</param>
+        /// <returns>The sanitized string value</returns>
         public static string Sanitize(this string value)
         {
             return value.Replace(Environment.NewLine, string.Empty);

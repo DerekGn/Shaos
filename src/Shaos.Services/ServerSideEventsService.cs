@@ -31,6 +31,9 @@ using System.Runtime.CompilerServices;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// A <see cref="IServerSideEventsService"/> implementation
+    /// </summary>
     public class ServerSideEventsService : IServerSideEventsService
     {
         private readonly List<IEventQueue> _eventQueues;
@@ -38,6 +41,11 @@ namespace Shaos.Services
         private readonly IOptions<ServerSideEventOptions> _options;
         private readonly SemaphoreSlim _semaphore;
 
+        /// <summary>
+        /// Create an instance of a <see cref="ServerSideEventsService"/>
+        /// </summary>
+        /// <param name="logger">The logger instance for this service</param>
+        /// <param name="options">The options instance for this service</param>
         public ServerSideEventsService(ILogger<ServerSideEventsService> logger,
                                        IOptions<ServerSideEventOptions> options)
         {
