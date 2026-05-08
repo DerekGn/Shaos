@@ -3,24 +3,23 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
-      "library": "chart.js@latest",
+      "library": "chart.js@4.5.1",
       "destination": "wwwroot/lib/chart.js"
     },
     {
       "provider": "unpkg",
-      "library": "chartjs-plugin-streaming@latest",
+      "library": "chartjs-plugin-streaming@2.0.0",
       "destination": "wwwroot/lib/chartjs-plugin-streaming/"
     },
     {
       "provider": "cdnjs",
       "library": "moment.js@2.30.1",
       "destination": "wwwroot/lib/moment.js/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "chartjs-adapter-moment@1.0.1",
+      "destination": "wwwroot/lib/chartjs-adapter-moment/"
     }
-  ,
-{
-  "provider": "unpkg",
-  "library": "chartjs-adapter-moment@latest",
-  "destination": "wwwroot/lib/chartjs-adapter-moment/"
-}
-]
+  ]
 }
