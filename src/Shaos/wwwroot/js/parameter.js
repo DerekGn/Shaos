@@ -1,32 +1,29 @@
-﻿"use strict";
-
-const eventSource = new EventSource('/api/v1/events');
+﻿const eventSource = new EventSource('/api/v1/events');
 
 const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const chart = new Chart(ctx, {
     type: 'line',
     data: {
-        datasets: [
-            {
-                label: settings.label,
-                data: []
-            }
-        ]
+        datasets: [{
+            label: 'Speed',
+            data: []
+        }]
     },
     options: {
         scales: {
-            xAxes: [{
+            x: {
                 type: 'realtime',
                 delay: 0,
+                // 20 seconds of data
                 duration: 20000
-            }],
-            yAxes: [{
+            },
+            y: {
                 ticks: {
                     suggestedMin: 0,
                     suggestedMax: 50
                 }
-            }]
+            }
         }
     }
 });

@@ -16,5 +16,11 @@
       "library": "moment.js@2.30.1",
       "destination": "wwwroot/lib/moment.js/"
     }
-  ]
+  ,
+{
+  "provider": "unpkg",
+  "library": "chartjs-adapter-moment@latest",
+  "destination": "wwwroot/lib/chartjs-adapter-moment/"
+}
+]
 }
