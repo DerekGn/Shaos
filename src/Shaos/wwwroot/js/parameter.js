@@ -6,8 +6,10 @@ const chart = new Chart(ctx, {
     type: 'line',
     data: {
         datasets: [{
-            label: 'Speed',
-            data: []
+            fill: true,
+            label: settings.label,
+            data: [],
+            tension: 0.1
         }]
     },
     options: {
@@ -15,8 +17,7 @@ const chart = new Chart(ctx, {
             x: {
                 type: 'realtime',
                 delay: 0,
-                // 20 seconds of data
-                duration: 20000
+                duration: settings.duration
             },
             y: {
                 ticks: {
@@ -35,7 +36,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -45,7 +46,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -55,7 +56,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -65,7 +66,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -75,7 +76,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -91,5 +92,14 @@ window.onload = function () {
 
     function plotParameterValue(value, timestamp) {
         var dateValue = moment(timestamp).subtract(5, 'seconds');
+
+        chart.data.datasets[0].data.push({
+            x: timestamp,
+            y: value
+        });
+
+        chart.update({
+            preservation: true
+        });
     }
 }

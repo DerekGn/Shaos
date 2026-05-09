@@ -28,7 +28,7 @@ namespace Shaos.Services.Eventing
     /// A device parameter update event
     /// </summary>
     /// <typeparam name="T">The device parameter value</typeparam>
-    public record ParameterUpdatedEvent<T> : BaseDeviceEvent
+    public record ParameterUpdatedEvent<T> : BaseParameterUpdatedEvent
     {
         /// <summary>
         /// The parameter value

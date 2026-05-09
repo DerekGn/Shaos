@@ -41,7 +41,7 @@ namespace Shaos.Services.UnitTests.Eventing
         {
             ParameterUpdatedEvent<int> @event = new()
             {
-                ParameterId = 1,
+                Id = 1,
                 Timestamp = DateTime.UtcNow,
                 Value = 1
             };
@@ -57,7 +57,7 @@ namespace Shaos.Services.UnitTests.Eventing
         {
             ParameterUpdatedEvent<int> @event = new()
             {
-                ParameterId= 1,
+                Id = 1,
                 Timestamp = DateTime.UtcNow,
                 Value = 1
             };
