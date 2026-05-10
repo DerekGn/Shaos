@@ -131,7 +131,7 @@ namespace Shaos.Services
         /// <param name="packageFileName"></param>
         /// <param name="plugInDirectory"></param>
         /// <param name="plugInAssemblyFileName"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <exception cref="PlugInInstancesRunningException">Thrown if a plugin instance is still running</exception> 
         Task UpdatePlugInPackageAsync(int id,
                                       string packageFileName,

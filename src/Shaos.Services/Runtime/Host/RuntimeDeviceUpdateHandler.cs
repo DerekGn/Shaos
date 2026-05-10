@@ -442,7 +442,7 @@ namespace Shaos.Services.Runtime.Host
             await _eventQueue.EnqueueAsync(new ParameterUpdatedEvent<T>()
             {
                 CanWrite = canWrite,
-                ParameterId = id,
+                Id = id,
                 Timestamp = timeStamp,
                 Value = value
             }, cancellationToken);

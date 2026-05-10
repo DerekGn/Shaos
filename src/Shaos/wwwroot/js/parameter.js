@@ -1,32 +1,30 @@
-﻿"use strict";
-
-const eventSource = new EventSource('/api/v1/events');
+﻿const eventSource = new EventSource('/api/v1/events');
 
 const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const chart = new Chart(ctx, {
     type: 'line',
     data: {
-        datasets: [
-            {
-                label: settings.label,
-                data: []
-            }
-        ]
+        datasets: [{
+            fill: true,
+            label: settings.label,
+            data: [],
+            tension: 0.1
+        }]
     },
     options: {
         scales: {
-            xAxes: [{
+            x: {
                 type: 'realtime',
                 delay: 0,
-                duration: 20000
-            }],
-            yAxes: [{
+                duration: settings.duration
+            },
+            y: {
                 ticks: {
                     suggestedMin: 0,
                     suggestedMax: 50
                 }
-            }]
+            }
         }
     }
 });
@@ -38,7 +36,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -48,7 +46,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -58,7 +56,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -68,7 +66,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -78,7 +76,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.Id == settings.Id) {
+        if (parameter.id == settings.id) {
             plotParameterValue(parameter.value, parameter.timestamp);
         }
     });
@@ -93,20 +91,15 @@ window.onload = function () {
     };
 
     function plotParameterValue(value, timestamp) {
-        chart.data.labels.push(timestamp);
-        chart.data.datasets.forEach((dataset) => {
-            dataset.data.push(value);
+        var dateValue = moment(timestamp).subtract(5, 'seconds');
+
+        chart.data.datasets[0].data.push({
+            x: timestamp,
+            y: value
         });
 
-        chart.update();
-
-        // this limit should be configurable
-        if (chart.data.labels.length > 10) {
-            chart.data.labels.splice(0, 1);
-            chart.data.datasets.forEach((dataset) => {
-                dataset.data.splice(0, 1);
-            });
-            chart.update();
-        }
+        chart.update({
+            preservation: true
+        });
     }
 }

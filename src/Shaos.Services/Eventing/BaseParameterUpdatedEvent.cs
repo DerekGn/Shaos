@@ -25,13 +25,13 @@
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The base device event
+    /// The base parameter updated event
     /// </summary>
-    public abstract record BaseDeviceEvent : BaseEvent
+    public abstract record BaseParameterUpdatedEvent : BaseEvent
     {
         /// <summary>
-        /// The device parameter identifier
+        /// The parameter identifier
         /// </summary>
-        public int ParameterId { get; init; }
+        public int Id { get; init; }
     }
 }

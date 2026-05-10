@@ -25,7 +25,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 using Shaos.Exceptions;
+using Shaos.Options;
 using Shaos.Plotting;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices.Parameters;
@@ -36,10 +38,13 @@ namespace Shaos.Pages.Parameters
     public class PlotModel : PageModel
     {
         private readonly IShaosRepository _repository;
+        private readonly IOptions<PlotOptions> _options;
 
-        public PlotModel(IShaosRepository repository)
+        public PlotModel(IShaosRepository repository,
+                         IOptions<PlotOptions> options)
         {
             _repository = repository;
+            _options = options;
         }
 
         [BindProperty]
@@ -57,7 +62,8 @@ namespace Shaos.Pages.Parameters
                     Settings = new PlotSettings()
                     {
                         Id = id,
-                        Label = parameter.Name
+                        Label = parameter.Name,
+                        Duration = _options.Value.Duration
                     };
                 }
                 catch (ParameterPlotNotSupportedException)

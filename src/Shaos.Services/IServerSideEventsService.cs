@@ -27,10 +27,22 @@ using System.Net.ServerSentEvents;
 
 namespace Shaos.Services
 {
+    /// <summary>
+    /// A server side event service for managing event streaming
+    /// </summary>
     public interface IServerSideEventsService
     {
+        /// <summary>
+        /// Read streamed events asynchronously
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
         IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync(CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Broadcast an <see cref="BaseEvent"/> to subscribed event listeners
+        /// </summary>
+        /// <param name="baseEvent"></param>
         Task BroadcastEventAsync(BaseEvent baseEvent);
     }
 }

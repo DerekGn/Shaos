@@ -26,8 +26,19 @@ namespace Shaos.Plotting
 {
     public class PlotSettings
     {
+        /// <summary>
+        /// The identifier of the parameter
+        /// </summary>
         public int Id { get; set; }
 
-        public string Label { get; set; }
+        /// <summary>
+        /// The parameter plot label
+        /// </summary>
+        public string Label { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The total plot duration
+        /// </summary>
+        public int Duration { get; set; } = 20000;
     }
 }
