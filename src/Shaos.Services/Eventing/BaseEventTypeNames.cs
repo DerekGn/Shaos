@@ -7,5 +7,6 @@
         public const string IntTypeName = "parameter-updated-event-int";
         public const string StringTypeName = "parameter-updated-event-string";
         public const string UIntTypeName = "parameter-updated-event-uint";
+        public const string ApplicationTypeName = "application-event";
     }
 }

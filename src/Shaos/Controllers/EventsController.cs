@@ -34,8 +34,8 @@ namespace Shaos.Controllers
     [Route("api/v{version:apiVersion}/events")]
     public class EventsController : CoreController
     {
-        private readonly ILogger<EventsController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<EventsController> _logger;
         private readonly IServerSideEventsService _serverSideEventsService;
 
         public EventsController(ILogger<EventsController> logger,
@@ -47,15 +47,66 @@ namespace Shaos.Controllers
             _serverSideEventsService = serverSideEventsService;
         }
 
-        [HttpGet()]
+        [HttpGet("StreamParameterEvents")]
+        [EndpointDescription("Gets a stream of application parameter events")]
+        [EndpointName("StreamParameterEvents")]
+        [EndpointSummary("Access application parameter event stream")]
+        [ProducesResponseType(typeof(SseItem<BaseParameterUpdatedEvent>), StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = Status400BadRequestText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public IResult StreamParameterEventsAsync(CancellationToken cancellationToken)
+        {
+            return ExecuteSubscription((context, cancellationToken) =>
+            {
+                _logger.EventStreamingStarted(context.Connection.Id);
+
+                return TypedResults.ServerSentEvents<BaseParameterUpdatedEvent>(_serverSideEventsService.StreamParameterEventsAsync(cancellationToken));
+            },
+            cancellationToken);
+        }
+
+        [HttpGet("StreamParameterEvents/{id:int}")]
+        [EndpointDescription("Gets a stream of application parameter events for a specific parameter")]
+        [EndpointName("StreamParameterEventsById")]
+        [EndpointSummary("Access application parameter event stream by identifier")]
+        [ProducesResponseType(typeof(SseItem<BaseParameterUpdatedEvent>), StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = Status400BadRequestText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
+        public IResult StreamParameterEventsByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            return ExecuteSubscription((context, cancellationToken) =>
+            {
+                _logger.EventStreamingStarted(context.Connection.Id);
+
+                return TypedResults.ServerSentEvents<BaseParameterUpdatedEvent>(_serverSideEventsService.StreamParameterEventsByIdAsync(id,
+                                                                                                                                        cancellationToken));
+            },
+            cancellationToken);
+        }
+
+        [HttpGet("StreamApplicationEvents")]
         [EndpointDescription("Gets a stream of application events")]
-        [EndpointName("StreamEvents")]
+        [EndpointName("StreamApplicationEvents")]
         [EndpointSummary("Access application event stream")]
         [ProducesResponseType(typeof(SseItem<BaseEvent>), StatusCodes.Status200OK)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = Status400BadRequestText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
-        public IResult StreamEventsAsync(CancellationToken cancellationToken)
+        public IResult StreamApplicationEventsAsync(CancellationToken cancellationToken)
+        {
+            return ExecuteSubscription((context, cancellationToken) =>
+            {
+                _logger.EventStreamingStarted(context.Connection.Id);
+
+                return TypedResults.ServerSentEvents<ApplicationEvent>(_serverSideEventsService.StreamApplicationEventsAsync(cancellationToken));
+            },
+            cancellationToken);
+        }
+
+        private IResult ExecuteSubscription(Func<HttpContext, CancellationToken, IResult> action,
+                                            CancellationToken cancellationToken)
         {
             var context = _httpContextAccessor.HttpContext;
 
@@ -63,9 +114,7 @@ namespace Shaos.Controllers
             {
                 if (context is not null)
                 {
-                    _logger.EventStreamingStarted(context.Connection.Id);
-
-                    return TypedResults.ServerSentEvents<BaseEvent>(_serverSideEventsService.StreamEventsAsync(cancellationToken));
+                    return action(context, cancellationToken);
                 }
                 else
                 {
