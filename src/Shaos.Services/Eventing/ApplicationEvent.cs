@@ -22,20 +22,9 @@
 * SOFTWARE.
 */
 
-using System.Text.Json.Serialization;
-
 namespace Shaos.Services.Eventing
 {
-    /// <summary>
-    /// The base event type
-    /// </summary>
-    [JsonDerivedType(typeof(ApplicationEvent), BaseEventTypeNames.ApplicationTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<bool>), BaseEventTypeNames.BooleanTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<float>), BaseEventTypeNames.FloatTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<int>), BaseEventTypeNames.IntTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<string>), BaseEventTypeNames.StringTypeName)]
-    [JsonDerivedType(typeof(ParameterUpdatedEvent<uint>), BaseEventTypeNames.UIntTypeName)]
-    public abstract record BaseEvent
+    public record ApplicationEvent : BaseEvent
     {
     }
 }

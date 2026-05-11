@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-const eventSource = new EventSource('/api/v1/events');
+const eventSource = new EventSource('/api/v1/events/streamparameterevents');
 const elementCount = 3;
 
 window.onload = function () {
@@ -9,7 +9,7 @@ window.onload = function () {
         console.debug('parameter-updated-event-bool');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById(parameter.parameterId);
+        const element = document.getElementById(parameter.id);
 
         if (element != null && element.children.length == elementCount) {
             element.children[0].innerHTML = parameter.value;
@@ -22,7 +22,7 @@ window.onload = function () {
         console.debug('parameter-updated-event-float');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById(parameter.parameterId);
+        const element = document.getElementById(parameter.id);
 
         if (element != null && element.children.length == elementCount) {
             element.children[0].innerHTML = parameter.value;
@@ -38,7 +38,7 @@ window.onload = function () {
         console.debug('parameter-updated-event-int');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById(parameter.parameterId);
+        const element = document.getElementById(parameter.id);
 
         if (element != null && element.children.length == elementCount) {
             element.children[0].innerHTML = parameter.value;
@@ -54,11 +54,11 @@ window.onload = function () {
         console.debug('parameter-updated-event-string');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById(parameter.parameterId);
+        const element = document.getElementById(parameter.id);
 
         if (element != null && element.children.length == elementCount) {
 
-            startIndex = 0;
+            var startIndex = 0;
 
             if (element.canWrite) {
                 startIndex = 1;
@@ -73,7 +73,7 @@ window.onload = function () {
         console.debug('parameter-updated-event-uint');
 
         const parameter = JSON.parse(event.data);
-        const element = document.getElementById(parameter.parameterId);
+        const element = document.getElementById(parameter.id);
 
         if (element != null && element.children.length == elementCount) {
             element.children[0].innerHTML = parameter.value;

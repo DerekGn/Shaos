@@ -68,7 +68,46 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+        public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken)
+        {
+            return StreamParameterEventsAsync((parameterUpdateEvent) =>
+            {
+                return true;
+            }, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
+                                                                                                   CancellationToken cancellationToken)
+        {
+            return StreamParameterEventsAsync((parameterUpdateEvent) =>
+            {
+                return parameterUpdateEvent.Id == id;
+            }, cancellationToken);
+        }
+
+        private async Task AccessClientQueuesAsync(Action action)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                action();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(Func<BaseParameterUpdatedEvent, bool> filterEvent,
+                                                                                                      [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             EventQueue? eventQueue = null;
 
@@ -85,9 +124,10 @@ namespace Shaos.Services
                 {
                     var baseEvent = await eventQueue.DequeueAsync(cancellationToken);
 
-                    if (baseEvent is not null)
+                    if (baseEvent is BaseParameterUpdatedEvent parameterEvent && filterEvent(parameterEvent))
                     {
-                        yield return new SseItem<BaseEvent>(baseEvent, baseEvent.GetEventName())
+                        yield return new SseItem<BaseParameterUpdatedEvent>(parameterEvent,
+                                                                            baseEvent.GetEventName())
                         {
                             EventId = Guid.NewGuid().ToString(),
                             ReconnectionInterval = _options.Value.ReconnectInterval
@@ -106,20 +146,6 @@ namespace Shaos.Services
                         _eventQueues.Remove(eventQueue);
                     });
                 }
-            }
-        }
-
-        private async Task AccessClientQueuesAsync(Action action)
-        {
-            await _semaphore.WaitAsync();
-
-            try
-            {
-                action();
-            }
-            finally
-            {
-                _semaphore.Release();
             }
         }
     }

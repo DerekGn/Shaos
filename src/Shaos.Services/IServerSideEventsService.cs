@@ -33,16 +33,32 @@ namespace Shaos.Services
     public interface IServerSideEventsService
     {
         /// <summary>
-        /// Read streamed events asynchronously
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
-        IAsyncEnumerable<SseItem<BaseEvent>> StreamEventsAsync(CancellationToken cancellationToken);
-
-        /// <summary>
         /// Broadcast an <see cref="BaseEvent"/> to subscribed event listeners
         /// </summary>
         /// <param name="baseEvent"></param>
         Task BroadcastEventAsync(BaseEvent baseEvent);
+
+        /// <summary>
+        /// Stream application
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Read streamed parameter events asynchronously
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
+        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Read streamed parameter events asynchronously
+        /// </summary>
+        /// <param name="id">The parameter identifier</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
+        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
+                                                                                            CancellationToken cancellationToken);
     }
 }
