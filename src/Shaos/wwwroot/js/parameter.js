@@ -1,6 +1,5 @@
-﻿const eventSource = new EventSource('/api/v1/events');
-
-const settings = JSON.parse(document.getElementById('settings').innerHTML);
+﻿const settings = JSON.parse(document.getElementById('settings').innerHTML);
+const eventSource = new EventSource('/api/v1/events/streamparameterevents/' + settings.id);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const chart = new Chart(ctx, {
     type: 'line',
@@ -36,9 +35,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.id == settings.id) {
-            plotParameterValue(parameter.value, parameter.timestamp);
-        }
+        plotParameterValue(parameter.value, parameter.timestamp);
     });
 
     eventSource.addEventListener('parameter-updated-event-float', (event) => {
@@ -46,9 +43,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.id == settings.id) {
-            plotParameterValue(parameter.value, parameter.timestamp);
-        }
+        plotParameterValue(parameter.value, parameter.timestamp);
     });
 
     eventSource.addEventListener('parameter-updated-event-int', (event) => {
@@ -56,9 +51,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.id == settings.id) {
-            plotParameterValue(parameter.value, parameter.timestamp);
-        }
+        plotParameterValue(parameter.value, parameter.timestamp);
     });
 
     eventSource.addEventListener('parameter-updated-event-string', (event) => {
@@ -66,9 +59,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.id == settings.id) {
-            plotParameterValue(parameter.value, parameter.timestamp);
-        }
+        plotParameterValue(parameter.value, parameter.timestamp);
     });
 
     eventSource.addEventListener('parameter-updated-event-uint', (event) => {
@@ -76,9 +67,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        if (parameter.id == settings.id) {
-            plotParameterValue(parameter.value, parameter.timestamp);
-        }
+        plotParameterValue(parameter.value, parameter.timestamp);
     });
 
     eventSource.onerror = (err) => {

@@ -1,4 +1,4 @@
-﻿/*
+﻿ /*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
