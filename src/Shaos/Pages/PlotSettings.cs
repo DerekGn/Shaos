@@ -22,14 +22,19 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Plotting
+namespace Shaos.Pages
 {
     public class PlotSettings
     {
         /// <summary>
-        /// The identifier of the parameter
+        /// The identifier of the device
         /// </summary>
-        public int Id { get; set; }
+        public int DeviceId { get; set; }
+
+        /// <summary>
+        /// The total plot duration
+        /// </summary>
+        public int Duration { get; set; } = 20000;
 
         /// <summary>
         /// The parameter plot label
@@ -37,8 +42,8 @@ namespace Shaos.Plotting
         public string Label { get; set; } = string.Empty;
 
         /// <summary>
-        /// The total plot duration
+        /// The identifier of the device parameter instance
         /// </summary>
-        public int Duration { get; set; } = 20000;
+        public int InstanceId { get; set; }
     }
 }

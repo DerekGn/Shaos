@@ -3,13 +3,18 @@
 @{
 }
 
-<h1>Parameter Plot</h1>
+<h1>Real-time Parameter</h1>
 
 <hr />
 
 <div class="container-fluid">
     <canvas id="chartCanvas"></canvas>
 </div>
+
+<a asp-page="/Parameters/Index" asp-route-id="@Model.Settings.DeviceId" class="btn btn-sm btn-primary">
+    Back
+</a>
+
 <script id="settings" type="application/json">
     @Json.Serialize(Model.Settings)
 </script>

@@ -62,6 +62,7 @@
                 @Html.DisplayNameFor(_ => _.List[0].UpdatedDate)
             </th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -134,9 +135,16 @@
                 @if(item is BoolParameter || item is FloatParameter || item is IntParameter || item is UIntParameter)
                 {
                     <td>
-                        <a asp-page="/Parameters/Plot" asp-route-id="@item.InstanceId" class="btn btn-sm btn-primary" title="Plot">
+                        <a asp-page="/Parameters/Plot" asp-route-deviceId="@item.DeviceId" asp-route-instanceId="@item.InstanceId" class="btn btn-sm btn-primary" title="Plot">
                             <span>
                                 <svg bootstrap-icon="GraphUp" width="24" height="24" aria-label="Plot"></svg>
+                            </span>
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-page="/Parameters/History" asp-route-deviceId="@item.DeviceId" asp-route-instanceId="@item.InstanceId" class="btn btn-sm btn-primary" title="History">
+                            <span>
+                                <svg bootstrap-icon="ClockHistory" width="24" height="24" aria-label="History"></svg>
                             </span>
                         </a>
                     </td>
