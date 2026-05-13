@@ -1,0 +1,28 @@
+﻿@page
+@model Shaos.Pages.Parameters.HistoryModel
+@{
+}
+
+<h1>Parameter History</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-sm-3">
+        StartTime:
+        <input asp-for="@Model.StartDateTime" type="datetime-local" class="form-control" />
+    </div>
+    <div class="col-sm-3">
+        EndTime:
+        <input asp-for="@Model.EndDateTime" type="datetime-local" class="form-control" />
+    </div>
+    <div class="col-sm-3">
+        <form asp-page-handler="apply" method="post">
+            <button class="btn btn-sm btn-primary">Apply</button>
+        </form>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <canvas id="chartCanvas"></canvas>
+</div>
