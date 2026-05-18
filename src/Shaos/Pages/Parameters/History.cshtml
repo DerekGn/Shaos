@@ -8,12 +8,16 @@
 <hr />
 
 <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-1">
         StartTime:
-        <input asp-for="@Model.StartDateTime" type="datetime-local" class="form-control" />
     </div>
     <div class="col-sm-3">
+        <input asp-for="@Model.StartDateTime" type="datetime-local" class="form-control" />
+    </div>
+    <div class="col-sm-1">
         EndTime:
+    </div>
+    <div class="col-sm-3">
         <input asp-for="@Model.EndDateTime" type="datetime-local" class="form-control" />
     </div>
     <div class="col-sm-3">

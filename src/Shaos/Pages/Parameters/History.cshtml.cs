@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
+using Shaos.Extensions;
 
 namespace Shaos.Pages.Parameters
 {
@@ -8,15 +8,19 @@ namespace Shaos.Pages.Parameters
     {
         public HistoryModel()
         {
-            StartDateTime = DateTime.UtcNow.Subtract(TimeSpan.FromHours(24));
-            EndDateTime = DateTime.UtcNow;
+            var offsetUtcNow = DateTimeOffset
+                .UtcNow
+                .Truncate(TimeSpan.FromMinutes(1));
+
+            StartDateTime = offsetUtcNow.Subtract(TimeSpan.FromHours(24));
+            EndDateTime = offsetUtcNow;
         }
 
         [BindProperty]
-        public DateTime EndDateTime { get; set; }
+        public DateTimeOffset EndDateTime { get; set; }
 
         [BindProperty]
-        public DateTime StartDateTime { get; set; }
+        public DateTimeOffset StartDateTime { get; set; }
 
         public void OnGet()
         {
