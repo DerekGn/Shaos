@@ -20,3 +20,16 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.collapse-icon {
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+button.collapsed .collapse-icon {
+    transform: rotate(0deg);
+}
+
+button:not(.collapsed) .collapse-icon {
+    transform: rotate(180deg);
+}
