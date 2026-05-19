@@ -17,6 +17,9 @@ namespace Shaos.Pages.Parameters
         }
 
         [BindProperty]
+        public HistoryData Data { get; set; }
+
+        [BindProperty]
         public DateTimeOffset EndDateTime { get; set; }
 
         [BindProperty]

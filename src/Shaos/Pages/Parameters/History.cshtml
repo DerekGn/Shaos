@@ -30,3 +30,10 @@
 <div class="container-fluid">
     <canvas id="chartCanvas"></canvas>
 </div>
+
+<script id="data" type="application/json">
+    @Json.Serialize(Model.Data)
+</script>
+
+<script src="~/lib/chart.js/dist/chart.umd.js"></script>
+<script src="~/js/history.js"></script>
