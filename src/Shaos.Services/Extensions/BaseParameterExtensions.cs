@@ -66,7 +66,7 @@ namespace Shaos.Services.Extensions
 
             switch (parameter)
             {
-                case BoolParameter boolParameter:
+                case Sdk.Devices.Parameters.BoolParameter boolParameter:
                     result = new BoolParameter()
                     {
                         InstanceId = parameter.Id,
@@ -75,7 +75,7 @@ namespace Shaos.Services.Extensions
                     };
                     break;
 
-                case FloatParameter floatParameter:
+                case Sdk.Devices.Parameters.FloatParameter floatParameter:
                     result = new FloatParameter()
                     {
                         InstanceId = parameter.Id,
@@ -86,7 +86,7 @@ namespace Shaos.Services.Extensions
                     };
                     break;
 
-                case IntParameter intParameter:
+                case Sdk.Devices.Parameters.IntParameter intParameter:
                     result = new IntParameter()
                     {
                         Max = intParameter.Max,
@@ -96,7 +96,7 @@ namespace Shaos.Services.Extensions
                     };
                     break;
 
-                case StringParameter stringParameter:
+                case Sdk.Devices.Parameters.StringParameter stringParameter:
                     result = new StringParameter()
                     {
                         Name = parameter.Name,
@@ -104,7 +104,7 @@ namespace Shaos.Services.Extensions
                     };
                     break;
 
-                case UIntParameter uIntParameter:
+                case Sdk.Devices.Parameters.UIntParameter uIntParameter:
                     result = new UIntParameter()
                     {
                         Max = uIntParameter.Max,
