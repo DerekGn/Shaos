@@ -33,7 +33,7 @@ namespace Shaos.Controllers
         internal const string PluginNotFound = "The PlugIn could not be found";
 
         protected BasePlugInController(ILogger<BasePlugInController> logger,
-                                       IShaosRepository repository,
+                                       IRepository repository,
                                        IPlugInService plugInService) : base(logger)
         {
             Repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -42,6 +42,6 @@ namespace Shaos.Controllers
 
         public IPlugInService PlugInService { get; }
 
-        public IShaosRepository Repository { get; }
+        public IRepository Repository { get; }
     }
 }

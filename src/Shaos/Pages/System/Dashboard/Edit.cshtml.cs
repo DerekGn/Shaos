@@ -37,7 +37,7 @@ namespace Shaos.Pages.System.Dashboard
     [Authorize]
     public class EditModel : DashboardItemPageModel
     {
-        public EditModel(IShaosRepository repository) : base(repository) { }
+        public EditModel(IRepository repository) : base(repository) { }
 
         [BindProperty]
         public DashboardItemModel Item { get; set; } = default!;

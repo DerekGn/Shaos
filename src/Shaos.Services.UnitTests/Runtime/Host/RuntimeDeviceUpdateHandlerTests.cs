@@ -372,7 +372,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .Returns(_mockServiceProvider.Object);
 
             _mockServiceProvider
-                .Setup(_ => _.GetService(typeof(IShaosRepository)))
+                .Setup(_ => _.GetService(typeof(IRepository)))
                 .Returns(MockRepository.Object);
         }
     }

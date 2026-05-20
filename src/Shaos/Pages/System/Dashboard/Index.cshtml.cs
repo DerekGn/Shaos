@@ -32,9 +32,9 @@ namespace Shaos.Pages.System.Dashboard
     [Authorize]
     public class IndexModel : PageModel
     {
-        private readonly IShaosRepository _repository;
+        private readonly IRepository _repository;
 
-        public IndexModel(IShaosRepository _repository)
+        public IndexModel(IRepository _repository)
         {
             this._repository = _repository;
         }
