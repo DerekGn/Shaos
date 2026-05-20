@@ -84,17 +84,18 @@ namespace Shaos.Repository
         /// <inheritdoc/>>
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            ChangeTracker.Entries<BaseEntity>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
+            ChangeTracker.Entries<BaseEntityTracked>().Where(_ => _.State == EntityState.Added).ToList().ForEach(_ =>
             {
                 _.Entity.CreatedDate = DateTime.UtcNow;
             });
 
-            ChangeTracker.Entries<BaseEntity>().Where(_ => _.State == EntityState.Modified).ToList().ForEach(_ =>
+            ChangeTracker.Entries<BaseEntityTracked>().Where(_ => _.State == EntityState.Modified).ToList().ForEach(_ =>
             {
                 _.Entity.UpdatedDate = DateTime.UtcNow;
             });
 
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess,
+                                         cancellationToken);
         }
 
         /// <inheritdoc/>>

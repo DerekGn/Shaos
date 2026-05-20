@@ -38,10 +38,5 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The parent <see cref="UIntParameter"/>
         /// </summary>
         public required UIntParameter Parameter { get; set; }
-
-        /// <summary>
-        /// The parent <see cref="UIntParameter"/> identifier
-        /// </summary>
-        public required int ParameterId { get; set; }
     }
 }

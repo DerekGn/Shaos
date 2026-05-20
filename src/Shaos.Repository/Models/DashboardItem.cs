@@ -29,7 +29,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// A dashboard item
     /// </summary>
-    public class DashboardItem : BaseEntity
+    public class DashboardItem : BaseEntityTracked
     {
         /// <summary>
         /// The parameter dashboard label

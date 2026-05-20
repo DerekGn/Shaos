@@ -31,7 +31,7 @@ namespace Shaos.Repository.Models.Devices
     /// <summary>
     /// A device model
     /// </summary>
-    public class Device : BaseEntity
+    public class Device : BaseEntityTracked
     {
         /// <summary>
         /// The <see cref="Sdk.Devices.Device"/> identifier

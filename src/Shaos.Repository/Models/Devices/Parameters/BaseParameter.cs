@@ -29,7 +29,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
     /// <summary>
     /// A device base parameter
     /// </summary>
-    public abstract class BaseParameter : BaseEntity
+    public abstract class BaseParameter : BaseEntityTracked
     {
         /// <summary>
         /// Indicates if the parameter can be written
