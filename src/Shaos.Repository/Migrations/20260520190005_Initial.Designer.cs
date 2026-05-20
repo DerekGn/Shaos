@@ -11,8 +11,8 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20260520185747_ParameterValueModelUpdate")]
-    partial class ParameterValueModelUpdate
+    [Migration("20260520190005_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
