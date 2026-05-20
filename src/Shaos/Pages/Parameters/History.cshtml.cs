@@ -25,7 +25,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Extensions;
+using Shaos.Pages.Parameters.Types;
 using Shaos.Repository;
+using Shaos.Repository.Models.Devices;
+using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.Parameters
 {
@@ -42,20 +45,27 @@ namespace Shaos.Pages.Parameters
             StartDateTime = offsetUtcNow.Subtract(TimeSpan.FromHours(24));
             EndDateTime = offsetUtcNow;
             _repository = repository;
+
+            Values = [];
         }
 
         [BindProperty]
-        public HistoryData Data { get; set; }
+        public IList<BaseValue> Values { get; init; }
 
         [BindProperty]
-        public DateTimeOffset EndDateTime { get; set; }
+        public DateTimeOffset EndDateTime { get; init; }
 
         [BindProperty]
-        public DateTimeOffset StartDateTime { get; set; }
+        public DateTimeOffset StartDateTime { get; init; }
 
         public async Task OnGetAsync(int parameterId,
                                      CancellationToken cancellationToken = default)
         {
+            await foreach (var parameterValue in _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId,
+                                                                                                    cancellationToken: cancellationToken))
+            {
+                Values.Add(parameterValue.ToModel());
+            }
         }
 
         public async Task OnPostApplyAsync(CancellationToken cancellationToken = default)

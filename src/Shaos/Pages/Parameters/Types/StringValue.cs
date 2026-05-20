@@ -22,21 +22,10 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Repository.Models.Devices.Parameters
+namespace Shaos.Pages.Parameters.Types
 {
-    /// <summary>
-    /// A base parameter
-    /// </summary>
-    public abstract class BaseParameterValue : BaseEntity
+    public record StringValue : BaseValue
     {
-        /// <summary>
-        /// The parent <see cref="BaseParameter"/> identifier
-        /// </summary>
-        public required int ParameterId { get; set; }
-
-        /// <summary>
-        /// The update time stamp
-        /// </summary>
-        public DateTime TimeStamp { get; set; }
+        public string? Value { get; init; }
     }
 }

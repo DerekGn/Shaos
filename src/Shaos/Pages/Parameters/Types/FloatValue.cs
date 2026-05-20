@@ -22,10 +22,10 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Pages.Parameters
+namespace Shaos.Pages.Parameters.Types
 {
-    public record HistoryData
+    public record FloatValue : BaseValue
     {
-        public DateTime X { get; set; }
+        public float Value { get; init; }
     }
 }
