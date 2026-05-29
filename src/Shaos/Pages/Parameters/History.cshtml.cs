@@ -24,11 +24,14 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json.Linq;
+using NuGet.Packaging;
 using Shaos.Extensions;
 using Shaos.Pages.Parameters.Types;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices;
 using Shaos.Repository.Models.Devices.Parameters;
+using System.Text.Json;
 
 namespace Shaos.Pages.Parameters
 {
@@ -45,12 +48,7 @@ namespace Shaos.Pages.Parameters
             StartDateTime = offsetUtcNow.Subtract(TimeSpan.FromHours(24));
             EndDateTime = offsetUtcNow;
             _repository = repository;
-
-            Values = [];
         }
-
-        [BindProperty]
-        public IList<BaseValue> Values { get; init; }
 
         [BindProperty]
         public DateTimeOffset EndDateTime { get; init; }
@@ -61,11 +59,9 @@ namespace Shaos.Pages.Parameters
         public async Task OnGetAsync(int parameterId,
                                      CancellationToken cancellationToken = default)
         {
-            await foreach (var parameterValue in _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId,
-                                                                                                    cancellationToken: cancellationToken))
-            {
-                Values.Add(parameterValue.ToModel());
-            }
+            ViewData["values"] = JsonSerializer.Serialize(await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.DateTime || _.TimeStamp <= EndDateTime.DateTime),
+                                                                                                                   cancellationToken: cancellationToken).Select(_ => _.ToModel())
+                                                                                                                   .ToListAsync(cancellationToken: cancellationToken));
         }
 
         public async Task OnPostApplyAsync(CancellationToken cancellationToken = default)

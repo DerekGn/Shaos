@@ -22,8 +22,15 @@
 * SOFTWARE.
 */
 
+using System.Text.Json.Serialization;
+
 namespace Shaos.Pages.Parameters.Types
 {
+    [JsonDerivedType(typeof(BoolValue))]
+    [JsonDerivedType(typeof(FloatValue))]
+    [JsonDerivedType(typeof(IntValue))]
+    [JsonDerivedType(typeof(StringValue))]
+    [JsonDerivedType(typeof(UIntValue))]
     public abstract record BaseValue
     {
         /// <summary>
