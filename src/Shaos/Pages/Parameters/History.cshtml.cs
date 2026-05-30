@@ -24,13 +24,10 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json.Linq;
-using NuGet.Packaging;
 using Shaos.Extensions;
-using Shaos.Pages.Parameters.Types;
 using Shaos.Repository;
-using Shaos.Repository.Models.Devices;
 using Shaos.Repository.Models.Devices.Parameters;
+using System.Reflection.Metadata;
 using System.Text.Json;
 
 namespace Shaos.Pages.Parameters
@@ -51,21 +48,36 @@ namespace Shaos.Pages.Parameters
         }
 
         [BindProperty]
-        public DateTimeOffset EndDateTime { get; init; }
+        public int Id { get; set; }
 
         [BindProperty]
-        public DateTimeOffset StartDateTime { get; init; }
+        public DateTimeOffset EndDateTime { get; set; }
 
-        public async Task OnGetAsync(int parameterId,
+        [BindProperty]
+        public DateTimeOffset StartDateTime { get; set; }
+
+        public async Task OnGetAsync(int id,
                                      CancellationToken cancellationToken = default)
         {
-            ViewData["values"] = JsonSerializer.Serialize(await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.DateTime || _.TimeStamp <= EndDateTime.DateTime),
-                                                                                                                   cancellationToken: cancellationToken).Select(_ => _.ToModel())
-                                                                                                                   .ToListAsync(cancellationToken: cancellationToken));
+            Id = id;
+            ViewData["values"] = await QueryParameterValueDataAsync(id,
+                                                                    cancellationToken);
         }
 
-        public async Task OnPostApplyAsync(CancellationToken cancellationToken = default)
+        public async Task OnPostApplyAsync(int id,
+                                           CancellationToken cancellationToken = default)
         {
+            Id = id;
+            ViewData["values"] = await QueryParameterValueDataAsync(id,
+                                                                    cancellationToken);
+        }
+
+        private async Task<string> QueryParameterValueDataAsync(int parameterId,
+                                                                CancellationToken cancellationToken)
+        {
+            return JsonSerializer.Serialize(await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.DateTime || _.TimeStamp <= EndDateTime.DateTime),
+                                                                                                     cancellationToken: cancellationToken).Select(_ => _.ToModel())
+                                                                                                     .ToListAsync(cancellationToken: cancellationToken));
         }
     }
 }

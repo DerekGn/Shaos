@@ -7,6 +7,7 @@
 
 <hr />
 
+<form asp-page-handler="apply" method="post" asp-route-id="@Model.Id">
 <div class="row">
     <div class="col-sm-1">
         StartTime:
@@ -21,11 +22,10 @@
         <input asp-for="@Model.EndDateTime" type="datetime-local" class="form-control" />
     </div>
     <div class="col-sm-3">
-        <form asp-page-handler="apply" method="post">
-            <button class="btn btn-sm btn-primary">Apply</button>
-        </form>
+        <button class="btn btn-sm btn-primary">Apply</button>
     </div>
 </div>
+</form>
 
 <div class="container-fluid">
     <canvas id="chartCanvas"></canvas>
