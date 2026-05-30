@@ -12,15 +12,6 @@ title: Domain Model
 
 classDiagram
 
-namespace Shaos.Repository.Models.Devices {
-    class Device {
-        +int InstanceId
-        +string Name
-        +List<BaseParameter> Parameters
-        +PlugInInstance? PlugInInstance
-    }
-}
-
 namespace Shaos.Repository.Models {
     class BaseEntity {
         +DateTime CreatedDate
@@ -59,6 +50,15 @@ namespace Shaos.Repository.Models {
         +bool Enabled
         +string Name
         +List<Device> Devices
+    }
+}
+
+namespace Shaos.Repository.Models.Devices {
+    class Device {
+        +int InstanceId
+        +string Name
+        +List<BaseParameter> Parameters
+        +PlugInInstance? PlugInInstance
     }
 }
 
