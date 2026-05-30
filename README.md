@@ -159,7 +159,7 @@ namespace Shaos.Repository.Models.Devices.Parameters {
     BaseParameter *-- DashboardItem
 
     BoolParameter *-- BoolParameterValue
-    FloatParameter *-- FLoatParameterValue
+    FloatParameter *-- FloatParameterValue
     IntParameter *-- IntParameterValue
     StringParameter *-- StringParameterValue
     UIntParameter *-- UIntParameterValue
