@@ -3,15 +3,14 @@
 @model Shaos.Pages.Parameters.IndexModel
 @{
     ViewData["Title"] = "Index";
+    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
+    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
 }
 
 <h1>Device Parameters</h1>
 
 <hr />
-
-@{
-    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
-}
 
 <form asp-page="./Index" method="get">
     <div class="form-actions no-color">
@@ -148,6 +147,13 @@
                             </span>
                         </a>
                     </td>
+                    <td>
+                        <a asp-page="/Parameters/Export" asp-route-id="@item.Id" asp-route-deviceId="@item.DeviceId" class="btn btn-sm btn-primary" title="Export">
+                            <span>
+                                <svg bootstrap-icon="Download" width="24" height="24" aria-label="Export"></svg>
+                            </span>
+                        </a>
+                    </td>
                 }
                 else
                 {
@@ -157,11 +163,6 @@
         }
     </tbody>
 </table>
-
-@{
-    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
-}
 
 <a asp-page="./Index"
    asp-route-id="@Model.Id"
@@ -180,9 +181,7 @@
     Next
 </a>
 
-<a asp-page="/Devices/Index" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">
-    Back
-</a>
+<a asp-page="/Devices/Index" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">Back</a>
 
 @section Scripts {
     @{

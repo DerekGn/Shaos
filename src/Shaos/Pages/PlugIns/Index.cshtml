@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "Index";
+    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
+    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
 }
 
 <h1>PlugIns</h1>
@@ -15,10 +18,6 @@
         PlugIn Package Upload
     </a>
 </p>
-
-@{
-    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
-}
 
 <form asp-page="./Index" method="get">
     <div class="form-actions no-color">
@@ -117,11 +116,6 @@
         }
     </tbody>
 </table>
-
-@{
-    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
-}
 
 <a asp-page="./Index"
    asp-route-sortOrder="@Model.CurrentSort"

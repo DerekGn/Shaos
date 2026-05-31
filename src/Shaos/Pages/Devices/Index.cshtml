@@ -3,14 +3,14 @@
 
 @{
     ViewData["Title"] = "Index";
+    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
+    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
 }
 
 <h1>Instance Devices</h1>
-<hr />
 
-@{
-    var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
-}
+<hr />
 
 <form asp-page="./Index" method="get">
     <div class="form-actions no-color">
@@ -84,11 +84,6 @@
     </tbody>
 </table>
 
-@{
-    var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
-}
-
 <a asp-page="./Index"
    asp-route-id="@Model.Id"
    asp-route-sortOrder="@Model.CurrentSort"
@@ -106,9 +101,7 @@
     Next
 </a>
 
-<a asp-page="/Instances/Index" class="btn btn-sm btn-primary">
-    Back
-</a>
+<a asp-page="/Instances/Index" class="btn btn-sm btn-primary">Back</a>
 
 @section Scripts {
     @{
