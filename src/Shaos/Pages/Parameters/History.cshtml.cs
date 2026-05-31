@@ -27,7 +27,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Extensions;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices.Parameters;
-using System.Reflection.Metadata;
 using System.Text.Json;
 
 namespace Shaos.Pages.Parameters
