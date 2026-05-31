@@ -54,21 +54,29 @@ namespace Shaos.Pages.Parameters
 
         [BindProperty]
         public int Id { get; set; }
+
+        [BindProperty]
+        public int DeviceId { get; set; }
+
         [BindProperty]
         public DateTimeOffset StartDateTime { get; set; }
 
         public async Task OnGetAsync(int id,
+                                     int deviceId,
                                      CancellationToken cancellationToken = default)
         {
             Id = id;
+            DeviceId = deviceId;
             ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
                                                                        cancellationToken);
         }
 
         public async Task OnPostApplyAsync(int id,
+                                           int deviceId,
                                            CancellationToken cancellationToken = default)
         {
             Id = id;
+            DeviceId = deviceId;
             ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
                                                                        cancellationToken);
         }
