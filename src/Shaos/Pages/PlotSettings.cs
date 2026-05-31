@@ -22,29 +22,28 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Serilog.Events;
-using System.ComponentModel.DataAnnotations;
-
-namespace Shaos.Repository.Models
+namespace Shaos.Pages
 {
-    /// <summary>
-    /// A log level switch entity
-    /// </summary>
-    [Index(nameof(Name), IsUnique = true)]
-    public class LogLevelSwitch : BaseEntityTracked
+    public class PlotSettings
     {
         /// <summary>
-        /// The current <see cref="LogEventLevel"/>
+        /// The identifier of the device
         /// </summary>
-        [Required]
-        public required LogEventLevel Level { get; set; }
+        public int DeviceId { get; set; }
 
         /// <summary>
-        /// The name of this <see cref="LogLevelSwitch"/>
+        /// The total plot duration
         /// </summary>
-        [MaxLength(40)]
-        [Required]
-        public required string Name { get; set; }
+        public int Duration { get; set; } = 20000;
+
+        /// <summary>
+        /// The identifier of the device parameter identifier
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// The parameter plot label
+        /// </summary>
+        public string Label { get; set; } = string.Empty;
     }
 }

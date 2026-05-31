@@ -3,16 +3,19 @@
 @{
 }
 
-<h1>Parameter Plot</h1>
+<h1>Real-time Parameter</h1>
 
 <hr />
 
 <div class="container-fluid">
     <canvas id="chartCanvas"></canvas>
 </div>
-<script id="settings" type="application/json">
-    @Json.Serialize(Model.Settings)
-</script>
+
+<a asp-page="/Parameters/Index" asp-route-id="@Model.Settings.DeviceId" class="btn btn-sm btn-primary">
+    Back
+</a>
+
+<script id="settings" type="application/json">@Json.Serialize(Model.Settings)</script>
 
 <script src="~/lib/chart.js/dist/chart.umd.js"></script>
 <script src="~/lib/moment.js/moment.min.js"></script>

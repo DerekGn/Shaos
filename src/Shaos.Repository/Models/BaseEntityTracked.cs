@@ -22,29 +22,25 @@
 * SOFTWARE.
 */
 
-using Microsoft.EntityFrameworkCore;
-using Serilog.Events;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models
 {
     /// <summary>
-    /// A log level switch entity
+    /// The <see cref="BaseEntityTracked"/> entity
     /// </summary>
-    [Index(nameof(Name), IsUnique = true)]
-    public class LogLevelSwitch : BaseEntityTracked
+    public abstract class BaseEntityTracked : BaseEntity
     {
         /// <summary>
-        /// The current <see cref="LogEventLevel"/>
+        /// The created date
         /// </summary>
-        [Required]
-        public required LogEventLevel Level { get; set; }
+        [DisplayFormat(DataFormatString = "{0:f}")]
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// The name of this <see cref="LogLevelSwitch"/>
+        /// The updated date
         /// </summary>
-        [MaxLength(40)]
-        [Required]
-        public required string Name { get; set; }
+        [DisplayFormat(DataFormatString = "{0:f}")]
+        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
     }
 }

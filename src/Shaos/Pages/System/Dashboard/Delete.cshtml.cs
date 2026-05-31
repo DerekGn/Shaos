@@ -33,9 +33,9 @@ namespace Shaos.Pages.System.Dashboard
     [Authorize]
     public class DeleteModel : PageModel
     {
-        private readonly IShaosRepository _repository;
+        private readonly IRepository _repository;
 
-        public DeleteModel(IShaosRepository repository)
+        public DeleteModel(IRepository repository)
         {
             _repository = repository;
         }

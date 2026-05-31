@@ -31,7 +31,7 @@ namespace Shaos.Repository.Models
     /// Represents a PlugIn entity
     /// </summary>
     [Index(nameof(Name), IsUnique = true)]
-    public class PlugIn : BaseEntity
+    public class PlugIn : BaseEntityTracked
     {
         /// <summary>
         /// The description of this <see cref="PlugIn"/>

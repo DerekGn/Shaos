@@ -35,10 +35,10 @@ namespace Shaos.Pages.Parameters
     public class IndexModel : PaginatedModel<BaseParameter>
     {
         private readonly IConfiguration _configuration;
-        private readonly IShaosRepository _repository;
+        private readonly IRepository _repository;
 
         public IndexModel(IConfiguration configuration,
-                          IShaosRepository repository)
+                          IRepository repository)
         {
             _configuration = configuration;
             _repository = repository;

@@ -15,7 +15,7 @@ namespace Shaos.Repository.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
 
             modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
                 {
@@ -145,6 +145,9 @@ namespace Shaos.Repository.Migrations
                         .IsRequired()
                         .HasMaxLength(21)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("ParameterId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
@@ -436,9 +439,6 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameterValue");
 
-                    b.Property<int>("ParameterId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("Value")
                         .HasColumnType("INTEGER");
 
@@ -451,9 +451,6 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameterValue");
 
-                    b.Property<int>("ParameterId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<float>("Value")
                         .HasColumnType("REAL");
 
@@ -461,9 +458,6 @@ namespace Shaos.Repository.Migrations
 
                     b.ToTable("BaseParameterValues", t =>
                         {
-                            t.Property("ParameterId")
-                                .HasColumnName("FloatParameterValue_ParameterId");
-
                             t.Property("Value")
                                 .HasColumnName("FloatParameterValue_Value");
                         });
@@ -475,9 +469,6 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameterValue");
 
-                    b.Property<int>("ParameterId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("Value")
                         .HasColumnType("INTEGER");
 
@@ -485,9 +476,6 @@ namespace Shaos.Repository.Migrations
 
                     b.ToTable("BaseParameterValues", t =>
                         {
-                            t.Property("ParameterId")
-                                .HasColumnName("IntParameterValue_ParameterId");
-
                             t.Property("Value")
                                 .HasColumnName("IntParameterValue_Value");
                         });
@@ -499,9 +487,6 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameterValue");
 
-                    b.Property<int>("ParameterId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Value")
                         .HasColumnType("TEXT");
 
@@ -509,9 +494,6 @@ namespace Shaos.Repository.Migrations
 
                     b.ToTable("BaseParameterValues", t =>
                         {
-                            t.Property("ParameterId")
-                                .HasColumnName("StringParameterValue_ParameterId");
-
                             t.Property("Value")
                                 .HasColumnName("StringParameterValue_Value");
                         });
@@ -523,9 +505,6 @@ namespace Shaos.Repository.Migrations
                 {
                     b.HasBaseType("Shaos.Repository.Models.Devices.Parameters.BaseParameterValue");
 
-                    b.Property<int>("ParameterId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<uint>("Value")
                         .HasColumnType("INTEGER");
 
@@ -533,9 +512,6 @@ namespace Shaos.Repository.Migrations
 
                     b.ToTable("BaseParameterValues", t =>
                         {
-                            t.Property("ParameterId")
-                                .HasColumnName("UIntParameterValue_ParameterId");
-
                             t.Property("Value")
                                 .HasColumnName("UIntParameterValue_Value");
                         });

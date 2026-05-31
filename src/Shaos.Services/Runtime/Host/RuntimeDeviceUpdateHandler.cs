@@ -416,12 +416,12 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
-        private async Task ExecuteRepositoryOperationAsync(Func<IShaosRepository, Task> operation)
+        private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
         {
             try
             {
                 using var scope = _serviceScopeFactory.CreateScope();
-                var repository = scope.ServiceProvider.GetRequiredService<IShaosRepository>();
+                var repository = scope.ServiceProvider.GetRequiredService<IRepository>();
 
                 await operation(repository);
             }

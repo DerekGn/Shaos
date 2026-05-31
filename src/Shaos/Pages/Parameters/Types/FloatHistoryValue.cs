@@ -22,23 +22,10 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Plotting
+namespace Shaos.Pages.Parameters.Types
 {
-    public class PlotSettings
+    public record FloatHistoryValue : BaseHistoryValue
     {
-        /// <summary>
-        /// The identifier of the parameter
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// The parameter plot label
-        /// </summary>
-        public string Label { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The total plot duration
-        /// </summary>
-        public int Duration { get; set; } = 20000;
+        public float Value { get; init; }
     }
 }

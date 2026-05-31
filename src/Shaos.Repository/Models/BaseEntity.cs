@@ -32,21 +32,9 @@ namespace Shaos.Repository.Models
     public abstract class BaseEntity
     {
         /// <summary>
-        /// The created date
-        /// </summary>
-        [DisplayFormat(DataFormatString = "{0:f}")]
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
         /// The identifier
         /// </summary>
         [Key]
         public int Id { get; set; }
-
-        /// <summary>
-        /// The updated date
-        /// </summary>
-        [DisplayFormat(DataFormatString = "{0:f}")]
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
     }
 }

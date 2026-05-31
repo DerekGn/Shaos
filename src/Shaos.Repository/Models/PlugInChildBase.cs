@@ -27,7 +27,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// A base class for classes associated with a <see cref="PlugIn"/>
     /// </summary>
-    public abstract class PlugInChildBase : BaseEntity
+    public abstract class PlugInChildBase : BaseEntityTracked
     {
         /// <summary>
         /// The associated <see cref="PlugIn"/>

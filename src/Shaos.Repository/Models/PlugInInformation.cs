@@ -32,7 +32,7 @@ namespace Shaos.Repository.Models
     /// <summary>
     /// A <see cref="PlugInInformation"/> for a <see cref="PlugIn"/>
     /// </summary>
-    public class PlugInInformation : BaseEntity
+    public class PlugInInformation : BaseEntityTracked
     {
         /// <summary>
         /// The fully qualified path to the PlugIn assembly

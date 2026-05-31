@@ -74,7 +74,8 @@ namespace Shaos.Controllers
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, Description = Status400BadRequestText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized, Description = Status401UnauthorizedText)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError, Description = Status500InternalServerErrorText)]
-        public IResult StreamParameterEventsByIdAsync(int id, CancellationToken cancellationToken)
+        public IResult StreamParameterEventsByIdAsync(int id,
+                                                      CancellationToken cancellationToken)
         {
             return ExecuteSubscription((context, cancellationToken) =>
             {

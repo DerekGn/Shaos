@@ -22,20 +22,17 @@
 * SOFTWARE.
 */
 
-using System.ComponentModel.DataAnnotations;
-
 namespace Shaos.Repository.Models.Devices.Parameters
 {
     /// <summary>
     /// A base parameter
     /// </summary>
-    public abstract class BaseParameterValue
+    public abstract class BaseParameterValue : BaseEntity
     {
         /// <summary>
-        /// The identifier
+        /// The parent <see cref="BaseParameter"/> identifier
         /// </summary>
-        [Key]
-        public int Id { get; set; }
+        public required int ParameterId { get; set; }
 
         /// <summary>
         /// The update time stamp

@@ -32,9 +32,9 @@ namespace Shaos.Pages.System.Dashboard
 {
     public class DashboardItemPageModel : PageModel
     {
-        internal protected readonly IShaosRepository Repository;
+        internal protected readonly IRepository Repository;
 
-        public DashboardItemPageModel(IShaosRepository repository)
+        public DashboardItemPageModel(IRepository repository)
         {
             Repository = repository;
         }

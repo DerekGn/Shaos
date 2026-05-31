@@ -31,9 +31,9 @@ using System.Linq.Expressions;
 namespace Shaos.Repository
 {
     /// <summary>
-    /// Defines a <see cref="IShaosRepository"/> interface
+    /// Defines a <see cref="IRepository"/> interface
     /// </summary>
-    public interface IShaosRepository
+    public interface IRepository
     {
         /// <summary>
         /// Add a <see cref="BaseEntity"/> to the repository
@@ -41,7 +41,8 @@ namespace Shaos.Repository
         /// <typeparam name="T">The <see cref="BaseEntity"/></typeparam>
         /// <param name="entity">The entity to add to the repository</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task AddAsync<T>(T entity, CancellationToken cancellationToken = default) where T : BaseEntity;
+        Task AddAsync<T>(T entity,
+                         CancellationToken cancellationToken = default) where T : BaseEntity;
 
         /// <summary>
         /// Determine if a <see cref="BaseEntity"/> exists in the store based on <paramref name="predicate"/>

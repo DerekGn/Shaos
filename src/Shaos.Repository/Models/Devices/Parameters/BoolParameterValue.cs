@@ -38,10 +38,5 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The parent <see cref="BoolParameter"/>
         /// </summary>
         public required BoolParameter Parameter { get; set; }
-
-        /// <summary>
-        /// The parent <see cref="BaseParameter"/> identifier
-        /// </summary>
-        public required int ParameterId { get; set; }
     }
 }

@@ -28,7 +28,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Shaos.Exceptions;
 using Shaos.Options;
-using Shaos.Plotting;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices.Parameters;
 
@@ -37,10 +36,10 @@ namespace Shaos.Pages.Parameters
     [Authorize]
     public class PlotModel : PageModel
     {
-        private readonly IShaosRepository _repository;
         private readonly IOptions<PlotOptions> _options;
+        private readonly IRepository _repository;
 
-        public PlotModel(IShaosRepository repository,
+        public PlotModel(IRepository repository,
                          IOptions<PlotOptions> options)
         {
             _repository = repository;
@@ -50,9 +49,11 @@ namespace Shaos.Pages.Parameters
         [BindProperty]
         public PlotSettings Settings { get; set; }
 
-        public async Task OnGetAsync(int id, CancellationToken cancellationToken)
+        public async Task OnGetAsync(int id,
+                                     int deviceId,
+                                     CancellationToken cancellationToken)
         {
-            var parameter = await _repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.InstanceId == id,
+            var parameter = await _repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == id,
                                                                                     cancellationToken: cancellationToken);
 
             if (parameter != null)
@@ -61,19 +62,20 @@ namespace Shaos.Pages.Parameters
                 {
                     Settings = new PlotSettings()
                     {
+                        DeviceId = deviceId,
+                        Duration = _options.Value.Duration,
                         Id = id,
-                        Label = parameter.Name,
-                        Duration = _options.Value.Duration
+                        Label = parameter.Name
                     };
                 }
                 catch (ParameterPlotNotSupportedException)
                 {
-                    ModelState.AddModelError(string.Empty, $"Parameter [{id}] does not support plotting.");
+                    ModelState.AddModelError(string.Empty, $"Parameter Id [{id}] does not support plotting.");
                 }
             }
             else
             {
-                ModelState.AddModelError(string.Empty, $"Parameter [{id}] was not found.");
+                ModelState.AddModelError(string.Empty, $"Parameter Id [{id}] was not found.");
             }
         }
     }
