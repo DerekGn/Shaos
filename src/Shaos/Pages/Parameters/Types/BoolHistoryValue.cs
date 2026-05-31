@@ -24,7 +24,7 @@
 
 namespace Shaos.Pages.Parameters.Types
 {
-    public record BoolValue : BaseValue
+    public record BoolHistoryValue : BaseHistoryValue
     {
         public bool Value { get; init; }
     }

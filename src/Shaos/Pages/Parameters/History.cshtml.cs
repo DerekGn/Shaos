@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Extensions;
+using Shaos.Pages.Parameters.Types;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices.Parameters;
 using System.Text.Json;
@@ -74,9 +75,31 @@ namespace Shaos.Pages.Parameters
         private async Task<string> QueryParameterValueDataAsync(int parameterId,
                                                                 CancellationToken cancellationToken)
         {
-            return JsonSerializer.Serialize(await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
-                                                                                                     cancellationToken: cancellationToken).Select(_ => _.ToModel())
-                                                                                                     .ToListAsync(cancellationToken: cancellationToken));
+            ParameterHistory? parameterHistory = new();
+
+            var parameter = await _repository.GetByIdAsync<BaseParameter>(parameterId,
+                                                                          true,
+                                                                          cancellationToken: cancellationToken);
+
+
+            if(parameter is not null)
+            {
+                var values = await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
+                                                                                      cancellationToken: cancellationToken).Select(_ => _.ToModel())
+                                                                                      .ToListAsync(cancellationToken: cancellationToken);
+                parameterHistory = new ParameterHistory()
+                {
+                    Name = parameter.Name,
+                    Values = values
+                };
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty,
+                                         $"Parameter Id [{parameterId}] was not found");
+            }
+
+            return JsonSerializer.Serialize(parameterHistory);
         }
     }
 }

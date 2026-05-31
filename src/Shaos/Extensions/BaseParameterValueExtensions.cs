@@ -5,52 +5,52 @@ namespace Shaos.Extensions
 {
     internal static class BaseParameterValueExtensions
     {
-        public static BoolValue ToModel(this BoolParameterValue parameter)
+        public static BoolHistoryValue ToModel(this BoolParameterValue parameter)
         {
-            return new BoolValue()
+            return new BoolHistoryValue()
             {
                 TimeStamp = parameter.TimeStamp,
                 Value = parameter.Value
             };
         }
 
-        public static IntValue ToModel(this IntParameterValue parameter)
+        public static IntHistoryValue ToModel(this IntParameterValue parameter)
         {
-            return new IntValue()
+            return new IntHistoryValue()
             {
                 TimeStamp = parameter.TimeStamp,
                 Value = parameter.Value
             };
         }
 
-        public static FloatValue ToModel(this FloatParameterValue parameter)
+        public static FloatHistoryValue ToModel(this FloatParameterValue parameter)
         {
-            return new FloatValue()
+            return new FloatHistoryValue()
             {
                 TimeStamp = parameter.TimeStamp,
                 Value = parameter.Value
             };
         }
 
-        public static StringValue ToModel(this StringParameterValue parameter)
+        public static StringHistoryValue ToModel(this StringParameterValue parameter)
         {
-            return new StringValue()
+            return new StringHistoryValue()
             {
                 TimeStamp = parameter.TimeStamp,
                 Value = parameter.Value
             };
         }
 
-        public static UIntValue ToModel(this UIntParameterValue parameter)
+        public static UIntHistoryValue ToModel(this UIntParameterValue parameter)
         {
-            return new UIntValue()
+            return new UIntHistoryValue()
             {
                 TimeStamp = parameter.TimeStamp,
                 Value = parameter.Value
             };
         }
 
-        public static BaseValue ToModel(this BaseParameterValue parameter) => parameter switch
+        public static BaseHistoryValue ToModel(this BaseParameterValue parameter) => parameter switch
         {
             BoolParameterValue boolParameter => boolParameter.ToModel(),
             FloatParameterValue floatParameter => floatParameter.ToModel(),

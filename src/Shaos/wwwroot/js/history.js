@@ -15,7 +15,12 @@ const chart = new Chart(ctx, {
     options: {
         scales: {
             x: {
-                type: 'time'
+                type: 'time',
+                time: {
+                    displayFormats: {
+                        day: 'MMM DD, YYYY'
+                    }
+                }
             }
         }
     }

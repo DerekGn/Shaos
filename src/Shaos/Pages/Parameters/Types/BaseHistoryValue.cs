@@ -26,12 +26,12 @@ using System.Text.Json.Serialization;
 
 namespace Shaos.Pages.Parameters.Types
 {
-    [JsonDerivedType(typeof(BoolValue))]
-    [JsonDerivedType(typeof(FloatValue))]
-    [JsonDerivedType(typeof(IntValue))]
-    [JsonDerivedType(typeof(StringValue))]
-    [JsonDerivedType(typeof(UIntValue))]
-    public abstract record BaseValue
+    [JsonDerivedType(typeof(BoolHistoryValue))]
+    [JsonDerivedType(typeof(FloatHistoryValue))]
+    [JsonDerivedType(typeof(IntHistoryValue))]
+    [JsonDerivedType(typeof(StringHistoryValue))]
+    [JsonDerivedType(typeof(UIntHistoryValue))]
+    public abstract record BaseHistoryValue
     {
         /// <summary>
         /// The time stamp for the update
