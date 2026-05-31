@@ -32,9 +32,7 @@
     <canvas id="chartCanvas"></canvas>
 </div>
 
-<script id="json" type="application/json">
-    @Html.Raw(ViewData["values"])
-</script>
+<script id="history" type="application/json">@Html.Raw(ViewData[HistoryModel.ViewDataKey])</script>
 
 <script src="~/lib/chart.js/dist/chart.umd.js"></script>
 <script src="~/lib/moment.js/moment.min.js"></script>

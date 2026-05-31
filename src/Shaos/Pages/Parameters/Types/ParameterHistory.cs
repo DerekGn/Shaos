@@ -3,9 +3,14 @@
     public class ParameterHistory
     {
         /// <summary>
+        /// The parameter history units
+        /// </summary>
+        public string? Units { get; set; }
+
+        /// <summary>
         /// The parameter name
         /// </summary>
-        public string Name { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
 
         /// <summary>
         /// The parameter history values

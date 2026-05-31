@@ -34,6 +34,8 @@ namespace Shaos.Pages.Parameters
 {
     public class HistoryModel : PageModel
     {
+        public const string ViewDataKey = "history";
+
         private readonly IRepository _repository;
 
         public HistoryModel(IRepository repository)
@@ -48,11 +50,10 @@ namespace Shaos.Pages.Parameters
         }
 
         [BindProperty]
-        public int Id { get; set; }
-
-        [BindProperty]
         public DateTimeOffset EndDateTime { get; set; }
 
+        [BindProperty]
+        public int Id { get; set; }
         [BindProperty]
         public DateTimeOffset StartDateTime { get; set; }
 
@@ -60,16 +61,16 @@ namespace Shaos.Pages.Parameters
                                      CancellationToken cancellationToken = default)
         {
             Id = id;
-            ViewData["values"] = await QueryParameterValueDataAsync(id,
-                                                                    cancellationToken);
+            ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
+                                                                       cancellationToken);
         }
 
         public async Task OnPostApplyAsync(int id,
                                            CancellationToken cancellationToken = default)
         {
             Id = id;
-            ViewData["values"] = await QueryParameterValueDataAsync(id,
-                                                                    cancellationToken);
+            ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
+                                                                       cancellationToken);
         }
 
         private async Task<string> QueryParameterValueDataAsync(int parameterId,
@@ -81,15 +82,15 @@ namespace Shaos.Pages.Parameters
                                                                           true,
                                                                           cancellationToken: cancellationToken);
 
-
-            if(parameter is not null)
+            if (parameter is not null)
             {
                 var values = await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
                                                                                       cancellationToken: cancellationToken).Select(_ => _.ToModel())
                                                                                       .ToListAsync(cancellationToken: cancellationToken);
                 parameterHistory = new ParameterHistory()
                 {
-                    Name = parameter.Name,
+                    Label = parameter.Name,
+                    Units = parameter.Units,
                     Values = values
                 };
             }
