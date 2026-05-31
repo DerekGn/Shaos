@@ -1,5 +1,9 @@
 ﻿"use strict";
 
+function isEmptyOrWhitespace(str) {
+    return typeof str !== 'string' || str.trim().length === 0;
+}
+
 const json = document.getElementById('history').innerHTML;
 var historyData = JSON.parse(json);
 
@@ -21,6 +25,12 @@ const chart = new Chart(ctx, {
                     displayFormats: {
                         day: 'MMM DD, YYYY'
                     }
+                }
+            },
+            y: {
+                title: {
+                    display: !isEmptyOrWhitespace(historyData.Units),
+                    text: historyData.Units
                 }
             }
         }
