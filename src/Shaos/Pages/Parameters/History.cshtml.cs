@@ -75,7 +75,7 @@ namespace Shaos.Pages.Parameters
         private async Task<string> QueryParameterValueDataAsync(int parameterId,
                                                                 CancellationToken cancellationToken)
         {
-            return JsonSerializer.Serialize(await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.DateTime || _.TimeStamp <= EndDateTime.DateTime),
+            return JsonSerializer.Serialize(await _repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
                                                                                                      cancellationToken: cancellationToken).Select(_ => _.ToModel())
                                                                                                      .ToListAsync(cancellationToken: cancellationToken));
         }
