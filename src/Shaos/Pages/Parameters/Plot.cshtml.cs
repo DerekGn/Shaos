@@ -49,11 +49,11 @@ namespace Shaos.Pages.Parameters
         [BindProperty]
         public PlotSettings Settings { get; set; }
 
-        public async Task OnGetAsync(int deviceId,
-                                     int instanceId,
+        public async Task OnGetAsync(int id,
+                                     int deviceId,
                                      CancellationToken cancellationToken)
         {
-            var parameter = await _repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.InstanceId == instanceId,
+            var parameter = await _repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == id,
                                                                                     cancellationToken: cancellationToken);
 
             if (parameter != null)
@@ -64,18 +64,18 @@ namespace Shaos.Pages.Parameters
                     {
                         DeviceId = deviceId,
                         Duration = _options.Value.Duration,
-                        InstanceId = instanceId,
+                        Id = id,
                         Label = parameter.Name
                     };
                 }
                 catch (ParameterPlotNotSupportedException)
                 {
-                    ModelState.AddModelError(string.Empty, $"Parameter Instance [{instanceId}] does not support plotting.");
+                    ModelState.AddModelError(string.Empty, $"Parameter Id [{id}] does not support plotting.");
                 }
             }
             else
             {
-                ModelState.AddModelError(string.Empty, $"Parameter Instance [{instanceId}] was not found.");
+                ModelState.AddModelError(string.Empty, $"Parameter Id [{id}] was not found.");
             }
         }
     }

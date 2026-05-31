@@ -37,13 +37,13 @@ namespace Shaos.Pages
         public int Duration { get; set; } = 20000;
 
         /// <summary>
+        /// The identifier of the device parameter identifier
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// The parameter plot label
         /// </summary>
         public string Label { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The identifier of the device parameter instance
-        /// </summary>
-        public int InstanceId { get; set; }
     }
 }
