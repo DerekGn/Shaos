@@ -17,27 +17,27 @@ namespace Shaos.Extensions
 
         public static string ToCsv(this BoolParameterValue parameter)
         {
-            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime()}{Environment.NewLine}";
         }
 
         public static string ToCsv(this FloatParameterValue parameter)
         {
-            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime()}{Environment.NewLine}";
         }
 
         public static string ToCsv(this IntParameterValue parameter)
         {
-            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime()}{Environment.NewLine}";
         }
 
         public static string ToCsv(this StringParameterValue parameter)
         {
-            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime()}{Environment.NewLine}";
         }
 
         public static string ToCsv(this UIntParameterValue parameter)
         {
-            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime()}{Environment.NewLine}";
         }
 
         public static BoolHistoryValue ToModel(this BoolParameterValue parameter)
