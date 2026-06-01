@@ -46,6 +46,9 @@ namespace Shaos.Pages.Parameters
                                                            int deviceId,
                                                            CancellationToken cancellationToken = default)
         {
+            Id = id;
+            DeviceId = deviceId;
+
             var parameter = await Repository.GetByIdAsync<BaseParameter>(id,
                                                                          cancellationToken: cancellationToken);
 
@@ -63,6 +66,8 @@ namespace Shaos.Pages.Parameters
             var stream = Response.BodyWriter.AsStream();
 
             var streamWriter = new StreamWriter(stream);
+
+            await streamWriter.WriteLineAsync($"value,timestamp(utc){Environment.NewLine}");
 
             await foreach (var item in Repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == id && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
                                                                                          cancellationToken: cancellationToken))
