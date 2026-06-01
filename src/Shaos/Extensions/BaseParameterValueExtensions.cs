@@ -5,6 +5,41 @@ namespace Shaos.Extensions
 {
     internal static class BaseParameterValueExtensions
     {
+        public static string ToCsv(this BaseParameterValue parameter) => parameter switch
+        {
+            BoolParameterValue boolParameter => boolParameter.ToCsv(),
+            FloatParameterValue floatParameter => floatParameter.ToCsv(),
+            IntParameterValue intParameter => intParameter.ToCsv(),
+            StringParameterValue stringParameter => stringParameter.ToCsv(),
+            UIntParameterValue uintParameter => uintParameter.ToCsv(),
+            _ => throw new NotImplementedException()
+        };
+
+        public static string ToCsv(this BoolParameterValue parameter)
+        {
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+        }
+
+        public static string ToCsv(this FloatParameterValue parameter)
+        {
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+        }
+
+        public static string ToCsv(this IntParameterValue parameter)
+        {
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+        }
+
+        public static string ToCsv(this StringParameterValue parameter)
+        {
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+        }
+
+        public static string ToCsv(this UIntParameterValue parameter)
+        {
+            return $"{parameter.Value},{parameter.TimeStamp.ToUniversalTime}{Environment.NewLine}";
+        }
+
         public static BoolHistoryValue ToModel(this BoolParameterValue parameter)
         {
             return new BoolHistoryValue()

@@ -22,17 +22,16 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc;
+using Shaos.Extensions;
 using Shaos.Repository;
+using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.Parameters
 {
     public class ExportModel : BaseDateRangePageModel
     {
-        public ExportModel(IRepository repository) : base(repository) { }
-
-        public async Task OnPostExportAsync(int id,
-                                            int deviceId,
-                                            CancellationToken cancellationToken = default)
+        public ExportModel(IRepository repository) : base(repository)
         {
         }
 
@@ -41,6 +40,37 @@ namespace Shaos.Pages.Parameters
         {
             Id = id;
             DeviceId = deviceId;
+        }
+
+        public async Task<IActionResult> OnPostExportAsync(int id,
+                                                           int deviceId,
+                                                           CancellationToken cancellationToken = default)
+        {
+            var parameter = await Repository.GetByIdAsync<BaseParameter>(id,
+                                                                         cancellationToken: cancellationToken);
+
+            if(parameter is null)
+            {
+                ModelState.AddModelError(string.Empty,
+                                         $"Parameter Id [{id}] was not found.");
+
+                return new EmptyResult();
+            }
+
+            Response.ContentType = "text/csv";
+            Response.Headers.Append("Content-Disposition", $"attachment; filename=\"{parameter.Name}.csv\"");
+
+            var stream = Response.BodyWriter.AsStream();
+
+            var streamWriter = new StreamWriter(stream);
+
+            await foreach (var item in Repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == id && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
+                                                                                         cancellationToken: cancellationToken))
+            {
+                await streamWriter.WriteAsync(item.ToCsv());
+            }
+
+            return new EmptyResult();
         }
     }
 }
