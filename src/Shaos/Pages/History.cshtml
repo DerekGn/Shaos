@@ -1,0 +1,40 @@
+﻿@page
+@model Shaos.Pages.HistoryModel
+
+<h1>Parameter History</h1>
+
+<hr />
+
+<form asp-page-handler="apply" method="post" asp-route-id="@Model.Id" asp-route-deviceId="@Model.DeviceId">
+    <div class="row">
+        <div class="col-sm-1">
+            StartTime:
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="@Model.StartDateTime" type="datetime-local" class="form-control" />
+        </div>
+        <div class="col-sm-1">
+            EndTime:
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="@Model.EndDateTime" type="datetime-local" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <button class="btn btn-sm btn-primary">Apply</button>
+        </div>
+    </div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+</form>
+
+<div class="container-fluid">
+    <canvas id="chartCanvas"></canvas>
+</div>
+
+<a asp-page="/Index" asp-route-id="@Model.DeviceId" class="btn btn-sm btn-primary">Back</a>
+
+<script id="history" type="application/json">@Html.Raw(ViewData[HistoryModel.ViewDataKey])</script>
+
+<script src="~/lib/chart.js/dist/chart.umd.js"></script>
+<script src="~/lib/moment.js/moment.min.js"></script>
+<script src="~/lib/chartjs-adapter-moment/dist/chartjs-adapter-moment.js"></script>
+<script src="~/js/history.js"></script>

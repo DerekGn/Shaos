@@ -1,4 +1,4 @@
-/*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -22,16 +22,38 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Extensions;
 using Shaos.Repository;
 
-namespace Shaos.Pages.Parameters
+namespace Shaos.Pages
 {
-    [Authorize]
-    public class ExportModel : BaseExportModel
+    public abstract class BaseDateRangePageModel : PageModel
     {
-        public ExportModel(IRepository repository) : base(repository)
+        private protected readonly IRepository Repository;
+
+        [BindProperty]
+        public int DeviceId { get; set; }
+
+        [BindProperty]
+        public DateTimeOffset EndDateTime { get; set; }
+
+        [BindProperty]
+        public int Id { get; set; }
+
+        [BindProperty]
+        public DateTimeOffset StartDateTime { get; set; }
+
+        protected BaseDateRangePageModel(IRepository repository)
         {
+            var offsetUtcNow = DateTimeOffset
+                .UtcNow
+                .Truncate(TimeSpan.FromHours(1));
+
+            StartDateTime = offsetUtcNow.Subtract(TimeSpan.FromHours(24));
+            EndDateTime = offsetUtcNow;
+            Repository = repository;
         }
     }
 }

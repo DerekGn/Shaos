@@ -22,15 +22,13 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Authorization;
 using Shaos.Repository;
 
-namespace Shaos.Pages.Parameters
+namespace Shaos.Pages
 {
-    [Authorize]
-    public class ExportModel : BaseExportModel
+    public class HistoryModel : BaseHistoryModel
     {
-        public ExportModel(IRepository repository) : base(repository)
+        public HistoryModel(IRepository repository) : base(repository)
         {
         }
     }
