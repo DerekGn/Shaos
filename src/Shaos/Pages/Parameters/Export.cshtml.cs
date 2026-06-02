@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Repository;
@@ -29,6 +30,7 @@ using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.Parameters
 {
+    [Authorize]
     public class ExportModel : BaseDateRangePageModel
     {
         public ExportModel(IRepository repository) : base(repository)

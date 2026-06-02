@@ -27,7 +27,7 @@ using Microsoft.Extensions.Options;
 using Shaos.Options;
 using Shaos.Repository;
 
-namespace Shaos.Pages.Parameters
+namespace Shaos.Pages
 {
     [Authorize]
     public class PlotModel : BasePlotModel

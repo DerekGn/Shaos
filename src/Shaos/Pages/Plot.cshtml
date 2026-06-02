@@ -1,5 +1,5 @@
 ﻿@page
-@model Shaos.Pages.Parameters.PlotModel
+@model Shaos.Pages.PlotModel
 
 <h1>Real-time Parameter</h1>
 
@@ -9,7 +9,7 @@
     <canvas id="chartCanvas"></canvas>
 </div>
 
-<a asp-page="/Parameters/Index" asp-route-id="@Model.Settings.DeviceId" class="btn btn-sm btn-primary">Back</a>
+<a asp-page="/Index" asp-route-id="@Model.Settings.DeviceId" class="btn btn-sm btn-primary">Back</a>
 
 <script id="settings" type="application/json">@Json.Serialize(Model.Settings)</script>
 

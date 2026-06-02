@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Authorization;
 using Shaos.Extensions;
 using Shaos.Pages.Parameters.Types;
 using Shaos.Repository;
@@ -30,6 +31,7 @@ using System.Text.Json;
 
 namespace Shaos.Pages.Parameters
 {
+    [Authorize]
     public class HistoryModel : BaseDateRangePageModel
     {
         public const string ViewDataKey = "history";
