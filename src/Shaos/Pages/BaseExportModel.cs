@@ -36,7 +36,7 @@ namespace Shaos.Pages
         }
 
         public void OnGet(int id,
-                  int deviceId)
+                          int deviceId)
         {
             Id = id;
             DeviceId = deviceId;

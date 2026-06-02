@@ -70,8 +70,9 @@ namespace Shaos.Pages
             if (parameter is not null)
             {
                 var values = await Repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
-                                                                                     cancellationToken: cancellationToken).Select(_ => _.ToModel())
-                                                                                      .ToListAsync(cancellationToken: cancellationToken);
+                                                                                     cancellationToken: cancellationToken)
+                                                                                     .Select(_ => _.ToModel())
+                                                                                     .ToListAsync(cancellationToken: cancellationToken);
                 parameterHistory = new ParameterHistory()
                 {
                     Label = parameter.Name,
