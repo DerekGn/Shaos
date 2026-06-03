@@ -27,6 +27,7 @@ using Shaos.Repository.EntityTypeConfigurations;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices;
 using Shaos.Repository.Models.Devices.Parameters;
+using Shaos.Repository.ValueConversion;
 
 namespace Shaos.Repository
 {
@@ -102,6 +103,18 @@ namespace Shaos.Repository
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BaseParameterEntityTypeConfiguration).Assembly);
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTime))
+                        property.SetValueConverter(new DateTimeUtcConverter());
+                    
+                    if (property.ClrType == typeof(DateTime?))
+                        property.SetValueConverter(new DateTimeUtcNullableConverter());
+                }
+            }
         }
     }
 }
