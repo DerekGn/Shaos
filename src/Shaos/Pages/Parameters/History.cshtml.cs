@@ -22,68 +22,16 @@
 * SOFTWARE.
 */
 
-using Shaos.Extensions;
-using Shaos.Pages.Parameters.Types;
+using Microsoft.AspNetCore.Authorization;
 using Shaos.Repository;
-using Shaos.Repository.Models.Devices.Parameters;
-using System.Text.Json;
 
 namespace Shaos.Pages.Parameters
 {
-    public class HistoryModel : BaseDateRangePageModel
+    [Authorize]
+    public class HistoryModel : BaseHistoryModel
     {
-        public const string ViewDataKey = "history";
-
-        public HistoryModel(IRepository repository) : base(repository) { }
-
-        public async Task OnGetAsync(int id,
-                                     int deviceId,
-                                     CancellationToken cancellationToken = default)
+        public HistoryModel(IRepository repository) : base(repository)
         {
-            Id = id;
-            DeviceId = deviceId;
-            ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
-                                                                       cancellationToken);
-        }
-
-        public async Task OnPostApplyAsync(int id,
-                                           int deviceId,
-                                           CancellationToken cancellationToken = default)
-        {
-            Id = id;
-            DeviceId = deviceId;
-            ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
-                                                                       cancellationToken);
-        }
-
-        private async Task<string> QueryParameterValueDataAsync(int parameterId,
-                                                                CancellationToken cancellationToken)
-        {
-            ParameterHistory? parameterHistory = new();
-
-            var parameter = await Repository.GetByIdAsync<BaseParameter>(parameterId,
-                                                                         true,
-                                                                         cancellationToken: cancellationToken);
-
-            if (parameter is not null)
-            {
-                var values = await Repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
-                                                                                     cancellationToken: cancellationToken).Select(_ => _.ToModel())
-                                                                                      .ToListAsync(cancellationToken: cancellationToken);
-                parameterHistory = new ParameterHistory()
-                {
-                    Label = parameter.Name,
-                    Units = parameter.Units,
-                    Values = values
-                };
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty,
-                                         $"Parameter Id [{parameterId}] was not found");
-            }
-
-            return JsonSerializer.Serialize(parameterHistory);
         }
     }
 }

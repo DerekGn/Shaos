@@ -23,60 +23,18 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
-using Shaos.Exceptions;
 using Shaos.Options;
 using Shaos.Repository;
-using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.Parameters
 {
     [Authorize]
-    public class PlotModel : PageModel
+    public class PlotModel : BasePlotModel
     {
-        private readonly IOptions<PlotOptions> _options;
-        private readonly IRepository _repository;
-
         public PlotModel(IRepository repository,
-                         IOptions<PlotOptions> options)
+                         IOptions<PlotOptions> options) : base(repository, options)
         {
-            _repository = repository;
-            _options = options;
-        }
-
-        [BindProperty]
-        public PlotSettings Settings { get; set; }
-
-        public async Task OnGetAsync(int id,
-                                     int deviceId,
-                                     CancellationToken cancellationToken)
-        {
-            var parameter = await _repository.GetFirstOrDefaultAsync<BaseParameter>(_ => _.Id == id,
-                                                                                    cancellationToken: cancellationToken);
-
-            if (parameter != null)
-            {
-                try
-                {
-                    Settings = new PlotSettings()
-                    {
-                        DeviceId = deviceId,
-                        Duration = _options.Value.Duration,
-                        Id = id,
-                        Label = parameter.Name
-                    };
-                }
-                catch (ParameterPlotNotSupportedException)
-                {
-                    ModelState.AddModelError(string.Empty, $"Parameter Id [{id}] does not support plotting.");
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, $"Parameter Id [{id}] was not found.");
-            }
         }
     }
 }

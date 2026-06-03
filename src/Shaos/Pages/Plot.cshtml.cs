@@ -23,14 +23,17 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Shaos.Options;
 using Shaos.Repository;
 
-namespace Shaos.Pages.Parameters
+namespace Shaos.Pages
 {
     [Authorize]
-    public class ExportModel : BaseExportPageModel
+    public class PlotModel : BasePlotModel
     {
-        public ExportModel(IRepository repository) : base(repository)
+        public PlotModel(IRepository repository,
+                         IOptions<PlotOptions> options) : base(repository, options)
         {
         }
     }

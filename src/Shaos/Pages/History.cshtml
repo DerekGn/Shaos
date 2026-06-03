@@ -1,28 +1,28 @@
 ﻿@page
-@model Shaos.Pages.Parameters.HistoryModel
+@model Shaos.Pages.HistoryModel
 
 <h1>Parameter History</h1>
 
 <hr />
 
 <form asp-page-handler="apply" method="post" asp-route-id="@Model.Id" asp-route-deviceId="@Model.DeviceId">
-<div class="row">
-    <div class="col-sm-1">
-        StartTime:
+    <div class="row">
+        <div class="col-sm-1">
+            StartTime:
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="@Model.StartDateTime" type="datetime-local" class="form-control" />
+        </div>
+        <div class="col-sm-1">
+            EndTime:
+        </div>
+        <div class="col-sm-3">
+            <input asp-for="@Model.EndDateTime" type="datetime-local" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <button class="btn btn-sm btn-primary">Apply</button>
+        </div>
     </div>
-    <div class="col-sm-3">
-        <input asp-for="@Model.StartDateTime" type="datetime-local" class="form-control" />
-    </div>
-    <div class="col-sm-1">
-        EndTime:
-    </div>
-    <div class="col-sm-3">
-        <input asp-for="@Model.EndDateTime" type="datetime-local" class="form-control" />
-    </div>
-    <div class="col-sm-3">
-        <button class="btn btn-sm btn-primary">Apply</button>
-    </div>
-</div>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 </form>
 
@@ -30,7 +30,7 @@
     <canvas id="chartCanvas"></canvas>
 </div>
 
-<a asp-page="/Parameters/Index" asp-route-id="@Model.DeviceId" class="btn btn-sm btn-primary">Back</a>
+<a asp-page="/Index" class="btn btn-sm btn-primary">Back</a>
 
 <script id="history" type="application/json">@Html.Raw(ViewData[HistoryModel.ViewDataKey])</script>
 
