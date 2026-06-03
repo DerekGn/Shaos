@@ -28,7 +28,7 @@ using Shaos.Repository;
 namespace Shaos.Pages.Parameters
 {
     [Authorize]
-    public class ExportModel : BaseExportModel
+    public class ExportModel : BaseExportPageModel
     {
         public ExportModel(IRepository repository) : base(repository)
         {

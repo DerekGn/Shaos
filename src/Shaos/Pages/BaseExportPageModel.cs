@@ -29,9 +29,9 @@ using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages
 {
-    public abstract class BaseExportModel : BaseDateRangePageModel
+    public abstract class BaseExportPageModel : BaseDateRangePageModel
     {
-        protected BaseExportModel(IRepository repository) : base(repository)
+        protected BaseExportPageModel(IRepository repository) : base(repository)
         {
         }
 
@@ -67,7 +67,7 @@ namespace Shaos.Pages
 
             var streamWriter = new StreamWriter(stream);
 
-            await streamWriter.WriteLineAsync($"value,timestamp(utc){Environment.NewLine}");
+            await streamWriter.WriteLineAsync($"value,timestamp(utc)");
 
             await foreach (var item in Repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == id && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
                                                                                          cancellationToken: cancellationToken))

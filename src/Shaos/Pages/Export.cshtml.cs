@@ -26,7 +26,7 @@ using Shaos.Repository;
 
 namespace Shaos.Pages
 {
-    public class ExportModel : BaseExportModel
+    public class ExportModel : BaseExportPageModel
     {
         public ExportModel(IRepository repository) : base(repository)
         {
