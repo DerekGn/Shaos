@@ -50,6 +50,8 @@ namespace Shaos
     {
         public static void Main(string[] args)
         {
+            var isDev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
@@ -83,9 +85,11 @@ namespace Shaos
 
             builder
                 .Services
-                .AddDbContext<ShaosDbContext>(options => options
-                .UseSqlite(connectionString, _ => _
-                .MigrationsAssembly(typeof(ShaosDbContext).Assembly.GetName().Name)));
+                .AddDbContext<ShaosDbContext>(options =>
+                {
+                    options.EnableSensitiveDataLogging(isDev);
+                    options.UseSqlite(connectionString, _ => _.MigrationsAssembly(typeof(ShaosDbContext).Assembly.GetName().Name));
+                });
 
             builder
                 .Services
