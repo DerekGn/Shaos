@@ -38,9 +38,21 @@ namespace Shaos.Repository.Models
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         /// <summary>
+        /// The created date
+        /// </summary>
+        [DisplayFormat(DataFormatString = "{0:f}")]
+        public DateTimeOffset CreatedDateOffset => new(CreatedDate);
+
+        /// <summary>
         /// The updated date
         /// </summary>
         [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// The updated date
+        /// </summary>
+        [DisplayFormat(DataFormatString = "{0:f}")]
+        public DateTimeOffset UpdatedDateOffset => new(CreatedDate);
     }
 }

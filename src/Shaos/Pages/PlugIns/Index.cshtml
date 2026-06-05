@@ -90,10 +90,10 @@
                     @Html.DisplayFor(_ => item.Instances.Count)
                 </td>
                 <td>
-                    @Html.DisplayFor(_ => item.CreatedDate)
+                    @Html.DisplayFor(_ => item.CreatedDateOffset)
                 </td>
                 <td>
-                    @Html.DisplayFor(_ => item.UpdatedDate)
+                    @Html.DisplayFor(_ => item.UpdatedDateOffset)
                 </td>
                 <td>
                     <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-primary" title="Delete PlugIn">
