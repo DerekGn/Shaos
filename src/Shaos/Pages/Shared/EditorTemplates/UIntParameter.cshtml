@@ -5,7 +5,7 @@
 <div id="@Model.Id" class="row">
     <div class="col-sm-1">@Model.Value</div>
     <div class="col-sm-2"><input class="form-range" id="@Model.Id" type="range" min="@Model.Min" max="@Model.Max" step="@Model.Step" value="@Model.Value" /></div>
-    <div class="col-sm-3">@Model.UpdatedDateOffset</div>
+    <div class="col-sm-3">@Model.UpdatedDate</div>
     <div class="col-sm-3">
         <a asp-page="/Plot" asp-route-Id="@Model.Id" asp-route-deviceId="@Model.DeviceId" class="btn btn-sm btn-primary" title="Plot">
             <span>
