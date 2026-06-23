@@ -23,6 +23,7 @@
 */
 
 using Shaos.Sdk.Devices.Parameters;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models.Devices.Parameters
 {
@@ -42,6 +43,11 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public int? DashboardItemId { get; set; }
 
         /// <summary>
+        /// The set of dashboard items
+        /// </summary>
+        public ICollection<DashboardItem> DashboardItems { get; } = [];
+
+        /// <summary>
         /// The parent <see cref="Device"/>
         /// </summary>
         public Device? Device { get; set; }
@@ -52,19 +58,21 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public int? DeviceId { get; set; }
 
         /// <summary>
-        /// The <see cref="BaseParameter"/> identifier.
-        /// </summary>
-        public int InstanceId { get; set; }
-
-        /// <summary>
         /// The <see cref="BaseParameter"/> name
         /// </summary>
+        [MaxLength(40)]
         public required string Name { get; set; }
 
         /// <summary>
         /// The <see cref="ParameterType"/>
         /// </summary>
         public ParameterType? ParameterType { get; set; }
+
+        /// <summary>
+        /// The optional reference identifier
+        /// </summary>
+        [MaxLength(40)]
+        public string? ReferenceId { get; set; }
 
         /// <summary>
         /// The update value time stamp
@@ -75,10 +83,5 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// The <see cref="BaseParameter"/> units
         /// </summary>
         public string? Units { get; set; }
-
-        /// <summary>
-        /// The set of dashboard items
-        /// </summary>
-        public ICollection<DashboardItem> DashboardItems { get; } = [];
     }
 }

@@ -73,14 +73,14 @@ namespace Shaos.Services.Runtime.Host
 
         internal void AttachDevicesListChange(IChildObservableList<IPlugIn, IDevice> devices)
         {
-            _logger.LogAttachingDevicesListChangedHandler(devices.Parent.Id);
+            _logger.LogAttachingDevicesListChangedHandler(devices.Parent.Id!.Value);
 
             devices.ListChanged += DevicesListChangedAsync;
         }
 
         internal void AttachParametersListChanged(IChildObservableList<IDevice, IBaseParameter> parameters)
         {
-            _logger.LogAttachParametersListChangedHandler(parameters.Parent.Id,
+            _logger.LogAttachParametersListChangedHandler(parameters.Parent.Id!.Value,
                                                           parameters.Parent.Name);
 
             parameters.ListChanged += ParametersListChangedAsync;
@@ -88,7 +88,7 @@ namespace Shaos.Services.Runtime.Host
 
         internal void DetachParametersListChanged(IChildObservableList<IDevice, IBaseParameter> parameters)
         {
-            _logger.LogDetachParametersListChangedHandler(parameters.Parent.Id,
+            _logger.LogDetachParametersListChangedHandler(parameters.Parent.Id!.Value,
                                                           parameters.Parent.Name);
 
             parameters.ListChanged -= ParametersListChangedAsync;
@@ -99,7 +99,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ValidateParameterChangeAsync(sender, async (parameter) =>
             {
-                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id!.Value,
                                                                            e.Value,
                                                                            parameter.CanWrite,
                                                                            e.TimeStamp);
@@ -111,7 +111,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ValidateParameterChangeAsync(sender, async (parameter) =>
             {
-                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id!.Value,
                                                                            e.Value,
                                                                            parameter.CanWrite,
                                                                            e.TimeStamp);
@@ -123,7 +123,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ValidateParameterChangeAsync(sender, async (parameter) =>
             {
-                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id!.Value,
                                                                            e.Value,
                                                                            parameter.CanWrite,
                                                                            e.TimeStamp);
@@ -135,7 +135,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ValidateParameterChangeAsync(sender, async (parameter) =>
             {
-                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id!.Value,
                                                                            e.Value,
                                                                            parameter.CanWrite,
                                                                            e.TimeStamp);
@@ -147,7 +147,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ValidateParameterChangeAsync(sender, async (parameter) =>
             {
-                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id,
+                await _runtimeDeviceUpdateHandler.SaveParameterChangeAsync(parameter.Id!.Value,
                                                                            e.Value,
                                                                            parameter.CanWrite,
                                                                            e.TimeStamp);
@@ -163,8 +163,9 @@ namespace Shaos.Services.Runtime.Host
 
         private void AttachParameter(IBaseParameter parameter)
         {
-            _logger.LogAttachingParameterEventHandler(parameter.Id,
-                                                      parameter.Name);
+#warning TODO
+            //_logger.LogAttachingParameterEventHandler(parameter.Id!.Value,
+            //                                          parameter.Name);
 
             switch (parameter)
             {
@@ -213,7 +214,7 @@ namespace Shaos.Services.Runtime.Host
 
         private void DetachParameter(IBaseParameter parameter)
         {
-            _logger.LogDetachParametersChangedHandler(parameter.Id,
+            _logger.LogDetachParametersChangedHandler(parameter.Id!.Value,
                                                       parameter.Name);
 
             switch (parameter)
@@ -269,7 +270,7 @@ namespace Shaos.Services.Runtime.Host
                     {
                         case ListChangedAction.Add:
 
-                            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id,
+                            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(devices.Parent.Id!.Value,
                                                                                  e.Items);
 
                             foreach (var device in e.Items)
@@ -280,12 +281,12 @@ namespace Shaos.Services.Runtime.Host
                             break;
 
                         case ListChangedAction.Reset:
-                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
+                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id!.Value));
 
                             break;
 
                         case ListChangedAction.Remove:
-                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id));
+                            await _runtimeDeviceUpdateHandler.DeleteDevicesAsync(e.Items.Select(_ => _.Id!.Value));
 
                             break;
                     }
@@ -311,7 +312,7 @@ namespace Shaos.Services.Runtime.Host
                     switch (e.Action)
                     {
                         case ListChangedAction.Add:
-                            await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(deviceParameters.Parent.Id,
+                            await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(deviceParameters.Parent.Id!.Value,
                                                                                           e.Items);
 
                             AttachParameters([.. e.Items]);
@@ -321,7 +322,7 @@ namespace Shaos.Services.Runtime.Host
                         case ListChangedAction.Reset:
                             DetachParameters(e.Items);
 
-                            await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id));
+                            await _runtimeDeviceUpdateHandler.DeleteDeviceParametersAsync(e.Items.Select(_ => _.Id!.Value));
                             break;
                     }
                 }

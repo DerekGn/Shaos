@@ -31,12 +31,6 @@ using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Runtime.Host;
 using Xunit;
-using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
-using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
-using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
-using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
-using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
-using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
 
 using SdkDevice = Shaos.Sdk.Devices.Device;
 
@@ -93,7 +87,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _mockBaseParameters[4].As<IBaseParameter<uint>>().VerifyAdd(_ => _.ValueChanged += It.IsAny<AsyncEventHandler<ParameterValueChangedEventArgs<uint>>>());
         }
 
-
         [Fact]
         public void TestDetach()
         {
@@ -132,14 +125,16 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockChildObservableListDevices.Object,
                        new ListChangedEventArgs<IDevice>(ListChangedAction.Add,
                        [
-                           new SdkDevice(1, Name,
-                           [
-                               new BoolParameter(1, true, Name, Units, ParameterType.Iaq),
-                               new FloatParameter(2, 0.2f, 0, 10, 0.1f, Name, Units, ParameterType.Iaq),
-                               new IntParameter(3, -18, -1, 10, 1, Name, Units, ParameterType.Iaq),
-                               new StringParameter(4, "string", Name, Units, ParameterType.Iaq),
-                               new UIntParameter(6, 7218, 0, 10, 1, Name, Units, ParameterType.Iaq)
-                           ])
+                           new SdkDevice(
+                               Name,
+                               parameters:
+                               [
+                                   new BoolParameter(true, Name, Units, string.Empty, ParameterType.Iaq),
+                                   new FloatParameter(0.2f, 0, 10, 0.1f, Name, Units, string.Empty, ParameterType.Iaq),
+                                   new IntParameter(-18, -1, 10, 1, Name, Units, string.Empty, ParameterType.Iaq),
+                                   new StringParameter("string", Name, Units, string.Empty, ParameterType.Iaq),
+                                   new UIntParameter(7218, 0, 10, 1, Name, Units, string.Empty, ParameterType.Iaq)
+                               ])
                        ]));
         }
 
@@ -158,7 +153,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockChildObservableListDevices.Object,
                        new ListChangedEventArgs<IDevice>(action,
                        [
-                           new SdkDevice(1, Name, [])
+                           new SdkDevice(Name)
                        ]));
 
             _mockRuntimeDeviceUpdateHandler.Verify(_ => _.DeleteDevicesAsync(It.IsAny<IEnumerable<int>>()));
@@ -179,11 +174,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                        _mockObservableListParameters.Object,
                        new ListChangedEventArgs<IBaseParameter>(ListChangedAction.Add,
                        [
-                           new BoolParameter(1, true, Name, Units, ParameterType.Iaq),
-                           new FloatParameter(2, 1.0f, 0, 10, 0.1f, Name, Units, ParameterType.Iaq),
-                           new IntParameter(3, 1, -1, 20, 1, Name, Units, ParameterType.Iaq),
-                           new StringParameter(4, "string", Name, Units, ParameterType.Iaq),
-                           new UIntParameter(5, 1, 0, 299, 1, Name, Units, ParameterType.Iaq)
+                           new BoolParameter(true, Name, Units, string.Empty, ParameterType.Iaq),
+                           new FloatParameter(1.0f, 0, 10, 0.1f, Name, Units, string.Empty, ParameterType.Iaq),
+                           new IntParameter(1, -1, 20, 1, Name, Units, string.Empty, ParameterType.Iaq),
+                           new StringParameter("string", Name, Units, string.Empty, ParameterType.Iaq),
+                           new UIntParameter(1, 0, 299, 1, Name, Units, string.Empty, ParameterType.Iaq)
                        ]));
 
             _mockRuntimeDeviceUpdateHandler.Verify(_ => _.CreateDeviceParametersAsync(It.IsAny<int>(), It.IsAny<IList<IBaseParameter>>()));

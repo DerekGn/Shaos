@@ -34,7 +34,6 @@ namespace Shaos.Services.Extensions
         {
             var modelDevice = new ModelDevice()
             {
-                InstanceId = device.Id,
                 Name = device.Name
             };
 

@@ -50,6 +50,11 @@ namespace Shaos.Repository.Models
         public required string Description { get; set; }
 
         /// <summary>
+        /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>
+        /// </summary>
+        public List<Device> Devices { get; } = [];
+
+        /// <summary>
         /// Indicates if the <see cref="PlugInInstance"/> is enabled
         /// </summary>
         public bool Enabled { get; set; } = false;
@@ -62,9 +67,10 @@ namespace Shaos.Repository.Models
         public required string Name { get; set; }
 
         /// <summary>
-        /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>
+        /// The optional reference identifier
         /// </summary>
-        public List<Device> Devices { get; } = [];
+        [MaxLength(40)]
+        public string? ReferenceId { get; set; }
 
         /// <inheritdoc/>
         [ExcludeFromCodeCoverage]

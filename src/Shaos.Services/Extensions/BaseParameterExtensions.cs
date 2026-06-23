@@ -69,7 +69,6 @@ namespace Shaos.Services.Extensions
                 case Sdk.Devices.Parameters.BoolParameter boolParameter:
                     result = new BoolParameter()
                     {
-                        InstanceId = parameter.Id,
                         Name = parameter.Name,
                         Value = boolParameter.Value
                     };
@@ -78,7 +77,6 @@ namespace Shaos.Services.Extensions
                 case Sdk.Devices.Parameters.FloatParameter floatParameter:
                     result = new FloatParameter()
                     {
-                        InstanceId = parameter.Id,
                         Max = floatParameter.Max,
                         Min = floatParameter.Min,
                         Name = parameter.Name,
@@ -117,7 +115,6 @@ namespace Shaos.Services.Extensions
 
             if (result is not null)
             {
-                result.InstanceId = parameter.Id;
                 result.CanWrite = parameter.CanWrite;
                 result.ParameterType = parameter.ParameterType;
                 result.Units = parameter.Units;

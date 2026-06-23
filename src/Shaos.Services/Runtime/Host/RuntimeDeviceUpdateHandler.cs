@@ -77,27 +77,35 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var modelDevice = await repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.InstanceId == id,
+                var modelDevice = await repository.GetFirstOrDefaultAsync<ModelDevice>(_ => _.Id == id,
                                                                                        false,
                                                                                        [nameof(ModelDevice.Parameters)]);
 
                 if (modelDevice != null)
                 {
+                    List<Tuple<IBaseParameter, ModelBaseParameter>> createdParameters = [];
+
                     foreach (var (parameter, modelParameter) in from parameter in parameters
-                                                                where !modelDevice.Parameters.Any(_ => _.InstanceId == parameter.Id)
+                                                                where !modelDevice.Parameters.Any(_ => _.Id == parameter.Id)
                                                                 let modelParameter = parameter.ToModel()!
                                                                 select (parameter, modelParameter))
                     {
-                        modelParameter.InstanceId = parameter.Id;
                         modelParameter.DeviceId = modelDevice.Id;
                         await repository.AddAsync(modelParameter!);
                         _logger.LogDeviceParameterCreated(id,
                                                           modelDevice.Name,
-                                                          parameter.Id,
-                                                          parameter.Name);
+                                                          modelParameter.Id,
+                                                          modelParameter.Name);
+
+                        createdParameters.Add(new Tuple<IBaseParameter, ModelBaseParameter>(parameter, modelParameter));
                     }
 
                     await repository.SaveChangesAsync();
+
+                    foreach (var created in createdParameters)
+                    {
+                        created.Item1.AssignId(created.Item2.Id);
+                    }
                 }
                 else
                 {
@@ -118,19 +126,33 @@ namespace Shaos.Services.Runtime.Host
 
                 if (plugInInstance != null)
                 {
+                    List<Tuple<IDevice, ModelDevice>> createdDevices = [];
+
                     foreach (var (device, modelDevice) in from device in devices
-                                                          where !plugInInstance.Devices.Any(_ => _.InstanceId == device.Id)
+                                                          where !plugInInstance.Devices.Any(_ => _.Id == device.Id)
                                                           let modelDevice = device.ToModel()
                                                           select (device, modelDevice))
                     {
-                        modelDevice.InstanceId = device.Id;
                         modelDevice.PlugInInstanceId = plugInInstance.Id;
                         await repository.AddAsync(modelDevice);
-                        _logger.LogDeviceCreated(id,
-                                                 device.Name);
+                        _logger.LogDeviceCreated(id, device.Name);
+                        createdDevices.Add(new Tuple<IDevice, ModelDevice>(device, modelDevice));
                     }
 
                     await repository.SaveChangesAsync();
+
+                    foreach (var created in createdDevices)
+                    {
+                        var device = created.Item1;
+                        var modelDevice = created.Item2;
+
+                        device.AssignId(modelDevice.Id);
+
+                        for (int i = 0; i < modelDevice.Parameters.Count; i++)
+                        {
+                            device.Parameters.ElementAt(i).AssignId(modelDevice.Parameters[i].Id);
+                        }
+                    }
                 }
                 else
                 {
@@ -283,7 +305,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetFirstOrDefaultAsync<ModelIntParameter>(_ => _.InstanceId == id,
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelIntParameter>(_ => _.Id == id,
                                                                                            false);
 
                 if (parameter != null)
@@ -311,7 +333,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetFirstOrDefaultAsync<ModelStringParameter>(_ => _.InstanceId == id,
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelStringParameter>(_ => _.Id == id,
                                                                                               false);
 
                 if (parameter != null)
@@ -339,7 +361,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetFirstOrDefaultAsync<ModelFloatParameter>(_ => _.InstanceId == id,
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelFloatParameter>(_ => _.Id == id,
                                                                                              false);
 
                 if (parameter != null)
@@ -367,7 +389,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetFirstOrDefaultAsync<ModelUIntParameter>(_ => _.InstanceId == id,
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelUIntParameter>(_ => _.Id == id,
                                                                                             false);
 
                 if (parameter != null)
@@ -395,7 +417,7 @@ namespace Shaos.Services.Runtime.Host
         {
             await ExecuteRepositoryOperationAsync(async (repository) =>
             {
-                var parameter = await repository.GetFirstOrDefaultAsync<ModelBoolParameter>(_ => _.InstanceId == id,
+                var parameter = await repository.GetFirstOrDefaultAsync<ModelBoolParameter>(_ => _.Id == id,
                                                                                             false);
 
                 if (parameter != null)
