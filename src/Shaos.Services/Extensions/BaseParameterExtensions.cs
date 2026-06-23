@@ -22,9 +22,16 @@
 * SOFTWARE.
 */
 
-using Shaos.Repository.Models.Devices.Parameters;
 using Shaos.Sdk.Collections.Generic;
+using Shaos.Sdk.Devices.Parameters;
+
 using ModelBaseParameter = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
+using ModelBoolParameter = Shaos.Repository.Models.Devices.Parameters.BoolParameter;
+using ModelFloatParameter = Shaos.Repository.Models.Devices.Parameters.FloatParameter;
+using ModelIntParameter = Shaos.Repository.Models.Devices.Parameters.IntParameter;
+using ModelStringParameter = Shaos.Repository.Models.Devices.Parameters.StringParameter;
+using ModelUIntParameter = Shaos.Repository.Models.Devices.Parameters.UIntParameter;
+
 using SdkIBaseParameter = Shaos.Sdk.Devices.Parameters.IBaseParameter;
 
 namespace Shaos.Services.Extensions
@@ -48,7 +55,7 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
-        public static ModelBaseParameter? ToModel(this SdkIBaseParameter parameter)
+        public static ModelBaseParameter? ToModel(this IBaseParameter parameter)
         {
             ModelBaseParameter? result = null;
 
@@ -60,22 +67,95 @@ namespace Shaos.Services.Extensions
             return result!;
         }
 
+        public static IList<IBaseParameter> ToSdk(this IList<ModelBaseParameter> parameters)
+        {
+            List<SdkIBaseParameter>? result = null;
+
+            if (parameters != null)
+            {
+                result = [];
+                foreach (var parameter in parameters)
+                {
+                    result.Add(Convert(parameter));
+                }
+            }
+
+            return result!;
+        }
+
+        private static SdkIBaseParameter Convert(ModelBaseParameter parameter)
+        {
+            IBaseParameter? result = null;
+
+            switch (parameter)
+            {
+                case ModelBoolParameter boolParameter:
+                    result = new BoolParameter(boolParameter.Value,
+                                               parameter.Name,
+                                               parameter.Units,
+                                               parameter.ReferenceId,
+                                               parameter.ParameterType);
+                    break;
+                case ModelFloatParameter floatParameter:
+                    result = new FloatParameter(floatParameter.Value,
+                                                floatParameter.Min,
+                                                floatParameter.Max,
+                                                floatParameter.Step,
+                                                parameter.Name,
+                                                parameter.Units,
+                                                parameter.ReferenceId,
+                                                parameter.ParameterType);
+                    break;
+                case ModelIntParameter intParameter:
+                    result = new IntParameter(intParameter.Value,
+                                              intParameter.Min,
+                                              intParameter.Max,
+                                              intParameter.Step,
+                                              parameter.Name,
+                                              parameter.Units,
+                                              parameter.ReferenceId,
+                                              parameter.ParameterType);
+                    break;
+                case ModelStringParameter stringParameter:
+                    result = new StringParameter(stringParameter.Value,
+                                                 parameter.Name,
+                                                 parameter.Units,
+                                                 parameter.ReferenceId,
+                                                 parameter.ParameterType);
+                    break;
+                case ModelUIntParameter uintParameter:
+                    result = new UIntParameter(uintParameter.Value,
+                                               uintParameter.Min,
+                                               uintParameter.Max,
+                                               uintParameter.Step,
+                                               parameter.Name,
+                                               parameter.Units,
+                                               parameter.ReferenceId,
+                                               parameter.ParameterType);
+                    break;
+            }
+
+            result?.AssignId(parameter.Id);
+
+            return result!;
+        }
+
         private static ModelBaseParameter Convert(SdkIBaseParameter parameter)
         {
             ModelBaseParameter? result = null;
 
             switch (parameter)
             {
-                case Sdk.Devices.Parameters.BoolParameter boolParameter:
-                    result = new BoolParameter()
+                case BoolParameter boolParameter:
+                    result = new ModelBoolParameter()
                     {
                         Name = parameter.Name,
                         Value = boolParameter.Value
                     };
                     break;
 
-                case Sdk.Devices.Parameters.FloatParameter floatParameter:
-                    result = new FloatParameter()
+                case FloatParameter floatParameter:
+                    result = new ModelFloatParameter()
                     {
                         Max = floatParameter.Max,
                         Min = floatParameter.Min,
@@ -84,8 +164,8 @@ namespace Shaos.Services.Extensions
                     };
                     break;
 
-                case Sdk.Devices.Parameters.IntParameter intParameter:
-                    result = new IntParameter()
+                case IntParameter intParameter:
+                    result = new ModelIntParameter()
                     {
                         Max = intParameter.Max,
                         Min = intParameter.Min,
@@ -94,16 +174,16 @@ namespace Shaos.Services.Extensions
                     };
                     break;
 
-                case Sdk.Devices.Parameters.StringParameter stringParameter:
-                    result = new StringParameter()
+                case StringParameter stringParameter:
+                    result = new ModelStringParameter()
                     {
                         Name = parameter.Name,
                         Value = stringParameter.Value
                     };
                     break;
 
-                case Sdk.Devices.Parameters.UIntParameter uIntParameter:
-                    result = new UIntParameter()
+                case UIntParameter uIntParameter:
+                    result = new ModelUIntParameter()
                     {
                         Max = uIntParameter.Max,
                         Min = uIntParameter.Min,

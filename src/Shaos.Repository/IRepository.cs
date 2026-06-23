@@ -190,6 +190,17 @@ namespace Shaos.Repository
                                       List<string>? includeProperties = null) where T : BaseEntity;
 
         /// <summary>
+        /// Get a <see cref="PlugInInstance"/> by identifier
+        /// </summary>
+        /// <param name="id">The </param>
+        /// <param name="withNoTracking">Disables change tracking on the returned <see cref="PlugInInstance"/></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An instance of a <see cref="PlugInInstance"/> if found</returns>
+        Task<PlugInInstance?> GetPlugInInstanceAsync(int id,
+                                                     bool withNoTracking = true,
+                                                     CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Saves changes to the context
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
@@ -238,5 +249,6 @@ namespace Shaos.Repository
         Task<LogLevelSwitch> UpsertLogLevelSwitchAsync(string name,
                                                        LogEventLevel level,
                                                        CancellationToken cancellationToken = default);
+
     }
 }
