@@ -163,9 +163,8 @@ namespace Shaos.Services.Runtime.Host
 
         private void AttachParameter(IBaseParameter parameter)
         {
-#warning TODO
-            //_logger.LogAttachingParameterEventHandler(parameter.Id!.Value,
-            //                                          parameter.Name);
+            _logger.LogAttachingParameterEventHandler(parameter.Id!.Value,
+                                                      parameter.Name);
 
             switch (parameter)
             {

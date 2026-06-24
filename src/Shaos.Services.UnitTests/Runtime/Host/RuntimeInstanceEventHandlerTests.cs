@@ -162,6 +162,10 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestParametersListChangedParameterAdded()
         {
+            _mockDevice
+                .Setup(_ => _.Id)
+                .Returns(1);
+            
             _mockObservableListParameters
                 .Setup(_ => _.Parent)
                 .Returns(_mockDevice.Object);
@@ -169,17 +173,26 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             _runtimeInstanceEventHandler
                 .AttachParametersListChanged(_mockObservableListParameters.Object);
 
+            List<IBaseParameter> parameters =
+            [
+                new BoolParameter(true, Name, Units, string.Empty, ParameterType.Iaq),
+                new FloatParameter(1.0f, 0, 10, 0.1f, Name, Units, string.Empty, ParameterType.Iaq),
+                new IntParameter(1, -1, 20, 1, Name, Units, string.Empty, ParameterType.Iaq),
+                new StringParameter("string", Name, Units, string.Empty, ParameterType.Iaq),
+                new UIntParameter(1, 0, 299, 1, Name, Units, string.Empty, ParameterType.Iaq)
+            ];
+
+            int i = 0;
+            
+            foreach (var parameter in parameters)
+            {
+                parameter.AssignId(i++);
+            }
+
             _mockObservableListParameters
                 .Raise(_ => _.ListChanged += null,
                        _mockObservableListParameters.Object,
-                       new ListChangedEventArgs<IBaseParameter>(ListChangedAction.Add,
-                       [
-                           new BoolParameter(true, Name, Units, string.Empty, ParameterType.Iaq),
-                           new FloatParameter(1.0f, 0, 10, 0.1f, Name, Units, string.Empty, ParameterType.Iaq),
-                           new IntParameter(1, -1, 20, 1, Name, Units, string.Empty, ParameterType.Iaq),
-                           new StringParameter("string", Name, Units, string.Empty, ParameterType.Iaq),
-                           new UIntParameter(1, 0, 299, 1, Name, Units, string.Empty, ParameterType.Iaq)
-                       ]));
+                       new ListChangedEventArgs<IBaseParameter>(ListChangedAction.Add, parameters));
 
             _mockRuntimeDeviceUpdateHandler.Verify(_ => _.CreateDeviceParametersAsync(It.IsAny<int>(), It.IsAny<IList<IBaseParameter>>()));
         }
@@ -317,6 +330,15 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                     _mockBaseParameters[3].As<IBaseParameter<string>>().Object,
                     _mockBaseParameters[4].As<IBaseParameter<uint>>().Object
                 }.GetEnumerator());
+
+            int i = 0;
+
+            foreach (var parameter in _mockBaseParameters)
+            {
+                parameter
+                    .Setup(_ => _.Id)
+                    .Returns(i++);
+            }
 
             _mockObservableListParameters.
                 Setup(_ => _.Parent)
