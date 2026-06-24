@@ -38,48 +38,6 @@ namespace Shaos.Services.UnitTests
             MockRepository = new Mock<IRepository>();
         }
 
-        protected void SetupPlugInInstanceGetByIdAsync()
-        {
-            var plugIn = new PlugIn()
-            {
-                Description = "Test",
-                Name = "Test",
-                PlugInInformation = CreatePlugInInformation(true)
-            };
-
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
-                                                           It.IsAny<bool>(),
-                                                           It.IsAny<List<string>?>(),
-                                                           It.IsAny<CancellationToken>()))
-                .ReturnsAsync(CreatePlugInInstance(plugIn,
-                                                   "configuration"));
-        }
-
-        protected void SetupPlugInInstanceGetByIdAsync(PlugInInstance plugInInstance)
-        {
-            MockRepository
-                .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
-                                                           It.IsAny<bool>(),
-                                                           It.IsAny<List<string>?>(),
-                                                           It.IsAny<CancellationToken>()))
-                .ReturnsAsync(plugInInstance);
-        }
-
-        protected void VerifyGetByIdAsync()
-        {
-            MockRepository
-                .Verify(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
-                                                            It.IsAny<bool>(),
-                                                            It.IsAny<List<string>?>(),
-                                                            It.IsAny<CancellationToken>()));
-        }
-
-        protected void VerifySaveAsync()
-        {
-            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
-        }
-
         internal static PlugInInformation CreatePlugInInformation(bool hasConfiguration = false)
         {
             return new PlugInInformation()
@@ -101,6 +59,73 @@ namespace Shaos.Services.UnitTests
                 Name = "name",
                 PlugIn = plugIn
             };
+        }
+
+        protected void SetupGetPlugInInstanceAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Description = "Test",
+                Name = "Test",
+                PlugInInformation = CreatePlugInInformation(true)
+            };
+
+            MockRepository
+                .Setup(_ => _.GetPlugInInstanceAsync(It.IsAny<int>(),
+                                                     It.IsAny<bool>(),
+                                                     It.IsAny<CancellationToken>()))
+                .ReturnsAsync(CreatePlugInInstance(plugIn,
+                                                   "configuration"));
+        }
+
+        protected void SetupGetPlugInInstanceAsync(PlugInInstance plugInInstance)
+        {
+            MockRepository
+                .Setup(_ => _.GetPlugInInstanceAsync(It.IsAny<int>(),
+                                                     It.IsAny<bool>(),
+                                                     It.IsAny<CancellationToken>()))
+                .ReturnsAsync(plugInInstance);
+        }
+
+        protected void SetupPlugInInstanceGetByIdAsync(PlugInInstance plugInInstance)
+        {
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                           It.IsAny<bool>(),
+                                                           It.IsAny<List<string>?>(),
+                                                           It.IsAny<CancellationToken>()))
+                .ReturnsAsync(plugInInstance);
+        }
+
+        protected void SetupPlugInInstanceGetByIdAsync()
+        {
+            var plugIn = new PlugIn()
+            {
+                Description = "Test",
+                Name = "Test",
+                PlugInInformation = CreatePlugInInformation(true)
+            };
+
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                           It.IsAny<bool>(),
+                                                           It.IsAny<List<string>?>(),
+                                                           It.IsAny<CancellationToken>()))
+                .ReturnsAsync(CreatePlugInInstance(plugIn,
+                                                   "configuration"));
+        }
+
+        protected void VerifyGetPlugInInstanceAsync()
+        {
+            MockRepository
+                .Verify(_ => _.GetPlugInInstanceAsync(It.IsAny<int>(),
+                                                      It.IsAny<bool>(),
+                                                      It.IsAny<CancellationToken>()));
+        }
+
+        protected void VerifySaveAsync()
+        {
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
     }
 }

@@ -90,16 +90,12 @@ namespace Shaos.Services
                 throw new PlugInInstanceNotLoadedException();
             }
 
-            AssignPlugInIdentifier(plugInInstance.Id);
-        }
+            foreach (var device in plugInInstance.Devices)
+            {
+                _plugin.Devices.AddAsync(device.ToSdk());
+            }
 
-        private void AssignPlugInIdentifier(int id)
-        {
-            var baseType = _plugin!.GetType().BaseType ?? throw new PlugInBuilderException("IPlugIn instance has no base type");
-            var propertyInfo = baseType.GetProperty(nameof(IPlugIn.Id)) ?? throw new PlugInBuilderException("IPlugIn instance base type has no Id property setter");
-            var setMethod = propertyInfo.GetSetMethod(true) ?? throw new PlugInBuilderException("IPlugIn instance Id property has no setter");
-
-            setMethod.Invoke(_plugin, [id]);
+            _plugin.AssignId(plugInInstance.Id);
         }
 
         private List<object> GetConstructorParameters(Type plugInType)

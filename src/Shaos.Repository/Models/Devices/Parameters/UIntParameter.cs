@@ -42,7 +42,7 @@ namespace Shaos.Repository.Models.Devices.Parameters
         /// <summary>
         /// The step value for the <see cref="UIntParameter"/>
         /// </summary>
-        public int Step { get; set; }
+        public uint Step { get; set; }
 
         /// <summary>
         /// The current value

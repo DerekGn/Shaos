@@ -23,7 +23,6 @@
 */
 
 using Shaos.Repository.Models.Devices.Parameters;
-using Shaos.Sdk.Devices;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models.Devices
@@ -33,11 +32,6 @@ namespace Shaos.Repository.Models.Devices
     /// </summary>
     public class Device : BaseEntityTracked
     {
-        /// <summary>
-        /// The <see cref="Sdk.Devices.Device"/> identifier
-        /// </summary>
-        public int InstanceId { get; set; }
-
         /// <summary>
         /// The <see cref="Device"/> instance name
         /// </summary>
@@ -59,5 +53,11 @@ namespace Shaos.Repository.Models.Devices
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int? PlugInInstanceId { get; set; } = null;
+
+        /// <summary>
+        /// The optional reference identifier
+        /// </summary>
+        [MaxLength(40)]
+        public string? ReferenceId { get; set; }
     }
 }

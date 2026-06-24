@@ -89,7 +89,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestLoadInstanceConfigurationWithConfigurationAsync()
         {
-            SetupPlugInInstanceGetByIdAsync();
+            SetupGetPlugInInstanceAsync();
 
             SetupInstanceLoadContext();
 
@@ -111,7 +111,7 @@ namespace Shaos.Services.UnitTests
                 PlugInInformation = CreatePlugInInformation()
             };
 
-            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
+            SetupGetPlugInInstanceAsync(CreatePlugInInstance(plugIn));
 
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotConfiguredException>(
                 async () => await _instanceHostService.LoadInstanceConfigurationAsync(1,
@@ -135,7 +135,7 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
                 .Returns(true);
 
-            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
+            SetupGetPlugInInstanceAsync(CreatePlugInInstance(plugIn));
 
             SetupInstanceLoadContext();
 
@@ -147,7 +147,7 @@ namespace Shaos.Services.UnitTests
             _mockInstanceHost
                 .Verify(_ => _.InstanceExists(1));
 
-            VerifyGetByIdAsync();
+            VerifyGetPlugInInstanceAsync();
 
             _mockInstanceHost.Verify(_ => _.StartInstance(It.IsAny<int>(),
                                                           It.IsAny<IPlugIn>()));
@@ -166,7 +166,7 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
                 .Returns(true);
 
-            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
+            SetupGetPlugInInstanceAsync(CreatePlugInInstance(plugIn));
 
             var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(
                 async () => await _instanceHostService.StartInstanceAsync(1,
@@ -262,7 +262,7 @@ namespace Shaos.Services.UnitTests
                 PlugInInformation = CreatePlugInInformation(true)
             };
 
-            SetupPlugInInstanceGetByIdAsync(CreatePlugInInstance(plugIn));
+            SetupGetPlugInInstanceAsync(CreatePlugInInstance(plugIn));
 
             _mockInstanceHost
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
@@ -283,7 +283,7 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
                 .Returns(true);
 
-            SetupPlugInInstanceGetByIdAsync((PlugInInstance)null!);
+            SetupGetPlugInInstanceAsync((PlugInInstance)null!);
 
             var exception = await Assert.ThrowsAsync<PlugInInstanceNotFoundException>(
                 async () => await _instanceHostService.StartInstanceAsync(1,
@@ -321,7 +321,7 @@ namespace Shaos.Services.UnitTests
                 new("TestSetting","10")
             ];
 
-            SetupPlugInInstanceGetByIdAsync();
+            SetupGetPlugInInstanceAsync();
 
             SetupInstanceLoadContext();
 

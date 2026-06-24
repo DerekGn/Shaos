@@ -12,7 +12,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Shaos.Sdk" Version="0.10.3-beta" />
+        <PackageReference Include="Shaos.Sdk" Version="0.10.4-beta" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
         <PackageReference Include="SQLitePCLRaw.core" Version="3.0.3" />
         <PackageReference Include="xunit.runner.visualstudio" Version="3.*">

@@ -90,7 +90,6 @@ namespace Shaos.Test.PlugIn
                 await stringWriteParameter.NotifyValueChangedAsync(intValue.ToString());
                 await uintParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
                 await uintWriteParameter.NotifyValueChangedAsync(IncrementLimit(ref uintValue, 1, 10));
-
             } while (!cancellationToken.IsCancellationRequested);
 
             _logger.LogInformation("Completed [{Name}].[{Operation}]",
@@ -140,96 +139,86 @@ namespace Shaos.Test.PlugIn
             {
                 List<IBaseParameter> baseParameters =
                 [
-                    new BoolParameter(1,
-                                      false,
+                    new BoolParameter(false,
                                       "Test bool parameter",
                                       Units),
-                    new BoolParameter(2,
-                                      false,
+                    new BoolParameter(false,
                                       "Test write bool parameter",
                                       Units,
-                                      WriteBool),
-                    new FloatParameter(3,
-                                       1.0f,
+                                      writeAsync: WriteBoolAsync),
+                    new FloatParameter(1.0f,
                                        0,
                                        10,
                                        0.1f,
                                        "Test float parameter",
                                        Units),
-                    new FloatParameter(4,
-                                       1.0f,
+                    new FloatParameter(1.0f,
                                        0,
                                        10,
                                        0.1f,
                                        "Test write float parameter",
                                        Units,
-                                       WriteFloat),
-                    new IntParameter(5,
-                                     0,
+                                       writeAsync: WriteFloatAsync),
+                    new IntParameter(0,
                                      0,
                                      10,
                                      1,
                                      "Test int parameter",
                                      Units),
-                    new IntParameter(6,
-                                     0,
+                    new IntParameter(0,
                                      0,
                                      10,
                                      1,
                                      "Test write int parameter",
                                      Units,
-                                     WriteInt),
-                    new StringParameter(7,
-                                     "",
-                                     "Test string parameter",
-                                     Units),
-                    new StringParameter(8,
-                                     "",
-                                     "Test write string parameter",
-                                     Units,
-                                     WriteString),
-                    new UIntParameter(9,
-                                     0,
-                                     0,
-                                     10,
-                                     1,
-                                     "Test uint parameter",
-                                     Units),
-                    new UIntParameter(10,
-                                     0,
-                                     0,
-                                     10,
-                                     1,
-                                     "Test write uint parameter",
-                                     Units,
-                                     WriteUInt),
+                                     writeAsync: WriteIntAsync),
+                    new StringParameter("",
+                                        "Test string parameter",
+                                        Units),
+                    new StringParameter("",
+                                        "Test write string parameter",
+                                        Units,
+                                        writeAsync: WriteStringAsync),
+                    new UIntParameter(0,
+                                      0,
+                                      10,
+                                      1,
+                                      "Test uint parameter",
+                                      Units),
+                    new UIntParameter(0,
+                                      0,
+                                      10,
+                                      1,
+                                      "Test write uint parameter",
+                                      Units,
+                                      writeAsync:WriteUIntAsync),
                 ];
 
-                var device = new Device(10,
-                                        "TestDevice",
+                var device = new Device("TestDevice",
+                                        "reference",
                                         baseParameters);
 
                 await Devices.AddAsync(device);
             }
         }
 
-        private async Task WriteBool(int id, bool value)
+        private async Task WriteBoolAsync(int id, bool value)
         {
         }
 
-        private async Task WriteFloat(int id, float value)
+        private async Task WriteFloatAsync(int id, float value)
         {
         }
 
-        private async Task WriteInt(int id, int value)
+        private async Task WriteIntAsync(int id, int value)
         {
         }
 
-        private async Task WriteString(int id, string value)
+        private async Task WriteStringAsync(int id, string value)
         {
         }
 
-        private async Task WriteUInt(int id, uint value)
+        private async Task WriteUIntAsync(int id, uint value)
         {
         }
     }
