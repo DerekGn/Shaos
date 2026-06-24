@@ -25,6 +25,7 @@
 using Shaos.Sdk.Devices;
 
 using ModelDevice = Shaos.Repository.Models.Devices.Device;
+using SdkDevice = Shaos.Sdk.Devices.Device;
 
 namespace Shaos.Services.Extensions
 {
@@ -34,7 +35,6 @@ namespace Shaos.Services.Extensions
         {
             var modelDevice = new ModelDevice()
             {
-                InstanceId = device.Id,
                 Name = device.Name
             };
 
@@ -43,15 +43,15 @@ namespace Shaos.Services.Extensions
             return modelDevice;
         }
 
-        //public static SdkDevice ToSdk(this ModelDevice device)
-        //{
-        //    var sdkDevice = new Device(device.Name,
-        //                               device.Features,
-        //                               device.Parameters.ToSdk());
+        public static SdkDevice ToSdk(this ModelDevice device)
+        {
+            var sdkDevice = new Device(device.Name,
+                                       device.ReferenceId,
+                                       device.Parameters.ToSdk());
 
-        //    sdkDevice.SetId(device.Id);
+            sdkDevice.AssignId(device.Id);
 
-        //    return sdkDevice;
-        //}
+            return sdkDevice;
+        }
     }
 }

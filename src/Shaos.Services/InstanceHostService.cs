@@ -116,7 +116,7 @@ namespace Shaos.Services
             var plugIn = plugInInstance.PlugIn!;
             var plugInInformation = plugIn.PlugInInformation!;
 
-            if (plugIn.PlugInInformation == null)
+            if (plugInInformation is null)
             {
                 _logger.LogPlugInInstancePackageNotAssigned(id);
 
@@ -208,7 +208,8 @@ namespace Shaos.Services
                                                            IEnumerable<KeyValuePair<string, string>> collection,
                                                            CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await LoadPlugInInstanceAsync(id, false, cancellationToken);
+            var plugInInstance = await LoadPlugInInstanceAsync(id,
+                                                               cancellationToken);
 
             var instanceLoadContext = _instanceHost.GetInstanceLoadContext(plugInInstance!.PlugIn!.Id);
 
@@ -272,17 +273,11 @@ namespace Shaos.Services
         }
 
         private async Task<PlugInInstance> LoadPlugInInstanceAsync(int id,
-                                                                   bool withNoTracking = true,
                                                                    CancellationToken cancellationToken = default)
         {
-            var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
-                                                                  withNoTracking,
-                                                                  includeProperties: [
-                                                                      nameof(PlugIn),
-                                                                      $"{nameof(PlugInInstance.Devices)}",
-                                                                      $"{nameof(PlugIn)}.{nameof(PlugInInformation)}",
-                                                                      $"{nameof(PlugInInstance.Devices)}.{nameof(Device.Parameters)}"],
-                                                                  cancellationToken: cancellationToken);
+            var plugInInstance = await _repository.GetPlugInInstanceAsync(id,
+                                                                          false,
+                                                                          cancellationToken);
 
             if (plugInInstance == null)
             {

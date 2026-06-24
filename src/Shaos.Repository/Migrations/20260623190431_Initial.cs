@@ -81,6 +81,7 @@ namespace Shaos.Repository.Migrations
                     Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    ReferenceId = table.Column<string>(type: "TEXT", maxLength: 40, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     PlugInId = table.Column<int>(type: "INTEGER", nullable: true)
@@ -101,9 +102,9 @@ namespace Shaos.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     PlugInInstanceId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ReferenceId = table.Column<string>(type: "TEXT", maxLength: 40, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -126,9 +127,9 @@ namespace Shaos.Repository.Migrations
                     CanWrite = table.Column<bool>(type: "INTEGER", nullable: false),
                     DashboardItemId = table.Column<int>(type: "INTEGER", nullable: true),
                     DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
-                    InstanceId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: true),
+                    ReferenceId = table.Column<string>(type: "TEXT", maxLength: 40, nullable: true),
                     TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),

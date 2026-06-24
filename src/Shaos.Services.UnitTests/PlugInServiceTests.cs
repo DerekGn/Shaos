@@ -352,11 +352,7 @@ namespace Shaos.Services.UnitTests
         [InlineData(false)]
         public async Task TestSetPlugInInstanceEnableSuccessAsync(bool state)
         {
-            SetupPlugInInstanceGetByIdAsync(new PlugInInstance()
-            {
-                Name = "name",
-                Description = "description"
-            });
+            SetupPlugInInstanceGetByIdAsync();
 
             var result = await _plugInService.SetPlugInInstanceEnableAsync(10,
                                                                            state,

@@ -30,6 +30,7 @@ using Serilog.Events;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Extensions;
 using Shaos.Repository.Models;
+using Shaos.Repository.Models.Devices;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -229,6 +230,21 @@ namespace Shaos.Repository
             return _context
                 .Set<T>()
                 .GetQueryable(withNoTracking, predicate, orderBy, includeProperties);
+        }
+
+        /// <inheritdoc/>
+        public async Task<PlugInInstance?> GetPlugInInstanceAsync(int id,
+                                                                  bool withNoTracking = true,
+                                                                  CancellationToken cancellationToken = default)
+        {
+            return await _context.PlugInInstances.GetByIdAsync(id,
+                                                               withNoTracking,
+                                                               includeProperties: [
+                                                                   nameof(PlugIn),
+                                                                   $"{nameof(PlugInInstance.Devices)}",
+                                                                   $"{nameof(PlugIn)}.{nameof(PlugInInformation)}",
+                                                                   $"{nameof(PlugInInstance.Devices)}.{nameof(Device.Parameters)}"],
+                                                               cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>

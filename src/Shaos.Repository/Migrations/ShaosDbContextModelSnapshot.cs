@@ -15,7 +15,7 @@ namespace Shaos.Repository.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
             modelBuilder.Entity("Shaos.Repository.Models.DashboardItem", b =>
                 {
@@ -56,9 +56,6 @@ namespace Shaos.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("InstanceId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -66,6 +63,10 @@ namespace Shaos.Repository.Migrations
 
                     b.Property<int?>("PlugInInstanceId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReferenceId")
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("TEXT");
@@ -100,9 +101,6 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(21)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("InstanceId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -110,6 +108,10 @@ namespace Shaos.Repository.Migrations
 
                     b.Property<int?>("ParameterType")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReferenceId")
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
@@ -300,6 +302,10 @@ namespace Shaos.Repository.Migrations
 
                     b.Property<int?>("PlugInId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReferenceId")
+                        .HasMaxLength(40)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("TEXT");
