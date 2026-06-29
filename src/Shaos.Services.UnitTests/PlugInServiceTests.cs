@@ -26,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
+using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Host;
@@ -558,25 +559,6 @@ namespace Shaos.Services.UnitTests
             VerifySaveAsync();
         }
 
-        private PlugIn SetupPlugInGetAsync()
-        {
-            var plugIn = new PlugIn()
-            {
-                Name = "plugin",
-                Description = "description",
-            };
-
-            MockRepository
-                .Setup(_ => _.GetEnumerableAsync(It.IsAny<Expression<Func<PlugIn, bool>>?>(),
-                                                 It.IsAny<Func<IQueryable<PlugIn>, IOrderedQueryable<PlugIn>>?>(),
-                                                 It.IsAny<bool>(),
-                                                 It.IsAny<List<string>?>(),
-                                                 It.IsAny<CancellationToken>()))
-                .Returns(new List<PlugIn>() { plugIn }.ToAsyncEnumerable());
-
-            return plugIn;
-        }
-
         private PlugIn SetupPlugInGetByIdAsync()
         {
             var plugInInformation = CreatePlugInInformation();
@@ -586,6 +568,7 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Name = "plugin",
                 Description = "description",
+                Instancing = Sdk.Instancing.Singleton,
                 PlugInInformation = plugInInformation
             };
 
@@ -607,6 +590,7 @@ namespace Shaos.Services.UnitTests
                                                               "typename",
                                                               "description",
                                                               "directory",
+                                                              Sdk.Instancing.Multple,
                                                               true,
                                                               true,
                                                               "assemblyfile",

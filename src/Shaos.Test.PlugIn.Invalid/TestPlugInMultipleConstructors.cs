@@ -28,7 +28,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    [PlugInDescription("Name", "Description")]
+    [PlugInDescription("Name", "Description", Instancing.Singleton)]
     public class TestPlugInMultipleConstructors : PlugInBase, IPlugIn
     {
         public TestPlugInMultipleConstructors()

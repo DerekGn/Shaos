@@ -33,7 +33,7 @@ using Shaos.Sdk.Devices.Parameters;
 namespace Shaos.Test.PlugIn
 {
     [ExcludeFromCodeCoverage]
-    [PlugInDescription("Name", "Description")]
+    [PlugInDescription("Name", "Description", Instancing.Multple)]
     public class TestPlugIn : PlugInBase
     {
         private const string Units = "units";

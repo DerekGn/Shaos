@@ -23,6 +23,7 @@
 */
 
 using Microsoft.EntityFrameworkCore;
+using Shaos.Sdk;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shaos.Repository.Models
@@ -44,6 +45,11 @@ namespace Shaos.Repository.Models
         /// The set of <see cref="PlugInInstance"/> associated with this <see cref="PlugInInstance"/>
         /// </summary>
         public List<PlugInInstance> Instances { get; } = [];
+
+        /// <summary>
+        /// The instancing for this <see cref="PlugIn"/>
+        /// </summary>
+        public Instancing Instancing { get; set; }
 
         /// <summary>
         /// The name of this <see cref="PlugIn"/>

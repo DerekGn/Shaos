@@ -34,6 +34,7 @@ namespace Shaos.Repository.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Description = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Instancing = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
@@ -145,7 +146,7 @@ namespace Shaos.Repository.Migrations
                     StringParameter_Value = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
                     UIntParameter_Max = table.Column<uint>(type: "INTEGER", nullable: true),
                     UIntParameter_Min = table.Column<uint>(type: "INTEGER", nullable: true),
-                    UIntParameter_Step = table.Column<int>(type: "INTEGER", nullable: true),
+                    UIntParameter_Step = table.Column<uint>(type: "INTEGER", nullable: true),
                     UIntParameter_Value = table.Column<uint>(type: "INTEGER", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)

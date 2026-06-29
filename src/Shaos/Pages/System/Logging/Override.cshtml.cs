@@ -52,7 +52,8 @@ namespace Shaos.Pages.System.Logging
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                ModelState.AddModelError("NotFound", $"{nameof(LogLevelSwitch)}: [{id}] was not found");
+                ModelState.AddModelError(PageConstants.NotFound,
+                                         $"{nameof(LogLevelSwitch)}: [{id}] was not found");
 
                 return Page();
             }
