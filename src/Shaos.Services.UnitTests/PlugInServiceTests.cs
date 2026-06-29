@@ -607,6 +607,7 @@ namespace Shaos.Services.UnitTests
                                                               "typename",
                                                               "description",
                                                               "directory",
+                                                              Sdk.Instancing.Multple,
                                                               true,
                                                               true,
                                                               "assemblyfile",

@@ -205,6 +205,9 @@ namespace Shaos.Repository.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Instancing")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(40)
@@ -417,7 +420,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<uint>("Min")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Step")
+                    b.Property<uint>("Step")
                         .HasColumnType("INTEGER");
 
                     b.Property<uint>("Value")

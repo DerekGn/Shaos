@@ -82,13 +82,17 @@ namespace Shaos.Services.Runtime.Validation
         internal void ValidatePlugInType(Type plugInType,
                                          out string name,
                                          out string description,
+                                         out Instancing instancing,
                                          out bool hasLogger,
                                          out bool hasConfiguration)
         {
             hasConfiguration = false;
             hasLogger = false;
 
-            LoadPlugInAttribute(plugInType, out name, out description);
+            LoadPlugInAttribute(plugInType,
+                                out name,
+                                out description,
+                                out instancing);
 
             var constructors = plugInType.GetConstructors();
 
@@ -177,15 +181,18 @@ namespace Shaos.Services.Runtime.Validation
 
         private static void LoadPlugInAttribute(Type plugInType,
                                                 out string name,
-                                                out string description)
+                                                out string description,
+                                                out Instancing instancing)
         {
-            var attribute = Attribute.GetCustomAttribute(plugInType, typeof(PlugInDescriptionAttribute));
+            var attribute = Attribute.GetCustomAttribute(plugInType,
+                                                         typeof(PlugInDescriptionAttribute));
 
             if (attribute != null)
             {
                 var plugInAttribute = attribute as PlugInDescriptionAttribute;
                 name = plugInAttribute!.Name;
                 description = plugInAttribute!.Description;
+                instancing = plugInAttribute.Instancing;
             }
             else
             {
@@ -224,6 +231,7 @@ namespace Shaos.Services.Runtime.Validation
                 ValidatePlugInType(plugInType,
                                    out var name,
                                    out var description,
+                                   out var instancing,
                                    out var hasLogger,
                                    out var hasConfiguration);
 
@@ -231,6 +239,7 @@ namespace Shaos.Services.Runtime.Validation
                                                  plugInType.Name,
                                                  description,
                                                  Path.GetDirectoryName(assemblyFile)!,
+                                                 instancing,
                                                  hasLogger,
                                                  hasConfiguration,
                                                  Path.GetFileName(assemblyFile),

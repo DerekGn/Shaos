@@ -86,6 +86,7 @@ namespace Shaos.Services
             {
                 Description = plugInTypeInformation.Description,
                 Name = plugInTypeInformation.Name,
+                Instancing = plugInTypeInformation.Instancing
             };
 
             plugIn.PlugInInformation = new PlugInInformation()
