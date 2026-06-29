@@ -320,8 +320,9 @@ namespace Shaos.Services
                 {
                     plugIn.Description = plugInTypeInformation.Description;
                     plugIn.Name = plugInTypeInformation.Name;
+                    plugIn.Instancing = plugInTypeInformation.Instancing;
 
-                    plugIn.PlugInInformation.AssemblyFileName = plugInAssemblyFileName;
+                    plugIn.PlugInInformation!.AssemblyFileName = plugInAssemblyFileName;
                     plugIn.PlugInInformation.AssemblyVersion = plugInTypeInformation.AssemblyVersion.ToString();
                     plugIn.PlugInInformation.Directory = plugInDirectory;
                     plugIn.PlugInInformation.PackageFileName = packageFileName;
