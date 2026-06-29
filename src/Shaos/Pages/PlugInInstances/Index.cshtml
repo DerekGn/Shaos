@@ -6,6 +6,7 @@
     var backToListDisabled = string.IsNullOrEmpty(Model.CurrentFilter) ? "disabled" : "";
     var prevDisabled = !Model.List.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.List.HasNextPage ? "disabled" : "";
+    var createDisabled = Model.PlugIn.Instancing == Sdk.Instancing.Singleton && Model.HasInstance ? "disabled" : "";
 }
 
 <h1>PlugIn Instances</h1>

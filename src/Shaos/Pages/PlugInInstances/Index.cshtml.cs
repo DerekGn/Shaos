@@ -45,6 +45,9 @@ namespace Shaos.Pages.PlugInInstances
         }
 
         [BindProperty]
+        public bool HasInstance { get; set; } = default!;
+
+        [BindProperty]
         public int Id { get; set; } = default!;
 
         [BindProperty]
@@ -59,7 +62,8 @@ namespace Shaos.Pages.PlugInInstances
         {
             Id = id;
 
-            await GetPlugInAsync(id, cancellationToken);
+            await GetPlugInAsync(id,
+                                 cancellationToken);
 
             await GetPlugInInstancesAsync(id,
                                           sortOrder,
@@ -73,13 +77,14 @@ namespace Shaos.Pages.PlugInInstances
                                           CancellationToken cancellationToken)
         {
             var plugIn = await _repository.GetByIdAsync<PlugIn>(id,
-                                                            cancellationToken: cancellationToken);
+                                                                cancellationToken: cancellationToken);
 
-            if(plugIn is not null)
+            if (plugIn is not null)
             {
                 PlugIn = plugIn;
 
-
+                HasInstance = await _repository.AnyAsync<PlugInInstance>(_ => _.PlugInId == id,
+                                                                         cancellationToken);
             }
             else
             {
@@ -115,7 +120,8 @@ namespace Shaos.Pages.PlugInInstances
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                filter = _ => _.PlugInId == id && _.Name!.Contains(searchString, StringComparison.CurrentCultureIgnoreCase);
+                filter = _ => _.PlugInId == id && _.Name!.Contains(searchString,
+                                                                   StringComparison.CurrentCultureIgnoreCase);
             }
             else
             {
