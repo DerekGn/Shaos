@@ -11,7 +11,7 @@ using Shaos.Repository;
 namespace Shaos.Repository.Migrations
 {
     [DbContext(typeof(ShaosDbContext))]
-    [Migration("20260623190431_Initial")]
+    [Migration("20260629124512_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -207,6 +207,9 @@ namespace Shaos.Repository.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Instancing")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -420,7 +423,7 @@ namespace Shaos.Repository.Migrations
                     b.Property<uint>("Min")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Step")
+                    b.Property<uint>("Step")
                         .HasColumnType("INTEGER");
 
                     b.Property<uint>("Value")

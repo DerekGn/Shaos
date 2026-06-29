@@ -29,7 +29,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    [PlugInDescription("Name", "Description")]
+    [PlugInDescription("Name", "Description", Instancing.Singleton)]
     public class TestPlugInInvalidLogger : PlugInBase, IPlugIn
     {
 #pragma warning disable S6672 // Generic logger injection should match enclosing type

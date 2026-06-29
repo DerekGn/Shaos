@@ -54,7 +54,7 @@ namespace Shaos.Pages
 
             if (parameter is null)
             {
-                ModelState.AddModelError(string.Empty,
+                ModelState.AddModelError(PageConstants.NotFound,
                                          $"Parameter Id [{id}] was not found.");
 
                 return new EmptyResult();

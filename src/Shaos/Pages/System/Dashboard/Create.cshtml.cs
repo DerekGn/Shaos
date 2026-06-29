@@ -63,7 +63,8 @@ namespace Shaos.Pages.System.Dashboard
 
             if (parameter == null)
             {
-                ModelState.AddModelError("NotFound", $"Parameter: [{parameterId}] was not found");
+                ModelState.AddModelError(PageConstants.NotFound,
+                                         $"Parameter: [{parameterId}] was not found");
             }
             else
             {
@@ -77,7 +78,8 @@ namespace Shaos.Pages.System.Dashboard
                 }
                 catch (DuplicateEntityException)
                 {
-                    ModelState.AddModelError(string.Empty, $"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
+                    ModelState.AddModelError(string.Empty,
+                                             $"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
 
                     return Page();
                 }

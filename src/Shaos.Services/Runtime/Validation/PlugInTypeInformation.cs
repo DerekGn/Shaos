@@ -47,6 +47,7 @@ namespace Shaos.Services.Runtime.Validation
         /// <param name="typeName">The <see cref="IPlugIn"/> derived type name</param>
         /// <param name="description">The <see cref="IPlugIn"/> description from the <see cref="PlugInDescriptionAttribute"/></param>
         /// <param name="directory">The plugin files directory</param>
+        /// <param name="instancing"></param>
         /// <param name="hasLogger">Indicates if the <see cref="IPlugIn"/> derived type has a logger</param>
         /// <param name="hasConfiguration">Indicates if the <see cref="IPlugIn"/> derived type has configuration</param>
         /// <param name="assemblyFile">The assembly file</param>
@@ -55,6 +56,7 @@ namespace Shaos.Services.Runtime.Validation
                                      string typeName,
                                      string description,
                                      string directory,
+                                     Instancing instancing,
                                      bool hasLogger,
                                      bool hasConfiguration,
                                      string assemblyFile,
@@ -64,6 +66,7 @@ namespace Shaos.Services.Runtime.Validation
             TypeName = typeName;
             Description = description;
             Directory = directory;
+            Instancing = instancing;
             HasLogger = hasLogger;
             HasConfiguration = hasConfiguration;
             AssemblyFileName = assemblyFile;
@@ -99,6 +102,11 @@ namespace Shaos.Services.Runtime.Validation
         /// Indicates if the <see cref="IPlugIn"/> derived type has a logger
         /// </summary>
         public bool HasLogger { get; }
+
+        /// <summary>
+        /// The <see cref="IPlugIn"/> instancing
+        /// </summary>
+        public Instancing Instancing { get; }
 
         /// <summary>
         /// The <see cref="IPlugIn"/> name from the <see cref="PlugInDescriptionAttribute"/>
