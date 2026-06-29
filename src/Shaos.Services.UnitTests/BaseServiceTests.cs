@@ -67,6 +67,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
+                Instancing = Sdk.Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation(true)
             };
 
@@ -103,6 +104,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
+                Instancing = Sdk.Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation(true)
             };
 

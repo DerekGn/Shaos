@@ -564,6 +564,7 @@ namespace Shaos.Services.UnitTests
             {
                 Name = "plugin",
                 Description = "description",
+                Instancing = Instancing.Singleton,
             };
 
             MockRepository
@@ -586,6 +587,7 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Name = "plugin",
                 Description = "description",
+                Instancing = Sdk.Instancing.Singleton,
                 PlugInInformation = plugInInformation
             };
 

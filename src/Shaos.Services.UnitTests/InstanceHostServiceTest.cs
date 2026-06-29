@@ -108,6 +108,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
+                Instancing = Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation()
             };
 
@@ -128,6 +129,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
+                Instancing = Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation()
             };
 
@@ -159,7 +161,8 @@ namespace Shaos.Services.UnitTests
             var plugIn = new PlugIn()
             {
                 Description = "Test",
-                Name = "Test"
+                Name = "Test",
+                Instancing = Instancing.Singleton,
             };
 
             _mockInstanceHost
@@ -199,6 +202,7 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
+                Instancing = Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation(true)
             };
 
@@ -220,6 +224,7 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
+                Instancing = Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation(true)
             };
 
@@ -240,6 +245,7 @@ namespace Shaos.Services.UnitTests
                 Id = 1,
                 Description = "description",
                 Name = InstanceName,
+                Instancing = Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation(true)
             };
 
@@ -259,6 +265,7 @@ namespace Shaos.Services.UnitTests
             {
                 Description = "Test",
                 Name = "Test",
+                Instancing = Instancing.Singleton,
                 PlugInInformation = CreatePlugInInformation(true)
             };
 
