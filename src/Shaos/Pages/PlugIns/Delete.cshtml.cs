@@ -56,7 +56,8 @@ namespace Shaos.Pages.PlugIns
 
             if (plugin == null)
             {
-                ModelState.AddModelError("NotFound", $"PlugIn: [{id}] was not found");
+                ModelState.AddModelError(PageConstants.NotFound,
+                                         $"PlugIn: [{id}] was not found");
             }
             else
             {

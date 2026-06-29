@@ -47,6 +47,9 @@ namespace Shaos.Pages.PlugInInstances
         [BindProperty]
         public int Id { get; set; } = default!;
 
+        [BindProperty]
+        public PlugIn PlugIn { get; set; } = default!;
+
         public async Task OnGetAsync(int id,
                                      string sortOrder,
                                      string currentFilter,
@@ -56,9 +59,45 @@ namespace Shaos.Pages.PlugInInstances
         {
             Id = id;
 
+            await GetPlugInAsync(id, cancellationToken);
+
+            await GetPlugInInstancesAsync(id,
+                                          sortOrder,
+                                          currentFilter,
+                                          searchString,
+                                          pageIndex,
+                                          cancellationToken);
+        }
+
+        private async Task GetPlugInAsync(int id,
+                                          CancellationToken cancellationToken)
+        {
+            var plugIn = await _repository.GetByIdAsync<PlugIn>(id,
+                                                            cancellationToken: cancellationToken);
+
+            if(plugIn is not null)
+            {
+                PlugIn = plugIn;
+
+
+            }
+            else
+            {
+                ModelState.AddModelError(PageConstants.NotFound,
+                                         $"PlugIn Id [{id}] was not found.");
+            }
+        }
+
+        private async Task GetPlugInInstancesAsync(int id,
+                                                   string sortOrder,
+                                                   string currentFilter,
+                                                   string searchString,
+                                                   int? pageIndex,
+                                                   CancellationToken cancellationToken)
+        {
             CurrentSort = sortOrder;
             NameSort = string.IsNullOrEmpty(sortOrder) ? NameDescending : "";
-            IdSort = sortOrder == nameof(PlugIn.Id) ? IdentifierDescending : nameof(PlugIn.Id);
+            IdSort = sortOrder == nameof(PlugInInstance.Id) ? IdentifierDescending : nameof(PlugInInstance.Id);
 
             if (searchString != null)
             {

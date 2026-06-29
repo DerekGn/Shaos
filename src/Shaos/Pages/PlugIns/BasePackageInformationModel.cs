@@ -52,7 +52,8 @@ namespace Shaos.Pages.PlugIns
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                ModelState.AddModelError(string.Empty, "The package file name is empty");
+                ModelState.AddModelError(string.Empty,
+                                         "The package file name is empty");
             }
             else
             {

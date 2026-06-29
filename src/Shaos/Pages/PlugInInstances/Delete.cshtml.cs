@@ -51,7 +51,8 @@ namespace Shaos.Pages.PlugInInstances
 
             if (plugininstance == null)
             {
-                ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
+                ModelState.AddModelError(PageConstants.NotFound,
+                                         $"PlugInInstance: [{id}] was not found");
             }
             else
             {
@@ -68,7 +69,8 @@ namespace Shaos.Pages.PlugInInstances
                                                                                           cancellationToken: cancellationToken);
             if (plugininstance == null)
             {
-                ModelState.AddModelError("NotFound", $"PlugInInstance: [{id}] was not found");
+                ModelState.AddModelError(PageConstants.NotFound,
+                                         $"PlugInInstance: [{id}] was not found");
             }
             else
             {

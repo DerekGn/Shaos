@@ -66,23 +66,28 @@ namespace Shaos.Pages.PlugIns
             }
             catch (FileContentInvalidException ex)
             {
-                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid content type: [{ex.ContentType}]");
+                ModelState.AddModelError(string.Empty,
+                                         $"The file [{ex.FileName}] has invalid content type: [{ex.ContentType}]");
             }
             catch (FileLengthInvalidException ex)
             {
-                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has invalid file length: [{ex.FileLength}]");
+                ModelState.AddModelError(string.Empty,
+                                         $"The file [{ex.FileName}] has invalid file length: [{ex.FileLength}]");
             }
             catch (FileNameEmptyException)
             {
-                ModelState.AddModelError(string.Empty, "The file name is empty");
+                ModelState.AddModelError(string.Empty,
+                                         "The file name is empty");
             }
             catch (FileNameInvalidExtensionException ex)
             {
-                ModelState.AddModelError(string.Empty, $"The file [{ex.FileName}] has an invalid extension.");
+                ModelState.AddModelError(string.Empty,
+                                         $"The file [{ex.FileName}] has an invalid extension.");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "Exception occurred check the logs");
+                ModelState.AddModelError(string.Empty,
+                                         "Exception occurred check the logs");
 
                 _logger.LogWarning(ex, "An unhandled exception occurred");
             }
