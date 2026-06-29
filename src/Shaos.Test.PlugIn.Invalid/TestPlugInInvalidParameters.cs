@@ -28,7 +28,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Test.PlugIn.Invalid
 {
     [ExcludeFromCodeCoverage]
-    [PlugInDescription("Name", "Description")]
+    [PlugInDescription("Name", "Description", Instancing.Singleton)]
     public class TestPlugInInvalidParameters : PlugInBase, IPlugIn
     {
         public TestPlugInInvalidParameters(int i, int q)
