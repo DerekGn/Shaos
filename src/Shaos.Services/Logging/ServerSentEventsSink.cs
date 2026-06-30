@@ -22,10 +22,23 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Pages
+using Serilog.Core;
+using Serilog.Events;
+
+namespace Shaos.Services.Logging
 {
-    internal static class PageConstants
+    public class ServerSentEventsSink : ILogEventSink
     {
-        public const string NotFound = "NotFound";
+        private readonly IFormatProvider _formatProvider;
+
+        public ServerSentEventsSink(IFormatProvider formatProvider)
+        {
+            _formatProvider = formatProvider;
+        }
+
+        public void Emit(LogEvent logEvent)
+        {
+            var message = logEvent.RenderMessage(_formatProvider);
+        }
     }
 }

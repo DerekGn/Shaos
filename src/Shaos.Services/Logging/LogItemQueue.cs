@@ -22,21 +22,9 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.Logging
 {
-    /// <summary>
-    /// Server side events options
-    /// </summary>
-    public class ServerSideEventOptions
+    public class LogItemQueue : ILogItemQueue
     {
-        /// <summary>
-        /// The event queue capacity
-        /// </summary>
-        public int EventQueueCapacity { get; set; } = 100;
-
-        /// <summary>
-        /// The server side event reconnect interval
-        /// </summary>
-        public TimeSpan ReconnectInterval { get; set; } = TimeSpan.FromSeconds(60);
     }
 }

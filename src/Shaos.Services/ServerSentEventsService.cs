@@ -32,22 +32,22 @@ using System.Runtime.CompilerServices;
 namespace Shaos.Services
 {
     /// <summary>
-    /// A <see cref="IServerSideEventsService"/> implementation
+    /// A <see cref="IServerSentEventsService"/> implementation
     /// </summary>
-    public class ServerSideEventsService : IServerSideEventsService
+    public class ServerSentEventsService : IServerSentEventsService
     {
         private readonly List<IEventQueue> _eventQueues;
-        private readonly ILogger<ServerSideEventsService> _logger;
-        private readonly IOptions<ServerSideEventOptions> _options;
+        private readonly ILogger<ServerSentEventsService> _logger;
+        private readonly IOptions<ServerSentEventOptions> _options;
         private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
-        /// Create an instance of a <see cref="ServerSideEventsService"/>
+        /// Create an instance of a <see cref="ServerSentEventsService"/>
         /// </summary>
         /// <param name="logger">The logger instance for this service</param>
         /// <param name="options">The options instance for this service</param>
-        public ServerSideEventsService(ILogger<ServerSideEventsService> logger,
-                                       IOptions<ServerSideEventOptions> options)
+        public ServerSentEventsService(ILogger<ServerSentEventsService> logger,
+                                       IOptions<ServerSentEventOptions> options)
         {
             _logger = logger;
             _options = options;

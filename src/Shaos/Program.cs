@@ -162,7 +162,7 @@ namespace Shaos
             builder.Services.AddSingleton<IRuntimeDeviceUpdateHandler, RuntimeDeviceUpdateHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
-            builder.Services.AddSingleton<IServerSideEventsService, ServerSideEventsService>();
+            builder.Services.AddSingleton<IServerSentEventsService, ServerSentEventsService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
             builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItemQueue(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();

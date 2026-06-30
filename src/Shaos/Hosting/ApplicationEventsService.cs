@@ -31,11 +31,11 @@ namespace Shaos.Hosting
     {
         private readonly IEventQueue _eventQueue;
         private readonly ILogger<ApplicationEventsService> _logger;
-        private readonly IServerSideEventsService _serverSideEventsService;
+        private readonly IServerSentEventsService _serverSideEventsService;
 
         public ApplicationEventsService(IEventQueue eventQueue,
                                         ILogger<ApplicationEventsService> logger,
-                                        IServerSideEventsService serverSideEventsService)
+                                        IServerSentEventsService serverSideEventsService)
         {
             _eventQueue = eventQueue;
             _logger = logger;

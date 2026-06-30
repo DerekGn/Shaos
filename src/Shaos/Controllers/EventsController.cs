@@ -1,4 +1,4 @@
-﻿ /*
+﻿/*
 * MIT License
 *
 * Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
@@ -36,11 +36,11 @@ namespace Shaos.Controllers
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<EventsController> _logger;
-        private readonly IServerSideEventsService _serverSideEventsService;
+        private readonly IServerSentEventsService _serverSideEventsService;
 
         public EventsController(ILogger<EventsController> logger,
                                 IHttpContextAccessor httpContextAccessor,
-                                IServerSideEventsService serverSideEventsService) : base(logger)
+                                IServerSentEventsService serverSideEventsService) : base(logger)
         {
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;

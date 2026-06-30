@@ -30,7 +30,7 @@ namespace Shaos.Services
     /// <summary>
     /// A server side event service for managing event streaming
     /// </summary>
-    public interface IServerSideEventsService
+    public interface IServerSentEventsService
     {
         /// <summary>
         /// Broadcast an <see cref="BaseEvent"/> to subscribed event listeners

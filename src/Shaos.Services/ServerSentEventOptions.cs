@@ -22,10 +22,21 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Pages
+namespace Shaos.Services
 {
-    internal static class PageConstants
+    /// <summary>
+    /// Server side events options
+    /// </summary>
+    public class ServerSentEventOptions
     {
-        public const string NotFound = "NotFound";
+        /// <summary>
+        /// The event queue capacity
+        /// </summary>
+        public int EventQueueCapacity { get; set; } = 100;
+
+        /// <summary>
+        /// The server side event reconnect interval
+        /// </summary>
+        public TimeSpan ReconnectInterval { get; set; } = TimeSpan.FromSeconds(60);
     }
 }
