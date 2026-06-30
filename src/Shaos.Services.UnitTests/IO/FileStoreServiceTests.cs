@@ -67,7 +67,7 @@ namespace Shaos.Services.UnitTests.IO
         [Fact]
         public void TestDeletePlugDirectory()
         {
-            _fileStoreService.DeletePlugDirectory(_fixture.PlugInIdInvalid.ToString());
+            _fileStoreService.DeleteBinariesDirectory(_fixture.PlugInIdInvalid.ToString());
 
             Assert.False(Directory.Exists(_fixture.PlugInDirectoryInvalid));
         }

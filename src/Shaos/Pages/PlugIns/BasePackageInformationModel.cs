@@ -74,7 +74,7 @@ namespace Shaos.Pages.PlugIns
 
             if (!string.IsNullOrWhiteSpace(plugInDirectory))
             {
-                FileStoreService.DeletePlugDirectory(plugInDirectory);
+                FileStoreService.DeleteBinariesDirectory(plugInDirectory);
             }
 
             return RedirectToPage("./Index");

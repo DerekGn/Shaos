@@ -155,7 +155,7 @@ namespace Shaos.Services
 
                     var plugInInformation = plugIn.PlugInInformation!;
 
-                    _fileStoreService.DeletePlugDirectory(plugInInformation.Directory);
+                    _fileStoreService.DeleteBinariesDirectory(plugInInformation.Directory);
                     _fileStoreService.DeletePackage(plugInInformation.PackageFileName);
                 }
                 else
@@ -181,7 +181,7 @@ namespace Shaos.Services
 
             if (!string.IsNullOrWhiteSpace(plugInDirectory))
             {
-                _fileStoreService.DeletePlugDirectory(plugInDirectory);
+                _fileStoreService.DeleteBinariesDirectory(plugInDirectory);
             }
         }
 
@@ -315,6 +315,7 @@ namespace Shaos.Services
 
                 var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory,
                                                                                                             plugInAssemblyFileName));
+                var packageDirectory = plugIn!.PlugInInformation!.Directory;
 
                 if (PlugInPackageChanged(plugIn, plugInTypeInformation))
                 {
@@ -330,6 +331,8 @@ namespace Shaos.Services
                     plugIn.PlugInInformation.HasLogger = plugInTypeInformation.HasLogger;
 
                     await _repository.SaveChangesAsync(cancellationToken);
+
+                    _fileStoreService.DeleteBinariesDirectory(packageDirectory);
                 }
                 else
                 {
