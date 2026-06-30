@@ -39,10 +39,10 @@ namespace Shaos.Services.IO
         void DeletePackage(string packagePath);
 
         /// <summary>
-        /// Delete the PlugIn files
+        /// Delete the PlugIn binaries files
         /// </summary>
-        /// <param name="plugInDirectory">The directory where the PlugIn files are located</param>
-        void DeletePlugDirectory(string plugInDirectory);
+        /// <param name="binariesDirectory">The directory where the PlugIn binary files are located</param>
+        void DeleteBinariesDirectory(string binariesDirectory);
 
         /// <summary>
         /// Extract a <see cref="PlugIn"/> package
