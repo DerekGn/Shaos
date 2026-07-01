@@ -56,7 +56,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task BroadcastEventAsync(BaseEvent baseEvent)
+        public async Task BroadcastEventAsync(BaseEvent baseEvent,
+                                              CancellationToken cancellationToken = default)
         {
             await AccessClientQueuesAsync(() =>
             {
@@ -68,13 +69,13 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken)
+        public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken)
+        public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default)
         {
             return StreamParameterEventsAsync((parameterUpdateEvent) =>
             {
@@ -84,7 +85,7 @@ namespace Shaos.Services
 
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
-                                                                                                   CancellationToken cancellationToken)
+                                                                                                   CancellationToken cancellationToken = default)
         {
             return StreamParameterEventsAsync((parameterUpdateEvent) =>
             {

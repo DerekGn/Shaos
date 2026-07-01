@@ -22,12 +22,32 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services
 {
     /// <summary>
-    /// A event queue.
+    /// A queue interface
     /// </summary>
-    public interface IEventQueue : IQueue<BaseEvent>
+    /// <typeparam name="T"></typeparam>
+    public interface IQueue<T>
     {
+        /// <summary>
+        /// The number of items queued
+        /// </summary>
+        int Count { get; }
+
+        /// <summary>
+        /// Dequeue an <typeparamref name="T"/> instance.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A dequeued item of type <typeparamref name="T"/></returns>
+        Task<T?> DequeueAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Enqueue a <typeparamref name="T"/> instance.
+        /// </summary>
+        /// <param name="item">The <typeparamref name="T"/> item to enqueue.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task EnqueueAsync(T item,
+                          CancellationToken cancellationToken = default);
     }
 }

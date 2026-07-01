@@ -35,22 +35,24 @@ namespace Shaos.Services
         /// <summary>
         /// Broadcast an <see cref="BaseEvent"/> to subscribed event listeners
         /// </summary>
-        /// <param name="baseEvent"></param>
-        Task BroadcastEventAsync(BaseEvent baseEvent);
+        /// <param name="baseEvent">The <see cref="BaseEvent"/> to broadcast</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task BroadcastEventAsync(BaseEvent baseEvent,
+                                 CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Stream application
         /// </summary>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns></returns>
-        IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken);
+        IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Read streamed parameter events asynchronously
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
-        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken);
+        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Read streamed parameter events asynchronously
@@ -59,6 +61,6 @@ namespace Shaos.Services
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
         IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
-                                                                                            CancellationToken cancellationToken);
+                                                                                            CancellationToken cancellationToken = default);
     }
 }

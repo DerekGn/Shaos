@@ -24,7 +24,10 @@
 
 namespace Shaos.Services.Logging
 {
-    public class LogItemQueue : ILogItemQueue
+    /// <summary>
+    /// The queue for log items
+    /// </summary>
+    public interface ILoggerItemQueue : IQueue<string>
     {
     }
 }

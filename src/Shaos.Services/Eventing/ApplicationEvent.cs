@@ -24,6 +24,9 @@
 
 namespace Shaos.Services.Eventing
 {
+    /// <summary>
+    /// Represents an application event
+    /// </summary>
     public record ApplicationEvent : BaseEvent
     {
     }

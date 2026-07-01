@@ -30,15 +30,12 @@ namespace Shaos.Hosting
     public class ApplicationEventsService : BackgroundService
     {
         private readonly IEventQueue _eventQueue;
-        private readonly ILogger<ApplicationEventsService> _logger;
         private readonly IServerSentEventsService _serverSideEventsService;
 
         public ApplicationEventsService(IEventQueue eventQueue,
-                                        ILogger<ApplicationEventsService> logger,
                                         IServerSentEventsService serverSideEventsService)
         {
             _eventQueue = eventQueue;
-            _logger = logger;
             _serverSideEventsService = serverSideEventsService;
         }
 
@@ -50,7 +47,7 @@ namespace Shaos.Hosting
 
                 if (baseEvent is not null)
                 {
-                    await _serverSideEventsService.BroadcastEventAsync(baseEvent);
+                    await _serverSideEventsService.BroadcastEventAsync(baseEvent, stoppingToken);
                 }
             }
         }

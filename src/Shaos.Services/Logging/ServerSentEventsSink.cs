@@ -27,18 +27,24 @@ using Serilog.Events;
 
 namespace Shaos.Services.Logging
 {
+    /// <summary>
+    /// A <see cref="ILogEventSink"/> that publishes log events
+    /// </summary>
     public class ServerSentEventsSink : ILogEventSink
     {
         private readonly IFormatProvider _formatProvider;
+        private readonly ILoggerItemQueue _loggerItemQueue;
 
-        public ServerSentEventsSink(IFormatProvider formatProvider)
+        public ServerSentEventsSink(IFormatProvider formatProvider,
+                                    ILoggerItemQueue loggerItemQueue)
         {
             _formatProvider = formatProvider;
+            _loggerItemQueue = loggerItemQueue;
         }
 
         public void Emit(LogEvent logEvent)
         {
-            var message = logEvent.RenderMessage(_formatProvider);
+            _loggerItemQueue.EnqueueAsync(logEvent.RenderMessage(_formatProvider));
         }
     }
 }

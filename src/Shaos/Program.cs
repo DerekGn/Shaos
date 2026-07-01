@@ -135,7 +135,7 @@ namespace Shaos
                         options.Conventions.AddPageApplicationModelConvention(
                             "/PlugIns/Package",
                             _ => _.Filters.Add(new SerializeModelStatePageFilter()));
-                });
+                    });
 
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {
@@ -156,6 +156,7 @@ namespace Shaos
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<IEventQueue>(InitEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
+            builder.Services.AddSingleton<ILoggerItemQueue>(InitLogItemEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
@@ -217,6 +218,16 @@ namespace Shaos
             }
 
             return new EventQueue(queueCapacity);
+        }
+
+        private static LoggerItemQueue InitLogItemEventQueue(ConfigurationManager configuration)
+        {
+            if (!int.TryParse(configuration["LogItemQueueCapacity"], out var queueCapacity))
+            {
+                queueCapacity = 100;
+            }
+
+            return new LoggerItemQueue(queueCapacity);
         }
 
         private static WorkItemQueue InitWorkItemQueue(ConfigurationManager configuration)
