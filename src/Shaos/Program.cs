@@ -72,6 +72,8 @@ namespace Shaos
             builder.Services.AddSerilog((serviceProvider, loggerConfiguration) =>
             {
                 loggingConfiguration.Configure(configuration, loggerConfiguration);
+
+                loggerConfiguration.WriteTo.ServerSentSink(serviceProvider.GetService<ILoggerItemQueue>()!);
             });
 
             // Add services to the container.

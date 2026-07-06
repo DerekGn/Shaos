@@ -22,35 +22,29 @@
 * SOFTWARE.
 */
 
-using Serilog.Core;
-using Serilog.Events;
+using Serilog;
+using Serilog.Configuration;
 
 namespace Shaos.Services.Logging
 {
     /// <summary>
-    /// A <see cref="ILogEventSink"/> that publishes log events
+    /// Extension for injection of <see cref="ServerSentSink"/>
     /// </summary>
-    public class ServerSentEventsSink : ILogEventSink
+    public static class ServerSentSinkExtensions
     {
-        private readonly IFormatProvider? _formatProvider;
-        private readonly ILoggerItemQueue _loggerItemQueue;
-
         /// <summary>
-        /// Create an instance of a <see cref="ServerSentSinkExtensions"/>
+        /// Add a <see cref="ServerSentSink"/> instance to the serilog sinks collection
         /// </summary>
-        /// <param name="loggerItemQueue">The <see cref="ILoggerItemQueue"/> instance to write loge messages</param>
-        /// <param name="formatProvider">The options <see cref="IFormatProvider"/></param>
-        public ServerSentEventsSink(ILoggerItemQueue loggerItemQueue,
-                                    IFormatProvider? formatProvider = null)
+        /// <param name="loggerConfiguration">The <see cref="LoggerSinkConfiguration"/></param>
+        /// <param name="loggerItemQueue">The <see cref="ILoggerItemQueue"/> for writing log events</param>
+        /// <param name="formatProvider">The optional <see cref="IFormatProvider"/> instance</param>
+        /// <returns>The <see cref="LoggerConfiguration"/></returns>
+        public static LoggerConfiguration ServerSentSink(this LoggerSinkConfiguration loggerConfiguration,
+                                                         ILoggerItemQueue loggerItemQueue,
+                                                         IFormatProvider? formatProvider = null)
         {
-            _formatProvider = formatProvider;
-            _loggerItemQueue = loggerItemQueue;
-        }
-
-        /// <inheritdoc/>
-        public void Emit(LogEvent logEvent)
-        {
-            _loggerItemQueue.EnqueueAsync(logEvent.RenderMessage(_formatProvider));
+            return loggerConfiguration.Sink(new ServerSentEventsSink(loggerItemQueue,
+                                                                     formatProvider));
         }
     }
 }
