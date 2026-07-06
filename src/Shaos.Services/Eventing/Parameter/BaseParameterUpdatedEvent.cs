@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Eventing.Parameter
 {
     /// <summary>
     /// The base parameter updated event

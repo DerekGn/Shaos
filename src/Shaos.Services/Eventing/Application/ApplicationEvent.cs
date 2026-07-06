@@ -22,27 +22,12 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Eventing.Application
 {
     /// <summary>
-    /// A device parameter update event
+    /// Represents an application event
     /// </summary>
-    /// <typeparam name="T">The device parameter value</typeparam>
-    public record ParameterUpdatedEvent<T> : BaseParameterUpdatedEvent
+    public record ApplicationEvent : BaseEvent
     {
-        /// <summary>
-        /// The parameter value
-        /// </summary>
-        public required T Value { get; init; }
-
-        /// <summary>
-        /// The parameter update timestamp
-        /// </summary>
-        public DateTime Timestamp { get; init; }
-
-        /// <summary>
-        /// Indicates if the parameter can be written too
-        /// </summary>
-        public bool CanWrite { get; init; }
     }
 }

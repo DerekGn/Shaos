@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shaos.Extensions;
 using Shaos.Services;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
 using System.Net.ServerSentEvents;
 
 namespace Shaos.Controllers

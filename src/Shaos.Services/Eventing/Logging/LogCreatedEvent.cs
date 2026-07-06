@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Eventing.Logging
 {
     /// <summary>
     /// Represents a log item created event

@@ -24,6 +24,9 @@
 
 using Serilog.Events;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
 using System.Net.ServerSentEvents;
 
 namespace Shaos.Services

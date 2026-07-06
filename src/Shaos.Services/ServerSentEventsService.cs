@@ -25,6 +25,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;

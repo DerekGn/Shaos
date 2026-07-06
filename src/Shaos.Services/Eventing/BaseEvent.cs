@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
 using System.Text.Json.Serialization;
 
 namespace Shaos.Services.Eventing

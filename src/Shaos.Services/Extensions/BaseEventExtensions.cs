@@ -23,6 +23,7 @@
 */
 
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Exceptions;
 
 namespace Shaos.Services.Extensions
