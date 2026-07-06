@@ -42,12 +42,17 @@ namespace Shaos.Services
                                  CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Stream application
+        /// Stream application events
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns></returns>
         IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Stream log created events
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
         IAsyncEnumerable<SseItem<LogCreatedEvent>> StreamLogEventsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>

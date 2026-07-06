@@ -37,6 +37,7 @@ namespace Shaos.Services
     public class ServerSentEventsService : IServerSentEventsService
     {
         private readonly List<IEventQueue> _eventQueues;
+        private readonly List<IEventQueue> _logEvents;
         private readonly ILogger<ServerSentEventsService> _logger;
         private readonly IOptions<ServerSentEventOptions> _options;
         private readonly SemaphoreSlim _semaphore;
@@ -53,6 +54,7 @@ namespace Shaos.Services
             _options = options;
             _semaphore = new SemaphoreSlim(1);
             _eventQueues = new List<IEventQueue>();
+            _logEvents = new List<IEventQueue>();
         }
 
         /// <inheritdoc/>
@@ -77,7 +79,12 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<LogCreatedEvent>> StreamLogEventsAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return StreamEventsAsync<LogCreatedEvent>(
+                _eventQueues,
+                (@event) =>
+                {
+                    return true;
+                }, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -110,6 +117,50 @@ namespace Shaos.Services
             finally
             {
                 _semaphore.Release();
+            }
+        }
+
+        private async IAsyncEnumerable<SseItem<T>> StreamEventsAsync<T>(List<IEventQueue> queues,
+                                                                        Func<T, bool> filterEvent,
+                                                                        [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            EventQueue? eventQueue = null;
+
+            try
+            {
+                eventQueue = new EventQueue(_options.Value.EventQueueCapacity);
+
+                await AccessClientQueuesAsync(async () =>
+                {
+                    queues.Add(eventQueue);
+                });
+
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    var baseEvent = await eventQueue.DequeueAsync(cancellationToken);
+
+                    if (baseEvent is T parameterEvent && filterEvent(parameterEvent))
+                    {
+                        yield return new SseItem<T>(parameterEvent,
+                                                    baseEvent.GetEventName())
+                        {
+                            EventId = Guid.NewGuid().ToString(),
+                            ReconnectionInterval = _options.Value.ReconnectInterval
+                        };
+                    }
+                }
+
+                _logger.EventStreamingComplete();
+            }
+            finally
+            {
+                if (eventQueue is not null)
+                {
+                    await AccessClientQueuesAsync(async () =>
+                    {
+                        queues.Remove(eventQueue);
+                    });
+                }
             }
         }
 
