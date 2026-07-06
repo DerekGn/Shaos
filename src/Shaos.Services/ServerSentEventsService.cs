@@ -75,6 +75,12 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
+        public IAsyncEnumerable<SseItem<LogCreatedEvent>> StreamLogEventsAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default)
         {
             return StreamParameterEventsAsync((parameterUpdateEvent) =>

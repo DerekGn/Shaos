@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Serilog.Events;
 using Shaos.Services.Eventing;
 using System.Net.ServerSentEvents;
 
@@ -46,6 +47,8 @@ namespace Shaos.Services
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns></returns>
         IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default);
+
+        IAsyncEnumerable<SseItem<LogCreatedEvent>> StreamLogEventsAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Read streamed parameter events asynchronously

@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-const eventSource = new EventSource('/api/v1/events/streamparameterevents');
+const eventSource = new EventSource('/api/v1/parameter-events');
 const elementCount = 3;
 
 window.onload = function () {

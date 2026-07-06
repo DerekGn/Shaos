@@ -1,5 +1,5 @@
 ﻿const settings = JSON.parse(document.getElementById('settings').innerHTML);
-const eventSource = new EventSource('/api/v1/events/streamparameterevents/' + settings.id);
+const eventSource = new EventSource('/api/v1/parameter-events/' + settings.id);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const chart = new Chart(ctx, {
     type: 'line',

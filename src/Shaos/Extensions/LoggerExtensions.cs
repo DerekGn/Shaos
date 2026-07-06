@@ -27,9 +27,25 @@ namespace Shaos.Extensions
     internal static partial class LoggerExtensions
     {
         [LoggerMessage(Level = LogLevel.Information,
-            Message = "Event streaming started. ConnectionId: [{ConnectionId}]")]
-        public static partial void EventStreamingStarted(this ILogger logger,
-                                                         string connectionId);
+                    Message = "Application event streaming started. ConnectionId: [{ConnectionId}]")]
+        public static partial void EventApplicationStreamingStarted(this ILogger logger,
+                                                                  string connectionId);
+
+        [LoggerMessage(Level = LogLevel.Information,
+                    Message = "Log event streaming started. ConnectionId: [{ConnectionId}]")]
+        public static partial void EventLogStreamingStarted(this ILogger logger,
+                                                            string connectionId);
+
+        [LoggerMessage(Level = LogLevel.Information,
+                    Message = "Parameter event streaming started. ConnectionId: [{ConnectionId}] Parameter Id: [{id}]")]
+        public static partial void EventParameterByIdStreamingStarted(this ILogger logger,
+                                                                      string connectionId,
+                                                                      int id);
+
+        [LoggerMessage(Level = LogLevel.Information,
+                            Message = "Parameter event streaming started. ConnectionId: [{ConnectionId}]")]
+        public static partial void EventParameterStreamingStarted(this ILogger logger,
+                                                                  string connectionId);
 
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "HttpContext is null")]
