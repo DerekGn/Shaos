@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 const eventSource = new EventSource('/api/v1/parameter-events');
-const elementCount = 3;
+const elementCount = 4;
 
 window.onload = function () {
 
