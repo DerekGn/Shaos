@@ -22,16 +22,21 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services
 {
     /// <summary>
-    /// The base parameter updated event
+    /// Server side events options
     /// </summary>
-    public abstract record BaseParameterUpdatedEvent : BaseEvent
+    public class ServerSentEventOptions
     {
         /// <summary>
-        /// The parameter identifier
+        /// The event queue capacity
         /// </summary>
-        public int Id { get; init; }
+        public int EventQueueCapacity { get; set; } = 100;
+
+        /// <summary>
+        /// The server side event reconnect interval
+        /// </summary>
+        public TimeSpan ReconnectInterval { get; set; } = TimeSpan.FromSeconds(60);
     }
 }

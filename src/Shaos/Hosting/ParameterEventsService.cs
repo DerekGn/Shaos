@@ -1,0 +1,65 @@
+﻿/*
+* MIT License
+*
+* Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
+using Shaos.Services;
+using Shaos.Services.Eventing;
+
+namespace Shaos.Hosting
+{
+    /// <summary>
+    /// Service for publishing parameter update events
+    /// </summary>
+    public class ParameterEventsService : BackgroundService
+    {
+        private readonly IEventQueue _eventQueue;
+        private readonly IServerSentEventsService _serverSentEventsService;
+
+        /// <summary>
+        /// Create an instance of a <see cref="ParameterEventsService"/>
+        /// </summary>
+        /// <param name="eventQueue">The <see cref="IEventQueue"/> to dequeue <see cref="BaseEvent"/></param>
+        /// <param name="serverSentEventsService">The <see cref="IServerSentEventsService"/></param>
+        public ParameterEventsService(IEventQueue eventQueue,
+                                      IServerSentEventsService serverSentEventsService)
+        {
+            _eventQueue = eventQueue;
+            _serverSentEventsService = serverSentEventsService;
+        }
+
+        /// <inheritdoc/>
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var baseEvent = await _eventQueue.DequeueAsync(stoppingToken);
+
+                if (baseEvent is not null)
+                {
+                    await _serverSentEventsService.BroadcastEventAsync(baseEvent,
+                                                                       stoppingToken);
+                }
+            }
+        }
+    }
+}

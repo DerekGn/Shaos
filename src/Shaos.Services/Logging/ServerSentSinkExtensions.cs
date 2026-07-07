@@ -22,12 +22,29 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+using Serilog;
+using Serilog.Configuration;
+
+namespace Shaos.Services.Logging
 {
     /// <summary>
-    /// A event queue.
+    /// Extension for injection of <see cref="ServerSentSink"/>
     /// </summary>
-    public interface IEventQueue : IQueue<BaseEvent>
+    public static class ServerSentSinkExtensions
     {
+        /// <summary>
+        /// Add a <see cref="ServerSentSink"/> instance to the serilog sinks collection
+        /// </summary>
+        /// <param name="loggerConfiguration">The <see cref="LoggerSinkConfiguration"/></param>
+        /// <param name="loggerItemQueue">The <see cref="ILoggerItemQueue"/> for writing log events</param>
+        /// <param name="formatProvider">The optional <see cref="IFormatProvider"/> instance</param>
+        /// <returns>The <see cref="LoggerConfiguration"/></returns>
+        public static LoggerConfiguration ServerSentSink(this LoggerSinkConfiguration loggerConfiguration,
+                                                         ILoggerItemQueue loggerItemQueue,
+                                                         IFormatProvider? formatProvider = null)
+        {
+            return loggerConfiguration.Sink(new ServerSentEventsSink(loggerItemQueue,
+                                                                     formatProvider));
+        }
     }
 }

@@ -22,10 +22,16 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Pages
+namespace Shaos.Services.Eventing.Parameter
 {
-    internal static class PageConstants
+    /// <summary>
+    /// The base parameter updated event
+    /// </summary>
+    public abstract record BaseParameterUpdatedEvent : BaseEvent
     {
-        public const string NotFound = "NotFound";
+        /// <summary>
+        /// The parameter identifier
+        /// </summary>
+        public int Id { get; init; }
     }
 }

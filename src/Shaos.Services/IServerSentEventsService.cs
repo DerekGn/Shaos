@@ -1,0 +1,84 @@
+﻿/*
+* MIT License
+*
+* Copyright (c) 2025 Derek Goslin https://github.com/DerekGn
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+
+using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
+using System.Net.ServerSentEvents;
+
+namespace Shaos.Services
+{
+    /// <summary>
+    /// A server side event service for managing event streaming
+    /// </summary>
+    public interface IServerSentEventsService
+    {
+        /// <summary>
+        /// Broadcast an <see cref="BaseEvent"/> to subscribed event listeners
+        /// </summary>
+        /// <param name="baseEvent">The <see cref="BaseEvent"/> to broadcast</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task BroadcastEventAsync(BaseEvent baseEvent,
+                                 CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Broadcast a log event
+        /// </summary>
+        /// <param name="log">The log event to broadcast</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task BroadcastLogEventAsync(string log,
+                                    CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Stream application events
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
+        IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Stream log created events
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns></returns>
+        IAsyncEnumerable<SseItem<LogCreatedEvent>> StreamLogEventsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Read streamed parameter events asynchronously
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
+        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Read streamed parameter events asynchronously
+        /// </summary>
+        /// <param name="id">The parameter identifier</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
+        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
+                                                                                            CancellationToken cancellationToken = default);
+    }
+}

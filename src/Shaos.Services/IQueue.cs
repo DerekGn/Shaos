@@ -22,43 +22,32 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Eventing;
-using System.Net.ServerSentEvents;
-
 namespace Shaos.Services
 {
     /// <summary>
-    /// A server side event service for managing event streaming
+    /// A queue interface
     /// </summary>
-    public interface IServerSideEventsService
+    /// <typeparam name="T"></typeparam>
+    public interface IQueue<T>
     {
         /// <summary>
-        /// Broadcast an <see cref="BaseEvent"/> to subscribed event listeners
+        /// The number of items queued
         /// </summary>
-        /// <param name="baseEvent"></param>
-        Task BroadcastEventAsync(BaseEvent baseEvent);
+        int Count { get; }
 
         /// <summary>
-        /// Stream application
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Read streamed parameter events asynchronously
+        /// Dequeue an <typeparamref name="T"/> instance.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
-        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken);
+        /// <returns>A dequeued item of type <typeparamref name="T"/></returns>
+        Task<T?> DequeueAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Read streamed parameter events asynchronously
+        /// Enqueue a <typeparamref name="T"/> instance.
         /// </summary>
-        /// <param name="id">The parameter identifier</param>
+        /// <param name="item">The <typeparamref name="T"/> item to enqueue.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>An <see cref="IAsyncEnumerable{T}"/> of <see cref="BaseEvent"/> instances</returns>
-        IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
-                                                                                            CancellationToken cancellationToken);
+        Task EnqueueAsync(T item,
+                          CancellationToken cancellationToken = default);
     }
 }

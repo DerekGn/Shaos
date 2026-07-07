@@ -23,6 +23,8 @@
 */
 
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Exceptions;
 
 namespace Shaos.Services.Extensions
@@ -35,11 +37,12 @@ namespace Shaos.Services.Extensions
 
             return type switch
             {
+                Type _ when type == typeof(LogCreatedEvent) => BaseEventTypeNames.LogCreatedTypeName,
                 Type _ when type == typeof(ParameterUpdatedEvent<bool>) => BaseEventTypeNames.BooleanTypeName,
                 Type _ when type == typeof(ParameterUpdatedEvent<float>) => BaseEventTypeNames.FloatTypeName,
                 Type _ when type == typeof(ParameterUpdatedEvent<int>) => BaseEventTypeNames.IntTypeName,
-                Type _ when type == typeof(ParameterUpdatedEvent<uint>) => BaseEventTypeNames.UIntTypeName,
                 Type _ when type == typeof(ParameterUpdatedEvent<string>) => BaseEventTypeNames.StringTypeName,
+                Type _ when type == typeof(ParameterUpdatedEvent<uint>) => BaseEventTypeNames.UIntTypeName,
                 _ => throw new UnmappedEventTypeNameException(type.Name)
             };
         }

@@ -25,6 +25,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Logs;
 using Serilog;
 using Shaos.Data;
 using Shaos.Filters;
@@ -58,10 +59,11 @@ namespace Shaos
                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
                 .Build();
 
-            Log.Logger = new LoggerConfiguration()
+            var loggerConfiguration = new LoggerConfiguration()
                 .ReadFrom
-                .Configuration(configuration)
-                .CreateLogger();
+                .Configuration(configuration);
+
+            Log.Logger = loggerConfiguration.CreateLogger();
 
             var loggingConfiguration = new LoggingConfiguration();
 
@@ -72,6 +74,8 @@ namespace Shaos
             builder.Services.AddSerilog((serviceProvider, loggerConfiguration) =>
             {
                 loggingConfiguration.Configure(configuration, loggerConfiguration);
+
+                loggerConfiguration.WriteTo.ServerSentSink(serviceProvider.GetService<ILoggerItemQueue>()!);
             });
 
             // Add services to the container.
@@ -135,7 +139,7 @@ namespace Shaos
                         options.Conventions.AddPageApplicationModelConvention(
                             "/PlugIns/Package",
                             _ => _.Filters.Add(new SerializeModelStatePageFilter()));
-                });
+                    });
 
             builder.Services.AddControllers().AddJsonOptions(_ =>
             {
@@ -156,20 +160,22 @@ namespace Shaos
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<IEventQueue>(InitEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
+            builder.Services.AddSingleton<ILoggerItemQueue>(InitLogItemEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<IRuntimeDeviceUpdateHandler, RuntimeDeviceUpdateHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceHost, RuntimeInstanceHost>();
-            builder.Services.AddSingleton<IServerSideEventsService, ServerSideEventsService>();
+            builder.Services.AddSingleton<IServerSentEventsService, ServerSentEventsService>();
             builder.Services.AddSingleton<ISystemService, SystemService>();
             builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItemQueue(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 
-            builder.Services.AddHostedService<ApplicationEventsService>();
             builder.Services.AddHostedService<InitialisationHostService>();
+            builder.Services.AddHostedService<LoggingEventService>();
             builder.Services.AddHostedService<MonitorHostedService>();
+            builder.Services.AddHostedService<ParameterEventsService>();
             builder.Services.AddHostedService<WorkItemProcessorBackgroundService>();
 
             builder.Services.AddMemoryCache();
@@ -217,6 +223,16 @@ namespace Shaos
             }
 
             return new EventQueue(queueCapacity);
+        }
+
+        private static LoggerItemQueue InitLogItemEventQueue(ConfigurationManager configuration)
+        {
+            if (!int.TryParse(configuration["LogItemQueueCapacity"], out var queueCapacity))
+            {
+                queueCapacity = 100;
+            }
+
+            return new LoggerItemQueue(queueCapacity);
         }
 
         private static WorkItemQueue InitWorkItemQueue(ConfigurationManager configuration)

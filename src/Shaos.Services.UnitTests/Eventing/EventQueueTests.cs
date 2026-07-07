@@ -23,6 +23,7 @@
 */
 
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Parameter;
 using Xunit;
 
 namespace Shaos.Services.UnitTests.Eventing
