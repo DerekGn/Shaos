@@ -25,6 +25,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
@@ -32,31 +35,34 @@ using System.Runtime.CompilerServices;
 namespace Shaos.Services
 {
     /// <summary>
-    /// A <see cref="IServerSideEventsService"/> implementation
+    /// A <see cref="IServerSentEventsService"/> implementation
     /// </summary>
-    public class ServerSideEventsService : IServerSideEventsService
+    public class ServerSentEventsService : IServerSentEventsService
     {
         private readonly List<IEventQueue> _eventQueues;
-        private readonly ILogger<ServerSideEventsService> _logger;
-        private readonly IOptions<ServerSideEventOptions> _options;
+        private readonly List<IEventQueue> _logEventQueues;
+        private readonly ILogger<ServerSentEventsService> _logger;
+        private readonly IOptions<ServerSentEventOptions> _options;
         private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
-        /// Create an instance of a <see cref="ServerSideEventsService"/>
+        /// Create an instance of a <see cref="ServerSentEventsService"/>
         /// </summary>
         /// <param name="logger">The logger instance for this service</param>
         /// <param name="options">The options instance for this service</param>
-        public ServerSideEventsService(ILogger<ServerSideEventsService> logger,
-                                       IOptions<ServerSideEventOptions> options)
+        public ServerSentEventsService(ILogger<ServerSentEventsService> logger,
+                                       IOptions<ServerSentEventOptions> options)
         {
             _logger = logger;
             _options = options;
             _semaphore = new SemaphoreSlim(1);
             _eventQueues = new List<IEventQueue>();
+            _logEventQueues = new List<IEventQueue>();
         }
 
         /// <inheritdoc/>
-        public async Task BroadcastEventAsync(BaseEvent baseEvent)
+        public async Task BroadcastEventAsync(BaseEvent baseEvent,
+                                              CancellationToken cancellationToken = default)
         {
             await AccessClientQueuesAsync(() =>
             {
@@ -68,28 +74,56 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken)
+        public async Task BroadcastLogEventAsync(string log,
+                                                 CancellationToken cancellationToken = default)
+        {
+            await AccessClientQueuesAsync(() =>
+            {
+                foreach (var queue in _logEventQueues)
+                {
+                    queue.EnqueueAsync(new LogCreatedEvent(log));
+                }
+            });
+        }
+
+        /// <inheritdoc/>
+        public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken)
+        public IAsyncEnumerable<SseItem<LogCreatedEvent>> StreamLogEventsAsync(CancellationToken cancellationToken = default)
         {
-            return StreamParameterEventsAsync((parameterUpdateEvent) =>
-            {
-                return true;
-            }, cancellationToken);
+            return StreamEventsAsync<LogCreatedEvent>(
+                _logEventQueues,
+                (@event) =>
+                {
+                    return true;
+                }, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default)
+        {
+            return StreamEventsAsync<BaseParameterUpdatedEvent>(
+                _eventQueues,
+                (parameterUpdateEvent) =>
+                {
+                    return true;
+                }, cancellationToken);
         }
 
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
-                                                                                                   CancellationToken cancellationToken)
+                                                                                                   CancellationToken cancellationToken = default)
         {
-            return StreamParameterEventsAsync((parameterUpdateEvent) =>
-            {
-                return parameterUpdateEvent.Id == id;
-            }, cancellationToken);
+            return StreamEventsAsync<BaseParameterUpdatedEvent>(
+                _eventQueues,
+                (parameterUpdateEvent) =>
+                {
+                    return parameterUpdateEvent.Id == id;
+                }, cancellationToken);
         }
 
         private async Task AccessClientQueuesAsync(Action action)
@@ -106,8 +140,9 @@ namespace Shaos.Services
             }
         }
 
-        private async IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(Func<BaseParameterUpdatedEvent, bool> filterEvent,
-                                                                                                      [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<SseItem<T>> StreamEventsAsync<T>(List<IEventQueue> queues,
+                                                                        Func<T, bool> filterEvent,
+                                                                        [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             EventQueue? eventQueue = null;
 
@@ -117,17 +152,17 @@ namespace Shaos.Services
 
                 await AccessClientQueuesAsync(async () =>
                 {
-                    _eventQueues.Add(eventQueue);
+                    queues.Add(eventQueue);
                 });
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var baseEvent = await eventQueue.DequeueAsync(cancellationToken);
 
-                    if (baseEvent is BaseParameterUpdatedEvent parameterEvent && filterEvent(parameterEvent))
+                    if (baseEvent is T parameterEvent && filterEvent(parameterEvent))
                     {
-                        yield return new SseItem<BaseParameterUpdatedEvent>(parameterEvent,
-                                                                            baseEvent.GetEventName())
+                        yield return new SseItem<T>(parameterEvent,
+                                                    baseEvent.GetEventName())
                         {
                             EventId = Guid.NewGuid().ToString(),
                             ReconnectionInterval = _options.Value.ReconnectInterval
@@ -143,7 +178,7 @@ namespace Shaos.Services
                 {
                     await AccessClientQueuesAsync(async () =>
                     {
-                        _eventQueues.Remove(eventQueue);
+                        queues.Remove(eventQueue);
                     });
                 }
             }

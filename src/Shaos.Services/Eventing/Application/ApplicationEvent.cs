@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Eventing.Application
 {
+    /// <summary>
+    /// Represents an application event
+    /// </summary>
     public record ApplicationEvent : BaseEvent
     {
     }

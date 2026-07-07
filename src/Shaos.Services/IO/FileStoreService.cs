@@ -62,16 +62,16 @@ namespace Shaos.Services.IO
         }
 
         /// <inheritdoc/>
-        public void DeletePlugDirectory(string plugInDirectory)
+        public void DeleteBinariesDirectory(string binariesDirectory)
         {
-            var extractedPackagePath = Path.Combine(_options.Value.BinariesPath,
-                                                    plugInDirectory);
+            var binariesPath = Path.Combine(_options.Value.BinariesPath,
+                                            binariesDirectory);
 
-            if (Directory.Exists(extractedPackagePath))
+            if (Directory.Exists(binariesPath))
             {
-                _logger.LogDeletingDirectory(extractedPackagePath);
+                _logger.LogDeletingDirectory(binariesPath);
 
-                Directory.Delete(extractedPackagePath,
+                Directory.Delete(binariesPath,
                                  true);
             }
         }

@@ -1,0 +1,35 @@
+﻿@model Exception
+
+@if(Model is not null)
+{
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(_ => _.GetType().Name)</th>
+            <td>@Html.DisplayFor(_ => _.GetType().Name)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(_ => _.HResult)</th>
+            <td>@Html.DisplayFor(_ => _.HResult)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(_ => _.Message)</th>
+            <td>@Html.DisplayFor(_ => _.Message)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(_ => _.Source)</th>
+            <td>@Html.DisplayFor(_ => _.Source)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(_ => _.StackTrace)</th>
+            <td>@Html.TextAreaFor(_ => _.StackTrace, new
+                {
+                    cols = "50",
+                    rows = "10",
+                    @align = "left",
+                    @draggable = "true",
+                    @readonly = "readonly"
+                })
+            </td>
+        </tr>
+    </table>
+}

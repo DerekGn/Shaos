@@ -1,0 +1,15 @@
+﻿@page
+@model Shaos.Pages.System.Log.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Log Output</h1>
+
+<hr />
+
+<textarea id="trace" readonly="readonly" class="console container-sm" rows="20">
+</textarea>
+
+<script src="~/js/log.js"></script>

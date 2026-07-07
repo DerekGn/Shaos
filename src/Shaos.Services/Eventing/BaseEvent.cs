@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
 using System.Text.Json.Serialization;
 
 namespace Shaos.Services.Eventing
@@ -30,6 +33,7 @@ namespace Shaos.Services.Eventing
     /// The base event type
     /// </summary>
     [JsonDerivedType(typeof(ApplicationEvent), BaseEventTypeNames.ApplicationTypeName)]
+    [JsonDerivedType(typeof(LogCreatedEvent), BaseEventTypeNames.LogCreatedTypeName)]
     [JsonDerivedType(typeof(ParameterUpdatedEvent<bool>), BaseEventTypeNames.BooleanTypeName)]
     [JsonDerivedType(typeof(ParameterUpdatedEvent<float>), BaseEventTypeNames.FloatTypeName)]
     [JsonDerivedType(typeof(ParameterUpdatedEvent<int>), BaseEventTypeNames.IntTypeName)]

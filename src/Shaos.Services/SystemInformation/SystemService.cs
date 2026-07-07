@@ -100,7 +100,7 @@ namespace Shaos.Services.SystemInformation
                 PrivateMemorySize = process.PrivateMemorySize64,
                 PrivilegedProcessorTime = process.PrivilegedProcessorTime,
                 ProcessName = process.ProcessName,
-                ProcessorAffinity = process.ProcessorAffinity.ToInt64(),
+                ProcessorAffinity = OperatingSystem.IsWindows() || OperatingSystem.IsLinux() ? process.ProcessorAffinity.ToInt64() : 0,
                 StartTime = process.StartTime,
                 ThreadsCount = process.Threads.Count,
                 TotalProcessorTime = process.TotalProcessorTime,

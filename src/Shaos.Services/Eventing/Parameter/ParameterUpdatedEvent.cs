@@ -22,21 +22,27 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.Eventing.Parameter
 {
     /// <summary>
-    /// Server side events options
+    /// A device parameter update event
     /// </summary>
-    public class ServerSideEventOptions
+    /// <typeparam name="T">The device parameter value</typeparam>
+    public record ParameterUpdatedEvent<T> : BaseParameterUpdatedEvent
     {
         /// <summary>
-        /// The event queue capacity
+        /// The parameter value
         /// </summary>
-        public int EventQueueCapacity { get; set; } = 100;
+        public required T Value { get; init; }
 
         /// <summary>
-        /// The server side event reconnect interval
+        /// The parameter update timestamp
         /// </summary>
-        public TimeSpan ReconnectInterval { get; set; } = TimeSpan.FromSeconds(60);
+        public DateTime Timestamp { get; init; }
+
+        /// <summary>
+        /// Indicates if the parameter can be written too
+        /// </summary>
+        public bool CanWrite { get; init; }
     }
 }

@@ -123,7 +123,7 @@ namespace Shaos.Services.UnitTests
 
             _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()));
 
-            _mockFileStoreService.Verify(_ => _.DeletePlugDirectory(It.IsAny<string>()));
+            _mockFileStoreService.Verify(_ => _.DeleteBinariesDirectory(It.IsAny<string>()));
         }
 
         [Fact]
@@ -265,7 +265,7 @@ namespace Shaos.Services.UnitTests
             MockRepository.Verify(_ => _.DeleteAsync<PlugIn>(It.IsAny<int>(),
                                                              It.IsAny<CancellationToken>()));
 
-            _mockFileStoreService.Verify(_ => _.DeletePlugDirectory(It.IsAny<string>()));
+            _mockFileStoreService.Verify(_ => _.DeleteBinariesDirectory(It.IsAny<string>()));
             _mockFileStoreService.Verify(_ => _.DeletePackage(It.IsAny<string>()));
         }
 

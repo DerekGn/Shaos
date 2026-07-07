@@ -29,6 +29,7 @@ using Shaos.Repository.Models;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
 using Shaos.Services.Processing;
 

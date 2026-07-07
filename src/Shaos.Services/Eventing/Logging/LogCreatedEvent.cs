@@ -22,37 +22,25 @@
 * SOFTWARE.
 */
 
-using Shaos.Services;
-using Shaos.Services.Eventing;
-
-namespace Shaos.Hosting
+namespace Shaos.Services.Eventing.Logging
 {
-    public class ApplicationEventsService : BackgroundService
+    /// <summary>
+    /// Represents a log item created event
+    /// </summary>
+    public record LogCreatedEvent : BaseEvent
     {
-        private readonly IEventQueue _eventQueue;
-        private readonly ILogger<ApplicationEventsService> _logger;
-        private readonly IServerSideEventsService _serverSideEventsService;
-
-        public ApplicationEventsService(IEventQueue eventQueue,
-                                        ILogger<ApplicationEventsService> logger,
-                                        IServerSideEventsService serverSideEventsService)
+        /// <summary>
+        /// Create a new <see cref="LogCreatedEvent"/> instance
+        /// </summary>
+        /// <param name="log"></param>
+        public LogCreatedEvent(string log)
         {
-            _eventQueue = eventQueue;
-            _logger = logger;
-            _serverSideEventsService = serverSideEventsService;
+            Log = log;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                var baseEvent = await _eventQueue.DequeueAsync(stoppingToken);
-
-                if (baseEvent is not null)
-                {
-                    await _serverSideEventsService.BroadcastEventAsync(baseEvent);
-                }
-            }
-        }
+        /// <summary>
+        /// The log event
+        /// </summary>
+        public string Log { get; init; }
     }
 }
