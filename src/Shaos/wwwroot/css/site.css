@@ -33,3 +33,12 @@ button.collapsed .collapse-icon {
 button:not(.collapsed) .collapse-icon {
     transform: rotate(180deg);
 }
+
+.console {
+    font-family: Courier New, Courier, monospace;
+    font-size: 12px;
+    background-color: #303030;
+    color: #ffffffc7;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
