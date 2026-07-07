@@ -25,6 +25,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Logs;
 using Serilog;
 using Shaos.Data;
 using Shaos.Filters;
@@ -58,10 +59,11 @@ namespace Shaos
                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
                 .Build();
 
-            Log.Logger = new LoggerConfiguration()
+            var loggerConfiguration = new LoggerConfiguration()
                 .ReadFrom
-                .Configuration(configuration)
-                .CreateLogger();
+                .Configuration(configuration);
+
+            Log.Logger = loggerConfiguration.CreateLogger();
 
             var loggingConfiguration = new LoggingConfiguration();
 
@@ -170,9 +172,10 @@ namespace Shaos
             builder.Services.AddSingleton<IWorkItemQueue>(InitWorkItemQueue(builder.Configuration));
             builder.Services.AddSingleton<IZipFileValidationService, ZipFileValidationService>();
 
-            builder.Services.AddHostedService<ApplicationEventsService>();
             builder.Services.AddHostedService<InitialisationHostService>();
+            builder.Services.AddHostedService<LoggingEventService>();
             builder.Services.AddHostedService<MonitorHostedService>();
+            builder.Services.AddHostedService<ParameterEventsService>();
             builder.Services.AddHostedService<WorkItemProcessorBackgroundService>();
 
             builder.Services.AddMemoryCache();

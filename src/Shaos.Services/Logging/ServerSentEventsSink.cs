@@ -24,6 +24,8 @@
 
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Formatting.Display;
+using System.Text;
 
 namespace Shaos.Services.Logging
 {
@@ -32,7 +34,9 @@ namespace Shaos.Services.Logging
     /// </summary>
     public class ServerSentEventsSink : ILogEventSink
     {
-        private readonly IFormatProvider? _formatProvider;
+        private const string DefaultOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+        private const int DefaultWriteBufferCapacity = 256;
+        private readonly MessageTemplateTextFormatter _formatter;
         private readonly ILoggerItemQueue _loggerItemQueue;
 
         /// <summary>
@@ -40,17 +44,24 @@ namespace Shaos.Services.Logging
         /// </summary>
         /// <param name="loggerItemQueue">The <see cref="ILoggerItemQueue"/> instance to write loge messages</param>
         /// <param name="formatProvider">The options <see cref="IFormatProvider"/></param>
+        /// <param name="outputTemplate">The output template</param>
         public ServerSentEventsSink(ILoggerItemQueue loggerItemQueue,
-                                    IFormatProvider? formatProvider = null)
+                                    IFormatProvider? formatProvider = null,
+                                    string outputTemplate = DefaultOutputTemplate)
         {
-            _formatProvider = formatProvider;
             _loggerItemQueue = loggerItemQueue;
+            _formatter = new MessageTemplateTextFormatter(outputTemplate,
+                                                          formatProvider);
         }
 
         /// <inheritdoc/>
         public void Emit(LogEvent logEvent)
         {
-            _loggerItemQueue.EnqueueAsync(logEvent.RenderMessage(_formatProvider));
+            var buffer = new StringWriter(new StringBuilder(DefaultWriteBufferCapacity));
+            _formatter.Format(logEvent, buffer);
+            var formattedLogEventText = buffer.ToString();
+
+            _loggerItemQueue.EnqueueAsync(formattedLogEventText);
         }
     }
 }

@@ -23,20 +23,28 @@
 */
 
 using Shaos.Services;
-using Shaos.Services.Eventing;
+using Shaos.Services.Logging;
 
 namespace Shaos.Hosting
 {
-    public class ApplicationEventsService : BackgroundService
+    /// <summary>
+    /// Service for publishing log create events
+    /// </summary>
+    public class LoggingEventService : BackgroundService
     {
-        private readonly IEventQueue _eventQueue;
-        private readonly IServerSentEventsService _serverSideEventsService;
+        private readonly ILoggerItemQueue _eventQueue;
+        private readonly IServerSentEventsService _serverSentEventsService;
 
-        public ApplicationEventsService(IEventQueue eventQueue,
-                                        IServerSentEventsService serverSideEventsService)
+        /// <summary>
+        /// Create an instance of a <see cref="LoggingEventService"/>
+        /// </summary>
+        /// <param name="eventQueue">The <see cref="ILoggerItemQueue"/> to dequeue log methods</param>
+        /// <param name="serverSentEventsService">The <see cref="IServerSentEventsService"/></param>
+        public LoggingEventService(ILoggerItemQueue eventQueue,
+                                   IServerSentEventsService serverSentEventsService)
         {
             _eventQueue = eventQueue;
-            _serverSideEventsService = serverSideEventsService;
+            _serverSentEventsService = serverSentEventsService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -47,7 +55,8 @@ namespace Shaos.Hosting
 
                 if (baseEvent is not null)
                 {
-                    await _serverSideEventsService.BroadcastEventAsync(baseEvent, stoppingToken);
+                    await _serverSentEventsService.BroadcastLogEventAsync(baseEvent!,
+                                                                          stoppingToken);
                 }
             }
         }

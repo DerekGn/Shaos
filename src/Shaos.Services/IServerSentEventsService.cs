@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Serilog.Events;
 using Shaos.Services.Eventing;
 using Shaos.Services.Eventing.Application;
 using Shaos.Services.Eventing.Logging;
@@ -43,6 +42,14 @@ namespace Shaos.Services
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task BroadcastEventAsync(BaseEvent baseEvent,
                                  CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Broadcast a log event
+        /// </summary>
+        /// <param name="log">The log event to broadcast</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task BroadcastLogEventAsync(string log,
+                                    CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Stream application events

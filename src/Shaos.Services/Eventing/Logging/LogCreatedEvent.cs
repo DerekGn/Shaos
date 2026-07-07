@@ -29,5 +29,18 @@ namespace Shaos.Services.Eventing.Logging
     /// </summary>
     public record LogCreatedEvent : BaseEvent
     {
+        /// <summary>
+        /// Create a new <see cref="LogCreatedEvent"/> instance
+        /// </summary>
+        /// <param name="log"></param>
+        public LogCreatedEvent(string log)
+        {
+            Log = log;
+        }
+
+        /// <summary>
+        /// The log event
+        /// </summary>
+        public string Log { get; init; }
     }
 }
