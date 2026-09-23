@@ -1,5 +1,19 @@
 # Update configuration to match application configuration
-@HostAddress = https://localhost:7000
+# Use the Autorisation.http script to generate an access token
+# Set the token to value returned from auth
+@address = https://localhost:7000
+@version = 1
+@token = TOKEN
 
-GET {{HostAddress}}/api/v1/events
+GET {{address}}/api/v{{version}}/app-events
+Accept: text/event-stream
+
+###
+
+GET {{address}}/api/v{{version}}/log-events
+Accept: text/event-stream
+
+###
+
+GET {{address}}/api/v{{version}}/parameter-events
 Accept: text/event-stream
