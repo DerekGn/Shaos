@@ -1,23 +1,17 @@
 # Update configuration to match application configuration
 # Use the Autorisation.http script to generate an access token
-@HostAddress = https://localhost:7000
-@id = 1
+# Set the token to value returned from auth
+@address = https://localhost:7000
+@version = 1
+@token = TOKEN
 @name = System
 @level = Verbose
-@accessToken = <paste access token without quotes>
 
 ###
 
 # Get the logging level
-GET {{HostAddress}}/api/v1/logging/levels
-#Authorization: Bearer {{accessToken}}
-Accept: application/json
-
-###
-
-# Get the logging level
-GET {{HostAddress}}/api/v1/logging/levels?name={{name}}&level={{level}}
-#Authorization: Bearer {{accessToken}}
+GET {{address}}/api/v{{version}}/logging/levels
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
