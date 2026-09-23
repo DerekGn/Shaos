@@ -1,20 +1,16 @@
 # Update configuration to match application configuration
-@HostAddress = https://localhost:7000
+@accesstoken = "SET THIS TO BEARER TOKEN"
+@address = https://localhost:7000
 @email = me@here.com
 @password = j+8KPrmgMiWi^+N
-
-###
-
-# This will fail
-GET {{HostAddress}}/api/System
-Accept: application/json
+@version = 1
 
 ###
 
 # This will generate a bearer token and refresh token
 # Used to generate access token for API access
 
-POST {{HostAddress}}/login
+POST {{address}}/login
 Content-Type: application/json
 
 {
@@ -24,11 +20,8 @@ Content-Type: application/json
 
 ###
 
-# This value come from the previous response
-@accessToken = <paste access token without quotes>
-
-GET {{HostAddress}}/api/system
-Authorization: Bearer {{accessToken}}
+GET {{address}}/api/v{{version}}/system/environment
+Authorization: Bearer {{accesstoken}}
 Accept: application/json
 
 ###

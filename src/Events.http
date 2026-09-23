@@ -1,5 +1,20 @@
 # Update configuration to match application configuration
-@HostAddress = https://localhost:7000
+@accesstoken = "SET THIS TO BEARER TOKEN"
+@address = https://localhost:7000
+@version = 1
 
-GET {{HostAddress}}/api/v1/events
+GET {{address}}/api/v{{version}}/app-events
+Authorization: Bearer {{accesstoken}}
+Accept: text/event-stream
+
+###
+
+GET {{address}}/api/v{{version}}/log-events
+Authorization: Bearer {{accesstoken}}
+Accept: text/event-stream
+
+###
+
+GET {{address}}/api/v{{version}}/parameter-events
+Authorization: Bearer {{accesstoken}}
 Accept: text/event-stream
