@@ -1,16 +1,21 @@
 ﻿"use strict";
 
-function writeBool() {
+function writeBool(url, id, value) {
+    console.debug('')
 }
 
-function writeFloat() {
+function writeFloat(url, id, value) {
+    console.debug('')
 }
 
-function writeInt() {
+function writeInt(url, id, value) {
+    console.debug('')
 }
 
-function writeString() {
+function writeString(url, id, value) {
+    console.debug('')
 }
 
-function writeUInt() {
+function writeUInt(url, id, value) {
+    console.debug('')
 }
