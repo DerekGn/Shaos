@@ -58,7 +58,7 @@ window.onload = function () {
 
         if (element != null && element.children.length == elementCount) {
 
-            var startIndex = 0;
+            let startIndex = 0;
 
             if (element.canWrite) {
                 startIndex = 1;
