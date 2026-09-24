@@ -5,7 +5,6 @@
 ## Domain Model
 
 ```mermaid
-
 ---
 title: Domain Model
 ---

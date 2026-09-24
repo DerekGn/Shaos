@@ -1,35 +1,31 @@
 # Update configuration to match application configuration
 # Use the Autorisation.http script to generate an access token
-@HostAddress = https://localhost:7000
+# Set the token to value returned from auth
+@address = https://localhost:7000
+@version = 1
+@token = TOKEN
+
 @id = 1
-@accessToken = <paste access token without quotes>
 
 ###
 
-# Get executing instance by id
-GET {{HostAddress}}/api/v1/runtime/{{id}}
-#Authorization: Bearer {{accessToken}}
-Accept: application/json
-
-###
-
-# Get all executing instances
-GET {{HostAddress}}/api/v1/runtime
-#Authorization: Bearer {{accessToken}}
+# Get the list of runtime plugin instances
+GET {{address}}/api/v{{version}}/runtime
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
 # Start an instance executing
-PUT {{HostAddress}}/api/v1/runtime/{{id}}/start
-#Authorization: Bearer {{accessToken}}
+PUT {{address}}/api/v{{version}}/runtime/{{id}}/start
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
 # Stop an instance executing
-PUT {{HostAddress}}/api/v1/runtime/{{id}}/stop
-#Authorization: Bearer {{accessToken}}
+PUT {{address}}/api/v{{version}}/runtime/{{id}}/stop
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###

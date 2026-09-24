@@ -21,7 +21,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.OpenApi" Version="2.10.*" />
+        <PackageReference Include="Microsoft.OpenApi" Version="2.12.*" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.*" />
         <PackageReference Include="NuGet.Packaging" Version="7.*" />
         <PackageReference Include="NuGet.Protocol" Version="7.*" />
