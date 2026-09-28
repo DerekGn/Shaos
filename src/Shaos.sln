@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiRequests", "ApiRequests"
 		Authorisation.http = Authorisation.http
 		Events.http = Events.http
 		Logging.http = Logging.http
+		Parameters.http = Parameters.http
 		Plugin.http = Plugin.http
 		Runtime.http = Runtime.http
 		System.http = System.http

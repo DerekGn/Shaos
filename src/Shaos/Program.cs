@@ -147,6 +147,12 @@ namespace Shaos
                 _.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
+            builder.Services.ConfigureHttpJsonOptions(_ =>
+            {
+                _.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                _.SerializerOptions.NumberHandling = JsonNumberHandling.AllowReadingFromString;
+            });
+
             builder.Services.AddOpenApi();
 
             // Application defined services
