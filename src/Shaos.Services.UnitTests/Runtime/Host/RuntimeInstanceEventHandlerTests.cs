@@ -67,6 +67,13 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 new Mock<IBaseParameter>()
             ];
 
+            int i = 0;
+
+            foreach (var param in _mockBaseParameters)
+            {
+                param.Setup(_ => _.Id).Returns(i++);
+            }
+
             _runtimeInstanceEventHandler = new RuntimeInstanceEventHandler(LoggerFactory!.CreateLogger<RuntimeInstanceEventHandler>(),
                                                                            _mockRuntimeDeviceUpdateHandler.Object);
         }
@@ -235,6 +242,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<bool>>().Object,
                             new ParameterValueChangedEventArgs<bool>(true));
+
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.SaveParameterChangeAsync(It.IsAny<int>(),
+                                                                                   It.IsAny<bool>(),
+                                                                                   It.IsAny<bool>(),
+                                                                                   It.IsAny<DateTime>()));
         }
 
         [Fact]
@@ -248,6 +260,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<float>>().Object,
                             new ParameterValueChangedEventArgs<float>(1.0f));
+
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.SaveParameterChangeAsync(It.IsAny<int>(),
+                                                                                   It.IsAny<float>(),
+                                                                                   It.IsAny<bool>(),
+                                                                                   It.IsAny<DateTime>()));
         }
 
         [Fact]
@@ -261,6 +278,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<int>>().Object,
                             new ParameterValueChangedEventArgs<int>(1));
+
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.SaveParameterChangeAsync(It.IsAny<int>(),
+                                                                                   It.IsAny<int>(),
+                                                                                   It.IsAny<bool>(),
+                                                                                   It.IsAny<DateTime>()));
         }
 
         [Fact]
@@ -274,6 +296,12 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<string>>().Object,
                             new ParameterValueChangedEventArgs<string>(""));
+
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.SaveParameterChangeAsync(It.IsAny<int>(),
+                                                                                   It.IsAny<string>(),
+                                                                                   It.IsAny<bool>(),
+                                                                                   It.IsAny<DateTime>()));
+
         }
 
         [Fact]
@@ -287,6 +315,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                 .RaiseAsync(_ => _.ValueChanged += null,
                             _mockBaseParameters[0].As<IBaseParameter<uint>>().Object,
                             new ParameterValueChangedEventArgs<uint>(10));
+
+            _mockRuntimeDeviceUpdateHandler.Verify(_ => _.SaveParameterChangeAsync(It.IsAny<int>(),
+                                                                                   It.IsAny<uint>(),
+                                                                                   It.IsAny<bool>(),
+                                                                                   It.IsAny<DateTime>()));
         }
 
         private void SetupCommonMocks()
