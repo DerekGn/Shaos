@@ -22,12 +22,15 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Exceptions
 {
     /// <summary>
     /// An exception that is thrown when an event type was not mapped
     /// </summary>
-    /// <param name="name"></param>
+    /// <param name="name">The event name</param>
+    [ExcludeFromCodeCoverage]
     public class UnmappedEventTypeNameException(string name) : Exception
     {
         /// <summary>
