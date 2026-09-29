@@ -27,15 +27,15 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when an event type was not mapped
+    /// An exception that is thrown when a parameter is not writable
     /// </summary>
-    /// <param name="name">The event name</param>
+    /// <param name="id">The parameter identifier</param>
     [ExcludeFromCodeCoverage]
-    public class UnmappedEventTypeNameException(string name) : Exception
+    public class ParameterNotWritableException(int id) : Exception
     {
         /// <summary>
-        /// The unmapped event type name
+        /// The parameter identifier
         /// </summary>
-        public string Name { get; } = name;
+        public int Id { get; } = id;
     }
 }

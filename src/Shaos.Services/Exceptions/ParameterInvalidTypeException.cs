@@ -27,15 +27,29 @@ using System.Diagnostics.CodeAnalysis;
 namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when an event type was not mapped
+    /// An exception that is thrown when a parameter is not found
     /// </summary>
-    /// <param name="name">The event name</param>
+    /// <param name="id">The parameter identifier</param>
+    /// <param name="expected"></param>
+    /// <param name="actual"></param>
     [ExcludeFromCodeCoverage]
-    public class UnmappedEventTypeNameException(string name) : Exception
+    public class ParameterInvalidTypeException(int id,
+                                               Type expected,
+                                               Type actual) : Exception
     {
         /// <summary>
-        /// The unmapped event type name
+        /// The actual type of the parameter
         /// </summary>
-        public string Name { get; } = name;
+        public Type ActualType { get; } = actual;
+
+        /// <summary>
+        /// The expected type
+        /// </summary>
+        public Type Expected { get; } = expected;
+
+        /// <summary>
+        /// The parameter identifier
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

@@ -1,0 +1,36 @@
+# Update configuration to match application configuration
+# Use the Autorisation.http script to generate an access token
+# Set the token to value returned from auth
+@address = https://localhost:7000
+@version = 1
+@token = CfDJ8IQaOmo7hBxKqaUm9FjzvNc_FuhTsGiR2pLusOP6vVmKmAnCCdkh-eLBG5jGj8jlIjDRQ6S82DgX7tVkGryf-0Dr8cn9kkER2IDLD850qm0NIfkI_UQ43SSjERvvHLjFAdnzYxZueGB0CU9zdLyRFCY9eSCy5r0K7IIyhZsF8sGt18yU-2qwORYviZLt8tk700XIs4fCAOnCuevtLvDoOgIuziyze1Z3-x-R0ybEyHF0sC8nxu8CQ0pT6B5EVGDZS-0AkO4dBDlOs5cO3Z8Xu2q8iVVoR6LpvJY1McldM_tkAkxQYmvczciT6PU4NISigsMESvveF47O3FxD4ISB0m7XY1qrHXd2ZIr6QrmeSShR7ZpDLw-aOrqtKHU3RaJAUsY6FH_JTxfkLzozg_f9GuMr06yu8DmB3qo2Wr5i7BfZi6pM0CmpKoOcF3C4Y5oKODN-Yc-y8Ap0TQi-JRGBO6f3-RDkw3TqA02UkG5o9uMfcMQ28R_sR0tUfzUFv2IsS8u1qAY_DvG3AAezHPWLRxNrFnTD5NqmrUOHDy4f-r_o3kFUhd6QaWET5HQBEDi7NtxGeViumkdogd7llLDfI13a4x11zmIJX8vwzn2CJcNUhRf_2nn_IP7iSUpaV-YRyeHvu-F3sMXcxRHMMAHARomBJ_dUJslS1ytQyhOQxmWCs_GggDhhMiG9joE0JLGwTw
+
+@parameterid = 1
+
+###
+
+# Write a boolean value to a parameter
+PUT {{address}}/api/v{{version}}/parameters/{{parameterid}}/bool/true
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+# Write a boolean value to a parameter
+PUT {{address}}/api/v{{version}}/parameters/{{parameterid}}/float/1.2
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+# Write a boolean value to a parameter
+PUT {{address}}/api/v{{version}}/parameters/{{parameterid}}/int/-10
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+# Write a boolean value to a parameter
+PUT {{address}}/api/v{{version}}/parameters/{{parameterid}}/uint/34
+Authorization: Bearer {{token}}
+Accept: application/json
