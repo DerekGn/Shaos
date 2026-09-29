@@ -46,47 +46,51 @@ namespace Shaos.Services.Parameters
         }
 
         /// <inheritdoc/>
-        public void WriteParameter(int parameterId,
-                                   bool value)
+        public async Task WriteParameterAsync(int parameterId,
+                                              bool value,
+                                              CancellationToken cancellationToken = default)
         {
-            ExecuteParameterUpdate<IBaseParameter<bool>>(parameterId, (parameter) =>
+            await ExecuteParameterUpdateAsync<IBaseParameter<bool>>(parameterId, async (parameter) =>
             {
-                parameter.WriteAsync(value);
+                await parameter.WriteAsync(value);
             });
         }
 
         /// <inheritdoc/>
-        public void WriteParameter(int parameterId,
-                                   float value)
+        public async Task WriteParameterAsync(int parameterId,
+                                              float value,
+                                              CancellationToken cancellationToken = default)
         {
-            ExecuteParameterUpdate<IBaseParameter<float>>(parameterId, (parameter) =>
+            await ExecuteParameterUpdateAsync<IBaseParameter<float>>(parameterId, async (parameter) =>
             {
-                parameter.WriteAsync(value);
+                await parameter.WriteAsync(value);
             });
         }
 
         /// <inheritdoc/>
-        public void WriteParameter(int parameterId,
-                                   uint value)
+        public async Task WriteParameterAsync(int parameterId,
+                                              uint value,
+                                              CancellationToken cancellationToken = default)
         {
-            ExecuteParameterUpdate<IBaseParameter<uint>>(parameterId, (parameter) =>
+            await ExecuteParameterUpdateAsync<IBaseParameter<uint>>(parameterId, async (parameter) =>
             {
-                parameter.WriteAsync(value);
+                await parameter.WriteAsync(value);
             });
         }
 
         /// <inheritdoc/>
-        public void WriteParameter(int parameterId,
-                                   int value)
+        public async Task WriteParameterAsync(int parameterId,
+                                              int value,
+                                              CancellationToken cancellationToken = default)
         {
-            ExecuteParameterUpdate<IBaseParameter<int>>(parameterId, (parameter) =>
+            await ExecuteParameterUpdateAsync<IBaseParameter<int>>(parameterId, async (parameter) =>
             {
-                parameter.WriteAsync(value);
+                await parameter.WriteAsync(value);
             });
         }
 
-        private void ExecuteParameterUpdate<T>(int parameterId,
-                                               Action<T> parameterUpdate) where T : class, IBaseParameter
+        private async Task ExecuteParameterUpdateAsync<T>(int parameterId,
+                                                          Func<T,Task> parameterUpdateAsync) where T : class, IBaseParameter
         {
             var parameter = _runtimeInstanceHost
                 .Instances
@@ -111,7 +115,7 @@ namespace Shaos.Services.Parameters
                                                         parameter.GetType());
             }
 
-            parameterUpdate(parameter as T);
+            await parameterUpdateAsync(parameter as T);
         }
     }
 }

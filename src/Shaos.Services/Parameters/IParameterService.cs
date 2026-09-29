@@ -34,31 +34,39 @@ namespace Shaos.Services.Parameters
         /// </summary>
         /// <param name="parameterId">The parameter identifier</param>
         /// <param name="value">The value to write</param>
-        void WriteParameter(int parameterId,
-                            bool value);
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task WriteParameterAsync(int parameterId,
+                                 bool value,
+                                 CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Write a parameter value
         /// </summary>
         /// <param name="parameterId">The parameter identifier</param>
         /// <param name="value">The value to write</param>
-        void WriteParameter(int parameterId,
-                            float value);
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task WriteParameterAsync(int parameterId,
+                                 float value,
+                                 CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Write a parameter value
         /// </summary>
         /// <param name="parameterId">The parameter identifier</param>
         /// <param name="value">The value to write</param>
-        void WriteParameter(int parameterId,
-                            uint value);
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task WriteParameterAsync(int parameterId,
+                                 uint value,
+                                 CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Write a parameter value
         /// </summary>
         /// <param name="parameterId">The parameter identifier</param>
         /// <param name="value">The value to write</param>
-        void WriteParameter(int parameterId,
-                            int value);
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task WriteParameterAsync(int parameterId,
+                                 int value,
+                                 CancellationToken cancellationToken = default);
     }
 }

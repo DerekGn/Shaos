@@ -23,9 +23,11 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Parameters;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace Shaos.Controllers
 {
@@ -53,17 +55,13 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Description("The value to write")] bool value,
                                                    CancellationToken cancellationToken = default)
         {
-            //try
-            //{
-                _parameterService.WriteParameter(parameterId,
-                                                 value);
+            return await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(parameterId,
+                                                            value,
+                                                            cancellationToken);
                 return Ok();
-            //}
-            //catch (Exception)
-            //{
-            //    return base.Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
-            //                                              $"A PlugIn with name [{create.Name}] already exists"));
-            //}
+            });
         }
 
         [HttpPut("{parameterId}/float/{value}")]
@@ -79,9 +77,13 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Range(float.MinValue, float.MaxValue), Description("The value to write")] float value,
                                                    CancellationToken cancellationToken = default)
         {
-            _parameterService.WriteParameter(parameterId,
-                                             value);
-            return Ok();
+            return await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(parameterId,
+                                                            value,
+                                                            cancellationToken);
+                return Ok();
+            });
         }
 
         [HttpPut("{parameterId}/int/{value}")]
@@ -97,9 +99,13 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Range(int.MinValue, int.MaxValue), Description("The value to write")] int value,
                                                    CancellationToken cancellationToken = default)
         {
-            _parameterService.WriteParameter(parameterId,
-                                             value);
-            return Ok();
+            return await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(parameterId,
+                                                            value,
+                                                            cancellationToken);
+                return Ok();
+            });
         }
 
         [HttpPut("{parameterId}/uint/{value}")]
@@ -115,9 +121,36 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Range(uint.MinValue, uint.MaxValue), Description("The value to write")] uint value,
                                                    CancellationToken cancellationToken = default)
         {
-            _parameterService.WriteParameter(parameterId,
-                                             value);
-            return Ok();
+            return await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(parameterId,
+                                                            value,
+                                                            cancellationToken);
+                return Ok();
+            });
+        }
+
+        private async Task<ActionResult> ExecuteParameterWriteAsync(Func<Task<ActionResult>> update)
+        {
+            try
+            {
+                return await update();
+            }
+            catch (ParameterInvalidTypeException invalidType)
+            {
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                     $"Parameter [{invalidType.Id}] is invalid type. Expected Type: [{invalidType.Expected}] Actual Type: [{invalidType.ActualType}]"));
+            }
+            catch (ParameterNotFoundException notFound)
+            {
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                     $"Parameter [{notFound.Id}] not found"));
+            }
+            catch (ParameterNotWritableException notWritable)
+            {
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                     $"Parameter [{notWritable.Id}] is not writable"));
+            }
         }
     }
 }
