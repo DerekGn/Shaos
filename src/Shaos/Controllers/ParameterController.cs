@@ -23,6 +23,7 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
+using Shaos.Services.Parameters;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -31,8 +32,12 @@ namespace Shaos.Controllers
     [Route("api/v{version:apiVersion}/parameters")]
     public class ParameterController : CoreController
     {
-        public ParameterController(ILogger<ParameterController> logger) : base(logger)
+        private readonly IParameterService _parameterService;
+
+        public ParameterController(ILogger<ParameterController> logger,
+                                   IParameterService parameterService) : base(logger)
         {
+            _parameterService = parameterService;
         }
 
         [HttpPut("{parameterId}/bool/{value}")]
@@ -48,7 +53,17 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Description("The value to write")] bool value,
                                                    CancellationToken cancellationToken = default)
         {
-            return Ok();
+            //try
+            //{
+                _parameterService.WriteParameter(parameterId,
+                                                 value);
+                return Ok();
+            //}
+            //catch (Exception)
+            //{
+            //    return base.Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
+            //                                              $"A PlugIn with name [{create.Name}] already exists"));
+            //}
         }
 
         [HttpPut("{parameterId}/float/{value}")]
@@ -64,6 +79,8 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Range(float.MinValue, float.MaxValue), Description("The value to write")] float value,
                                                    CancellationToken cancellationToken = default)
         {
+            _parameterService.WriteParameter(parameterId,
+                                             value);
             return Ok();
         }
 
@@ -80,6 +97,8 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Range(int.MinValue, int.MaxValue), Description("The value to write")] int value,
                                                    CancellationToken cancellationToken = default)
         {
+            _parameterService.WriteParameter(parameterId,
+                                             value);
             return Ok();
         }
 
@@ -96,6 +115,8 @@ namespace Shaos.Controllers
                                                    [FromRoute, Required, Range(uint.MinValue, uint.MaxValue), Description("The value to write")] uint value,
                                                    CancellationToken cancellationToken = default)
         {
+            _parameterService.WriteParameter(parameterId,
+                                             value);
             return Ok();
         }
     }
