@@ -3,8 +3,13 @@
 @model FloatParameter
 
 <div id="@Model.Id" class="row">
-    <div class="col-sm-1">@Model.Value</div>
-    <div class="col-sm-2"><input class="form-range" id="@Model.Id" type="range" min="@Model.Min" max="@Model.Max" step="@Model.Step" value="@Model.Value" /></div>
+    <div class="col-sm-1">@(Model.Value)</div>
+    <div class="col-sm-2">
+        <form asp-page-handler="writefloat" method="post">
+            <input class="form-range" id="@(Model.Id)" onchange="this.form.submit()" type="range" min="@Model.Min" max="@Model.Max" step="@Model.Step" value="@Model.Value" />
+            <input type="hidden" name="id" value="@(Model.Id)" />
+        </form>
+    </div>
     <div class="col-sm-3">@Model.UpdatedDate</div>
     <div class="col-sm-3">
         <a asp-page="/Plot" asp-route-Id="@Model.Id" asp-route-deviceId="@Model.DeviceId" class="btn btn-sm btn-primary" title="Plot">

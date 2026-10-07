@@ -43,9 +43,24 @@ namespace Shaos.Pages
 
         public async Task OnGetAsync(CancellationToken cancellationToken = default)
         {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteBooleanAsync(int id, bool value, CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteFloatAsync(int id, bool value, CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        private async Task LoadItemsAsync(CancellationToken cancellationToken)
+        {
             Items = await _repository
-                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
-                                         cancellationToken: cancellationToken);
+                            .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
+                                                     cancellationToken: cancellationToken);
         }
     }
 }
