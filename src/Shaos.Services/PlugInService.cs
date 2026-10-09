@@ -162,8 +162,8 @@ namespace Shaos.Services
                 {
                     _logger.LogPlugInStillRunning(id);
 
-                    throw new PlugInInstanceRunningException(plugInInstanceId,
-                                                             $"PlugIn [{id}] still running");
+                    throw new PlugInInstanceRunningException(id,
+                                                             plugInInstanceId);
                 }
             },
             false,
@@ -197,7 +197,8 @@ namespace Shaos.Services
                 {
                     _logger.LogInstanceRunning(id);
 
-                    throw new PlugInInstanceRunningException(id, $"Instance [{id}] Running");
+                    throw new PlugInInstanceRunningException(id,
+                                                             instance.Id);
                 }
                 else
                 {

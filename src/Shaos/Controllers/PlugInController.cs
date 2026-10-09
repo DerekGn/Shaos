@@ -87,10 +87,9 @@ namespace Shaos.Controllers
 
                 return Ok(plugInId);
             }
-            catch (NameExistsException)
+            catch (NameExistsException ex)
             {
-                return base.Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
-                                                          $"A PlugIn with name [{create.Name}] already exists"));
+                return base.Conflict(ex.ToProblemDetails());
             }
         }
 
@@ -116,13 +115,11 @@ namespace Shaos.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                     ex.Message));
+                return NotFound(ex.ToProblemDetails());
             }
-            catch (NameExistsException)
+            catch (NameExistsException ex)
             {
-                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
-                                                     $"A PlugInInstance with name [{create.Name}] already exists"));
+                return Conflict(ex.ToProblemDetails());
             }
         }
 
@@ -145,8 +142,7 @@ namespace Shaos.Controllers
             }
             catch (PlugInInstanceRunningException ex)
             {
-                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                       ex.Message));
+                return BadRequest(ex.ToProblemDetails());
             }
         }
 
@@ -169,8 +165,7 @@ namespace Shaos.Controllers
             }
             catch (PlugInInstanceRunningException ex)
             {
-                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                       ex.Message));
+                return BadRequest(ex.ToProblemDetails());
             }
         }
 
@@ -268,10 +263,9 @@ namespace Shaos.Controllers
                 Response.Headers.ContentLocation = new StringValues($"/api/v1/plugins/{id}");
                 return NoContent();
             }
-            catch (NameExistsException)
+            catch (NameExistsException ex)
             {
-                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
-                                                     $"A PlugIn with name [{update.Name}] already exists"));
+                return Conflict(ex.ToProblemDetails());
             }
             catch (NotFoundException)
             {
@@ -300,14 +294,13 @@ namespace Shaos.Controllers
 
                 return Accepted();
             }
-            catch (NameExistsException)
+            catch (NameExistsException ex)
             {
-                return Conflict(CreateProblemDetails(HttpStatusCode.Conflict,
-                                                     $"A PlugInInstance with name [{update.Name}] already exists"));
+                return Conflict(ex.ToProblemDetails());
             }
-            catch (NotFoundException)
+            catch (NotFoundException ex)
             {
-                return NotFound();
+                return NotFound(ex.ToProblemDetails());
             }
         }
 
@@ -332,38 +325,32 @@ namespace Shaos.Controllers
 
                 try
                 {
-                    await PlugInService.UploadPlugInPackageAsync(
-                        id,
-                        fileName,
-                        formFile.OpenReadStream(),
-                        cancellationToken);
+                    await PlugInService.UploadPlugInPackageAsync(id,
+                                                                 fileName,
+                                                                 formFile.OpenReadStream(),
+                                                                 cancellationToken);
 
                     return Accepted();
                 }
                 catch (NotFoundException ex)
                 {
-                    return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                         ex.Message));
+                    return NotFound(ex.ToProblemDetails());
                 }
                 catch (PlugInInstanceRunningException ex)
                 {
-                    return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                           $"The PlugIn: [{id}] currently has running instances Id: [{ex.Id}]"));
+                    return BadRequest(ex.ToProblemDetails());
                 }
-                catch (NoValidPlugInAssemblyFoundException)
+                catch (NoValidPlugInAssemblyFoundException ex)
                 {
-                    return BadRequest(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                           $"No valid assembly file found [{fileName}]"));
+                    return BadRequest(ex.ToProblemDetails());
                 }
-                catch (PlugInTypeNotFoundException)
+                catch (PlugInTypeNotFoundException ex)
                 {
-                    return BadRequest(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                           $"No valid [{nameof(IPlugIn)}] implementation found in package file [{fileName}]"));
+                    return BadRequest(ex.ToProblemDetails());
                 }
-                catch (PlugInTypesFoundException)
+                catch (PlugInTypesFoundException ex)
                 {
-                    return BadRequest(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                           $"Multiple [{nameof(IPlugIn)}] implementations found in package file [{fileName}]"));
+                    return BadRequest(ex.ToProblemDetails());
                 }
             }
             else
@@ -381,32 +368,27 @@ namespace Shaos.Controllers
             {
                 _codeFileValidationService.ValidateFile(formFile);
             }
-            catch (FileContentInvalidException)
+            catch (FileContentInvalidException ex)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                      $"File: [{formFile.Name}] invalid content type");
+                problemDetails = ex.ToProblemDetails();
             }
-            catch (FileLengthInvalidException)
+            catch (FileLengthInvalidException ex)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                      $"File: [{formFile.Name}] has invalid length");
+                problemDetails = ex.ToProblemDetails();
             }
-            catch (FileNameEmptyException)
+            catch (FileNameEmptyException ex)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                      "File name is empty");
+                problemDetails = ex.ToProblemDetails();
             }
-            catch (FileNameInvalidExtensionException)
+            catch (FileNameInvalidExtensionException ex)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                      $"File: [{formFile.Name}] has invalid file extension");
+                problemDetails = ex.ToProblemDetails();
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                problemDetails = CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                      $"Exception occurred check the logs");
+                problemDetails = ex.ToProblemDetails();
 
-                Logger.LogError(exception, "Exception occurred");
+                Logger.LogError(ex, "Exception occurred");
             }
 
             return problemDetails == null;

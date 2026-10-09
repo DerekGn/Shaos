@@ -23,9 +23,13 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
+using Shaos.Services.Parameters;
+using System.Net;
 
 namespace Shaos.Pages
 {
@@ -33,10 +37,13 @@ namespace Shaos.Pages
     public class IndexModel : PageModel
     {
         private readonly IRepository _repository;
+        private readonly IParameterService _parameterService;
 
-        public IndexModel(IRepository repository)
+        public IndexModel(IRepository repository,
+                          IParameterService parameterService)
         {
             _repository = repository;
+            _parameterService = parameterService;
         }
 
         public IList<DashboardItem> Items { get; set; } = default!;
@@ -79,6 +86,29 @@ namespace Shaos.Pages
             Items = await _repository
                             .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
                                                      cancellationToken: cancellationToken);
+        }
+
+        private async Task<ActionResult> ExecuteParameterWriteAsync(Func<Task<ActionResult>> update)
+        {
+            try
+            {
+                return await update();
+            }
+            catch (ParameterInvalidTypeException invalidType)
+            {
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                     $"Parameter [{invalidType.Id}] is invalid type. Expected Type: [{invalidType.Expected}] Actual Type: [{invalidType.ActualType}]"));
+            }
+            catch (ParameterNotFoundException notFound)
+            {
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                     $"Parameter [{notFound.Id}] not found"));
+            }
+            catch (ParameterNotWritableException notWritable)
+            {
+                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
+                                                     $"Parameter [{notWritable.Id}] is not writable"));
+            }
         }
     }
 }

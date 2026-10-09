@@ -23,6 +23,7 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
+using Shaos.Extensions;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Parameters;
 using System.ComponentModel;
@@ -136,20 +137,17 @@ namespace Shaos.Controllers
             {
                 return await update();
             }
-            catch (ParameterInvalidTypeException invalidType)
+            catch (ParameterInvalidTypeException ex)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                     $"Parameter [{invalidType.Id}] is invalid type. Expected Type: [{invalidType.Expected}] Actual Type: [{invalidType.ActualType}]"));
+                return NotFound(ex.ToProblemDetails());
             }
-            catch (ParameterNotFoundException notFound)
+            catch (ParameterNotFoundException ex)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                     $"Parameter [{notFound.Id}] not found"));
+                return NotFound(ex.ToProblemDetails());
             }
-            catch (ParameterNotWritableException notWritable)
+            catch (ParameterNotWritableException ex)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                     $"Parameter [{notWritable.Id}] is not writable"));
+                return BadRequest(ex.ToProblemDetails());
             }
         }
     }

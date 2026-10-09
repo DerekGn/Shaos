@@ -33,15 +33,20 @@ namespace Shaos.Services.Exceptions
     /// <remarks>
     /// Create an instance of a <see cref="PlugInInstanceRunningException"/>
     /// </remarks>
-    /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
-    /// <param name="message">An associated message</param>
+    /// <param name="id">The <see cref="PlugIn"/> identifier</param>
+    /// <param name="plugInInstanceId">The identifier of the <see cref="PlugInInstance"/> that is running</param>
     [ExcludeFromCodeCoverage]
     public class PlugInInstanceRunningException(int id,
-                                                string message) : Exception(message)
+                                                int plugInInstanceId) : Exception($"The PlugIn: [{id}] currently has a running instance: [{plugInInstanceId}]")
     {
+        /// <summary>
+        /// The <see cref="PlugIn"/> identifier
+        /// </summary>
+        public int Id { get; } = id;
+
         /// <summary>
         /// The running <see cref="PlugInInstance"/> identifier
         /// </summary>
-        public int Id { get; } = id;
+        public int PlugInInstanceId { get; } = plugInInstanceId;
     }
 }
