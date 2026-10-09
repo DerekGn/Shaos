@@ -46,12 +46,30 @@ namespace Shaos.Pages
             await LoadItemsAsync(cancellationToken);
         }
 
-        public async Task OnPostWriteBooleanAsync(int id, bool value, CancellationToken cancellationToken = default)
+        public async Task OnPostWriteBooleanAsync(int id,
+                                                  bool value,
+                                                  CancellationToken cancellationToken = default)
         {
             await LoadItemsAsync(cancellationToken);
         }
 
-        public async Task OnPostWriteFloatAsync(int id, bool value, CancellationToken cancellationToken = default)
+        public async Task OnPostWriteFloatAsync(int id,
+                                                float value,
+                                                CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteIntegerAsync(int id,
+                                                  int value,
+                                                  CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteUnsignedIntegerAsync(int id,
+                                                          uint value,
+                                                          CancellationToken cancellationToken = default)
         {
             await LoadItemsAsync(cancellationToken);
         }

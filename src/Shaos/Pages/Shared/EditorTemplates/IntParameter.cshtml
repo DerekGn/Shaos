@@ -6,8 +6,8 @@
     <div class="col-sm-1">@Model.Value</div>
     <div class="col-sm-2">
         <form asp-page-handler="writeinteger" method="post">
-            <input class="form-range" id="@(Model.Id)" type="range" min="@Model.Min" max="@Model.Max" step="@Model.Step" value="@Model.Value" />
-            <input type="hidden" name="id" value="@(Model.Id)" />
+            <input class="form-range" id="@(Model.Id)" max="@Model.Max" min="@Model.Min" name="value" step="@Model.Step" type="range" value="@Model.Value" />
+            <input name="id" type="hidden" value="@(Model.Id)" />
         </form>
     </div>
     <div class="col-sm-3">@Model.UpdatedDate</div>
