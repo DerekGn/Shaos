@@ -35,7 +35,8 @@ namespace Shaos.Services.Exceptions
     /// </remarks>
     /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotConfiguredException(int id) : Exception
+    public class PlugInInstanceNotConfiguredException(int id) 
+        : Exception($"[{nameof(PlugInInstance)}] Id: [{id}] is not configured")
     {
         /// <summary>
         /// The identifier of the <see cref="PlugInInstance"/> that was not configured

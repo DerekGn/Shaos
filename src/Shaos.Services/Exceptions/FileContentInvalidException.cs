@@ -40,7 +40,8 @@ namespace Shaos.Services.Exceptions
         /// <param name="fileLength">The file length</param>
         public FileContentInvalidException(string fileName,
                                            string contentType,
-                                           long fileLength)
+                                           long fileLength) 
+            : base($"File content invalid. FileName: [{fileName}] Content Type: [{contentType}] File Length: [{fileLength}]")
         {
             ArgumentNullException.ThrowIfNull(fileName);
             ArgumentNullException.ThrowIfNull(contentType);

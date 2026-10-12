@@ -23,7 +23,6 @@
 */
 
 using Shaos.Sdk;
-using Shaos.Sdk.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -35,14 +34,19 @@ namespace Shaos.Services.Runtime.Exceptions
     /// <remarks>
     /// Create an instance of a <see cref="PlugInTypesFoundException"/>
     /// </remarks>
-    /// <param name="count">The count of <see cref="IPlugIn"/> derived types in the <see cref="Assembly"/></param>
     [ExcludeFromCodeCoverage]
-    public class PlugInTypesFoundException(int count) : Exception
+    public class PlugInTypesFoundException : Exception
     {
+
+        /// <param name="count">The count of <see cref="IPlugIn"/> derived types in the <see cref="Assembly"/></param>
+        public PlugInTypesFoundException(int count) : base("")
+        {
+            Count = count;
+        }
 
         /// <summary>
         /// The number of <see cref="IPlugIn"/> types found in the <see cref="Assembly"/>
         /// </summary>
-        public int Count { get; } = count;
+        public int Count { get; }
     }
 }

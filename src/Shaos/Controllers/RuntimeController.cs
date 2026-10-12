@@ -109,15 +109,13 @@ namespace Shaos.Controllers
             {
                 operation(id);
             }
-            catch (InstanceNotFoundException)
+            catch (InstanceNotFoundException exception)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                       $"Instance [{id}] not found"));
+                return NotFound(exception.ToProblemDetails());
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                       "Id is invalid"));
+                return BadRequest(exception.ToProblemDetails());
             }
 
             return Accepted();
@@ -130,15 +128,13 @@ namespace Shaos.Controllers
             {
                 await operation(id);
             }
-            catch (InstanceNotFoundException)
+            catch (InstanceNotFoundException exception)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                       $"Instance [{id}] not found"));
+                return NotFound(exception.ToProblemDetails());
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException exception)
             {
-                return BadRequest(CreateProblemDetails(HttpStatusCode.BadRequest,
-                                                       "Id is invalid"));
+                return BadRequest(exception.ToProblemDetails());
             }
 
             return Accepted();

@@ -22,24 +22,26 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
 using Shaos.Repository.Models;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Repository.Exceptions
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when an <see cref="BaseEntity"/> derived type 
+    /// An exception that is thrown when a <see cref="PlugIn"/> has no <see cref="PlugInInformation"/> assigned
     /// </summary>
     /// <remarks>
-    /// Create an instance of a <see cref="NameExistsException"/>
+    /// Create an instance of a <see cref="PlugInInformationNotAssignedException"/>
     /// </remarks>
-    /// <param name="name">The existing name</param>
+    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
     [ExcludeFromCodeCoverage]
-    public class NameExistsException(string name) : Exception
+    public class PlugInInformationNotAssignedException(int id) 
+        : Exception($"[{nameof(PlugInInstance)}] Id: [{id}] has no [{nameof(PlugInInformation)}] assigned")
     {
+
         /// <summary>
-        /// The value of the existing name
+        /// The <see cref="PlugIn"/> instance identifier
         /// </summary>
-        public string? Name { get; } = name;
+        public int Id { get; } = id;
     }
 }

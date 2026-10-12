@@ -25,6 +25,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices;
 using Shaos.Repository.Models.Devices.Parameters;
@@ -171,7 +172,7 @@ namespace Shaos.Services.UnitTests
 
             SetupGetPlugInInstanceAsync(CreatePlugInInstance(plugIn));
 
-            var exception = await Assert.ThrowsAsync<PlugInPackageNotAssignedException>(
+            var exception = await Assert.ThrowsAsync<PlugInInformationNotAssignedException>(
                 async () => await _instanceHostService.StartInstanceAsync(1,
                                                                           TestContext.Current.CancellationToken));
 

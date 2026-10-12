@@ -41,6 +41,7 @@ namespace Shaos.Services.Exceptions
         public FileNameInvalidExtensionException(string fileName,
                                                  string contentType,
                                                  long fileLength)
+            : base($"File extension invalid. FileName: [{fileName}] Content Type: [{contentType}] File Length: [{fileLength}]")
         {
             ArgumentNullException.ThrowIfNull(fileName);
             ArgumentNullException.ThrowIfNull(contentType);

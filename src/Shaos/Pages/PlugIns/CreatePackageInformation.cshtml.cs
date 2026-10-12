@@ -50,7 +50,7 @@ namespace Shaos.Pages.PlugIns
                                                       plugInAssemblyFile,
                                                       cancellationToken);
             }
-            catch (NameExistsException ex)
+            catch (PlugInNameExistsException ex)
             {
                 ModelState.AddModelError(string.Empty,
                                          $"PlugIn Name: [{ex.Name}] already exists");

@@ -46,17 +46,5 @@ namespace Shaos.Controllers
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
-        internal static ProblemDetails CreateProblemDetails(HttpStatusCode statusCode,
-                                                            string details)
-        {
-            return new ProblemDetails()
-            {
-                Title = statusCode.ToString(),
-                Detail = details,
-                Status = (int?)statusCode,
-                Type = statusCode.MapToType()
-            };
-        }
     }
 }
