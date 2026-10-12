@@ -269,7 +269,7 @@ namespace Shaos.Repository
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
             ArgumentException.ThrowIfNullOrWhiteSpace(description);
 
-            var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new NotFoundException(id);
+            var plugIn = await _context.PlugIns.FirstAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInNotFoundException(id);
 
             return await HandleDuplicatePlugInNameAsync(name, async () =>
             {
@@ -291,7 +291,7 @@ namespace Shaos.Repository
         {
             if (enabled.HasValue && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(description))
             {
-                var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new NotFoundException(id);
+                var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
                 await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
                 {
@@ -361,7 +361,7 @@ namespace Shaos.Repository
                     _logger.LogDuplicatePlugInInstanceName(name,
                                                            exception);
 
-                    throw new NameExistsException(name);
+                    throw new PlugInInstanceNameExistsException(name);
                 }
 
                 throw;
@@ -382,7 +382,7 @@ namespace Shaos.Repository
                     _logger.LogDuplicatePlugInName(name,
                                                    exception);
 
-                    throw new NameExistsException(name);
+                    throw new PlugInNameExistsException(name);
                 }
 
                 throw;

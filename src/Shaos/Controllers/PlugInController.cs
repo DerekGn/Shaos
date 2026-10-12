@@ -87,9 +87,9 @@ namespace Shaos.Controllers
 
                 return Ok(plugInId);
             }
-            catch (NameExistsException ex)
+            catch (PlugInNameExistsException exception)
             {
-                return base.Conflict(ex.ToProblemDetails());
+                return base.Conflict(exception.ToProblemDetails());
             }
         }
 
@@ -113,13 +113,13 @@ namespace Shaos.Controllers
 
                 return Ok(plugInId);
             }
-            catch (NotFoundException ex)
+            catch (PlugInNotFoundException exception)
             {
-                return NotFound(ex.ToProblemDetails());
+                return NotFound(exception.ToProblemDetails());
             }
-            catch (NameExistsException ex)
+            catch (PlugInNameExistsException exception)
             {
-                return Conflict(ex.ToProblemDetails());
+                return Conflict(exception.ToProblemDetails());
             }
         }
 
@@ -136,13 +136,14 @@ namespace Shaos.Controllers
         {
             try
             {
-                await PlugInService.DeletePlugInAsync(id, cancellationToken);
+                await PlugInService.DeletePlugInAsync(id,
+                                                      cancellationToken);
 
                 return Accepted();
             }
-            catch (PlugInInstanceRunningException ex)
+            catch (PlugInInstanceRunningException exception)
             {
-                return BadRequest(ex.ToProblemDetails());
+                return BadRequest(exception.ToProblemDetails());
             }
         }
 
@@ -159,13 +160,14 @@ namespace Shaos.Controllers
         {
             try
             {
-                await PlugInService.DeletePlugInInstanceAsync(id, cancellationToken);
+                await PlugInService.DeletePlugInInstanceAsync(id,
+                                                              cancellationToken);
 
                 return Accepted();
             }
-            catch (PlugInInstanceRunningException ex)
+            catch (PlugInInstanceRunningException exception)
             {
-                return BadRequest(ex.ToProblemDetails());
+                return BadRequest(exception.ToProblemDetails());
             }
         }
 
@@ -232,9 +234,9 @@ namespace Shaos.Controllers
 
                 return Ok();
             }
-            catch (NotFoundException)
+            catch (PlugInInstanceNotFoundException exception)
             {
-                return NotFound();
+                return NotFound(exception.ToProblemDetails());
             }
         }
 
@@ -263,13 +265,13 @@ namespace Shaos.Controllers
                 Response.Headers.ContentLocation = new StringValues($"/api/v1/plugins/{id}");
                 return NoContent();
             }
-            catch (NameExistsException ex)
+            catch (PlugInNameExistsException exception)
             {
-                return Conflict(ex.ToProblemDetails());
+                return Conflict(exception.ToProblemDetails());
             }
-            catch (NotFoundException)
+            catch (PlugInNotFoundException exception)
             {
-                return NotFound();
+                return NotFound(exception.ToProblemDetails());
             }
         }
 
@@ -294,13 +296,13 @@ namespace Shaos.Controllers
 
                 return Accepted();
             }
-            catch (NameExistsException ex)
+            catch (PlugInInstanceNameExistsException exception)
             {
-                return Conflict(ex.ToProblemDetails());
+                return Conflict(exception.ToProblemDetails());
             }
-            catch (NotFoundException ex)
+            catch (PlugInNotFoundException exception)
             {
-                return NotFound(ex.ToProblemDetails());
+                return NotFound(exception.ToProblemDetails());
             }
         }
 
@@ -332,25 +334,25 @@ namespace Shaos.Controllers
 
                     return Accepted();
                 }
-                catch (NotFoundException ex)
+                catch (PlugInNotFoundException exception)
                 {
-                    return NotFound(ex.ToProblemDetails());
+                    return NotFound(exception.ToProblemDetails());
                 }
-                catch (PlugInInstanceRunningException ex)
+                catch (PlugInInstanceRunningException exception)
                 {
-                    return BadRequest(ex.ToProblemDetails());
+                    return BadRequest(exception.ToProblemDetails());
                 }
-                catch (NoValidPlugInAssemblyFoundException ex)
+                catch (NoValidPlugInAssemblyFoundException exception)
                 {
-                    return BadRequest(ex.ToProblemDetails());
+                    return BadRequest(exception.ToProblemDetails());
                 }
-                catch (PlugInTypeNotFoundException ex)
+                catch (PlugInTypeNotFoundException exception)
                 {
-                    return BadRequest(ex.ToProblemDetails());
+                    return BadRequest(exception.ToProblemDetails());
                 }
-                catch (PlugInTypesFoundException ex)
+                catch (PlugInTypesFoundException exception)
                 {
-                    return BadRequest(ex.ToProblemDetails());
+                    return BadRequest(exception.ToProblemDetails());
                 }
             }
             else
@@ -368,25 +370,25 @@ namespace Shaos.Controllers
             {
                 _codeFileValidationService.ValidateFile(formFile);
             }
-            catch (FileContentInvalidException ex)
+            catch (FileContentInvalidException exception)
             {
-                problemDetails = ex.ToProblemDetails();
+                problemDetails = exception.ToProblemDetails();
             }
-            catch (FileLengthInvalidException ex)
+            catch (FileLengthInvalidException exception)
             {
-                problemDetails = ex.ToProblemDetails();
+                problemDetails = exception.ToProblemDetails();
             }
-            catch (FileNameEmptyException ex)
+            catch (FileNameEmptyException exception)
             {
-                problemDetails = ex.ToProblemDetails();
+                problemDetails = exception.ToProblemDetails();
             }
-            catch (FileNameInvalidExtensionException ex)
+            catch (FileNameInvalidExtensionException exception)
             {
-                problemDetails = ex.ToProblemDetails();
+                problemDetails = exception.ToProblemDetails();
             }
             catch (Exception ex)
             {
-                problemDetails = ex.ToProblemDetails();
+                problemDetails = exception.ToProblemDetails();
 
                 Logger.LogError(ex, "Exception occurred");
             }

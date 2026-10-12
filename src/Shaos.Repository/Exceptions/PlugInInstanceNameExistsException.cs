@@ -22,21 +22,23 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
 using Shaos.Repository.Models;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Repository.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="PlugIn"/> contains a <see cref="PlugInInformation"/> that has no configuration
+    /// An exception that is thrown when a <see cref="PlugInInstance"/> with the same name
     /// </summary>
-    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
-    [ExcludeFromCodeCoverage]
-    public class PlugInPackageHasNoConfigurationException(int id) : Exception
+    /// <remarks>
+    /// Create a new instance of a <see cref="PlugInInstance"/>
+    /// </remarks>
+    /// <param name="name">The duplicate name</param>
+    public class PlugInInstanceNameExistsException(string name) 
+        : Exception($"[{nameof(PlugInInstance)}] with name [{name}] already exists")
     {
         /// <summary>
-        /// The identifier of the <see cref="PlugIn"/>
+        /// The <see cref="PlugInInstance"/> duplicate name
         /// </summary>
-        public int Id { get; } = id;
+        public string Name { get; } = name;
     }
 }

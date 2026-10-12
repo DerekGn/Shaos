@@ -25,20 +25,20 @@
 using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Repository.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when a <see cref="PlugIn"/> has no <see cref="PlugInInformation"/> assigned
+    /// Thrown when a <see cref="PlugIn"/> cannot be found
     /// </summary>
     /// <remarks>
-    /// Create an instance of a <see cref="PlugInPackageNotAssignedException"/>
+    /// Create an instance of a <see cref="PlugInNotFoundException"/>
     /// </remarks>
-    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
+    /// <param name="id">The identifier of the <see cref="PlugIn"/> that was not found</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInPackageNotAssignedException(int id) : Exception
+    public class PlugInNotFoundException(int id) : Exception($"[{nameof(PlugIn)}] [{id}] not found")
     {
         /// <summary>
-        /// The <see cref="PlugIn"/> instance identifier
+        /// The identifier of the <see cref="PlugIn"/> that was not found
         /// </summary>
         public int Id { get; } = id;
     }

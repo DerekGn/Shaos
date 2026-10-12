@@ -32,7 +32,8 @@ namespace Shaos.Services.Exceptions
     /// <param name="name">The property name</param>
     /// <param name="propertyType">The property <see cref="Type"/></param>
     [ExcludeFromCodeCoverage]
-    public class ConfigurationPropertyTypeNotMappedException(string name, Type propertyType) : Exception
+    public class ConfigurationPropertyTypeNotMappedException(string name, Type propertyType)
+        : Exception($"Configuration Property [{name}] Property Type: [{propertyType.Name}]")
     {
         /// <summary>
         /// The property name

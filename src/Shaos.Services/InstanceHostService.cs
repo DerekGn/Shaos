@@ -25,6 +25,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
+using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
 using Shaos.Repository.Models.Devices;
 using Shaos.Sdk;
@@ -120,7 +121,7 @@ namespace Shaos.Services
             {
                 _logger.LogPlugInInstancePackageNotAssigned(id);
 
-                throw new PlugInPackageNotAssignedException(id);
+                throw new PlugInInformationNotAssignedException(id);
             }
 
             if (plugInInformation.HasConfiguration && string.IsNullOrEmpty(plugInInstance.Configuration))

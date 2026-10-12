@@ -34,7 +34,8 @@ namespace Shaos.Services.Exceptions
     /// </remarks>
     /// <param name="name">The name of the property that was not found</param>
     [ExcludeFromCodeCoverage]
-    public class PropertyNotFoundException(string name) : Exception
+    public class PropertyNotFoundException(string name) 
+        : Exception($"Property Name: [{name}] not found")
     {
         /// <summary>
         /// The property name that was not found

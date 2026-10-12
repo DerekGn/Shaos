@@ -33,9 +33,19 @@ namespace Shaos.Services.Exceptions
     /// <remarks>
     /// Create an instance of a <see cref="NoValidPlugInAssemblyFoundException"/>
     /// </remarks>
-    /// <param name="message">An associated message</param>
     [ExcludeFromCodeCoverage]
-    public class NoValidPlugInAssemblyFoundException(string message) : Exception(message)
+    public class NoValidPlugInAssemblyFoundException(string plugInNamePostFix,
+                                                     string packageFileName) 
+        : Exception($"No assembly file ending with [{plugInNamePostFix}] was found in the package [{packageFileName}] files")
     {
+        /// <summary>
+        /// The package file name
+        /// </summary>
+        public string PackageFileName { get; } = packageFileName;
+
+        /// <summary>
+        /// The plugin name post fix
+        /// </summary>
+        public string PlugInNamePostFix { get; } = plugInNamePostFix;
     }
 }

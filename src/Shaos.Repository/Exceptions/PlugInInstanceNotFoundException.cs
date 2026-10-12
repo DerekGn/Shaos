@@ -25,7 +25,7 @@
 using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Repository.Exceptions
 {
     /// <summary>
     /// An exception that is thrown when a <see cref="PlugInInstance"/> is not found
@@ -35,7 +35,7 @@ namespace Shaos.Services.Exceptions
     /// </remarks>
     /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotFoundException(int id) : Exception
+    public class PlugInInstanceNotFoundException(int id) : Exception($"[{nameof(PlugInInstance)}] [{id}] not found")
     {
         /// <summary>
         /// The identifier of the <see cref="PlugInInstance"/> that was not found

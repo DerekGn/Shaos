@@ -25,37 +25,19 @@
 using Shaos.Repository.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Shaos.Repository.Exceptions
+namespace Shaos.Services.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when an <see cref="BaseEntity"/> type cannot be found in the repository
+    /// An exception that is thrown when a <see cref="PlugIn"/> contains a <see cref="PlugInInformation"/> that has no configuration
     /// </summary>
+    /// <param name="id">The identifier of the <see cref="PlugIn"/></param>
     [ExcludeFromCodeCoverage]
-    public class NotFoundException : Exception
+    public class PlugInHasNoConfigurationException(int id) 
+        : Exception($"[{nameof(PlugIn)}] Id: [{id}] has no configuration")
     {
         /// <summary>
-        /// Create and instance of <see cref="NotFoundException"/>
+        /// The identifier of the <see cref="PlugIn"/>
         /// </summary>
-        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
-        public NotFoundException(int id)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Create and instance of <see cref="NotFoundException"/>
-        /// </summary>
-        /// <param name="id">The identifier of the <see cref="BaseEntity"/> that was not found</param>
-        /// <param name="message">An associated message</param>
-        public NotFoundException(int id,
-                                 string message) : base(message)
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// The identifier of the <see cref="BaseEntity"/> that was not found
-        /// </summary>
-        public int Id { get; }
+        public int Id { get; } = id;
     }
 }

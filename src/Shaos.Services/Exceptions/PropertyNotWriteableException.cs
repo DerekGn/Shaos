@@ -34,7 +34,8 @@ namespace Shaos.Services.Exceptions
     /// </remarks>
     /// <param name="name">The name of the property that is not writeable</param>
     [ExcludeFromCodeCoverage]
-    public class PropertyNotWriteableException(string name) : Exception
+    public class PropertyNotWriteableException(string name) 
+        : Exception($"Property Name: [{name}] not found.")
     {
         /// <summary>
         /// The property name that is not writeable

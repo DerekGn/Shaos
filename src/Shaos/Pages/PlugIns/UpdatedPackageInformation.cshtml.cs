@@ -55,7 +55,7 @@ namespace Shaos.Pages.PlugIns
 
                 return RedirectToPage("./Index");
             }
-            catch (NameExistsException ex)
+            catch (PlugInNameExistsException ex)
             {
                 ModelState.AddModelError(string.Empty, $"PlugIn Name: [{ex.Name}] already exists");
 
