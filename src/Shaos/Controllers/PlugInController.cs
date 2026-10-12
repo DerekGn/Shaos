@@ -386,11 +386,11 @@ namespace Shaos.Controllers
             {
                 problemDetails = exception.ToProblemDetails();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 problemDetails = exception.ToProblemDetails();
 
-                Logger.LogError(ex, "Exception occurred");
+                Logger.LogError(exception, "Exception occurred");
             }
 
             return problemDetails == null;

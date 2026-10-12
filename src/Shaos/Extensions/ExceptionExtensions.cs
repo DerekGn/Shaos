@@ -32,6 +32,12 @@ namespace Shaos.Extensions
 {
     public static class ExceptionExtensions
     {
+        public static ProblemDetails ToProblemDetails(this ParameterNotFoundException exception)
+        {
+            return CreateProblemDetails(exception,
+                                        HttpStatusCode.NotFound);
+        }
+
         public static ProblemDetails ToProblemDetails(this PlugInInstanceRunningException exception)
         {
             return CreateProblemDetails(exception,
@@ -75,6 +81,12 @@ namespace Shaos.Extensions
         }
 
         public static ProblemDetails ToProblemDetails(this FileNameInvalidExtensionException exception)
+        {
+            return CreateProblemDetails(exception,
+                                        HttpStatusCode.BadRequest);
+        }
+
+        public static ProblemDetails ToProblemDetails(this ParameterInvalidTypeException exception)
         {
             return CreateProblemDetails(exception,
                                         HttpStatusCode.BadRequest);

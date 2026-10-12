@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Extensions;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
@@ -94,20 +95,17 @@ namespace Shaos.Pages
             {
                 return await update();
             }
-            catch (ParameterInvalidTypeException invalidType)
+            catch (ParameterInvalidTypeException exception)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                     $"Parameter [{invalidType.Id}] is invalid type. Expected Type: [{invalidType.Expected}] Actual Type: [{invalidType.ActualType}]"));
+                return BadRequest(exception.ToProblemDetails());
             }
-            catch (ParameterNotFoundException notFound)
+            catch (ParameterNotFoundException exception)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                     $"Parameter [{notFound.Id}] not found"));
+                return NotFound(exception.ToProblemDetails());
             }
-            catch (ParameterNotWritableException notWritable)
+            catch (ParameterNotWritableException exception)
             {
-                return NotFound(CreateProblemDetails(HttpStatusCode.NotFound,
-                                                     $"Parameter [{notWritable.Id}] is not writable"));
+                return BadRequest(exception.ToProblemDetails());
             }
         }
     }
