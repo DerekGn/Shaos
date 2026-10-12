@@ -36,7 +36,7 @@ namespace Shaos.Services.Exceptions
     /// <param name="ids">The set of <see cref="PlugInInstance"/> identifiers</param>
     [ExcludeFromCodeCoverage]
     public class PlugInInstancesRunningException(IList<int> ids) 
-        : Exception($"[{nameof(PlugInInstance)}] running [{string.Join(",", ids)}]")
+        : Exception($"Multiple [{nameof(PlugInInstance)}] running Ids: [{string.Join(",", ids)}]")
     {
         /// <summary>
         /// The running <see cref="PlugInInstance"/> identifiers

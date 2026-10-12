@@ -457,7 +457,7 @@ namespace Shaos.Services.UnitTests
                                               TestContext.Current.CancellationToken));
 
             Assert.Equal(
-                "Instances are Running",
+                "Multiple [PlugInInstance] running Ids: [1]",
                 exception.Message);
 
             _mockFileStoreService
