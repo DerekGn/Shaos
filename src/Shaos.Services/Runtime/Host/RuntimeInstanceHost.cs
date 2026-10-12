@@ -237,7 +237,7 @@ namespace Shaos.Services.Runtime.Host
             }
 
             InstanceStateChanged?.Invoke(this,
-                    new RuntimeInstanceStateEventArgs(instance.Id, instance.State));
+                                         new RuntimeInstanceStateEventArgs(instance.Id, instance.State));
         }
 
         private async Task ExecutePlugInMethod(RuntimeInstance instance,

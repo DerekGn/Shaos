@@ -1,4 +1,6 @@
-﻿const eventSource = new EventSource('/api/v1/log-events');
+﻿"use strict";
+
+const eventSource = new EventSource('/api/v1/log-events');
 const trace = document.getElementById('trace');
 const maxTraceLines = 100;
 
@@ -13,9 +15,9 @@ window.onload = function () {
 
             if (traceLines.length > maxTraceLines) {
 
-                var count = 0;
+                let count = 0;
 
-                for (var i = 0; i < newTraceLines.length; i++) {
+                for (let i = 0; i < newTraceLines.length; i++) {
                     count += traceLines[i].length + 1;
                 }
 

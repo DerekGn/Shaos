@@ -24,8 +24,6 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Shaos.Extensions;
-using System.Net;
 
 namespace Shaos.Controllers
 {

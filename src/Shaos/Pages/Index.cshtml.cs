@@ -23,9 +23,14 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Shaos.Extensions;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
+using Shaos.Services.Parameters;
+using System.Net;
 
 namespace Shaos.Pages
 {
@@ -33,19 +38,75 @@ namespace Shaos.Pages
     public class IndexModel : PageModel
     {
         private readonly IRepository _repository;
+        private readonly IParameterService _parameterService;
 
-        public IndexModel(IRepository repository)
+        public IndexModel(IRepository repository,
+                          IParameterService parameterService)
         {
             _repository = repository;
+            _parameterService = parameterService;
         }
 
         public IList<DashboardItem> Items { get; set; } = default!;
 
         public async Task OnGetAsync(CancellationToken cancellationToken = default)
         {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteBooleanAsync(int id,
+                                                  bool value,
+                                                  CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteFloatAsync(int id,
+                                                float value,
+                                                CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteIntegerAsync(int id,
+                                                  int value,
+                                                  CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteUnsignedIntegerAsync(int id,
+                                                          uint value,
+                                                          CancellationToken cancellationToken = default)
+        {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        private async Task LoadItemsAsync(CancellationToken cancellationToken)
+        {
             Items = await _repository
-                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
-                                         cancellationToken: cancellationToken);
+                            .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
+                                                     cancellationToken: cancellationToken);
+        }
+
+        private async Task<ActionResult> ExecuteParameterWriteAsync(Func<Task<ActionResult>> update)
+        {
+            try
+            {
+                return await update();
+            }
+            catch (ParameterInvalidTypeException exception)
+            {
+                return BadRequest(exception.ToProblemDetails());
+            }
+            catch (ParameterNotFoundException exception)
+            {
+                return NotFound(exception.ToProblemDetails());
+            }
+            catch (ParameterNotWritableException exception)
+            {
+                return BadRequest(exception.ToProblemDetails());
+            }
         }
     }
 }

@@ -201,7 +201,7 @@ namespace Shaos.Services.Runtime.Validation
         }
 
         private PlugInTypeInformation ValidatePlugInAssembly(string assemblyFile,
-                                                                             out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
+                                                             out UnloadingWeakReference<IRuntimeAssemblyLoadContext> unloadingWeakReference)
         {
             var runtimeAssemblyLoadContext = _runtimeAssemblyLoadContextFactory.Create(assemblyFile);
             unloadingWeakReference = new UnloadingWeakReference<IRuntimeAssemblyLoadContext>(runtimeAssemblyLoadContext);
@@ -217,7 +217,7 @@ namespace Shaos.Services.Runtime.Validation
                 if (count == 0)
                 {
                     _logger.LogNoPlugInTypeFound(assembly.FullName);
-                    throw new PlugInTypeNotFoundException();
+                    throw new PlugInTypeNotFoundException(assembly.FullName);
                 }
 
                 if (count > 1)
