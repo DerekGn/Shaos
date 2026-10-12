@@ -22,20 +22,25 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
+using Shaos.Repository.Models;
 
-namespace Shaos.Services.Exceptions
+namespace Shaos.Repository.Exceptions
 {
     /// <summary>
-    /// An exception that is thrown when the <see cref="IPlugInBuilder"/> cannot construct a <see cref="IPlugIn"/> instance
+    /// An exception that is thrown when an <see cref="PlugIn"/> with the same name exists
     /// </summary>
     /// <remarks>
-    /// Create an instance of a <see cref="PlugInBuilderException"/>
+    /// Create an instance of a <see cref="PlugInNameExistsException"/>
     /// </remarks>
-    /// <param name="message">An associated message</param>
+    /// <param name="name">The existing name</param>
     [ExcludeFromCodeCoverage]
-    public class PlugInBuilderException(string message) : Exception(message)
+    public class PlugInNameExistsException(string name) 
+        : Exception($"[{nameof(PlugIn)}] with name [{name}] already exists")
     {
+        /// <summary>
+        /// The value of the existing name
+        /// </summary>
+        public string? Name { get; } = name;
     }
 }

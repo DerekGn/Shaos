@@ -131,7 +131,7 @@ namespace Shaos.Services
                 }
                 else
                 {
-                    throw new PlugInPackageNotAssignedException(id);
+                    throw new PlugInInformationNotAssignedException(id);
                 }
             },
             false,
@@ -162,8 +162,7 @@ namespace Shaos.Services
                 {
                     _logger.LogPlugInStillRunning(id);
 
-                    throw new PlugInInstanceRunningException(plugInInstanceId,
-                                                             $"PlugIn [{id}] still running");
+                    throw new PlugInInstanceRunningException(plugInInstanceId);
                 }
             },
             false,
@@ -197,7 +196,7 @@ namespace Shaos.Services
                 {
                     _logger.LogInstanceRunning(id);
 
-                    throw new PlugInInstanceRunningException(id, $"Instance [{id}] Running");
+                    throw new PlugInInstanceRunningException(id);
                 }
                 else
                 {
@@ -231,8 +230,8 @@ namespace Shaos.Services
             {
                 _logger.LogNoAssemblyFound(PlugInNamePostFix, packageFileName);
 
-                throw new NoValidPlugInAssemblyFoundException(
-                    $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+                throw new NoValidPlugInAssemblyFoundException(PlugInNamePostFix,
+                                                              packageFileName);
             }
 
             return new PackageDetails()
@@ -261,13 +260,13 @@ namespace Shaos.Services
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                                 includeProperties: [nameof(PlugIn), $"{nameof(PlugIn)}.{nameof(PlugInInformation)}"],
-                                                                                cancellationToken: cancellationToken) ?? throw new NotFoundException(id);
+                                                                                cancellationToken: cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
-            var plugInInformation = (plugInInstance.PlugIn?.PlugInInformation) ?? throw new PlugInPackageNotAssignedException(id);
+            var plugInInformation = (plugInInstance.PlugIn?.PlugInInformation) ?? throw new PlugInInformationNotAssignedException(id);
 
             if (!plugInInformation.HasConfiguration)
             {
-                throw new PlugInPackageHasNoConfigurationException(plugInInstance.PlugIn.Id);
+                throw new PlugInHasNoConfigurationException(plugInInstance.PlugIn.Id);
             }
 
             return _plugInConfigurationBuilder.LoadConfiguration(plugInInformation.Directory,
@@ -282,7 +281,7 @@ namespace Shaos.Services
         {
             var plugInInstance = await _repository.GetByIdAsync<PlugInInstance>(id,
                                                                                 false,
-                                                                                cancellationToken: cancellationToken) ?? throw new NotFoundException(id);
+                                                                                cancellationToken: cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
             plugInInstance.Enabled = enable;
 
@@ -309,8 +308,7 @@ namespace Shaos.Services
                 {
                     _logger.LogRunningPlugInFound(ids);
 
-                    throw new PlugInInstancesRunningException(ids,
-                                                              "Instances are Running");
+                    throw new PlugInInstancesRunningException(ids);
                 }
 
                 var plugInTypeInformation = _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory,
@@ -358,7 +356,7 @@ namespace Shaos.Services
                 {
                     _logger.LogRunningPlugInFound(ids);
 
-                    throw new PlugInInstancesRunningException(ids, "Instances are Running");
+                    throw new PlugInInstancesRunningException(ids);
                 }
 
                 _logger.LogWrittingPlugInPackageFile(packageFileName);
@@ -370,15 +368,16 @@ namespace Shaos.Services
 
                 var plugInFile = _fileStoreService
                     .ExtractPackage(plugIn.Id, packageFileName)
-                    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix, StringComparison.OrdinalIgnoreCase));
+                    .FirstOrDefault(_ => _.EndsWith(PlugInNamePostFix,
+                                                    StringComparison.OrdinalIgnoreCase));
 
                 if (plugInFile == null)
                 {
                     _logger.NoAssemblyFilePackageFileFound(PlugInNamePostFix,
                                                    packageFileName);
 
-                    throw new NoValidPlugInAssemblyFoundException(
-                        $"No assembly file ending with [{PlugInNamePostFix}] was found in the package [{packageFileName}] files");
+                    throw new NoValidPlugInAssemblyFoundException(PlugInNamePostFix,
+                                                                  packageFileName);
                 }
 
                 await CreateOrUpdatePlugInInformationAsync(plugIn,
@@ -495,7 +494,7 @@ namespace Shaos.Services
             {
                 _logger.LogPlugInNotFound(id);
 
-                throw new NotFoundException(id, $"PlugIn: [{id}] not found");
+                throw new PlugInNotFoundException(id);
             }
         }
 

@@ -27,8 +27,9 @@ namespace Shaos.Services.Exceptions
     /// <summary>
     /// An exception that is thrown when an event type was not mapped
     /// </summary>
-    /// <param name="name"></param>
-    public class UnmappedEventTypeNameException(string name) : Exception
+    /// <param name="name">The event name</param>
+    public class UnmappedEventTypeNameException(string name) 
+        : Exception($"Unmapped event type: [{name}]")
     {
         /// <summary>
         /// The unmapped event type name
