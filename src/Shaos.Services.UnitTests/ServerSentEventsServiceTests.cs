@@ -64,11 +64,16 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestBroadcastApplicationEventAsync()
         {
-            _applicationEvents.Add(new EventQueue(1));
+            var queue = new EventQueue(1);
+
+            _applicationEvents.Add(queue);
 
             await _service.BroadcastApplicationEventAsync(new ApplicationEvent(),
                                                           TestContext.Current.CancellationToken);
 
+            Assert.Equal(1, queue.Count);
+
+            _applicationEvents.Clear();
         }
     }
 }
