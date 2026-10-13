@@ -24,15 +24,29 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
+using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Factories;
+using Xunit;
 
 namespace Shaos.Services.UnitTests
 {
     public class ServerSentEventsServiceTests : BaseServiceTests
     {
+        private readonly Mock<IEventQueueFactory> _mockEventQueueFactory;
         private readonly ServerSentEventsService _service;
+        private readonly List<IEventQueue> _applicationEvents;
+        private readonly List<IEventQueue> _logEvents;
+        private readonly List<IEventQueue> _parameterEvents;
 
         public ServerSentEventsServiceTests()
         {
+            _mockEventQueueFactory = new Mock<IEventQueueFactory>();
+            _applicationEvents = new List<IEventQueue>();
+            _logEvents = new List<IEventQueue>();
+            _parameterEvents = new List<IEventQueue>();
+
             var optionsInstance = new ServerSentEventOptions
             {
             };
@@ -40,7 +54,21 @@ namespace Shaos.Services.UnitTests
             var serverSentEventOptions = Options.Create(optionsInstance);
 
             _service = new ServerSentEventsService(LoggerFactory!.CreateLogger<ServerSentEventsService>(),
-                                                   serverSentEventOptions);
+                                                   serverSentEventOptions,
+                                                   _mockEventQueueFactory.Object,
+                                                   _applicationEvents,
+                                                   _logEvents,
+                                                   _parameterEvents);
+        }
+
+        [Fact]
+        public async Task TestBroadcastApplicationEventAsync()
+        {
+            _applicationEvents.Add(new EventQueue(1));
+
+            await _service.BroadcastApplicationEventAsync(new ApplicationEvent(),
+                                                          TestContext.Current.CancellationToken);
+
         }
     }
 }

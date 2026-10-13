@@ -29,6 +29,7 @@ using Shaos.Services.Eventing.Application;
 using Shaos.Services.Eventing.Logging;
 using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
+using Shaos.Services.Factories;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
 
@@ -39,10 +40,12 @@ namespace Shaos.Services
     /// </summary>
     public class ServerSentEventsService : IServerSentEventsService
     {
-        private readonly List<IEventQueue> _eventQueues;
-        private readonly List<IEventQueue> _logEventQueues;
         private readonly ILogger<ServerSentEventsService> _logger;
         private readonly IOptions<ServerSentEventOptions> _options;
+        private readonly IEventQueueFactory _eventQueueFactory;
+        private readonly List<IEventQueue> _applicationEventQueues;
+        private readonly List<IEventQueue> _logEventQueues;
+        private readonly List<IEventQueue> _parameterEventQueues;
         private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
@@ -50,14 +53,56 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="logger">The logger instance for this service</param>
         /// <param name="options">The options instance for this service</param>
-        public ServerSentEventsService(ILogger<ServerSentEventsService> logger,
-                                       IOptions<ServerSentEventOptions> options)
+        /// <param name="eventQueueFactory">The <see cref="IEventQueue"/> factory instance</param>
+        /// <param name="applicationEvents">The application event queue list</param>
+        /// <param name="logEvents">The logger event queue list</param>
+        /// <param name="parameterEvents">The parameter event queue list</param>
+        internal ServerSentEventsService(ILogger<ServerSentEventsService> logger,
+                                          IOptions<ServerSentEventOptions> options,
+                                          IEventQueueFactory eventQueueFactory,
+                                          List<IEventQueue> applicationEvents,
+                                          List<IEventQueue> logEvents,
+                                          List<IEventQueue> parameterEvents)
         {
             _logger = logger;
             _options = options;
+            _eventQueueFactory = eventQueueFactory;
             _semaphore = new SemaphoreSlim(1);
-            _eventQueues = new List<IEventQueue>();
+            _applicationEventQueues = applicationEvents;
+            _logEventQueues = logEvents;
+            _parameterEventQueues = parameterEvents;
+        }
+
+        /// <summary>
+        /// Create an instance of a <see cref="ServerSentEventsService"/>
+        /// </summary>
+        /// <param name="logger">The logger instance for this service</param>
+        /// <param name="options">The options instance for this service</param>
+        /// <param name="eventQueueFactory">The <see cref="IEventQueue"/> factory instance</param>
+        public ServerSentEventsService(ILogger<ServerSentEventsService> logger,
+                                       IOptions<ServerSentEventOptions> options,
+                                       IEventQueueFactory eventQueueFactory)
+        {
+            _logger = logger;
+            _options = options;
+            _eventQueueFactory = eventQueueFactory;
+            _semaphore = new SemaphoreSlim(1);
+            _applicationEventQueues = new List<IEventQueue>();
             _logEventQueues = new List<IEventQueue>();
+            _parameterEventQueues = new List<IEventQueue>();
+        }
+
+        /// <inheritdoc/>
+        public async Task BroadcastApplicationEventAsync(ApplicationEvent applicationEvent,
+                                                         CancellationToken cancellationToken = default)
+        {
+            await AccessClientQueuesAsync(() =>
+            {
+                foreach (var queue in _applicationEventQueues)
+                {
+                    queue.EnqueueAsync(applicationEvent);
+                }
+            });
         }
 
         /// <inheritdoc/>
@@ -66,7 +111,7 @@ namespace Shaos.Services
         {
             await AccessClientQueuesAsync(() =>
             {
-                foreach (var queue in _eventQueues)
+                foreach (var queue in _parameterEventQueues)
                 {
                     queue.EnqueueAsync(baseEvent);
                 }
@@ -89,7 +134,12 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return StreamEventsAsync<ApplicationEvent>(
+                _applicationEventQueues,
+                (applicationEvent) =>
+                {
+                    return true;
+                }, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -107,7 +157,7 @@ namespace Shaos.Services
         public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default)
         {
             return StreamEventsAsync<BaseParameterUpdatedEvent>(
-                _eventQueues,
+                _parameterEventQueues,
                 (parameterUpdateEvent) =>
                 {
                     return true;
@@ -119,7 +169,7 @@ namespace Shaos.Services
                                                                                                    CancellationToken cancellationToken = default)
         {
             return StreamEventsAsync<BaseParameterUpdatedEvent>(
-                _eventQueues,
+                _parameterEventQueues,
                 (parameterUpdateEvent) =>
                 {
                     return parameterUpdateEvent.Id == id;
@@ -144,11 +194,11 @@ namespace Shaos.Services
                                                                         Func<T, bool> filterEvent,
                                                                         [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            EventQueue? eventQueue = null;
+            IEventQueue? eventQueue = null;
 
             try
             {
-                eventQueue = new EventQueue(_options.Value.EventQueueCapacity);
+                eventQueue = _eventQueueFactory.CreateEventQueue(_options.Value.EventQueueCapacity);
 
                 await AccessClientQueuesAsync(async () =>
                 {

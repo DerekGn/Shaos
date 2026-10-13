@@ -44,6 +44,14 @@ namespace Shaos.Services
                                  CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Broadcast an <see cref="ApplicationEvent"/> to subscribed event listeners
+        /// </summary>
+        /// <param name="applicationEvent">The <see cref="ApplicationEvent"/> to broadcast</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task BroadcastApplicationEventAsync(ApplicationEvent applicationEvent,
+                                            CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Broadcast a log event
         /// </summary>
         /// <param name="log">The log event to broadcast</param>

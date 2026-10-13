@@ -25,7 +25,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using OpenTelemetry.Logs;
 using Serilog;
 using Shaos.Data;
 using Shaos.Filters;
@@ -34,6 +33,8 @@ using Shaos.Options;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.Eventing;
+using Shaos.Services.Extensions;
+using Shaos.Services.Factories;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
 using Shaos.Services.Processing;
@@ -159,6 +160,7 @@ namespace Shaos
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<IEventQueue>(InitEventQueue(builder.Configuration));
+            builder.Services.AddSingleton<IEventQueueFactory, EventQueueFactory>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
             builder.Services.AddSingleton<ILoggerItemQueue>(InitLogItemEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
