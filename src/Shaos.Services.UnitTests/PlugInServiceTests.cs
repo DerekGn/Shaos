@@ -26,13 +26,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Shaos.Repository.Exceptions;
 using Shaos.Repository.Models;
-using Shaos.Sdk;
 using Shaos.Services.Exceptions;
 using Shaos.Services.IO;
 using Shaos.Services.Runtime.Host;
 using Shaos.Services.Runtime.Validation;
-using Shaos.Testing.Shared.Extensions;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace Shaos.Services.UnitTests
