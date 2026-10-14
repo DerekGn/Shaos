@@ -56,8 +56,8 @@ namespace Shaos.Hosting
 
                 if (baseEvent is not null)
                 {
-                    await _serverSentEventsService.BroadcastEventAsync(baseEvent,
-                                                                       stoppingToken);
+                    await _serverSentEventsService.BroadcastParameterUpdatedEventAsync(baseEvent,
+                                                                                       stoppingToken);
                 }
             }
         }

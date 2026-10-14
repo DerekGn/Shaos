@@ -29,7 +29,7 @@ using Shaos.Services.Eventing.Application;
 using Shaos.Services.Eventing.Logging;
 using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
-using Shaos.Services.Factories;
+using Shaos.Services.Eventing.Factories;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
 
@@ -42,10 +42,10 @@ namespace Shaos.Services
     {
         private readonly ILogger<ServerSentEventsService> _logger;
         private readonly IOptions<ServerSentEventOptions> _options;
-        private readonly IEventQueueFactory _eventQueueFactory;
-        private readonly List<IEventQueue> _applicationEventQueues;
-        private readonly List<IEventQueue> _logEventQueues;
-        private readonly List<IEventQueue> _parameterEventQueues;
+        private readonly IQueueFactory _queueFactory;
+        private readonly List<IQueue<ApplicationEvent>> _applicationEventQueues;
+        private readonly List<IQueue<LogCreatedEvent>> _logEventQueues;
+        private readonly List<IQueue<BaseParameterUpdatedEvent>> _parameterEventQueues;
         private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public async Task BroadcastEventAsync(BaseEvent baseEvent,
-                                              CancellationToken cancellationToken = default)
+        public async Task BroadcastParameterUpdatedEventAsync(BaseParameterUpdatedEvent baseEvent,
+                                                              CancellationToken cancellationToken = default)
         {
             await AccessClientQueuesAsync(() =>
             {

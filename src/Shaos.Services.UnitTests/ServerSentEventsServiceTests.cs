@@ -27,6 +27,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Shaos.Services.Eventing;
 using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Factories;
 using Xunit;
 
@@ -74,6 +75,16 @@ namespace Shaos.Services.UnitTests
             Assert.Equal(1, queue.Count);
 
             _applicationEvents.Clear();
+        }
+
+        public async Task Test()
+        {
+            await _service.BroadcastParameterUpdatedEventAsync(new ParameterUpdatedEvent<bool>()
+            {
+                Value = true,
+                CanWrite = true,
+                Timestamp = DateTime.UtcNow
+            });
         }
     }
 }

@@ -23,35 +23,36 @@
 */
 
 using System.Threading.Channels;
+using Shaos.Services.Eventing.Parameter;
 
 namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// The event queue
+    /// Defines a queue of <typeparamref name="T"/>
     /// </summary>
-    public class EventQueue : IEventQueue
+    public class Queue<T> : IQueue<T>
     {
-        private readonly Channel<BaseEvent> _queue;
+        private readonly Channel<T> _queue;
 
         /// <summary>
-        /// Create an instance of a <see cref="EventQueue"/>
+        /// Create an instance of a <typeparamref name="T"/>
         /// </summary>
-        /// <param name="capacity">The event queue capacity</param>
-        public EventQueue(int capacity)
+        /// <param name="capacity">The queue capacity</param>
+        public Queue(int capacity)
         {
             BoundedChannelOptions options = new(capacity)
             {
                 FullMode = BoundedChannelFullMode.Wait
             };
 
-            _queue = Channel.CreateBounded<BaseEvent>(options);
+            _queue = Channel.CreateBounded<T>(options);
         }
 
         /// <inheritdoc/>
         public int Count => _queue.Reader.Count;
 
         /// <inheritdoc/>
-        public async Task<BaseEvent?> DequeueAsync(CancellationToken cancellationToken = default)
+        public async Task<T?> DequeueAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -59,12 +60,12 @@ namespace Shaos.Services.Eventing
             }
             catch (OperationCanceledException)
             {
-                return null;
+                return default(T);
             }
         }
 
         /// <inheritdoc/>
-        public async Task EnqueueAsync(BaseEvent @event,
+        public async Task EnqueueAsync(T @event,
                                        CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(@event);

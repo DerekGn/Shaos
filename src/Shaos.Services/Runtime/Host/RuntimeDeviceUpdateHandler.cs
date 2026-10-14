@@ -49,7 +49,7 @@ namespace Shaos.Services.Runtime.Host
     /// </summary>
     public class RuntimeDeviceUpdateHandler : IRuntimeDeviceUpdateHandler
     {
-        private readonly IEventQueue _eventQueue;
+        private readonly IQueue _eventQueue;
         private readonly ILogger<RuntimeDeviceUpdateHandler> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IWorkItemQueue _workItemQueue;
