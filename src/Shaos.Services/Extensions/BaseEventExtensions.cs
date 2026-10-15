@@ -23,6 +23,7 @@
 */
 
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
 using Shaos.Services.Eventing.Logging;
 using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Exceptions;
@@ -37,6 +38,7 @@ namespace Shaos.Services.Extensions
 
             return type switch
             {
+                Type _ when type == typeof(ApplicationEvent) => BaseEventTypeNames.ApplicationTypeName,
                 Type _ when type == typeof(LogCreatedEvent) => BaseEventTypeNames.LogCreatedTypeName,
                 Type _ when type == typeof(ParameterUpdatedEvent<bool>) => BaseEventTypeNames.BooleanTypeName,
                 Type _ when type == typeof(ParameterUpdatedEvent<float>) => BaseEventTypeNames.FloatTypeName,
