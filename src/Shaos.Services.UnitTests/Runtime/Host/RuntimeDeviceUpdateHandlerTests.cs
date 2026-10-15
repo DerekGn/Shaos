@@ -29,6 +29,7 @@ using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Processing;
 using Shaos.Services.Runtime.Host;
 using System.Linq.Expressions;
@@ -47,7 +48,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeDeviceUpdateHandlerTests : BaseServiceTests
     {
-        private readonly Mock<IEventQueue> _mockEventQueue;
+        private readonly Mock<IQueue> _mockEventQueue;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
@@ -56,7 +57,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
         public RuntimeDeviceUpdateHandlerTests()
         {
-            _mockEventQueue = new Mock<IEventQueue>();
+            _mockEventQueue = new Mock<IQueue<BaseParameterUpdatedEvent>>();
             _mockServiceProvider = new Mock<IServiceProvider>();
             _mockServiceScope = new Mock<IServiceScope>();
             _mockServiceScopeFactory = new Mock<IServiceScopeFactory>();
