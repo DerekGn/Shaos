@@ -24,6 +24,7 @@
 
 using Shaos.Services;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Parameter;
 
 namespace Shaos.Hosting
 {
@@ -32,7 +33,7 @@ namespace Shaos.Hosting
     /// </summary>
     public class ParameterEventsService : BackgroundService
     {
-        private readonly IEventQueue _eventQueue;
+        private readonly IQueue<BaseParameterUpdatedEvent> _eventQueue;
         private readonly IServerSentEventsService _serverSentEventsService;
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace Shaos.Hosting
         /// </summary>
         /// <param name="eventQueue">The <see cref="IEventQueue"/> to dequeue <see cref="BaseEvent"/></param>
         /// <param name="serverSentEventsService">The <see cref="IServerSentEventsService"/></param>
-        public ParameterEventsService(IEventQueue eventQueue,
+        public ParameterEventsService(IQueue<BaseParameterUpdatedEvent> eventQueue,
                                       IServerSentEventsService serverSentEventsService)
         {
             _eventQueue = eventQueue;

@@ -23,7 +23,6 @@
 */
 
 using System.Threading.Channels;
-using Shaos.Services.Eventing.Parameter;
 
 namespace Shaos.Services.Eventing
 {

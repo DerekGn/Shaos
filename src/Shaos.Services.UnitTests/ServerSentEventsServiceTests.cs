@@ -27,26 +27,27 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Shaos.Services.Eventing;
 using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Factories;
+using Shaos.Services.Eventing.Logging;
 using Shaos.Services.Eventing.Parameter;
-using Shaos.Services.Factories;
 using Xunit;
 
 namespace Shaos.Services.UnitTests
 {
     public class ServerSentEventsServiceTests : BaseServiceTests
     {
-        private readonly Mock<IEventQueueFactory> _mockEventQueueFactory;
+        private readonly Mock<IQueueFactory> _mockEventQueueFactory;
         private readonly ServerSentEventsService _service;
-        private readonly List<IEventQueue> _applicationEvents;
-        private readonly List<IEventQueue> _logEvents;
-        private readonly List<IEventQueue> _parameterEvents;
+        private readonly List<IQueue<ApplicationEvent>> _applicationEvents;
+        private readonly List<IQueue<LogCreatedEvent>> _logEvents;
+        private readonly List<IQueue<BaseParameterUpdatedEvent>> _parameterEvents;
 
         public ServerSentEventsServiceTests()
         {
-            _mockEventQueueFactory = new Mock<IEventQueueFactory>();
-            _applicationEvents = new List<IEventQueue>();
-            _logEvents = new List<IEventQueue>();
-            _parameterEvents = new List<IEventQueue>();
+            _mockEventQueueFactory = new Mock<IQueueFactory>();
+            _applicationEvents = new List<IQueue<ApplicationEvent>>();
+            _logEvents = new List<IQueue<LogCreatedEvent>>();
+            _parameterEvents = new List<IQueue<BaseParameterUpdatedEvent>>();
 
             var optionsInstance = new ServerSentEventOptions
             {
@@ -65,7 +66,7 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestBroadcastApplicationEventAsync()
         {
-            var queue = new EventQueue(1);
+            var queue = new Services.Eventing.Queue<ApplicationEvent>(1);
 
             _applicationEvents.Add(queue);
 

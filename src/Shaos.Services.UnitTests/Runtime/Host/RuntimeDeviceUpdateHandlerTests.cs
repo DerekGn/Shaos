@@ -48,7 +48,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeDeviceUpdateHandlerTests : BaseServiceTests
     {
-        private readonly Mock<IQueue> _mockEventQueue;
+        private readonly Mock<IQueue<BaseParameterUpdatedEvent>> _mockEventQueue;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
         private readonly Mock<IServiceScopeFactory> _mockServiceScopeFactory;
