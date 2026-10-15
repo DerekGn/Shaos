@@ -25,6 +25,7 @@
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Display;
+using Shaos.Services.Extensions;
 using System.Text;
 
 namespace Shaos.Services.Logging
