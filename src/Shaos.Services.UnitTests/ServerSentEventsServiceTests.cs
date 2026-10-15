@@ -78,14 +78,37 @@ namespace Shaos.Services.UnitTests
             _applicationEvents.Clear();
         }
 
-        public async Task Test()
+        [Fact]
+        public async Task TestBroadcastParameterUpdatedEventAsync()
         {
+            var queue = new Services.Eventing.Queue<BaseParameterUpdatedEvent>(1);
+
+            _parameterEvents.Add(queue);
+
             await _service.BroadcastParameterUpdatedEventAsync(new ParameterUpdatedEvent<bool>()
             {
                 Value = true,
                 CanWrite = true,
                 Timestamp = DateTime.UtcNow
-            });
+            }, TestContext.Current.CancellationToken);
+
+            Assert.Equal(1, queue.Count);
+
+            _parameterEvents.Clear();
+        }
+
+        [Fact]
+        public async Task TestBroadcastLogEventAsync()
+        {
+            var queue = new Services.Eventing.Queue<LogCreatedEvent>(1);
+
+            _logEvents.Add(queue);
+
+            await _service.BroadcastLogEventAsync("", TestContext.Current.CancellationToken);
+
+            Assert.Equal(1, queue.Count);
+
+            _logEvents.Clear();
         }
     }
 }
