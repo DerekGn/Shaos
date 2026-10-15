@@ -164,5 +164,26 @@ namespace Shaos.Services.UnitTests
             Assert.NotNull(result.Data);
             Assert.IsType<ParameterUpdatedEvent<int>>(result.Data);
         }
+
+        [Fact]
+        public async Task TestStreamParameterEventsByIdAsync()
+        {
+            var queue = new Services.Eventing.Queue<BaseParameterUpdatedEvent>(1);
+
+            await queue.EnqueueAsync(new ParameterUpdatedEvent<int>()
+            {
+                Value = 1,
+                Id  = 1
+            }, TestContext.Current.CancellationToken);
+
+            _mockQueueFactory
+            .Setup(_ => _.CreateQueue<BaseParameterUpdatedEvent>(It.IsAny<int>()))
+            .Returns(queue);
+
+            var result = await _service.StreamParameterEventsByIdAsync( 1, TestContext.Current.CancellationToken).FirstOrDefaultAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result.Data);
+            Assert.IsType<ParameterUpdatedEvent<int>>(result.Data);
+        }
     }
 }
