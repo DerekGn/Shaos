@@ -202,16 +202,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await SaveParameterChangeToRepositoryAsync(id,
-                                                           value,
-                                                           timestamp,
-                                                           cancellationToken);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                       value,
-                                                       canWrite,
-                                                       timestamp,
-                                                       cancellationToken);
+                await SaveAndPublishParameterAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
             });
         }
 
@@ -223,16 +218,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await SaveParameterChangeToRepositoryAsync(id,
-                                                           value,
-                                                           timestamp,
-                                                           cancellationToken);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                       value,
-                                                       canWrite,
-                                                       timestamp,
-                                                       cancellationToken);
+                await SaveAndPublishParameterAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
             });
         }
 
@@ -244,16 +234,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await SaveParameterChangeToRepositoryAsync(id,
-                                                           value,
-                                                           timestamp,
-                                                           cancellationToken);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                       value,
-                                                       canWrite,
-                                                       timestamp,
-                                                       cancellationToken);
+                await SaveAndPublishParameterAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
             });
         }
 
@@ -265,16 +250,11 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await SaveParameterChangeToRepositoryAsync(id,
-                                                           value,
-                                                           timestamp,
-                                                           cancellationToken);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                       value,
-                                                       canWrite,
-                                                       timestamp,
-                                                       cancellationToken);
+                await SaveAndPublishParameterAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
             });
         }
 
@@ -286,17 +266,102 @@ namespace Shaos.Services.Runtime.Host
         {
             await _workItemQueue.EnqueueAsync(async (cancellationToken) =>
             {
-                await SaveParameterChangeToRepositoryAsync(id,
-                                                           value,
-                                                           timestamp,
-                                                           cancellationToken);
-
-                await PublishDeviceParameterEventAsync(id,
-                                                      value,
-                                                      canWrite,
-                                                      timestamp,
-                                                      cancellationToken);
+                await SaveAndPublishParameterAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
             });
+        }
+
+        internal async Task SaveAndPublishParameterAsync(int id,
+                                                         string value,
+                                                         bool canWrite,
+                                                         DateTime timestamp,
+                                                         CancellationToken cancellationToken)
+        {
+            await SaveParameterChangeToRepositoryAsync(id,
+                                                       value,
+                                                       timestamp,
+                                                       cancellationToken);
+
+            await PublishDeviceParameterEventAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
+        }
+
+        internal async Task SaveAndPublishParameterAsync(int id,
+                                                         bool value,
+                                                         bool canWrite,
+                                                         DateTime timestamp,
+                                                         CancellationToken cancellationToken)
+        {
+            await SaveParameterChangeToRepositoryAsync(id,
+                                                       value,
+                                                       timestamp,
+                                                       cancellationToken);
+
+            await PublishDeviceParameterEventAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
+        }
+
+        internal async Task SaveAndPublishParameterAsync(int id,
+                                                         uint value,
+                                                         bool canWrite,
+                                                         DateTime timestamp,
+                                                         CancellationToken cancellationToken)
+        {
+            await SaveParameterChangeToRepositoryAsync(id,
+                                                       value,
+                                                       timestamp,
+                                                       cancellationToken);
+
+            await PublishDeviceParameterEventAsync(id,
+                                                  value,
+                                                  canWrite,
+                                                  timestamp,
+                                                  cancellationToken);
+        }
+
+        internal async Task SaveAndPublishParameterAsync(int id,
+                                                        float value,
+                                                        bool canWrite,
+                                                        DateTime timestamp,
+                                                        CancellationToken cancellationToken)
+        {
+            await SaveParameterChangeToRepositoryAsync(id,
+                                                       value,
+                                                       timestamp,
+                                                       cancellationToken);
+
+            await PublishDeviceParameterEventAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
+        }
+
+        internal async Task SaveAndPublishParameterAsync(int id,
+                                                        int value,
+                                                        bool canWrite,
+                                                        DateTime timestamp,
+                                                        CancellationToken cancellationToken)
+        {
+            await SaveParameterChangeToRepositoryAsync(id,
+                                                       value,
+                                                       timestamp,
+                                                       cancellationToken);
+
+            await PublishDeviceParameterEventAsync(id,
+                                                   value,
+                                                   canWrite,
+                                                   timestamp,
+                                                   cancellationToken);
         }
 
         internal async Task SaveParameterChangeToRepositoryAsync(int id,

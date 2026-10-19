@@ -22,11 +22,14 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Services.Eventing.Factories
 {
     /// <summary>
     /// The <see cref="IQueueFactory"/> implementation
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class QueueFactory : IQueueFactory
     {
         /// <inheritdoc/>

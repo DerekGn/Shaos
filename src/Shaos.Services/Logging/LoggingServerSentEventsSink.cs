@@ -25,6 +25,7 @@
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Display;
+using Shaos.Services.Eventing;
 using Shaos.Services.Extensions;
 using System.Text;
 
@@ -33,24 +34,24 @@ namespace Shaos.Services.Logging
     /// <summary>
     /// A <see cref="ILogEventSink"/> that publishes log events
     /// </summary>
-    public class ServerSentEventsSink : ILogEventSink
+    public class LoggingServerSentEventsSink : ILogEventSink
     {
         private const string DefaultOutputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
         private const int DefaultWriteBufferCapacity = 256;
         private readonly MessageTemplateTextFormatter _formatter;
-        private readonly ILoggerItemQueue _loggerItemQueue;
+        private readonly IQueue<string> _loggerQueue;
 
         /// <summary>
-        /// Create an instance of a <see cref="ServerSentSinkExtensions"/>
+        /// Create an instance of a <see cref="LoggerSinkConfigurationExtensions"/>
         /// </summary>
-        /// <param name="loggerItemQueue">The <see cref="ILoggerItemQueue"/> instance to write loge messages</param>
+        /// <param name="loggerQueue">The <see cref="IQueue{String}"/> instance to write log messages</param>
         /// <param name="formatProvider">The options <see cref="IFormatProvider"/></param>
         /// <param name="outputTemplate">The output template</param>
-        public ServerSentEventsSink(ILoggerItemQueue loggerItemQueue,
-                                    IFormatProvider? formatProvider = null,
-                                    string outputTemplate = DefaultOutputTemplate)
+        public LoggingServerSentEventsSink(IQueue<string> loggerQueue,
+                                           IFormatProvider? formatProvider = null,
+                                           string outputTemplate = DefaultOutputTemplate)
         {
-            _loggerItemQueue = loggerItemQueue;
+            _loggerQueue = loggerQueue;
             _formatter = new MessageTemplateTextFormatter(outputTemplate,
                                                           formatProvider);
         }
@@ -62,7 +63,7 @@ namespace Shaos.Services.Logging
             _formatter.Format(logEvent, buffer);
             var formattedLogEventText = buffer.ToString();
 
-            _loggerItemQueue.EnqueueAsync(formattedLogEventText);
+            _loggerQueue.EnqueueAsync(formattedLogEventText);
         }
     }
 }

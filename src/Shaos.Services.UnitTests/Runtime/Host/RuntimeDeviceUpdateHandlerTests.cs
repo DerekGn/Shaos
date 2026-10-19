@@ -161,6 +161,161 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         }
 
         [Fact]
+        public async Task TestSaveAndPublishParameterAsyncBool()
+        {
+            SetupServiceScopeFactory();
+
+            ModelBoolParameter parameter = new ModelBoolParameter()
+            {
+                Name = "name",
+                Units = string.Empty
+            };
+
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelBoolParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parameter);
+
+            await _runtimeDeviceUpdateHandler.SaveAndPublishParameterAsync(1,
+                                                                           true,
+                                                                           true,
+                                                                           DateTime.UtcNow,
+                                                                           TestContext.Current.CancellationToken);
+
+            Assert.Single(parameter.Values);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+
+            _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<bool>>(),
+                                                       It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveAndPublishParameterAsyncFloat()
+        {
+            SetupServiceScopeFactory();
+
+            ModelFloatParameter parameter = new ModelFloatParameter()
+            {
+                Name = "name",
+                Units = string.Empty
+            };
+
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelFloatParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parameter);
+
+            await _runtimeDeviceUpdateHandler.SaveAndPublishParameterAsync(1,
+                                                                           0.2f,
+                                                                           true,
+                                                                           DateTime.UtcNow,
+                                                                           TestContext.Current.CancellationToken);
+
+            Assert.Single(parameter.Values);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+
+            _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<float>>(),
+                                                       It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveAndPublishParameterAsyncInt()
+        {
+            SetupServiceScopeFactory();
+
+            ModelIntParameter parameter = new ModelIntParameter()
+            {
+                Name = "name",
+                Units = string.Empty
+            };
+
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelIntParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parameter);
+
+            await _runtimeDeviceUpdateHandler.SaveAndPublishParameterAsync(1,
+                                                                           10,
+                                                                           true,
+                                                                           DateTime.UtcNow,
+                                                                           TestContext.Current.CancellationToken);
+
+            Assert.Single(parameter.Values);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+
+            _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<int>>(),
+                                                       It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveAndPublishParameterAsyncUInt()
+        {
+            SetupServiceScopeFactory();
+
+            ModelUIntParameter parameter = new ModelUIntParameter()
+            {
+                Name = "name",
+                Units = string.Empty
+            };
+
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelUIntParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parameter);
+
+            await _runtimeDeviceUpdateHandler.SaveAndPublishParameterAsync(1,
+                                                                           10u,
+                                                                           true,
+                                                                           DateTime.UtcNow,
+                                                                           TestContext.Current.CancellationToken);
+
+            Assert.Single(parameter.Values);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+
+            _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<uint>>(),
+                                                       It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveAndPublishParameterAsyncString()
+        {
+            SetupServiceScopeFactory();
+
+            ModelStringParameter parameter = new ModelStringParameter()
+            {
+                Name = "name",
+                Units = string.Empty
+            };
+
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelStringParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parameter);
+
+            await _runtimeDeviceUpdateHandler.SaveAndPublishParameterAsync(1,
+                                                                           "true",
+                                                                           true,
+                                                                           DateTime.UtcNow,
+                                                                           TestContext.Current.CancellationToken);
+
+            Assert.Single(parameter.Values);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+
+            _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<string>>(),
+                                                       It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
         public async Task TestSaveParameterChangeAsyncBool()
         {
             SetupServiceScopeFactory();

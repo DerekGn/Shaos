@@ -22,14 +22,27 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Eventing;
+using Shaos.Services.Logging;
+using Xunit;
 
-namespace Shaos.Services.Logging
+namespace Shaos.Services.UnitTests.Logging
 {
-    /// <summary>
-    /// The queue for log items
-    /// </summary>
-    public interface ILoggerItemQueue : IQueue<string>
+    public class LoggerItemQueueTests
     {
+        private readonly LoggerItemQueue _loggerItemQueue;
+
+        public LoggerItemQueueTests()
+        {
+            _loggerItemQueue = new LoggerItemQueue(1);
+        }
+
+        public async Task TestEnqueueAsync()
+        {
+            await _loggerItemQueue.EnqueueAsync("test",
+                                                TestContext.Current.CancellationToken);
+
+            Assert.Equal(1,
+                         _loggerItemQueue.Count);
+        }
     }
 }

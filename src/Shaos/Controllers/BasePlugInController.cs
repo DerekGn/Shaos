@@ -36,8 +36,8 @@ namespace Shaos.Controllers
                                        IRepository repository,
                                        IPlugInService plugInService) : base(logger)
         {
-            Repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            PlugInService = plugInService ?? throw new ArgumentNullException(nameof(plugInService));
+            Repository = repository;
+            PlugInService = plugInService;
         }
 
         public IPlugInService PlugInService { get; }

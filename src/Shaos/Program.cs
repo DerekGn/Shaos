@@ -79,7 +79,7 @@ namespace Shaos
             {
                 loggingConfiguration.Configure(configuration, loggerConfiguration);
 
-                loggerConfiguration.WriteTo.ServerSentSink(serviceProvider.GetService<ILoggerItemQueue>()!);
+                loggerConfiguration.WriteTo.ServerSentSink(serviceProvider.GetService<IQueue<string>>()!);
             });
 
             // Add services to the container.
@@ -162,14 +162,14 @@ namespace Shaos
             builder.Services.AddScoped<IRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
-            builder.Services.AddSingleton<IQueue<ApplicationEvent>>(InitEventQueue<ApplicationEvent>(builder.Configuration));
-            builder.Services.AddSingleton<IQueue<LogCreatedEvent>>(InitEventQueue<LogCreatedEvent>(builder.Configuration));
-            builder.Services.AddSingleton<IQueue<BaseParameterUpdatedEvent>>(InitEventQueue<BaseParameterUpdatedEvent>(builder.Configuration));
-            builder.Services.AddSingleton<IQueueFactory, QueueFactory>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<ILoggerItemQueue>(InitLogItemEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
+            builder.Services.AddSingleton<IQueue<ApplicationEvent>>(InitEventQueue<ApplicationEvent>(builder.Configuration));
+            builder.Services.AddSingleton<IQueue<BaseParameterUpdatedEvent>>(InitEventQueue<BaseParameterUpdatedEvent>(builder.Configuration));
+            builder.Services.AddSingleton<IQueue<LogCreatedEvent>>(InitEventQueue<LogCreatedEvent>(builder.Configuration));
+            builder.Services.AddSingleton<IQueue<string>>(InitLogItemEventQueue(builder.Configuration));
+            builder.Services.AddSingleton<IQueueFactory, QueueFactory>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<IRuntimeDeviceUpdateHandler, RuntimeDeviceUpdateHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();

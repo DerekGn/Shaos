@@ -23,7 +23,7 @@
 */
 
 using Shaos.Services;
-using Shaos.Services.Logging;
+using Shaos.Services.Eventing;
 
 namespace Shaos.Hosting
 {
@@ -32,18 +32,18 @@ namespace Shaos.Hosting
     /// </summary>
     public class LoggingEventService : BackgroundService
     {
-        private readonly ILoggerItemQueue _eventQueue;
+        private readonly IQueue<string> _loggingQueue;
         private readonly IServerSentEventsService _serverSentEventsService;
 
         /// <summary>
         /// Create an instance of a <see cref="LoggingEventService"/>
         /// </summary>
-        /// <param name="eventQueue">The <see cref="ILoggerItemQueue"/> to dequeue log methods</param>
+        /// <param name="loggingQueue">The <see cref="IQueue{T}"/> to dequeue log methods</param>
         /// <param name="serverSentEventsService">The <see cref="IServerSentEventsService"/></param>
-        public LoggingEventService(ILoggerItemQueue eventQueue,
+        public LoggingEventService(IQueue<string> loggingQueue,
                                    IServerSentEventsService serverSentEventsService)
         {
-            _eventQueue = eventQueue;
+            _loggingQueue = loggingQueue;
             _serverSentEventsService = serverSentEventsService;
         }
 
@@ -51,7 +51,7 @@ namespace Shaos.Hosting
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var baseEvent = await _eventQueue.DequeueAsync(stoppingToken);
+                var baseEvent = await _loggingQueue.DequeueAsync(stoppingToken);
 
                 if (baseEvent is not null)
                 {

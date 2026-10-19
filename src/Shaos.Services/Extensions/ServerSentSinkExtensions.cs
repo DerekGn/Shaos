@@ -24,6 +24,7 @@
 
 using Serilog;
 using Serilog.Configuration;
+using Shaos.Services.Eventing;
 using Shaos.Services.Logging;
 
 namespace Shaos.Services.Extensions
@@ -31,21 +32,21 @@ namespace Shaos.Services.Extensions
     /// <summary>
     /// Extension for injection of <see cref="ServerSentSink"/>
     /// </summary>
-    public static class ServerSentSinkExtensions
+    public static class LoggerSinkConfigurationExtensions
     {
         /// <summary>
         /// Add a <see cref="ServerSentSink"/> instance to the serilog sinks collection
         /// </summary>
         /// <param name="loggerConfiguration">The <see cref="LoggerSinkConfiguration"/></param>
-        /// <param name="loggerItemQueue">The <see cref="ILoggerItemQueue"/> for writing log events</param>
+        /// <param name="loggerItemQueue">The <see cref="IQueue{T}"/> for writing log events</param>
         /// <param name="formatProvider">The optional <see cref="IFormatProvider"/> instance</param>
         /// <returns>The <see cref="LoggerConfiguration"/></returns>
         public static LoggerConfiguration ServerSentSink(this LoggerSinkConfiguration loggerConfiguration,
-                                                         ILoggerItemQueue loggerItemQueue,
+                                                         IQueue<string> loggerItemQueue,
                                                          IFormatProvider? formatProvider = null)
         {
-            return loggerConfiguration.Sink(new ServerSentEventsSink(loggerItemQueue,
-                                                                     formatProvider));
+            return loggerConfiguration.Sink(new LoggingServerSentEventsSink(loggerItemQueue,
+                                                                            formatProvider));
         }
     }
 }

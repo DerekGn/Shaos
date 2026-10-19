@@ -38,7 +38,7 @@ namespace Shaos.Pages.System.Logging
 
         public IndexModel(ILoggingConfiguration loggingConfiguration)
         {
-            _loggingConfiguration = loggingConfiguration ?? throw new ArgumentNullException(nameof(loggingConfiguration));
+            _loggingConfiguration = loggingConfiguration;
         }
 
         [BindProperty]

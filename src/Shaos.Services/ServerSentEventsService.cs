@@ -79,7 +79,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="logger">The logger instance for this service</param>
         /// <param name="options">The options instance for this service</param>
-        /// <param name="eventQueueFactory">The <see cref="IEventQueue"/> factory instance</param>
+        /// <param name="queueFactory">The <see cref="IQueueFactory"/> factory instance</param>
         public ServerSentEventsService(ILogger<ServerSentEventsService> logger,
                                        IOptions<ServerSentEventOptions> options,
                                        IQueueFactory queueFactory)
