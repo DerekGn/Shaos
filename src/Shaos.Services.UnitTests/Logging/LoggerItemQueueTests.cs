@@ -36,6 +36,7 @@ namespace Shaos.Services.UnitTests.Logging
             _loggerItemQueue = new LoggerItemQueue(1);
         }
 
+        [Fact]
         public async Task TestEnqueueAsync()
         {
             await _loggerItemQueue.EnqueueAsync("test",
@@ -43,6 +44,17 @@ namespace Shaos.Services.UnitTests.Logging
 
             Assert.Equal(1,
                          _loggerItemQueue.Count);
+        }
+
+        [Fact]
+        public async Task TestDequeueAsync()
+        {
+            await _loggerItemQueue.EnqueueAsync("test",
+                                                TestContext.Current.CancellationToken);
+
+            var result = await _loggerItemQueue.DequeueAsync(TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result);
         }
     }
 }

@@ -63,7 +63,9 @@ namespace Shaos.Services.Logging
             _formatter.Format(logEvent, buffer);
             var formattedLogEventText = buffer.ToString();
 
-            _loggerQueue.EnqueueAsync(formattedLogEventText);
+            Task.Run(async () => await _loggerQueue.EnqueueAsync(formattedLogEventText))
+                .GetAwaiter()
+                .GetResult();
         }
     }
 }
