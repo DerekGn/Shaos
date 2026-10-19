@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+namespace Shaos.Services.Eventing
 {
     /// <summary>
     /// A queue interface

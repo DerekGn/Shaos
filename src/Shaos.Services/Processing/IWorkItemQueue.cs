@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Services.Eventing;
+
 namespace Shaos.Services.Processing
 {
     /// <summary>

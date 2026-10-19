@@ -22,8 +22,6 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Eventing;
-
 namespace Shaos.Services.Eventing.Factories
 {
     /// <summary>

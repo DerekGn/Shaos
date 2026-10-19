@@ -22,8 +22,6 @@
 * SOFTWARE.
 */
 
-using Shaos.Services.Eventing;
-
 namespace Shaos.Services.Eventing.Factories
 {
     /// <summary>
@@ -34,7 +32,7 @@ namespace Shaos.Services.Eventing.Factories
         /// <inheritdoc/>
         public IQueue<T> CreateQueue<T>(int eventQueueCapacity)
         {
-            return new Eventing.Queue<T>(eventQueueCapacity);
+            return new Queue<T>(eventQueueCapacity);
         }
     }
 }
