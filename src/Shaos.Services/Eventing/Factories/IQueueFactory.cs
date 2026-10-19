@@ -24,17 +24,18 @@
 
 using Shaos.Services.Eventing;
 
-namespace Shaos.Services.Factories
+namespace Shaos.Services.Eventing.Factories
 {
     /// <summary>
-    /// The <see cref="IEventQueueFactory"/> implementation
+    /// A factory for creating <see cref="IQueue{T}"/> instances
     /// </summary>
-    public class EventQueueFactory : IEventQueueFactory
+    public interface IQueueFactory
     {
-        /// <inheritdoc/>
-        public IEventQueue CreateEventQueue(int eventQueueCapacity)
-        {
-            return new EventQueue(eventQueueCapacity);
-        }
+        /// <summary>
+        /// Create an <see cref="IQueue{T}"/>
+        /// </summary>
+        /// <param name="eventQueueCapacity">The <see cref="IQueue{T}"/> instance capacity</param>
+        /// <returns>A new <see cref="IQueue{T}"/> instance</returns>
+        IQueue<T> CreateQueue<T>(int eventQueueCapacity);
     }
 }

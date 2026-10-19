@@ -22,12 +22,19 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+using Shaos.Services.Eventing;
+
+namespace Shaos.Services.Eventing.Factories
 {
     /// <summary>
-    /// A event queue.
+    /// The <see cref="IQueueFactory"/> implementation
     /// </summary>
-    public interface IEventQueue : IQueue<BaseEvent>
+    public class QueueFactory : IQueueFactory
     {
+        /// <inheritdoc/>
+        public IQueue<T> CreateQueue<T>(int eventQueueCapacity)
+        {
+            return new Eventing.Queue<T>(eventQueueCapacity);
+        }
     }
 }

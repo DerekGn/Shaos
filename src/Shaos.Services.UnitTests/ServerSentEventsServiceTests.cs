@@ -27,25 +27,27 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Shaos.Services.Eventing;
 using Shaos.Services.Eventing.Application;
-using Shaos.Services.Factories;
+using Shaos.Services.Eventing.Factories;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
 using Xunit;
 
 namespace Shaos.Services.UnitTests
 {
     public class ServerSentEventsServiceTests : BaseServiceTests
     {
-        private readonly Mock<IEventQueueFactory> _mockEventQueueFactory;
+        private readonly Mock<IQueueFactory> _mockQueueFactory;
         private readonly ServerSentEventsService _service;
-        private readonly List<IEventQueue> _applicationEvents;
-        private readonly List<IEventQueue> _logEvents;
-        private readonly List<IEventQueue> _parameterEvents;
+        private readonly List<IQueue<ApplicationEvent>> _applicationEvents;
+        private readonly List<IQueue<LogCreatedEvent>> _logEvents;
+        private readonly List<IQueue<BaseParameterUpdatedEvent>> _parameterEvents;
 
         public ServerSentEventsServiceTests()
         {
-            _mockEventQueueFactory = new Mock<IEventQueueFactory>();
-            _applicationEvents = new List<IEventQueue>();
-            _logEvents = new List<IEventQueue>();
-            _parameterEvents = new List<IEventQueue>();
+            _mockQueueFactory = new Mock<IQueueFactory>();
+            _applicationEvents = new List<IQueue<ApplicationEvent>>();
+            _logEvents = new List<IQueue<LogCreatedEvent>>();
+            _parameterEvents = new List<IQueue<BaseParameterUpdatedEvent>>();
 
             var optionsInstance = new ServerSentEventOptions
             {
@@ -55,7 +57,7 @@ namespace Shaos.Services.UnitTests
 
             _service = new ServerSentEventsService(LoggerFactory!.CreateLogger<ServerSentEventsService>(),
                                                    serverSentEventOptions,
-                                                   _mockEventQueueFactory.Object,
+                                                   _mockQueueFactory.Object,
                                                    _applicationEvents,
                                                    _logEvents,
                                                    _parameterEvents);
@@ -64,11 +66,124 @@ namespace Shaos.Services.UnitTests
         [Fact]
         public async Task TestBroadcastApplicationEventAsync()
         {
-            _applicationEvents.Add(new EventQueue(1));
+            var queue = new Services.Eventing.Queue<ApplicationEvent>(1);
+
+            _applicationEvents.Add(queue);
 
             await _service.BroadcastApplicationEventAsync(new ApplicationEvent(),
                                                           TestContext.Current.CancellationToken);
 
+            Assert.Equal(1, queue.Count);
+
+            _applicationEvents.Clear();
+        }
+
+        [Fact]
+        public async Task TestBroadcastParameterUpdatedEventAsync()
+        {
+            var queue = new Services.Eventing.Queue<BaseParameterUpdatedEvent>(1);
+
+            _parameterEvents.Add(queue);
+
+            await _service.BroadcastParameterUpdatedEventAsync(new ParameterUpdatedEvent<bool>()
+            {
+                Value = true,
+                CanWrite = true,
+                Timestamp = DateTime.UtcNow
+            }, TestContext.Current.CancellationToken);
+
+            Assert.Equal(1, queue.Count);
+
+            _parameterEvents.Clear();
+        }
+
+        [Fact]
+        public async Task TestBroadcastLogEventAsync()
+        {
+            var queue = new Services.Eventing.Queue<LogCreatedEvent>(1);
+
+            _logEvents.Add(queue);
+
+            await _service.BroadcastLogEventAsync("", TestContext.Current.CancellationToken);
+
+            Assert.Equal(1, queue.Count);
+
+            _logEvents.Clear();
+        }
+
+        [Fact]
+        public async Task TestStreamApplicationEventsAsync()
+        {
+            var queue = new Services.Eventing.Queue<ApplicationEvent>(1);
+
+            await queue.EnqueueAsync(new ApplicationEvent(), TestContext.Current.CancellationToken);
+
+            _mockQueueFactory
+            .Setup(_ => _.CreateQueue<ApplicationEvent>(It.IsAny<int>()))
+            .Returns(queue);
+
+            var result = await _service.StreamApplicationEventsAsync(TestContext.Current.CancellationToken).FirstOrDefaultAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result.Data);
+            Assert.IsType<ApplicationEvent>(result.Data);
+        }
+
+        [Fact]
+        public async Task TestStreamLogEventsAsync()
+        {
+            var queue = new Services.Eventing.Queue<LogCreatedEvent>(1);
+
+            await queue.EnqueueAsync(new LogCreatedEvent(""), TestContext.Current.CancellationToken);
+
+            _mockQueueFactory
+            .Setup(_ => _.CreateQueue<LogCreatedEvent>(It.IsAny<int>()))
+            .Returns(queue);
+
+            var result = await _service.StreamLogEventsAsync(TestContext.Current.CancellationToken).FirstOrDefaultAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result.Data);
+            Assert.IsType<LogCreatedEvent>(result.Data);
+        }
+
+        [Fact]
+        public async Task TestStreamParameterEventsAsync()
+        {
+            var queue = new Services.Eventing.Queue<BaseParameterUpdatedEvent>(1);
+
+            await queue.EnqueueAsync(new ParameterUpdatedEvent<int>()
+            {
+                Value = 1
+            }, TestContext.Current.CancellationToken);
+
+            _mockQueueFactory
+            .Setup(_ => _.CreateQueue<BaseParameterUpdatedEvent>(It.IsAny<int>()))
+            .Returns(queue);
+
+            var result = await _service.StreamParameterEventsAsync(TestContext.Current.CancellationToken).FirstOrDefaultAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result.Data);
+            Assert.IsType<ParameterUpdatedEvent<int>>(result.Data);
+        }
+
+        [Fact]
+        public async Task TestStreamParameterEventsByIdAsync()
+        {
+            var queue = new Services.Eventing.Queue<BaseParameterUpdatedEvent>(1);
+
+            await queue.EnqueueAsync(new ParameterUpdatedEvent<int>()
+            {
+                Value = 1,
+                Id  = 1
+            }, TestContext.Current.CancellationToken);
+
+            _mockQueueFactory
+            .Setup(_ => _.CreateQueue<BaseParameterUpdatedEvent>(It.IsAny<int>()))
+            .Returns(queue);
+
+            var result = await _service.StreamParameterEventsByIdAsync( 1, TestContext.Current.CancellationToken).FirstOrDefaultAsync(cancellationToken: TestContext.Current.CancellationToken);
+
+            Assert.NotNull(result.Data);
+            Assert.IsType<ParameterUpdatedEvent<int>>(result.Data);
         }
     }
 }
