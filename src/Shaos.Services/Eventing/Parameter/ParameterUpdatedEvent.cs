@@ -38,7 +38,7 @@ namespace Shaos.Services.Eventing.Parameter
         /// <summary>
         /// The parameter update timestamp
         /// </summary>
-        public DateTime Timestamp { get; init; }
+        public DateTime Timestamp { get; init; } = DateTime.UtcNow;
 
         /// <summary>
         /// Indicates if the parameter can be written too

@@ -24,8 +24,6 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Shaos.Extensions;
-using System.Net;
 
 namespace Shaos.Controllers
 {
@@ -44,7 +42,7 @@ namespace Shaos.Controllers
 
         protected CoreController(ILogger<CoreController> logger)
         {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            Logger = logger;
         }
     }
 }

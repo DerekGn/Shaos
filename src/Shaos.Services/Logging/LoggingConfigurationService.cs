@@ -47,8 +47,8 @@ namespace Shaos.Services.Logging
         public LoggingConfigurationService(ILogger<LoggingConfigurationService> logger,
                                            IRepository repository)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _repository = repository;
+            _logger = logger;
         }
 
         /// <inheritdoc/>

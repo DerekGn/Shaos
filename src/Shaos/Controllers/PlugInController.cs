@@ -65,7 +65,7 @@ namespace Shaos.Controllers
                                 IPlugInService plugInService,
                                 IZipFileValidationService codeFileValidationService) : base(logger, repository, plugInService)
         {
-            _codeFileValidationService = codeFileValidationService ?? throw new ArgumentNullException(nameof(codeFileValidationService));
+            _codeFileValidationService = codeFileValidationService;
         }
 
         [HttpPost]

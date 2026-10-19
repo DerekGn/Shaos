@@ -24,11 +24,13 @@
 
 using Microsoft.Extensions.Logging;
 using Serilog.Events;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Reflection;
 
 namespace Shaos.Services.Extensions
 {
+    [ExcludeFromCodeCoverage]
     internal static partial class LoggerExtensions
     {
         [LoggerMessage(Level = LogLevel.Information,

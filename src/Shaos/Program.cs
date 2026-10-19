@@ -25,7 +25,6 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using OpenTelemetry.Logs;
 using Serilog;
 using Shaos.Data;
 using Shaos.Filters;
@@ -34,6 +33,11 @@ using Shaos.Options;
 using Shaos.Repository;
 using Shaos.Services;
 using Shaos.Services.Eventing;
+using Shaos.Services.Eventing.Application;
+using Shaos.Services.Eventing.Factories;
+using Shaos.Services.Eventing.Logging;
+using Shaos.Services.Eventing.Parameter;
+using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
 using Shaos.Services.Processing;
@@ -75,7 +79,7 @@ namespace Shaos
             {
                 loggingConfiguration.Configure(configuration, loggerConfiguration);
 
-                loggerConfiguration.WriteTo.ServerSentSink(serviceProvider.GetService<ILoggerItemQueue>()!);
+                loggerConfiguration.WriteTo.ServerSentSink(serviceProvider.GetService<IQueue<string>>()!);
             });
 
             // Add services to the container.
@@ -158,11 +162,14 @@ namespace Shaos
             builder.Services.AddScoped<IRepository, ShaosRepository>();
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
-            builder.Services.AddSingleton<IEventQueue>(InitEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
-            builder.Services.AddSingleton<ILoggerItemQueue>(InitLogItemEventQueue(builder.Configuration));
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
+            builder.Services.AddSingleton<IQueue<ApplicationEvent>>(InitEventQueue<ApplicationEvent>(builder.Configuration));
+            builder.Services.AddSingleton<IQueue<BaseParameterUpdatedEvent>>(InitEventQueue<BaseParameterUpdatedEvent>(builder.Configuration));
+            builder.Services.AddSingleton<IQueue<LogCreatedEvent>>(InitEventQueue<LogCreatedEvent>(builder.Configuration));
+            builder.Services.AddSingleton<IQueue<string>>(InitLogItemEventQueue(builder.Configuration));
+            builder.Services.AddSingleton<IQueueFactory, QueueFactory>();
             builder.Services.AddSingleton<IRuntimeAssemblyLoadContextFactory, RuntimeAssemblyLoadContextFactory>();
             builder.Services.AddSingleton<IRuntimeDeviceUpdateHandler, RuntimeDeviceUpdateHandler>();
             builder.Services.AddSingleton<IRuntimeInstanceEventHandler, RuntimeInstanceEventHandler>();
@@ -215,14 +222,14 @@ namespace Shaos
             app.Run();
         }
 
-        private static EventQueue InitEventQueue(ConfigurationManager configuration)
+        private static Services.Eventing.Queue<T> InitEventQueue<T>(ConfigurationManager configuration)
         {
             if (!int.TryParse(configuration["EventQueueCapacity"], out var queueCapacity))
             {
                 queueCapacity = 100;
             }
 
-            return new EventQueue(queueCapacity);
+            return new Services.Eventing.Queue<T>(queueCapacity);
         }
 
         private static LoggerItemQueue InitLogItemEventQueue(ConfigurationManager configuration)

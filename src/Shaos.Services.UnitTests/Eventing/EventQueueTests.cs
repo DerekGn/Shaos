@@ -30,11 +30,11 @@ namespace Shaos.Services.UnitTests.Eventing
 {
     public class EventQueueTests
     {
-        private readonly EventQueue _eventQueue;
+        private readonly IQueue<ParameterUpdatedEvent<int>> _eventQueue;
 
         public EventQueueTests()
         {
-            _eventQueue = new EventQueue(10);
+            _eventQueue = new Services.Eventing.Queue<ParameterUpdatedEvent<int>>(10);
         }
 
         [Fact]

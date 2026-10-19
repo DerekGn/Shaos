@@ -22,29 +22,32 @@
 * SOFTWARE.
 */
 
-using Serilog;
-using Serilog.Configuration;
-
-namespace Shaos.Services.Logging
+namespace Shaos.Services.Eventing
 {
     /// <summary>
-    /// Extension for injection of <see cref="ServerSentSink"/>
+    /// A queue interface
     /// </summary>
-    public static class ServerSentSinkExtensions
+    /// <typeparam name="T"></typeparam>
+    public interface IQueue<T>
     {
         /// <summary>
-        /// Add a <see cref="ServerSentSink"/> instance to the serilog sinks collection
+        /// The number of items queued
         /// </summary>
-        /// <param name="loggerConfiguration">The <see cref="LoggerSinkConfiguration"/></param>
-        /// <param name="loggerItemQueue">The <see cref="ILoggerItemQueue"/> for writing log events</param>
-        /// <param name="formatProvider">The optional <see cref="IFormatProvider"/> instance</param>
-        /// <returns>The <see cref="LoggerConfiguration"/></returns>
-        public static LoggerConfiguration ServerSentSink(this LoggerSinkConfiguration loggerConfiguration,
-                                                         ILoggerItemQueue loggerItemQueue,
-                                                         IFormatProvider? formatProvider = null)
-        {
-            return loggerConfiguration.Sink(new ServerSentEventsSink(loggerItemQueue,
-                                                                     formatProvider));
-        }
+        int Count { get; }
+
+        /// <summary>
+        /// Dequeue an <typeparamref name="T"/> instance.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <returns>A dequeued item of type <typeparamref name="T"/></returns>
+        Task<T?> DequeueAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Enqueue a <typeparamref name="T"/> instance.
+        /// </summary>
+        /// <param name="item">The <typeparamref name="T"/> item to enqueue.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task EnqueueAsync(T item,
+                          CancellationToken cancellationToken = default);
     }
 }

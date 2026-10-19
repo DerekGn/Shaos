@@ -22,12 +22,18 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Eventing
+namespace Shaos.Services.Eventing.Factories
 {
     /// <summary>
-    /// A event queue.
+    /// A factory for creating <see cref="IQueue{T}"/> instances
     /// </summary>
-    public interface IEventQueue : IQueue<BaseEvent>
+    public interface IQueueFactory
     {
+        /// <summary>
+        /// Create an <see cref="IQueue{T}"/>
+        /// </summary>
+        /// <param name="eventQueueCapacity">The <see cref="IQueue{T}"/> instance capacity</param>
+        /// <returns>A new <see cref="IQueue{T}"/> instance</returns>
+        IQueue<T> CreateQueue<T>(int eventQueueCapacity);
     }
 }

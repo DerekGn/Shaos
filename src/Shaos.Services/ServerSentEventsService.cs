@@ -29,8 +29,10 @@ using Shaos.Services.Eventing.Application;
 using Shaos.Services.Eventing.Logging;
 using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
+using Shaos.Services.Eventing.Factories;
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
+using Serilog.Events;
 
 namespace Shaos.Services
 {
@@ -39,10 +41,12 @@ namespace Shaos.Services
     /// </summary>
     public class ServerSentEventsService : IServerSentEventsService
     {
-        private readonly List<IEventQueue> _eventQueues;
-        private readonly List<IEventQueue> _logEventQueues;
         private readonly ILogger<ServerSentEventsService> _logger;
         private readonly IOptions<ServerSentEventOptions> _options;
+        private readonly IQueueFactory _queueFactory;
+        private readonly List<IQueue<ApplicationEvent>> _applicationEventQueues;
+        private readonly List<IQueue<LogCreatedEvent>> _logEventQueues;
+        private readonly List<IQueue<BaseParameterUpdatedEvent>> _parameterEventQueues;
         private readonly SemaphoreSlim _semaphore;
 
         /// <summary>
@@ -50,23 +54,65 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="logger">The logger instance for this service</param>
         /// <param name="options">The options instance for this service</param>
-        public ServerSentEventsService(ILogger<ServerSentEventsService> logger,
-                                       IOptions<ServerSentEventOptions> options)
+        /// <param name="queueFactory">The <see cref="IQueue{T}"/> factory instance</param>
+        /// <param name="applicationEvents">The application event queue list</param>
+        /// <param name="logEvents">The logger event queue list</param>
+        /// <param name="parameterEvents">The parameter event queue list</param>
+        internal ServerSentEventsService(ILogger<ServerSentEventsService> logger,
+                                          IOptions<ServerSentEventOptions> options,
+                                          IQueueFactory queueFactory,
+                                          List<IQueue<ApplicationEvent>> applicationEvents,
+                                          List<IQueue<LogCreatedEvent>> logEvents,
+                                          List<IQueue<BaseParameterUpdatedEvent>> parameterEvents)
         {
             _logger = logger;
             _options = options;
+            _queueFactory = queueFactory;
             _semaphore = new SemaphoreSlim(1);
-            _eventQueues = new List<IEventQueue>();
-            _logEventQueues = new List<IEventQueue>();
+            _applicationEventQueues = applicationEvents;
+            _logEventQueues = logEvents;
+            _parameterEventQueues = parameterEvents;
+        }
+
+        /// <summary>
+        /// Create an instance of a <see cref="ServerSentEventsService"/>
+        /// </summary>
+        /// <param name="logger">The logger instance for this service</param>
+        /// <param name="options">The options instance for this service</param>
+        /// <param name="queueFactory">The <see cref="IQueueFactory"/> factory instance</param>
+        public ServerSentEventsService(ILogger<ServerSentEventsService> logger,
+                                       IOptions<ServerSentEventOptions> options,
+                                       IQueueFactory queueFactory)
+        {
+            _logger = logger;
+            _options = options;
+            _queueFactory = queueFactory;
+            _semaphore = new SemaphoreSlim(1);
+            _applicationEventQueues = new List<IQueue<ApplicationEvent>>();
+            _logEventQueues = new List<IQueue<LogCreatedEvent>>();
+            _parameterEventQueues = new List<IQueue<BaseParameterUpdatedEvent>>();
         }
 
         /// <inheritdoc/>
-        public async Task BroadcastEventAsync(BaseEvent baseEvent,
-                                              CancellationToken cancellationToken = default)
+        public async Task BroadcastApplicationEventAsync(ApplicationEvent applicationEvent,
+                                                         CancellationToken cancellationToken = default)
         {
             await AccessClientQueuesAsync(() =>
             {
-                foreach (var queue in _eventQueues)
+                foreach (var queue in _applicationEventQueues)
+                {
+                    queue.EnqueueAsync(applicationEvent);
+                }
+            });
+        }
+
+        /// <inheritdoc/>
+        public async Task BroadcastParameterUpdatedEventAsync(BaseParameterUpdatedEvent baseEvent,
+                                                              CancellationToken cancellationToken = default)
+        {
+            await AccessClientQueuesAsync(() =>
+            {
+                foreach (var queue in _parameterEventQueues)
                 {
                     queue.EnqueueAsync(baseEvent);
                 }
@@ -89,7 +135,12 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return StreamEventsAsync<ApplicationEvent>(
+                _applicationEventQueues,
+                (applicationEvent) =>
+                {
+                    return true;
+                }, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -107,7 +158,7 @@ namespace Shaos.Services
         public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default)
         {
             return StreamEventsAsync<BaseParameterUpdatedEvent>(
-                _eventQueues,
+                _parameterEventQueues,
                 (parameterUpdateEvent) =>
                 {
                     return true;
@@ -119,7 +170,7 @@ namespace Shaos.Services
                                                                                                    CancellationToken cancellationToken = default)
         {
             return StreamEventsAsync<BaseParameterUpdatedEvent>(
-                _eventQueues,
+                _parameterEventQueues,
                 (parameterUpdateEvent) =>
                 {
                     return parameterUpdateEvent.Id == id;
@@ -140,15 +191,15 @@ namespace Shaos.Services
             }
         }
 
-        private async IAsyncEnumerable<SseItem<T>> StreamEventsAsync<T>(List<IEventQueue> queues,
+        private async IAsyncEnumerable<SseItem<T>> StreamEventsAsync<T>(List<IQueue<T>> queues,
                                                                         Func<T, bool> filterEvent,
-                                                                        [EnumeratorCancellation] CancellationToken cancellationToken)
+                                                                        [EnumeratorCancellation] CancellationToken cancellationToken) where T : BaseEvent
         {
-            EventQueue? eventQueue = null;
+            IQueue<T>? eventQueue = null;
 
             try
             {
-                eventQueue = new EventQueue(_options.Value.EventQueueCapacity);
+                eventQueue = _queueFactory.CreateQueue<T>(_options.Value.EventQueueCapacity);
 
                 await AccessClientQueuesAsync(async () =>
                 {
