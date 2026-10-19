@@ -22,12 +22,39 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services.Logging
+using Moq;
+using Serilog.Events;
+using Serilog.Parsing;
+using Shaos.Services.Eventing;
+using Shaos.Services.Logging;
+using Xunit;
+
+namespace Shaos.Services.UnitTests.Logging
 {
-    /// <summary>
-    /// The queue for log items
-    /// </summary>
-    public interface ILoggerItemQueue : IQueue<string>
+    public class LoggingServerSentEventsSinkTest
     {
+        private readonly LoggingServerSentEventsSink _loggingServerSentEventsSink;
+        private readonly Mock<IQueue<string>> _mockQueue;
+
+        public LoggingServerSentEventsSinkTest()
+        {
+            _mockQueue = new Mock<IQueue<string>>();
+
+            _loggingServerSentEventsSink = new LoggingServerSentEventsSink(_mockQueue.Object);
+        }
+
+        [Fact]
+        public void TestEmit()
+        {
+            var logEvent = new LogEvent(DateTimeOffset.UtcNow,
+                                        LogEventLevel.Error,
+                                        null,
+                                        new MessageTemplate("", []),
+                                        []);
+
+            _loggingServerSentEventsSink.Emit(logEvent);
+
+            _mockQueue.Verify(_ => _.EnqueueAsync(It.IsAny<string>()));
+        }
     }
 }

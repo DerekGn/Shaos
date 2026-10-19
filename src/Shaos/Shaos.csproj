@@ -35,6 +35,7 @@
         <PackageReference Include="Shaos.Sdk" Version="0.10.5-beta" />
         <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.*" />
         <PackageReference Include="SQLitePCLRaw.core" Version="3.*" />
+        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="[10.0.13,)" />
     </ItemGroup>
 
     <ItemGroup>

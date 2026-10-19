@@ -35,8 +35,8 @@ namespace Shaos.Startup
         public InitialisationHostService(ILogger<InitialisationHostService> logger,
                                          IServiceProvider services)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _services = services ?? throw new ArgumentNullException(nameof(services));
+            _logger = logger;
+            _services = services;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

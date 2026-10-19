@@ -78,8 +78,8 @@ namespace Shaos.Services.Runtime.Host
                                               bool configurable = false)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(instanceName);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(assemblyPath);
+            ArgumentException.ThrowIfNullOrWhiteSpace(instanceName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(assemblyPath);
 
             VerifyInstanceCount();
 
@@ -119,7 +119,8 @@ namespace Shaos.Services.Runtime.Host
         /// <inheritdoc/>
         public RuntimeInstanceLoadContext GetInstanceLoadContext(int id)
         {
-            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id) ?? throw new InstanceNotFoundException(id);
+            var instance = _executingInstances.FirstOrDefault(_ => _.Id == id)
+                ?? throw new InstanceNotFoundException(id);
 
             InitaliseInstanceLoadContext(instance);
 
@@ -202,8 +203,25 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
+        internal async Task StopExecutingInstanceAsync(RuntimeInstance instance)
+        {
+            _logger.LogStoppingInstance(instance.Id,
+                                        instance.Name);
+
+            if (await instance.StopExecutionAsync(_options.Value.TaskStopTimeout))
+            {
+                _logger.LogInstanceStopped(instance.Id,
+                                           instance.Name);
+            }
+            else
+            {
+                _logger.LogInstanceNotStoppedWithinTimeOut(instance.Id,
+                                                           instance.Name);
+            }
+        }
+
         internal void UpdateStateOnCompletion(RuntimeInstance instance,
-                                              Task antecedent)
+                                                      Task antecedent)
         {
             _logger.LogPlugInCompleted(Environment.NewLine,
                                        antecedent.ToLoggingString());
@@ -323,23 +341,6 @@ namespace Shaos.Services.Runtime.Host
 
             InstanceStateChanged?.Invoke(this,
                 new RuntimeInstanceStateEventArgs(instance.Id, instance.State));
-        }
-
-        private async Task StopExecutingInstanceAsync(RuntimeInstance instance)
-        {
-            _logger.LogStoppingInstance(instance.Id,
-                                        instance.Name);
-
-            if (await instance.StopExecutionAsync(_options.Value.TaskStopTimeout))
-            {
-                _logger.LogInstanceStopped(instance.Id,
-                                           instance.Name);
-            }
-            else
-            {
-                _logger.LogInstanceNotStoppedWithinTimeOut(instance.Id,
-                                                           instance.Name);
-            }
         }
 
         private void UnloadInstanceLoadContext(RuntimeInstance instance)

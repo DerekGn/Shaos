@@ -31,7 +31,7 @@ namespace Shaos.Hosting
         public MonitorHostedService(ILogger<MonitorHostedService> logger,
                                     IHostApplicationLifetime hostApplicationLifetime)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
 
             hostApplicationLifetime.ApplicationStarted.Register(OnStarted);
             hostApplicationLifetime.ApplicationStopped.Register(OnStopped);

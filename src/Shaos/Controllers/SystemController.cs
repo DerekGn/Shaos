@@ -39,8 +39,8 @@ namespace Shaos.Controllers
                                 ISystemService systemService,
                                 IAppVersionService appVersionService) : base(logger)
         {
-            _systemService = systemService ?? throw new ArgumentNullException(nameof(systemService));
-            _appVersionService = appVersionService ?? throw new ArgumentNullException(nameof(appVersionService));
+            _systemService = systemService;
+            _appVersionService = appVersionService;
         }
 
         [HttpGet("environment")]

@@ -40,8 +40,16 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="baseEvent">The <see cref="BaseEvent"/> to broadcast</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task BroadcastEventAsync(BaseEvent baseEvent,
-                                 CancellationToken cancellationToken = default);
+        Task BroadcastParameterUpdatedEventAsync(BaseParameterUpdatedEvent baseEvent,
+                                                 CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Broadcast an <see cref="ApplicationEvent"/> to subscribed event listeners
+        /// </summary>
+        /// <param name="applicationEvent">The <see cref="ApplicationEvent"/> to broadcast</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        Task BroadcastApplicationEventAsync(ApplicationEvent applicationEvent,
+                                            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Broadcast a log event

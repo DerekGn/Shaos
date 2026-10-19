@@ -22,14 +22,15 @@
 * SOFTWARE.
 */
 
+using Shaos.Services.Eventing;
 using System.Threading.Channels;
 
 namespace Shaos.Services.Logging
 {
     /// <summary>
-    /// The <see cref="ILoggerItemQueue"/> implementation
+    /// A <see cref="IQueue{T}"/> of string events
     /// </summary>
-    public class LoggerItemQueue : ILoggerItemQueue
+    public class LoggerItemQueue : IQueue<string>
     {
         private readonly Channel<string> _queue;
 

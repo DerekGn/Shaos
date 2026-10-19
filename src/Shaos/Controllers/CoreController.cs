@@ -42,7 +42,7 @@ namespace Shaos.Controllers
 
         protected CoreController(ILogger<CoreController> logger)
         {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            Logger = logger;
         }
     }
 }

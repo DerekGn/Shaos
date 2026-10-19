@@ -247,8 +247,8 @@ namespace Shaos.Services
         public PlugInTypeInformation GetPlugInTypeInformation(string plugInDirectory,
                                                               string plugInAssemblyFileName)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInDirectory);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(plugInDirectory);
+            ArgumentException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
 
             return _plugInTypeValidator.Validate(_fileStoreService.GetAssemblyPath(plugInDirectory,
                                                                                    plugInAssemblyFileName));
@@ -348,7 +348,7 @@ namespace Shaos.Services
                                                    Stream stream,
                                                    CancellationToken cancellationToken = default)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {

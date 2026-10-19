@@ -22,8 +22,11 @@
 * SOFTWARE.
 */
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Shaos.Extensions
 {
+    [ExcludeFromCodeCoverage]
     internal static partial class LoggerExtensions
     {
         [LoggerMessage(Level = LogLevel.Information,

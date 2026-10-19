@@ -22,32 +22,20 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Services
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Eventing.Factories
 {
     /// <summary>
-    /// A queue interface
+    /// The <see cref="IQueueFactory"/> implementation
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IQueue<T>
+    [ExcludeFromCodeCoverage]
+    public class QueueFactory : IQueueFactory
     {
-        /// <summary>
-        /// The number of items queued
-        /// </summary>
-        int Count { get; }
-
-        /// <summary>
-        /// Dequeue an <typeparamref name="T"/> instance.
-        /// </summary>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <returns>A dequeued item of type <typeparamref name="T"/></returns>
-        Task<T?> DequeueAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Enqueue a <typeparamref name="T"/> instance.
-        /// </summary>
-        /// <param name="item">The <typeparamref name="T"/> item to enqueue.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        Task EnqueueAsync(T item,
-                          CancellationToken cancellationToken = default);
+        /// <inheritdoc/>
+        public IQueue<T> CreateQueue<T>(int eventQueueCapacity)
+        {
+            return new Queue<T>(eventQueueCapacity);
+        }
     }
 }
