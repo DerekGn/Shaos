@@ -30,15 +30,14 @@ using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Parameters;
-using System.Net;
 
 namespace Shaos.Pages
 {
     [Authorize]
     public class IndexModel : PageModel
     {
-        private readonly IRepository _repository;
         private readonly IParameterService _parameterService;
+        private readonly IRepository _repository;
 
         public IndexModel(IRepository repository,
                           IParameterService parameterService)
@@ -55,31 +54,66 @@ namespace Shaos.Pages
         }
 
         public async Task OnPostWriteBooleanAsync(int id,
-                                                  bool value,
-                                                  CancellationToken cancellationToken = default)
+                                                                 bool value,
+                                                                 CancellationToken cancellationToken = default)
         {
-            await LoadItemsAsync(cancellationToken);
+            await ExecuteParameterWriteAsync(async () =>
+            {
+                throw new ParameterNotFoundException(id);
+            }, cancellationToken);
         }
 
         public async Task OnPostWriteFloatAsync(int id,
-                                                float value,
-                                                CancellationToken cancellationToken = default)
+                                                               float value,
+                                                               CancellationToken cancellationToken = default)
         {
-            await LoadItemsAsync(cancellationToken);
+            await ExecuteParameterWriteAsync(async () =>
+            {
+            }, cancellationToken);
         }
 
         public async Task OnPostWriteIntegerAsync(int id,
                                                   int value,
                                                   CancellationToken cancellationToken = default)
         {
-            await LoadItemsAsync(cancellationToken);
+            await ExecuteParameterWriteAsync(async () =>
+            {
+            }, cancellationToken);
         }
 
         public async Task OnPostWriteUnsignedIntegerAsync(int id,
                                                           uint value,
                                                           CancellationToken cancellationToken = default)
         {
-            await LoadItemsAsync(cancellationToken);
+            await ExecuteParameterWriteAsync(async () =>
+            {
+            }, cancellationToken);
+        }
+
+        private async Task ExecuteParameterWriteAsync(Func<Task> update,
+                                                      CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await LoadItemsAsync(cancellationToken);
+
+                await update();
+            }
+            catch (ParameterInvalidTypeException exception)
+            {
+                ModelState.AddModelError("InvalidParameterType",
+                                         $"Parameter [{exception.Id}] is invalid type. Expected Type: [{exception.Expected.Name}] Actual Type: [{exception.Actual.Name}]");
+            }
+            catch (ParameterNotFoundException exception)
+            {
+                ModelState.AddModelError("InvalidParameterType",
+                                         $"Parameter [{exception.Id}] was not found");
+            }
+            catch (ParameterNotWritableException exception)
+            {
+                ModelState.AddModelError("InvalidParameterType",
+                                         $"Parameter [{exception.Id}] is not writable");
+            }
         }
 
         private async Task LoadItemsAsync(CancellationToken cancellationToken)
@@ -87,26 +121,6 @@ namespace Shaos.Pages
             Items = await _repository
                             .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
                                                      cancellationToken: cancellationToken);
-        }
-
-        private async Task<ActionResult> ExecuteParameterWriteAsync(Func<Task<ActionResult>> update)
-        {
-            try
-            {
-                return await update();
-            }
-            catch (ParameterInvalidTypeException exception)
-            {
-                return BadRequest(exception.ToProblemDetails());
-            }
-            catch (ParameterNotFoundException exception)
-            {
-                return NotFound(exception.ToProblemDetails());
-            }
-            catch (ParameterNotWritableException exception)
-            {
-                return BadRequest(exception.ToProblemDetails());
-            }
         }
     }
 }
