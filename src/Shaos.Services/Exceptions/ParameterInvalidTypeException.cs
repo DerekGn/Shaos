@@ -40,7 +40,7 @@ namespace Shaos.Services.Exceptions
         /// <summary>
         /// The actual type of the parameter
         /// </summary>
-        public Type ActualType { get; } = actual;
+        public Type Actual { get; } = actual;
 
         /// <summary>
         /// The expected type
