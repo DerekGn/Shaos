@@ -25,6 +25,7 @@
 using Shaos.Repository.Models;
 using Shaos.Sdk;
 using Shaos.Sdk.Devices;
+using Shaos.Services.Exceptions;
 using System.Reflection;
 
 namespace Shaos.Services
@@ -51,6 +52,7 @@ namespace Shaos.Services
         /// Restore the <see cref="IPlugIn"/> from the <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to restore</param>
+        /// <exception cref="PlugInInstanceNotLoadedException">Thrown when a <see cref="PlugInInstance"/> was not loaded</exception>
         void Restore(PlugInInstance plugInInstance);
     }
 }

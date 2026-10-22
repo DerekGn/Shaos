@@ -298,9 +298,9 @@ namespace Shaos.Services
                                                    CancellationToken cancellationToken = default)
         {
             ArgumentOutOfRangeException.ThrowIfLessThan(id, 0);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInDirectory);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(plugInDirectory);
+            ArgumentException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
 
             await ExecutePlugInOperationAsync(id, async (plugIn, cancellationToken) =>
             {
@@ -335,7 +335,7 @@ namespace Shaos.Services
                 else
                 {
                     _logger.LogPackageNotChanged(plugIn.Id,
-                                         plugIn.Name);
+                                                 plugIn.Name);
                 }
             },
             false,

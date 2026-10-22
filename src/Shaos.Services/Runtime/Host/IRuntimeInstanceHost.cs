@@ -63,10 +63,11 @@ namespace Shaos.Services.Runtime.Host
                                        bool configurable = false);
 
         /// <summary>
-        /// 
+        /// Gets a <see cref="RuntimeInstanceLoadContext"/>
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The identifier of the <see cref="RuntimeInstanceLoadContext"/></param>
+        /// <returns>The <see cref="RuntimeInstanceLoadContext"/> if found</returns>
+        /// <exception cref="RuntimeInstanceNotFoundException">Thrown when the <see cref="RuntimeInstanceLoadContext"/> cannot be found</exception>
         RuntimeInstanceLoadContext GetInstanceLoadContext(int id);
 
         /// <summary>
@@ -91,6 +92,8 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
         /// <param name="plugIn">The <see cref="IPlugIn"/> instance</param>
         /// <returns>The <see cref="RuntimeInstance"/></returns>
+        /// <exception cref="RuntimeInstanceNotFoundException">Thrown when the <see cref="RuntimeInstance"/> is not found</exception>
+        /// <exception cref="InstanceRunningException">Thrown when the <see cref="PlugInInstance"/> is already running</exception>
         RuntimeInstance StartInstance(int id,
                                       IPlugIn plugIn);
 

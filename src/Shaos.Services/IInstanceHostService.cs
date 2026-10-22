@@ -41,8 +41,8 @@ namespace Shaos.Services
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The configuration instance</returns>
-        /// <exception cref="PlugInInstanceNotFoundException">Thrown when the <see cref="PlugInInstance"/> cannot be found</exception>
-        /// <exception cref="PlugInInstanceNotConfiguredException">Thrown when the <see cref="PlugInInstance"/> does not have a configuration to load</exception>
+        /// <exception cref="PlugInInstanceNotFoundException">Thrown if a <see cref="PlugInInstance"/> cannot be found</exception>
+        /// <exception cref="PlugInInstanceNotConfiguredException">Thrown if a <see cref="PlugInInstance"/> is not configured</exception>
         Task<object?> LoadInstanceConfigurationAsync(int id,
                                                      CancellationToken cancellationToken = default);
 
