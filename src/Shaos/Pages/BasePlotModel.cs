@@ -23,7 +23,6 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Shaos.Exceptions;
 using Shaos.Options;
@@ -32,7 +31,7 @@ using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages
 {
-    public abstract class BasePlotModel : PageModel
+    public abstract class BasePlotModel : BasePageModel
     {
         private readonly IOptions<PlotOptions> _options;
         private readonly IRepository _repository;

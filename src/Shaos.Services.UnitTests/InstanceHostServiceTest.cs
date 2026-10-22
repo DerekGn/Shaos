@@ -187,7 +187,7 @@ namespace Shaos.Services.UnitTests
                 .Setup(_ => _.InstanceExists(It.IsAny<int>()))
                 .Returns(false);
 
-            var exception = await Assert.ThrowsAsync<InstanceNotFoundException>(
+            var exception = await Assert.ThrowsAsync<RuntimeInstanceNotFoundException>(
                 async () => await _instanceHostService.StartInstanceAsync(1,
                                                                           TestContext.Current.CancellationToken));
 

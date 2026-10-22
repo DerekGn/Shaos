@@ -82,7 +82,7 @@ namespace Shaos.Services.Runtime.Host
         /// <param name="id">The identifier of the <see cref="RuntimeInstance"/> to remove</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
         /// <exception cref="InstanceRunningException">Thrown if the <see cref="RuntimeInstance"/> is still running</exception>
-        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="RuntimeInstance"/> is not found</exception>
+        /// <exception cref="RuntimeInstanceNotFoundException">Thrown if the <see cref="RuntimeInstance"/> is not found</exception>
         void RemoveInstance(int id);
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Shaos.Services.Runtime.Host
         /// </summary>
         /// <param name="id">The identifier of the <see cref="RuntimeInstance"/> that is to be stopped</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="id"/> is zero</exception>
-        /// <exception cref="InstanceNotFoundException">Thrown if the <see cref="RuntimeInstance"/> is not found</exception>
+        /// <exception cref="RuntimeInstanceNotFoundException">Thrown if the <see cref="RuntimeInstance"/> is not found</exception>
         /// <remarks>
         /// The <see cref="RuntimeInstance"/> is not synchronously stopped
         /// </remarks>

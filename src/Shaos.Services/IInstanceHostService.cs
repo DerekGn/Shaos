@@ -22,7 +22,11 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Exceptions;
+using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime.Exceptions;
+using Shaos.Services.Runtime.Host;
 
 namespace Shaos.Services
 {
@@ -32,40 +36,45 @@ namespace Shaos.Services
     public interface IInstanceHostService
     {
         /// <summary>
-        /// Load a PlugIn instance configuration
+        /// Load a <see cref="PlugInInstance"/> configuration
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The configuration instance</returns>
+        /// <exception cref="PlugInInstanceNotFoundException">Thrown when the <see cref="PlugInInstance"/> cannot be found</exception>
+        /// <exception cref="PlugInInstanceNotConfiguredException">Thrown when the <see cref="PlugInInstance"/> does not have a configuration to load</exception>
         Task<object?> LoadInstanceConfigurationAsync(int id,
                                                      CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Start a PlugIn instance
+        /// Start a <see cref="PlugInInstance"/>
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <exception cref="InstanceNotFoundException">Thrown if the instance was not found</exception>
+        /// <exception cref="RuntimeInstanceNotFoundException">Throw if the <see cref="RuntimeInstance"/> was not found</exception>
+        /// <exception cref="PlugInInstanceNotFoundException">Throw if the <see cref="PlugInInstance"/> was not found</exception>
+        /// <exception cref="PlugInInformationNotAssignedException">Throw if the <see cref="PlugInInstance"/> has no <see cref="PlugInInformation"/> assigned</exception>
+        /// <exception cref="PlugInInstanceNotConfiguredException">Throw if the <see cref="PlugInInstance"/> has not been configured</exception>
         Task StartInstanceAsync(int id,
                                 CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Start all enabled PlugIn instances.
+        /// Start all enabled <see cref="PlugInInstance"/>
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task StartInstancesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Stop a running PlugIn instance
+        /// Stop a running <see cref="PlugInInstance"/>
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         void StopInstance(int id);
 
         /// <summary>
-        /// Update the instance configuration
+        /// Update the <see cref="PlugInInstance"/> configuration
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
-        /// <param name="collection"></param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
+        /// <param name="collection">The key </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         Task UpdateInstanceConfigurationAsync(int id,
                                               IEnumerable<KeyValuePair<string, string>> collection,

@@ -32,7 +32,7 @@ namespace Shaos.Services.Runtime.Exceptions
     /// </summary>
     /// <param name="id">The identifier of the <see cref="RuntimeInstance"/></param>
     [ExcludeFromCodeCoverage]
-    public class InstanceNotFoundException(int id) : Exception
+    public class RuntimeInstanceNotFoundException(int id) : Exception
     {
         /// <summary>
         /// The identifier of the <see cref="RuntimeInstance"/>
