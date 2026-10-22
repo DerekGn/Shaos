@@ -291,7 +291,7 @@ namespace Shaos.Repository
         {
             if (enabled.HasValue && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(description))
             {
-                var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new    (id);
+                var plugInInstance = await _context.PlugInInstances.FirstOrDefaultAsync(_ => _.Id == id, cancellationToken) ?? throw new PlugInInstanceNotFoundException(id);
 
                 await HandleDuplicatePlugInInstanceNameAsync(name, async () =>
                 {
