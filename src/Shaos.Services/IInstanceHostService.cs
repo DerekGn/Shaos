@@ -22,6 +22,9 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Exceptions;
+using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime.Exceptions;
 
 namespace Shaos.Services
@@ -32,11 +35,13 @@ namespace Shaos.Services
     public interface IInstanceHostService
     {
         /// <summary>
-        /// Load a PlugIn instance configuration
+        /// Load a <see cref="PlugInInstance"/> configuration
         /// </summary>
-        /// <param name="id">The identifier of the PlugIn instance</param>
+        /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>The configuration instance</returns>
+        /// <exception cref="PlugInInstanceNotFoundException">Thrown if a <see cref="PlugInInstance"/> cannot be found</exception>
+        /// <exception cref="PlugInInstanceNotConfiguredException">Thrown if a <see cref="PlugInInstance"/> is not configured</exception>
         Task<object?> LoadInstanceConfigurationAsync(int id,
                                                      CancellationToken cancellationToken = default);
 
@@ -45,7 +50,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The identifier of the PlugIn instance</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
-        /// <exception cref="InstanceNotFoundException">Thrown if the instance was not found</exception>
+        /// <exception cref="RuntimeInstanceNotFoundException">Thrown if the instance was not found</exception>
         Task StartInstanceAsync(int id,
                                 CancellationToken cancellationToken = default);
 

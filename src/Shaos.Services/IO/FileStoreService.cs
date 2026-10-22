@@ -109,7 +109,7 @@ namespace Shaos.Services.IO
                                    out string extractedPath,
                                    out IEnumerable<string> files)
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             extractedPath = Guid.NewGuid().ToString();
             var sourcePath = _options.Value.PackagesPath;
@@ -134,7 +134,7 @@ namespace Shaos.Services.IO
                                       string plugInAssemblyFileName)
         {
             ArgumentNullException.ThrowIfNull(plugInDirectory);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(plugInAssemblyFileName);
 
             return Path.Combine(Path.Combine(_options.Value.BinariesPath,
                                              plugInDirectory),
@@ -147,7 +147,7 @@ namespace Shaos.Services.IO
                                             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(packageFileStream);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             if (_options.Value.PackagesPath.CreateDirectory())
             {
@@ -191,7 +191,7 @@ namespace Shaos.Services.IO
                                                               CancellationToken cancellationToken = default)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(packageFileName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(packageFileName);
 
             if (_options.Value.PackagesPath.CreateDirectory())
             {

@@ -109,7 +109,7 @@ namespace Shaos.Controllers
             {
                 operation(id);
             }
-            catch (InstanceNotFoundException exception)
+            catch (RuntimeInstanceNotFoundException exception)
             {
                 return NotFound(exception.ToProblemDetails());
             }
@@ -128,7 +128,7 @@ namespace Shaos.Controllers
             {
                 await operation(id);
             }
-            catch (InstanceNotFoundException exception)
+            catch (RuntimeInstanceNotFoundException exception)
             {
                 return NotFound(exception.ToProblemDetails());
             }

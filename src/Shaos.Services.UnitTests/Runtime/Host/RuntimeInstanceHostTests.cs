@@ -177,7 +177,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestRemoveInstanceNotFound()
         {
-            Assert.Throws<InstanceNotFoundException>(() => _instanceHost.RemoveInstance(1));
+            Assert.Throws<RuntimeInstanceNotFoundException>(() => _instanceHost.RemoveInstance(1));
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestStartInstanceNotFound()
         {
-            Assert.Throws<InstanceNotFoundException>(() => _instanceHost.StartInstance(1, _mockPlugIn.Object));
+            Assert.Throws<RuntimeInstanceNotFoundException>(() => _instanceHost.StartInstance(1, _mockPlugIn.Object));
         }
 
         [Fact]
@@ -233,7 +233,7 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         [Fact]
         public void TestStopInstanceNotFound()
         {
-            Assert.Throws<InstanceNotFoundException>(() => _instanceHost.StopInstance(1));
+            Assert.Throws<RuntimeInstanceNotFoundException>(() => _instanceHost.StopInstance(1));
         }
 
         [Fact]
