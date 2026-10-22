@@ -57,6 +57,7 @@ namespace Shaos.Services
         /// <returns>The identifier of the created <see cref="PlugInInstance"/></returns>
         /// <exception cref="PlugInNotFoundException">Thrown if the <see cref="PlugIn"/> is not found</exception>
         /// <exception cref="PlugInNameExistsException">Thrown if a <see cref="PlugInInstance"/> with the same name already exists</exception>
+        /// <exception cref="PlugInInformationNotAssignedException">Thrown if a <see cref="PlugInInstance"/> has no assigned <see cref="PlugInInformation"/></exception>
         Task<int> CreatePlugInInstanceAsync(int id,
                                             PlugInInstance plugInInstance,
                                             CancellationToken cancellationToken = default);
@@ -66,6 +67,7 @@ namespace Shaos.Services
         /// </summary>
         /// <param name="id">The identifier of the <see cref="PlugIn"/> to delete</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <exception cref="PlugInNotFoundException">Thrown if a <see cref="PlugIn"/> was not found</exception>
         /// <exception cref="PlugInInstanceRunningException">Thrown if a <see cref="PlugInInstance"/> is running</exception>
         Task DeletePlugInAsync(int id,
                                CancellationToken cancellationToken = default);
@@ -109,6 +111,8 @@ namespace Shaos.Services
         /// <param name="id">The identifier of the <see cref="PlugInInstance"/></param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
         /// <returns>An instance of a <see cref="PlugInInstance"/> configuration</returns>
+        /// <exception cref="PlugInInformationNotAssignedException">Thrown if the associated <see cref="PlugIn"/> has no <see cref="PlugInInformation"/> assigned</exception>
+        /// <exception cref="PlugInHasNoConfigurationException">Thrown if the associated <see cref="PlugInInformation"/> has no configuration assigned</exception>
         Task<object> LoadPlugInInstanceConfigurationAsync(int id,
                                                           CancellationToken cancellationToken = default);
 
@@ -125,13 +129,14 @@ namespace Shaos.Services
                                                            CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Update a plugin package
+        /// Update a <see cref="PlugIn"/> package
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="packageFileName"></param>
-        /// <param name="plugInDirectory"></param>
-        /// <param name="plugInAssemblyFileName"></param>
+        /// <param name="id">The <see cref="PlugIn"/> identifier</param>
+        /// <param name="packageFileName">The file name of the <see cref="PlugIn"/> package</param>
+        /// <param name="plugInDirectory">The <see cref="PlugIn"/> directory</param>
+        /// <param name="plugInAssemblyFileName">The <see cref="PlugIn"/> assembly file</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to cancel the operation</param>
+        /// <exception cref="PlugInNotFoundException">Thrown if a plugin instance is still running</exception> 
         /// <exception cref="PlugInInstancesRunningException">Thrown if a plugin instance is still running</exception> 
         Task UpdatePlugInPackageAsync(int id,
                                       string packageFileName,
