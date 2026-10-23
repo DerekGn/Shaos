@@ -49,6 +49,27 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData[AlertTypes.Success] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @Html.Raw(@TempData[AlertTypes.Errorr])
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData[AlertTypes.Errorr] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @Html.Raw(@TempData[AlertTypes.Errorr])
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData[AlertTypes.Warning] != null)
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    @Html.Raw(@TempData[AlertTypes.Warning])
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             @RenderBody()
         </main>
     </div>

@@ -29,7 +29,19 @@ namespace Shaos.Pages
 {
     public abstract class BasePageModel : PageModel
     {
-        [TempData]
-        public string StatusMessage { get; set; } 
+        public void AlertSuccess(string alert)
+        {
+            TempData[AlertTypes.Success] = alert;
+        }
+
+        public void AlertError(string alert)
+        {
+            TempData[AlertTypes.Errorr] = alert;
+        }
+
+        public void AlertWarning(string alert)
+        {
+            TempData[AlertTypes.Warning] = alert;
+        }
     }
 }
