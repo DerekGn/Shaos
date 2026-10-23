@@ -34,7 +34,8 @@ namespace Shaos.Pages
     {
         public const string ViewDataKey = "history";
 
-        protected BaseHistoryModel(IRepository repository) : base(repository)
+        protected BaseHistoryModel(IRepository repository,
+                                   ILogger<BaseHistoryModel> logger) : base(repository, logger)
         {
         }
 

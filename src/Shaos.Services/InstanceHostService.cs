@@ -250,7 +250,7 @@ namespace Shaos.Services
             var runtimeInstance = plugInBuilder.PlugIn;
 
             _logger.LogAttachEventHandlers(plugInInstance.Id,
-                                            plugInInstance.Name);
+                                           plugInInstance.Name);
 
             _instanceEventHandler.Attach(runtimeInstance!);
 

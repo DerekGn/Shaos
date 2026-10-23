@@ -30,7 +30,8 @@ namespace Shaos.Pages.Parameters
     [Authorize]
     public class HistoryModel : BaseHistoryModel
     {
-        public HistoryModel(IRepository repository) : base(repository)
+        public HistoryModel(IRepository repository,
+                            ILogger<HistoryModel> logger) : base(repository, logger)
         {
         }
     }

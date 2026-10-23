@@ -23,14 +23,19 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+
+using Shaos.Pages;
 
 namespace Shaos.Paging
 {
-    public class PaginatedModel<T> : PageModel where T : class
+    public class PaginatedModel<T> : BasePageModel where T : class
     {
         public const string NameDescending = "name_desc";
         public const string IdentifierDescending = "id_desc";
+
+        public PaginatedModel(ILogger<BasePageModel> logger) : base(logger)
+        {
+        }
 
         [BindProperty]
         public string CurrentFilter { get; set; } = string.Empty;

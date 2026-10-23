@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Logging;
@@ -32,13 +31,15 @@ using Shaos.Services.Logging;
 namespace Shaos.Pages.System.Logging
 {
     [Authorize]
-    public class OverrideModel : PageModel
+    public class OverrideModel : BasePageModel
     {
         private readonly ILoggingConfiguration _loggingConfiguration;
         private readonly IRepository _repository;
 
         public OverrideModel(ILoggingConfiguration loggingConfiguration,
+                             ILogger<OverrideModel> logger,
                              IRepository repository)
+            : base(logger)
         {
             _loggingConfiguration = loggingConfiguration;
             _repository = repository;
@@ -52,8 +53,7 @@ namespace Shaos.Pages.System.Logging
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"{nameof(LogLevelSwitch)}: [{id}] was not found");
+                AlertError($"{nameof(LogLevelSwitch)}: [{id}] was not found");
 
                 return Page();
             }

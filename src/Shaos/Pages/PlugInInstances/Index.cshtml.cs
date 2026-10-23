@@ -38,7 +38,9 @@ namespace Shaos.Pages.PlugInInstances
         private readonly IRepository _repository;
 
         public IndexModel(IConfiguration configuration,
-                          IRepository repository)
+                          IRepository repository,
+                          ILogger<IndexModel> logger)
+            : base(logger)
         {
             _configuration = configuration;
             _repository = repository;
@@ -88,8 +90,7 @@ namespace Shaos.Pages.PlugInInstances
             }
             else
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"PlugIn Id [{id}] was not found.");
+                AlertError($"PlugIn Id [{id}] was not found.");
             }
         }
 

@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services;
@@ -33,13 +32,15 @@ using Shaos.Services.Exceptions;
 namespace Shaos.Pages.PlugIns
 {
     [Authorize]
-    public class DeleteModel : PageModel
+    public class DeleteModel : BasePageModel
     {
         private readonly IPlugInService _plugInService;
         private readonly IRepository _repository;
 
         public DeleteModel(IRepository repository,
-                           IPlugInService plugInService)
+                           IPlugInService plugInService,
+                           ILogger<DeleteModel> logger)
+            : base(logger)
         {
             _repository = repository;
             _plugInService = plugInService;
@@ -56,8 +57,7 @@ namespace Shaos.Pages.PlugIns
 
             if (plugin == null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"PlugIn: [{id}] was not found");
+                AlertError($"PlugIn: [{id}] was not found");
             }
             else
             {

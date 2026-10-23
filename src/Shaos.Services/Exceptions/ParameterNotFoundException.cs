@@ -22,10 +22,20 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Pages
+using System.Diagnostics.CodeAnalysis;
+
+namespace Shaos.Services.Exceptions
 {
-    internal static class PageConstants
+    /// <summary>
+    /// An exception that is thrown when a parameter is not found
+    /// </summary>
+    /// <param name="id">The parameter identifier</param>
+    [ExcludeFromCodeCoverage]
+    public class ParameterNotFoundException(int id) : Exception
     {
-        public const string NotFound = "NotFound";
+        /// <summary>
+        /// The parameter identifier
+        /// </summary>
+        public int Id { get; } = id;
     }
 }

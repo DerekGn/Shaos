@@ -29,6 +29,13 @@ namespace Shaos.Pages
 {
     public abstract class BasePageModel : PageModel
     {
+        private readonly ILogger<BasePageModel> _logger;
+
+        protected BasePageModel(ILogger<BasePageModel> logger)
+        {
+            _logger = logger;
+        }
+
         public void AlertSuccess(string alert)
         {
             TempData[AlertTypes.Success] = alert;

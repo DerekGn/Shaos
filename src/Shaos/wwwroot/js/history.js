@@ -5,7 +5,7 @@ function isEmptyOrWhitespace(str) {
 }
 
 const json = document.getElementById('history').innerHTML;
-var historyData = JSON.parse(json);
+let historyData = JSON.parse(json);
 
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const chart = new Chart(ctx, {

@@ -40,6 +40,7 @@ using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
+using Shaos.Services.Parameters;
 using Shaos.Services.Processing;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
@@ -163,6 +164,7 @@ namespace Shaos
 
             builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
             builder.Services.AddSingleton<IFileStoreService, FileStoreService>();
+            builder.Services.AddSingleton<IParameterService, ParameterService>();
             builder.Services.AddSingleton<IPlugInConfigurationBuilder, PlugInConfigurationBuilder>();
             builder.Services.AddSingleton<IPlugInTypeValidator, PlugInTypeValidator>();
             builder.Services.AddSingleton<IQueue<ApplicationEvent>>(InitEventQueue<ApplicationEvent>(builder.Configuration));

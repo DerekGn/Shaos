@@ -35,7 +35,11 @@ namespace Shaos.Pages.System.Dashboard
     [Authorize]
     public class CreateModel : DashboardItemPageModel
     {
-        public CreateModel(IRepository repository) : base(repository) { }
+        public CreateModel(IRepository repository,
+                           ILogger<CreateModel> logger)
+            : base(repository, logger)
+        {
+        }
 
         [BindProperty]
         public DashboardItemModel Item { get; set; } = default!;
@@ -63,8 +67,7 @@ namespace Shaos.Pages.System.Dashboard
 
             if (parameter == null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"Parameter: [{parameterId}] was not found");
+                AlertError($"Parameter: [{parameterId}] was not found");
             }
             else
             {
@@ -78,8 +81,7 @@ namespace Shaos.Pages.System.Dashboard
                 }
                 catch (DuplicateEntityException)
                 {
-                    ModelState.AddModelError(string.Empty,
-                                             $"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
+                    AlertWarning($"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
 
                     return Page();
                 }

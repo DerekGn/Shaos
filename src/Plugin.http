@@ -7,7 +7,7 @@
 
 @pluginid = 1
 @codefileid = 1
-@pluginidinstanceid = 1
+@plugininstanceid = 1
 
 ###
 
@@ -72,14 +72,14 @@ Content-Type: application/json
 ###
 
 # Delete the instances
-DELETE {{address}}/api/v1/plugins/instances/{{pluginidinstanceid}}
+DELETE {{address}}/api/v1/plugins/instances/{{plugininstanceid}}
 Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
 # Update a plugin instance
-PUT {{address}}/api/v1/plugins/instances/{{pluginidinstanceid}}
+PUT {{address}}/api/v1/plugins/instances/{{plugininstanceid}}
 Authorization: Bearer {{token}}
 Accept: application/json
 Content-Type: application/json
