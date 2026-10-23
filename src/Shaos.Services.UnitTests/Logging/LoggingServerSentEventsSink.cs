@@ -44,7 +44,7 @@ namespace Shaos.Services.UnitTests.Logging
         }
 
         [Fact]
-        public void TestEmit()
+        public async Task TestEmit()
         {
             var logEvent = new LogEvent(DateTimeOffset.UtcNow,
                                         LogEventLevel.Error,
@@ -53,6 +53,8 @@ namespace Shaos.Services.UnitTests.Logging
                                         []);
 
             _loggingServerSentEventsSink.Emit(logEvent);
+
+            await Task.Delay(100, TestContext.Current.CancellationToken);
 
             _mockQueue.Verify(_ => _.EnqueueAsync(It.IsAny<string>()));
         }
