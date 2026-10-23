@@ -108,7 +108,7 @@ namespace Shaos.Services
             {
                 _logger.LogUnableToStartPlugIn(id);
 
-                throw new InstanceNotFoundException(id);
+                throw new RuntimeInstanceNotFoundException(id);
             }
 
             var plugInInstance = await LoadPlugInInstanceAsync(id,

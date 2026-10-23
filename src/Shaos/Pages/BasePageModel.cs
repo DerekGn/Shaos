@@ -22,21 +22,26 @@
 * SOFTWARE.
 */
 
-using System.Diagnostics.CodeAnalysis;
-using Shaos.Services.Runtime.Host;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Shaos.Services.Runtime.Exceptions
+namespace Shaos.Pages
 {
-    /// <summary>
-    /// An exception that is thrown when a <see cref="RuntimeInstance"/> was not found
-    /// </summary>
-    /// <param name="id">The identifier of the <see cref="RuntimeInstance"/></param>
-    [ExcludeFromCodeCoverage]
-    public class InstanceNotFoundException(int id) : Exception
+    public abstract class BasePageModel : PageModel
     {
-        /// <summary>
-        /// The identifier of the <see cref="RuntimeInstance"/>
-        /// </summary>
-        public int Id { get; } = id;
+        public void AlertSuccess(string alert)
+        {
+            TempData[AlertTypes.Success] = alert;
+        }
+
+        public void AlertError(string alert)
+        {
+            TempData[AlertTypes.Errorr] = alert;
+        }
+
+        public void AlertWarning(string alert)
+        {
+            TempData[AlertTypes.Warning] = alert;
+        }
     }
 }

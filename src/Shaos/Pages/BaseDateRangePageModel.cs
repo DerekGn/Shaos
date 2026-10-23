@@ -23,13 +23,12 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Extensions;
 using Shaos.Repository;
 
 namespace Shaos.Pages
 {
-    public abstract class BaseDateRangePageModel : PageModel
+    public abstract class BaseDateRangePageModel : BasePageModel
     {
         private protected readonly IRepository Repository;
 

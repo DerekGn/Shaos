@@ -135,46 +135,50 @@ namespace Shaos.Services
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<ApplicationEvent>> StreamApplicationEventsAsync(CancellationToken cancellationToken = default)
         {
-            return StreamEventsAsync<ApplicationEvent>(
+            return StreamEventsAsync(
                 _applicationEventQueues,
                 (applicationEvent) =>
                 {
                     return true;
-                }, cancellationToken);
+                },
+                cancellationToken);
         }
 
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<LogCreatedEvent>> StreamLogEventsAsync(CancellationToken cancellationToken = default)
         {
-            return StreamEventsAsync<LogCreatedEvent>(
+            return StreamEventsAsync(
                 _logEventQueues,
                 (@event) =>
                 {
                     return true;
-                }, cancellationToken);
+                },
+                cancellationToken);
         }
 
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsAsync(CancellationToken cancellationToken = default)
         {
-            return StreamEventsAsync<BaseParameterUpdatedEvent>(
+            return StreamEventsAsync(
                 _parameterEventQueues,
                 (parameterUpdateEvent) =>
                 {
                     return true;
-                }, cancellationToken);
+                },
+                cancellationToken);
         }
 
         /// <inheritdoc/>
         public IAsyncEnumerable<SseItem<BaseParameterUpdatedEvent>> StreamParameterEventsByIdAsync(int id,
                                                                                                    CancellationToken cancellationToken = default)
         {
-            return StreamEventsAsync<BaseParameterUpdatedEvent>(
+            return StreamEventsAsync(
                 _parameterEventQueues,
                 (parameterUpdateEvent) =>
                 {
                     return parameterUpdateEvent.Id == id;
-                }, cancellationToken);
+                },
+                cancellationToken);
         }
 
         private async Task AccessClientQueuesAsync(Action action)

@@ -120,7 +120,7 @@ namespace Shaos.Services.Runtime.Host
         public RuntimeInstanceLoadContext GetInstanceLoadContext(int id)
         {
             var instance = _executingInstances.FirstOrDefault(_ => _.Id == id)
-                ?? throw new InstanceNotFoundException(id);
+                ?? throw new RuntimeInstanceNotFoundException(id);
 
             InitaliseInstanceLoadContext(instance);
 
@@ -304,7 +304,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 _logger.LogUnableToFindInstance(id);
 
-                throw new InstanceNotFoundException(id);
+                throw new RuntimeInstanceNotFoundException(id);
             }
             else
             {
@@ -323,7 +323,7 @@ namespace Shaos.Services.Runtime.Host
             {
                 _logger.LogUnableToFindInstance(id);
 
-                throw new InstanceNotFoundException(id);
+                throw new RuntimeInstanceNotFoundException(id);
             }
             else
             {
