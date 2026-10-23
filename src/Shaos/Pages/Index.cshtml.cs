@@ -23,9 +23,6 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Shaos.Extensions;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Exceptions;
@@ -34,13 +31,14 @@ using Shaos.Services.Parameters;
 namespace Shaos.Pages
 {
     [Authorize]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
         private readonly IParameterService _parameterService;
         private readonly IRepository _repository;
 
         public IndexModel(IRepository repository,
-                          IParameterService parameterService)
+                          ILogger<IndexModel> logger,
+                          IParameterService parameterService) : base(logger)
         {
             _repository = repository;
             _parameterService = parameterService;
@@ -54,21 +52,26 @@ namespace Shaos.Pages
         }
 
         public async Task OnPostWriteBooleanAsync(int id,
-                                                                 bool value,
-                                                                 CancellationToken cancellationToken = default)
+                                                  bool value,
+                                                  CancellationToken cancellationToken = default)
         {
             await ExecuteParameterWriteAsync(async () =>
             {
-                throw new ParameterNotFoundException(id);
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
             }, cancellationToken);
         }
 
         public async Task OnPostWriteFloatAsync(int id,
-                                                               float value,
-                                                               CancellationToken cancellationToken = default)
+                                                float value,
+                                                CancellationToken cancellationToken = default)
         {
             await ExecuteParameterWriteAsync(async () =>
             {
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
             }, cancellationToken);
         }
 
@@ -78,6 +81,9 @@ namespace Shaos.Pages
         {
             await ExecuteParameterWriteAsync(async () =>
             {
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
             }, cancellationToken);
         }
 
@@ -87,6 +93,9 @@ namespace Shaos.Pages
         {
             await ExecuteParameterWriteAsync(async () =>
             {
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
             }, cancellationToken);
         }
 
@@ -101,18 +110,15 @@ namespace Shaos.Pages
             }
             catch (ParameterInvalidTypeException exception)
             {
-                ModelState.AddModelError("InvalidParameterType",
-                                         $"Parameter [{exception.Id}] is invalid type. Expected Type: [{exception.Expected.Name}] Actual Type: [{exception.Actual.Name}]");
+                AlertError($"Parameter [{exception.Id}] is invalid type. Expected Type: [{exception.Expected.Name}] Actual Type: [{exception.Actual.Name}]");
             }
             catch (ParameterNotFoundException exception)
             {
-                ModelState.AddModelError("InvalidParameterType",
-                                         $"Parameter [{exception.Id}] was not found");
+                AlertError($"Parameter [{exception.Id}] was not found");
             }
             catch (ParameterNotWritableException exception)
             {
-                ModelState.AddModelError("InvalidParameterType",
-                                         $"Parameter [{exception.Id}] is not writable");
+                AlertError($"Parameter [{exception.Id}] is not writable");
             }
         }
 

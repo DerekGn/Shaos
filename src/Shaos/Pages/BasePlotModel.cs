@@ -37,7 +37,8 @@ namespace Shaos.Pages
         private readonly IRepository _repository;
 
         protected BasePlotModel(IRepository repository,
-                                IOptions<PlotOptions> options)
+                                ILogger<BasePlotModel> logger,
+                                IOptions<PlotOptions> options) : base(logger)
         {
             _repository = repository;
             _options = options;
@@ -67,14 +68,12 @@ namespace Shaos.Pages
                 }
                 catch (ParameterPlotNotSupportedException)
                 {
-                    ModelState.AddModelError(string.Empty,
-                                             $"Parameter Id [{id}] does not support plotting.");
+                    AlertWarning($"Parameter Id [{id}] does not support plotting.");
                 }
             }
             else
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"Parameter Id [{id}] was not found.");
+                AlertError($"Parameter Id [{id}] was not found.");
             }
         }
     }

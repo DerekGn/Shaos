@@ -38,7 +38,9 @@ namespace Shaos.Pages.Parameters
         private readonly IRepository _repository;
 
         public IndexModel(IConfiguration configuration,
-                          IRepository repository)
+                          IRepository repository,
+                          ILogger<IndexModel> logger)
+            : base(logger)
         {
             _configuration = configuration;
             _repository = repository;

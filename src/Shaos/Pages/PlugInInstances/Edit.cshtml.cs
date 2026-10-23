@@ -24,21 +24,20 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
 namespace Shaos.Pages.PlugInInstances
 {
     [Authorize]
-    public class EditModel : PageModel
+    public class EditModel : BasePageModel
     {
         private readonly IRepository _repository;
 
-        public EditModel(IRepository repository)
+        public EditModel(IRepository repository,
+                         ILogger<EditModel> logger) 
+            : base(logger)
         {
-            ArgumentNullException.ThrowIfNull(repository);
-
             _repository = repository;
         }
 
@@ -53,8 +52,7 @@ namespace Shaos.Pages.PlugInInstances
 
             if (plugininstance == null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"PlugInInstance: [{id}] was not found");
+                AlertError($"PlugInInstance: [{id}] was not found");
             }
             else
             {

@@ -40,7 +40,9 @@ namespace Shaos.Pages.Instances
 
         public IndexModel(IInstanceHostService instanceHostService,
                           IRuntimeInstanceHost instanceHost,
-                          IConfiguration configuration)
+                          IConfiguration configuration,
+                          ILogger<IndexModel> logger)
+            : base(logger)
         {
             _instanceHost = instanceHost;
             _configuration = configuration;
@@ -124,8 +126,7 @@ namespace Shaos.Pages.Instances
             }
             catch (PlugInInstanceNotConfiguredException)
             {
-                ModelState.AddModelError(string.Empty,
-                                         $"Instance [{id}] not configured.");
+                AlertWarning($"Instance [{id}] not configured.");
             }
 
             return RedirectToPage();

@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Shaos.Sdk;
+using Shaos.Sdk.Collections.Generic;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Exceptions;
@@ -98,8 +100,7 @@ namespace Shaos.Services.Parameters
                 .Where(_ => _.ExecutionContext!.PlugIn != null)
                 .Select(_ => _.ExecutionContext!.PlugIn)
                 .Select(_ => _!.Devices)
-                .Cast<IDevice>()
-                .Select(_ => _.Parameters)
+                .Select(_ => _)
                 .Cast<IBaseParameter>()
                 .FirstOrDefault(_ => _.Id == parameterId) ?? throw new ParameterNotFoundException(parameterId);
 

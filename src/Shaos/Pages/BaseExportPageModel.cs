@@ -31,7 +31,8 @@ namespace Shaos.Pages
 {
     public abstract class BaseExportPageModel : BaseDateRangePageModel
     {
-        protected BaseExportPageModel(IRepository repository) : base(repository)
+        protected BaseExportPageModel(IRepository repository,
+                                      ILogger<BaseExportPageModel> logger) : base(repository, logger)
         {
         }
 
@@ -54,8 +55,7 @@ namespace Shaos.Pages
 
             if (parameter is null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"Parameter Id [{id}] was not found.");
+                AlertWarning($"Parameter Id [{id}] was not found.");
 
                 return new EmptyResult();
             }
