@@ -3,14 +3,14 @@
 @model IntParameter
 
 <div id="@Model.Id" class="row">
-    <div class="col-sm-1">@Model.Value</div>
+    <div id="value" class="col-sm-1">@Model.Value</div>
     <div class="col-sm-2">
         <form asp-page-handler="writeinteger" method="post">
-            <input class="form-range" id="@(Model.Id)" max="@Model.Max" min="@Model.Min" name="value" step="@Model.Step" type="range" value="@Model.Value" />
+            <input id="input" class="form-range" max="@Model.Max" min="@Model.Min" name="value" step="@Model.Step" type="range" value="@Model.Value" />
             <input name="id" type="hidden" value="@(Model.Id)" />
         </form>
     </div>
-    <div class="col-sm-3">@Model.UpdatedDate</div>
+    <div id="timestamp" class="col-sm-3">@Model.UpdatedDate</div>
     <div class="col-sm-3">
         <a asp-page="/Plot" asp-route-Id="@Model.Id" asp-route-deviceId="@Model.DeviceId" class="btn btn-sm btn-primary" title="Plot">
             <span>
