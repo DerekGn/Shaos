@@ -25,6 +25,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Shaos.Data;
 using Shaos.Filters;
@@ -192,6 +193,7 @@ namespace Shaos
 
             var app = builder.Build();
 
+            InitFileStore(app.Services.GetService<IOptions<FileStoreOptions>>());
             app.MapIdentityApi<IdentityUser>();
 
             app.MapControllers();
@@ -250,6 +252,12 @@ namespace Shaos
             }
 
             return new WorkItemQueue(queueCapacity);
+        }
+
+        private static void InitFileStore(IOptions<FileStoreOptions> options)
+        {
+            Directory.CreateDirectory(options.Value.BinariesPath);
+            Directory.CreateDirectory(options.Value.PackagesPath);
         }
     }
 }
