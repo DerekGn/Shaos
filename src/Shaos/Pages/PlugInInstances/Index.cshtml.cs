@@ -88,8 +88,7 @@ namespace Shaos.Pages.PlugInInstances
             }
             else
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"PlugIn Id [{id}] was not found.");
+                AlertError($"PlugIn Id [{id}] was not found.");
             }
         }
 

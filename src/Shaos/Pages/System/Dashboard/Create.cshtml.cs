@@ -63,8 +63,7 @@ namespace Shaos.Pages.System.Dashboard
 
             if (parameter == null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"Parameter: [{parameterId}] was not found");
+                AlertError($"Parameter: [{parameterId}] was not found");
             }
             else
             {

@@ -33,7 +33,7 @@ using Shaos.Services.Exceptions;
 namespace Shaos.Pages.PlugIns
 {
     [Authorize]
-    public class DeleteModel : PageModel
+    public class DeleteModel : BasePageModel
     {
         private readonly IPlugInService _plugInService;
         private readonly IRepository _repository;
@@ -56,8 +56,7 @@ namespace Shaos.Pages.PlugIns
 
             if (plugin == null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"PlugIn: [{id}] was not found");
+                AlertError($"PlugIn: [{id}] was not found");
             }
             else
             {

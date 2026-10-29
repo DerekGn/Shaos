@@ -124,8 +124,7 @@ namespace Shaos.Pages.Instances
             }
             catch (PlugInInstanceNotConfiguredException)
             {
-                ModelState.AddModelError(string.Empty,
-                                         $"Instance [{id}] not configured.");
+                AlertWarning($"PlugIn Instance [{id}] not configured.");
             }
 
             return RedirectToPage();
