@@ -55,8 +55,8 @@ namespace Shaos.Pages
 
             if (parameter is null)
             {
-                AlertWarning($"Parameter Id [{id}] was not found.");
-
+                AlertError($"Parameter Id [{id}] was not found.");
+                
                 return new EmptyResult();
             }
 

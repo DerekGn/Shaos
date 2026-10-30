@@ -23,7 +23,7 @@
 */
 
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Pages;
 
 namespace Shaos.Paging

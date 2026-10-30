@@ -126,7 +126,7 @@ namespace Shaos.Pages.Instances
             }
             catch (PlugInInstanceNotConfiguredException)
             {
-                AlertWarning($"Instance [{id}] not configured.");
+                AlertWarning($"PlugIn Instance [{id}] not configured.");
             }
 
             return RedirectToPage();
