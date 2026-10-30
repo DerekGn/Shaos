@@ -67,14 +67,12 @@ namespace Shaos.Pages
                 }
                 catch (ParameterPlotNotSupportedException)
                 {
-                    ModelState.AddModelError(string.Empty,
-                                             $"Parameter Id [{id}] does not support plotting.");
+                    AlertWarning($"Parameter Id [{id}] does not support plotting.");
                 }
             }
             else
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"Parameter Id [{id}] was not found.");
+                AlertError($"Parameter Id [{id}] was not found.");
             }
         }
     }

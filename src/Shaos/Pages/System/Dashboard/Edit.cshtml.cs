@@ -81,8 +81,7 @@ namespace Shaos.Pages.System.Dashboard
                                                                                    cancellationToken: cancellationToken);
             if (parameter == null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"Parameter: [{parameterId}] was not found");
+                AlertError($"Parameter: [{parameterId}] was not found");
             }
             else
             {

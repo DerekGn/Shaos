@@ -82,8 +82,7 @@ namespace Shaos.Pages
             }
             else
             {
-                ModelState.AddModelError(string.Empty,
-                                         $"Parameter Id [{parameterId}] was not found");
+                AlertError($"Parameter Id [{parameterId}] was not found");
             }
 
             return JsonSerializer.Serialize(parameterHistory);

@@ -31,7 +31,7 @@ using Shaos.Repository.Models;
 namespace Shaos.Pages.PlugInInstances
 {
     [Authorize]
-    public class EditModel : PageModel
+    public class EditModel : BasePageModel
     {
         private readonly IRepository _repository;
 
@@ -53,8 +53,7 @@ namespace Shaos.Pages.PlugInInstances
 
             if (plugininstance == null)
             {
-                ModelState.AddModelError(PageConstants.NotFound,
-                                         $"PlugInInstance: [{id}] was not found");
+                AlertError($"PlugInInstance: [{id}] was not found");
             }
             else
             {

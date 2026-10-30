@@ -30,7 +30,7 @@ using Shaos.Repository.Models.Devices.Parameters;
 
 namespace Shaos.Pages.System.Dashboard
 {
-    public class DashboardItemPageModel : PageModel
+    public class DashboardItemPageModel : BasePageModel
     {
         internal protected readonly IRepository Repository;
 
