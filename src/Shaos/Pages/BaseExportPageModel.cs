@@ -31,7 +31,8 @@ namespace Shaos.Pages
 {
     public abstract class BaseExportPageModel : BaseDateRangePageModel
     {
-        protected BaseExportPageModel(IRepository repository) : base(repository)
+        protected BaseExportPageModel(IRepository repository,
+                                      ILogger<BaseExportPageModel> logger) : base(repository, logger)
         {
         }
 

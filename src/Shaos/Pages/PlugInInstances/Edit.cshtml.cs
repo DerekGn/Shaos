@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 
@@ -35,10 +34,10 @@ namespace Shaos.Pages.PlugInInstances
     {
         private readonly IRepository _repository;
 
-        public EditModel(IRepository repository)
+        public EditModel(IRepository repository,
+                         ILogger<EditModel> logger) 
+            : base(logger)
         {
-            ArgumentNullException.ThrowIfNull(repository);
-
             _repository = repository;
         }
 

@@ -1,4 +1,6 @@
-﻿const settings = JSON.parse(document.getElementById('settings').innerHTML);
+﻿"use strict";
+
+const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const eventSource = new EventSource('/api/v1/parameter-events/' + settings.id);
 const ctx = document.getElementById('chartCanvas').getContext('2d');
 const chart = new Chart(ctx, {
@@ -80,7 +82,7 @@ window.onload = function () {
     };
 
     function plotParameterValue(value, timestamp) {
-        var dateValue = moment(timestamp).subtract(5, 'seconds');
+        let dateValue = moment(timestamp).subtract(5, 'seconds');
 
         chart.data.datasets[0].data.push({
             x: timestamp,

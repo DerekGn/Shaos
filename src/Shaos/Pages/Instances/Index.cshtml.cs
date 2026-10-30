@@ -40,7 +40,9 @@ namespace Shaos.Pages.Instances
 
         public IndexModel(IInstanceHostService instanceHostService,
                           IRuntimeInstanceHost instanceHost,
-                          IConfiguration configuration)
+                          IConfiguration configuration,
+                          ILogger<IndexModel> logger)
+            : base(logger)
         {
             _instanceHost = instanceHost;
             _configuration = configuration;

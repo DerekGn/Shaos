@@ -22,7 +22,6 @@
 * SOFTWARE.
 */
 
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Shaos.Repository;
@@ -32,9 +31,11 @@ namespace Shaos.Pages.System.Dashboard
 {
     public class DashboardItemPageModel : BasePageModel
     {
-        internal protected readonly IRepository Repository;
+        protected internal readonly IRepository Repository;
 
-        public DashboardItemPageModel(IRepository repository)
+        public DashboardItemPageModel(IRepository repository,
+                                      ILogger<DashboardItemPageModel> logger)
+            : base(logger)
         {
             Repository = repository;
         }

@@ -23,7 +23,6 @@
 */
 
 using Shaos.Sdk;
-using Shaos.Sdk.Exceptions;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -32,13 +31,11 @@ namespace Shaos.Services.Runtime.Exceptions
     /// <summary>
     /// An exception that is thrown when no <see cref="IPlugIn"/> was found in an <see cref="Assembly"/>
     /// </summary>
+    /// <remarks>
+    /// Create an instance of a <see cref="PlugInTypeNotFoundException"/>
+    /// </remarks>
     [ExcludeFromCodeCoverage]
-    public class PlugInTypeNotFoundException : Exception
+    public class PlugInTypeNotFoundException(string? assemblyName) : Exception($"No valid [{nameof(IPlugIn)}] implementation found in package file [{assemblyName}]")
     {
-        /// <summary>
-        /// Create an instance of a <see cref="PlugInTypeNotFoundException"/>
-        /// </summary>
-        public PlugInTypeNotFoundException()
-        { }
     }
 }
