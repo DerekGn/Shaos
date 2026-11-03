@@ -101,8 +101,8 @@ namespace Shaos.Services.Parameters
         }
 
         private async Task ExecuteParameterUpdateAsync<T>(int parameterId,
-                                                          CancellationToken cancellationToken,
-                                                          Func<T, Task> parameterUpdateAsync) where T : class, IBaseParameter
+                                                          Func<T, Task> parameterUpdateAsync,
+                                                          CancellationToken cancellationToken) where T : class, IBaseParameter
         {
             var modelParameter = await _repository.GetByIdAsync<BaseParameterModel>(parameterId,
                                                                                     true,
@@ -121,14 +121,10 @@ namespace Shaos.Services.Parameters
                 ?? throw new ParameterPlugInNotStartedException(modelParameter.Id,
                                                                 parameterId);
 
-            var parameter = runtimeInstance
-                .ExecutionContext!
-                .PlugIn!
+            var parameter = runtimeInstance.ExecutionContext!.PlugIn!
                 .Devices
-                .Select(_ => _)
-                .Select(_ => _.Parameters)
-                .Cast<IBaseParameter>()
-                .FirstOrDefault(_ => _.Id == parameterId)
+                .SelectMany(_ => _.Parameters)
+                .FirstOrDefault(_ => _.Id ==  modelParameter.Id)
                 ?? throw new ParameterNotFoundException(parameterId);
 
             if (!parameter.CanWrite)
