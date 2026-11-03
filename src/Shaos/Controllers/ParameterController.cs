@@ -28,7 +28,6 @@ using Shaos.Services.Exceptions;
 using Shaos.Services.Parameters;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 
 namespace Shaos.Controllers
 {
@@ -139,13 +138,21 @@ namespace Shaos.Controllers
             }
             catch (ParameterInvalidTypeException ex)
             {
-                return NotFound(ex.ToProblemDetails());
+                return BadRequest(ex.ToProblemDetails());
             }
             catch (ParameterNotFoundException ex)
             {
-                return NotFound(ex.ToProblemDetails());
+                return BadRequest(ex.ToProblemDetails());
             }
             catch (ParameterNotWritableException ex)
+            {
+                return BadRequest(ex.ToProblemDetails());
+            }
+            catch (ParameterPlugInNotStartedException ex)
+            {
+                return BadRequest(ex.ToProblemDetails());
+            }
+            catch (PersistedParameterNotFoundException ex)
             {
                 return BadRequest(ex.ToProblemDetails());
             }

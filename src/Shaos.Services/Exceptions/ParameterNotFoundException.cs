@@ -24,15 +24,19 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-/// <summary>
-/// An exception that is thrown when a parameter is not found
-/// </summary>
-/// <param name="id">The parameter identifier</param>
-[ExcludeFromCodeCoverage]
-    public class ParameterNotFoundException(int id) : Exception
+namespace Shaos.Services.Exceptions
+{
+    /// <summary>
+    /// An exception that is thrown when a parameter is not found
+    /// </summary>
+    /// <param name="id">The parameter identifier</param>
+    [ExcludeFromCodeCoverage]
+    public class ParameterNotFoundException(int id) 
+        : Exception($"Parameter [{id}] was not found")
     {
         /// <summary>
         /// The parameter identifier
         /// </summary>
         public int Id { get; } = id;
     }
+}

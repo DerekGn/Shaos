@@ -35,7 +35,8 @@ namespace Shaos.Services.Exceptions
     [ExcludeFromCodeCoverage]
     public class ParameterInvalidTypeException(int id,
                                                Type expected,
-                                               Type actual) : Exception
+                                               Type actual) 
+        : Exception($"Parameter [{id}] is invalid type. Expected Type: [{expected.Name}] Actual Type: [{actual.Name}]")
     {
         /// <summary>
         /// The actual type of the parameter

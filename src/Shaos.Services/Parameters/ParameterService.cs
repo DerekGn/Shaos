@@ -22,12 +22,13 @@
 * SOFTWARE.
 */
 
-using Shaos.Sdk;
-using Shaos.Sdk.Collections.Generic;
-using Shaos.Sdk.Devices;
+using Shaos.Repository;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Exceptions;
 using Shaos.Services.Runtime.Host;
+
+using BaseParameterModel = Shaos.Repository.Models.Devices.Parameters.BaseParameter;
+using DeviceModel = Shaos.Repository.Models.Devices.Device;
 
 namespace Shaos.Services.Parameters
 {
@@ -36,15 +37,19 @@ namespace Shaos.Services.Parameters
     /// </summary>
     public class ParameterService : IParameterService
     {
+        private readonly IRepository _repository;
         private readonly IRuntimeInstanceHost _runtimeInstanceHost;
 
         /// <summary>
         /// Create an instance of a <see cref="IParameterService"/>
         /// </summary>
         /// <param name="runtimeInstanceHost">The <see cref="IRuntimeInstanceHost"/> instance</param>
-        public ParameterService(IRuntimeInstanceHost runtimeInstanceHost)
+        /// <param name="repository">The <see cref="IRepository"/> instance</param>
+        public ParameterService(IRuntimeInstanceHost runtimeInstanceHost,
+                                IRepository repository)
         {
             _runtimeInstanceHost = runtimeInstanceHost;
+            _repository = repository;
         }
 
         /// <inheritdoc/>
@@ -52,10 +57,11 @@ namespace Shaos.Services.Parameters
                                               bool value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<bool>>(parameterId, async (parameter) =>
-            {
-                await parameter.WriteAsync(value);
-            });
+            await ExecuteParameterUpdateAsync<IBaseParameter<bool>>(parameterId, cancellationToken,
+                async (parameter) =>
+                {
+                    await parameter.WriteAsync(value);
+                });
         }
 
         /// <inheritdoc/>
@@ -63,10 +69,11 @@ namespace Shaos.Services.Parameters
                                               float value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<float>>(parameterId, async (parameter) =>
-            {
-                await parameter.WriteAsync(value);
-            });
+            await ExecuteParameterUpdateAsync<IBaseParameter<float>>(parameterId, cancellationToken,
+                async (parameter) =>
+                {
+                    await parameter.WriteAsync(value);
+                });
         }
 
         /// <inheritdoc/>
@@ -74,10 +81,11 @@ namespace Shaos.Services.Parameters
                                               uint value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<uint>>(parameterId, async (parameter) =>
-            {
-                await parameter.WriteAsync(value);
-            });
+            await ExecuteParameterUpdateAsync<IBaseParameter<uint>>(parameterId, cancellationToken,
+                async (parameter) =>
+                {
+                    await parameter.WriteAsync(value);
+                });
         }
 
         /// <inheritdoc/>
@@ -85,26 +93,45 @@ namespace Shaos.Services.Parameters
                                               int value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<int>>(parameterId, async (parameter) =>
-            {
-                await parameter.WriteAsync(value);
-            });
+            await ExecuteParameterUpdateAsync<IBaseParameter<int>>(parameterId, cancellationToken,
+                async (parameter) =>
+                {
+                    await parameter.WriteAsync(value);
+                });
         }
 
         private async Task ExecuteParameterUpdateAsync<T>(int parameterId,
-                                                          Func<T,Task> parameterUpdateAsync) where T : class, IBaseParameter
+                                                          CancellationToken cancellationToken,
+                                                          Func<T, Task> parameterUpdateAsync) where T : class, IBaseParameter
         {
-            var parameter = _runtimeInstanceHost
+            var modelParameter = await _repository.GetByIdAsync<BaseParameterModel>(parameterId,
+                                                                                    true,
+                                                                                    [
+                                                                                        nameof(BaseParameterModel.Device),
+                                                                                        $"{nameof(BaseParameterModel.Device)}.{nameof(DeviceModel.PlugInInstance)}",
+                                                                                    ],
+                                                                                    cancellationToken) ?? throw new ParameterNotFoundException(parameterId);
+
+
+            var runtimeInstance = _runtimeInstanceHost
                 .Instances
                 .Where(_ => _.ExecutionContext != null)
                 .Where(_ => _.ExecutionContext!.PlugIn != null)
-                .Select(_ => _.ExecutionContext!.PlugIn)
-                .Select(_ => _!.Devices)
-                .Select(_ => _)
-                .Cast<IBaseParameter>()
-                .FirstOrDefault(_ => _.Id == parameterId) ?? throw new ParameterNotFoundException(parameterId);
+                .FirstOrDefault(_ => _.ExecutionContext!.PlugIn!.Id == modelParameter.Device!.PlugInInstance!.PlugInId)
+                ?? throw new ParameterPlugInNotStartedException(modelParameter.Id,
+                                                                parameterId);
 
-            if(!parameter.CanWrite)
+            var parameter = runtimeInstance
+                .ExecutionContext!
+                .PlugIn!
+                .Devices
+                .Select(_ => _)
+                .Select(_ => _.Parameters)
+                .Cast<IBaseParameter>()
+                .FirstOrDefault(_ => _.Id == parameterId)
+                ?? throw new ParameterNotFoundException(parameterId);
+
+            if (!parameter.CanWrite)
             {
                 throw new ParameterNotWritableException(parameterId);
             }
@@ -116,7 +143,7 @@ namespace Shaos.Services.Parameters
                                                         parameter.GetType());
             }
 
-            await parameterUpdateAsync(parameter as T);
+            await parameterUpdateAsync((T)parameter);
         }
     }
 }

@@ -92,6 +92,18 @@ namespace Shaos.Extensions
                                         HttpStatusCode.BadRequest);
         }
 
+        public static ProblemDetails ToProblemDetails(this ParameterPlugInNotStartedException exception)
+        {
+            return CreateProblemDetails(exception,
+                                        HttpStatusCode.BadRequest);
+        }
+
+        public static ProblemDetails ToProblemDetails(this PersistedParameterNotFoundException exception)
+        {
+            return CreateProblemDetails(exception,
+                                        HttpStatusCode.BadRequest);
+        }
+
         public static ProblemDetails ToProblemDetails(this Exception exception)
         {
             var statusCode = HttpStatusCode.InternalServerError;

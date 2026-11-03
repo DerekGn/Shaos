@@ -31,7 +31,8 @@ namespace Shaos.Services.Exceptions
     /// </summary>
     /// <param name="id">The parameter identifier</param>
     [ExcludeFromCodeCoverage]
-    public class ParameterNotWritableException(int id) : Exception
+    public class ParameterNotWritableException(int id) 
+        : Exception($"Parameter [{id}] is not writable")
     {
         /// <summary>
         /// The parameter identifier

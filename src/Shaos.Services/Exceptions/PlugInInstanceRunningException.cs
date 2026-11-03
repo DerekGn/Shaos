@@ -36,7 +36,7 @@ namespace Shaos.Services.Exceptions
     /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
     [ExcludeFromCodeCoverage]
     public class PlugInInstanceRunningException(int id) 
-        : Exception($"[{nameof(PlugInInstance)}] running [{id}]")
+        : Exception($"[{nameof(PlugInInstance)}] [{id}] is running")
     {
         /// <summary>
         /// The running <see cref="PlugInInstance"/> identifier

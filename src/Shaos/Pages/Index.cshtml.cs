@@ -110,15 +110,23 @@ namespace Shaos.Pages
             }
             catch (ParameterInvalidTypeException exception)
             {
-                AlertError($"Parameter [{exception.Id}] is invalid type. Expected Type: [{exception.Expected.Name}] Actual Type: [{exception.Actual.Name}]");
+                AlertError(exception.Message);
             }
             catch (ParameterNotFoundException exception)
             {
-                AlertError($"Parameter [{exception.Id}] was not found");
+                AlertError(exception.Message);
             }
             catch (ParameterNotWritableException exception)
             {
-                AlertError($"Parameter [{exception.Id}] is not writable");
+                AlertError(exception.Message);
+            }
+            catch (ParameterPlugInNotStartedException exception)
+            {
+                AlertError(exception.Message);
+            }
+            catch (PersistedParameterNotFoundException exception)
+            {
+                AlertError(exception.Message);
             }
         }
 

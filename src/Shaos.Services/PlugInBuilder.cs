@@ -87,7 +87,7 @@ namespace Shaos.Services
 
             if (_plugin == null)
             {
-                throw new PlugInInstanceNotLoadedException();
+                throw new PlugInInstanceNotLoadedException(plugInInstance.Id);
             }
 
             foreach (var device in plugInInstance.Devices)

@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 
+using Shaos.Repository.Models;
 using Shaos.Sdk;
 using System.Diagnostics.CodeAnalysis;
 
@@ -31,7 +32,8 @@ namespace Shaos.Services.Exceptions
     /// Thrown when a <see cref="IPlugIn"/> was not loaded by a <see cref="PlugInBuilder"/> instance
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class PlugInInstanceNotLoadedException : Exception
+    public class PlugInInstanceNotLoadedException(int id) 
+        : Exception($"[{nameof(PlugInInstance)}] [{id}] not loaded")
     {
     }
 }
