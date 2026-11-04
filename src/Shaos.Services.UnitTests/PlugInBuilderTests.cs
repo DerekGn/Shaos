@@ -23,11 +23,7 @@
 */
 
 using Microsoft.Extensions.Logging;
-using Shaos.Repository.Models;
-using Shaos.Sdk.Devices.Parameters;
-using Shaos.Services.Exceptions;
 using Shaos.Services.UnitTests.Fixtures;
-using Shaos.Test.PlugIn;
 using Xunit;
 
 namespace Shaos.Services.UnitTests
@@ -48,98 +44,12 @@ namespace Shaos.Services.UnitTests
             var context = _unloadingWeakReference.Target;
             var assembly = context.LoadFromAssemblyPath(_fixture.AssemblyFilePath);
 
-            _builder.Load(assembly,
+            _builder.Load(1,
+                          assembly,
                           "{\"Delay\": \"00:00:00\"}");
 
             Assert.NotNull(_builder.PlugIn);
-        }
-
-        [Fact]
-        public void TestRestore()
-        {
-            PlugInInstance plugInInstance = SetupPlugInInstance();
-
-            _builder.PlugIn = new TestPlugIn(LoggerFactory!.CreateLogger<TestPlugIn>(),
-                                             new TestPlugInConfiguration());
-
-            _builder.Restore(plugInInstance);
-
-            var plugIn = _builder.PlugIn;
-
-            Assert.Equal(plugInInstance.Id, plugIn.Id);
-        }
-
-        [Fact]
-        public void TestRestoreInstanceNotLoaded()
-        {
-            PlugInInstance plugInInstance = SetupPlugInInstance();
-
-            Assert.Throws<PlugInInstanceNotLoadedException>(() => _builder.Restore(plugInInstance));
-        }
-
-        private static PlugInInstance SetupPlugInInstance()
-        {
-            var device = new Repository.Models.Devices.Device()
-            {
-                Id = 2,
-                Name = "name"
-            };
-
-            device.Parameters.Add(new Repository.Models.Devices.Parameters.BoolParameter()
-            {
-                Id = 1,
-                Name = "name",
-                ParameterType = ParameterType.Voltage,
-                Units = "units",
-                Value = true
-            });
-
-            device.Parameters.Add(new Repository.Models.Devices.Parameters.FloatParameter()
-            {
-                Id = 1,
-                Name = "name",
-                ParameterType = ParameterType.Voltage,
-                Units = "units",
-                Value = 100
-            });
-
-            device.Parameters.Add(new Repository.Models.Devices.Parameters.IntParameter()
-            {
-                Id = 1,
-                Name = "name",
-                ParameterType = ParameterType.Voltage,
-                Units = "units",
-                Value = -10
-            });
-
-            device.Parameters.Add(new Repository.Models.Devices.Parameters.StringParameter()
-            {
-                Id = 1,
-                Name = "name",
-                ParameterType = ParameterType.Voltage,
-                Units = "units",
-                Value = "string"
-            });
-
-            device.Parameters.Add(new Repository.Models.Devices.Parameters.UIntParameter()
-            {
-                Id = 1,
-                Name = "name",
-                ParameterType = ParameterType.Voltage,
-                Units = "units",
-                Value = 7896
-            });
-
-            var plugInInstance = new PlugInInstance()
-            {
-                Description = "description",
-                Id = 3,
-                Name = "name"
-            };
-
-            plugInInstance.Devices.Add(device);
-
-            return plugInInstance;
+            Assert.Equal(1, _builder.PlugIn.Id);
         }
     }
 }

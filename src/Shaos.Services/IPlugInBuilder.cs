@@ -43,16 +43,11 @@ namespace Shaos.Services
         /// <summary>
         /// Load an <see cref="IPlugIn"/> instance from the <paramref name="assembly"/>
         /// </summary>
+        /// <param name="id">The <see cref="PlugInInstance"/> identifier</param>
         /// <param name="assembly">The <see cref="Assembly"/> to load the <see cref="PlugIn"/></param>
         /// <param name="configuration">The json configuration setting parameters</param>
-        void Load(Assembly assembly,
+        void Load(int id,
+                  Assembly assembly,
                   string? configuration);
-
-        /// <summary>
-        /// Restore the <see cref="IPlugIn"/> from the <see cref="PlugInInstance"/>
-        /// </summary>
-        /// <param name="plugInInstance">The <see cref="PlugInInstance"/> to restore</param>
-        /// <exception cref="PlugInInstanceNotLoadedException">Thrown when a <see cref="PlugInInstance"/> was not loaded</exception>
-        void Restore(PlugInInstance plugInInstance);
     }
 }

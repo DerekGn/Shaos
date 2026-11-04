@@ -58,7 +58,8 @@ namespace Shaos.Services
         }
 
         /// <inheritdoc/>
-        public void Load(Assembly assembly,
+        public void Load(int id,
+                         Assembly assembly,
                          string? configuration)
         {
             ArgumentNullException.ThrowIfNull(assembly);
@@ -78,24 +79,8 @@ namespace Shaos.Services
             }
 
             _plugin = Activator.CreateInstance(plugInType, constructorParameters.ToArray()) as IPlugIn;
-        }
 
-        /// <inheritdoc/>
-        public void Restore(PlugInInstance plugInInstance)
-        {
-            ArgumentNullException.ThrowIfNull(plugInInstance);
-
-            if (_plugin == null)
-            {
-                throw new PlugInInstanceNotLoadedException(plugInInstance.Id);
-            }
-
-            foreach (var device in plugInInstance.Devices)
-            {
-                _plugin.Devices.AddAsync(device.ToSdk());
-            }
-
-            _plugin.AssignId(plugInInstance.Id);
+            _plugin!.AssignId(id);
         }
 
         private List<object> GetConstructorParameters(Type plugInType)

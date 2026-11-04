@@ -242,10 +242,9 @@ namespace Shaos.Services
             using var scope = _serviceScopeFactory.CreateScope();
             var plugInBuilder = scope.ServiceProvider.GetRequiredService<IPlugInBuilder>();
 
-            plugInBuilder!.Load(loadContext.Assembly!,
+            plugInBuilder!.Load(plugInInstance.Id,
+                                loadContext.Assembly!,
                                 configuration);
-
-            plugInBuilder.Restore(plugInInstance);
 
             var runtimeInstance = plugInBuilder.PlugIn;
 
