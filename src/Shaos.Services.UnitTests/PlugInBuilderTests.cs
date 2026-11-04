@@ -48,8 +48,10 @@ namespace Shaos.Services.UnitTests
                           assembly,
                           "{\"Delay\": \"00:00:00\"}");
 
-            Assert.NotNull(_builder.PlugIn);
-            Assert.Equal(1, _builder.PlugIn.Id);
+            var plugIn = _builder.PlugIn;
+
+            Assert.NotNull(plugIn);
+            Assert.Equal(1, plugIn.Id);
         }
     }
 }
