@@ -57,11 +57,12 @@ namespace Shaos.Services.Parameters
                                               bool value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<bool>>(parameterId, cancellationToken,
+            await ExecuteParameterUpdateAsync<IBaseParameter<bool>>(parameterId,
                 async (parameter) =>
                 {
                     await parameter.WriteAsync(value);
-                });
+                },
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -69,11 +70,12 @@ namespace Shaos.Services.Parameters
                                               float value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<float>>(parameterId, cancellationToken,
+            await ExecuteParameterUpdateAsync<IBaseParameter<float>>(parameterId,
                 async (parameter) =>
                 {
                     await parameter.WriteAsync(value);
-                });
+                },
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -81,11 +83,12 @@ namespace Shaos.Services.Parameters
                                               uint value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<uint>>(parameterId, cancellationToken,
+            await ExecuteParameterUpdateAsync<IBaseParameter<uint>>(parameterId,
                 async (parameter) =>
                 {
                     await parameter.WriteAsync(value);
-                });
+                },
+                cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -93,11 +96,12 @@ namespace Shaos.Services.Parameters
                                               int value,
                                               CancellationToken cancellationToken = default)
         {
-            await ExecuteParameterUpdateAsync<IBaseParameter<int>>(parameterId, cancellationToken,
+            await ExecuteParameterUpdateAsync<IBaseParameter<int>>(parameterId,
                 async (parameter) =>
                 {
                     await parameter.WriteAsync(value);
-                });
+                },
+                cancellationToken);
         }
 
         private async Task ExecuteParameterUpdateAsync<T>(int parameterId,
