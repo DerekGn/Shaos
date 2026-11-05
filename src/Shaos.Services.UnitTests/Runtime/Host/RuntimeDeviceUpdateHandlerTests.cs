@@ -87,7 +87,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SdkBoolParameter parameter = new(false,
                                              "name",
                                              "units",
-                                             "reference",
                                              ParameterType.Level);
 
             await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(1,
@@ -122,11 +121,9 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             SdkBoolParameter parameter = new(false,
                                              "name",
                                              "units",
-                                             "reference",
                                              ParameterType.Level);
 
             var device = new SdkDevice("name",
-                                       "reference",
                                        [parameter]);
 
             await _runtimeDeviceUpdateHandler.CreateDevicesAsync(1,

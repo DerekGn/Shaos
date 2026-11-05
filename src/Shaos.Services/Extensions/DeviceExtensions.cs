@@ -46,7 +46,6 @@ namespace Shaos.Services.Extensions
         public static SdkDevice ToSdk(this ModelDevice device)
         {
             var sdkDevice = new Device(device.Name,
-                                       device.ReferenceId,
                                        device.Parameters.ToSdk());
 
             sdkDevice.AssignId(device.Id);

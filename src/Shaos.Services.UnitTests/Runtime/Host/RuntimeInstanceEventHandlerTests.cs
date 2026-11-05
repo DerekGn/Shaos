@@ -136,11 +136,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
                                Name,
                                parameters:
                                [
-                                   new BoolParameter(true, Name, Units, string.Empty, ParameterType.Iaq),
-                                   new FloatParameter(0.2f, 0, 10, 0.1f, Name, Units, string.Empty, ParameterType.Iaq),
-                                   new IntParameter(-18, -1, 10, 1, Name, Units, string.Empty, ParameterType.Iaq),
-                                   new StringParameter("string", Name, Units, string.Empty, ParameterType.Iaq),
-                                   new UIntParameter(7218, 0, 10, 1, Name, Units, string.Empty, ParameterType.Iaq)
+                                   new BoolParameter(true, Name, Units, ParameterType.Iaq),
+                                   new FloatParameter(0.2f, 0, 10, 0.1f, Name, Units, ParameterType.Iaq),
+                                   new IntParameter(-18, -1, 10, 1, Name, Units, ParameterType.Iaq),
+                                   new StringParameter("string", Name, Units, ParameterType.Iaq),
+                                   new UIntParameter(7218, 0, 10, 1, Name, Units, ParameterType.Iaq)
                                ])
                        ]));
         }
@@ -182,11 +182,11 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 
             List<IBaseParameter> parameters =
             [
-                new BoolParameter(true, Name, Units, string.Empty, ParameterType.Iaq),
-                new FloatParameter(1.0f, 0, 10, 0.1f, Name, Units, string.Empty, ParameterType.Iaq),
-                new IntParameter(1, -1, 20, 1, Name, Units, string.Empty, ParameterType.Iaq),
-                new StringParameter("string", Name, Units, string.Empty, ParameterType.Iaq),
-                new UIntParameter(1, 0, 299, 1, Name, Units, string.Empty, ParameterType.Iaq)
+                new BoolParameter(true, Name, Units, ParameterType.Iaq),
+                new FloatParameter(1.0f, 0, 10, 0.1f, Name, Units, ParameterType.Iaq),
+                new IntParameter(1, -1, 20, 1, Name, Units, ParameterType.Iaq),
+                new StringParameter("string", Name, Units, ParameterType.Iaq),
+                new UIntParameter(1, 0, 299, 1, Name, Units, ParameterType.Iaq)
             ];
 
             int i = 0;

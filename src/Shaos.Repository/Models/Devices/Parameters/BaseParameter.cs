@@ -69,12 +69,6 @@ namespace Shaos.Repository.Models.Devices.Parameters
         public ParameterType? ParameterType { get; set; }
 
         /// <summary>
-        /// The optional reference identifier
-        /// </summary>
-        [MaxLength(40)]
-        public string? ReferenceId { get; set; }
-
-        /// <summary>
         /// The update value time stamp
         /// </summary>
         public DateTime TimeStamp { get; set; }

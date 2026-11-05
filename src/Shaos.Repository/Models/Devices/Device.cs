@@ -53,11 +53,5 @@ namespace Shaos.Repository.Models.Devices
         /// The <see cref="PlugInInstance"/> identifier
         /// </summary>
         public int? PlugInInstanceId { get; set; } = null;
-
-        /// <summary>
-        /// The optional reference identifier
-        /// </summary>
-        [MaxLength(40)]
-        public string? ReferenceId { get; set; }
     }
 }

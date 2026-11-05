@@ -195,7 +195,6 @@ namespace Shaos.Test.PlugIn
                 ];
 
                 var device = new Device("TestDevice",
-                                        "reference",
                                         baseParameters);
 
                 await Devices.AddAsync(device);
