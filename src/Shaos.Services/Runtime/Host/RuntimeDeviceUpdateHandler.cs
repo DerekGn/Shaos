@@ -123,37 +123,19 @@ namespace Shaos.Services.Runtime.Host
             {
                 var plugInInstance = await repository.GetByIdAsync<PlugInInstance>(id,
                                                                                    true,
-                                                                                   [nameof(PlugInInstance.Devices)]);
+                                                                                   [
+                                                                                       nameof(PlugInInstance.Devices),
+                                                                                       $"{nameof(PlugInInstance.Devices)}.{nameof(Device.Parameters)}"
+                                                                                   ]);
 
                 if (plugInInstance != null)
                 {
-                    List<Tuple<IDevice, ModelDevice>> createdDevices = [];
+                    await ProcessExistingDevicesAsync(devices,
+                                                      plugInInstance);
 
-                    foreach (var (device, modelDevice) in from device in devices
-                                                          where !plugInInstance.Devices.Any(_ => _.Id == device.Id)
-                                                          let modelDevice = device.ToModel()
-                                                          select (device, modelDevice))
-                    {
-                        modelDevice.PlugInInstanceId = plugInInstance.Id;
-                        await repository.AddAsync(modelDevice);
-                        _logger.LogDeviceCreated(id, device.Name);
-                        createdDevices.Add(new Tuple<IDevice, ModelDevice>(device, modelDevice));
-                    }
-
-                    await repository.SaveChangesAsync();
-
-                    foreach (var created in createdDevices)
-                    {
-                        var device = created.Item1;
-                        var modelDevice = created.Item2;
-
-                        device.AssignId(modelDevice.Id);
-
-                        for (int i = 0; i < modelDevice.Parameters.Count; i++)
-                        {
-                            device.Parameters.ElementAt(i).AssignId(modelDevice.Parameters[i].Id);
-                        }
-                    }
+                    await ProcessNewDevicesAsync(repository,
+                                                 devices,
+                                                 plugInInstance);
                 }
                 else
                 {
@@ -504,6 +486,19 @@ namespace Shaos.Services.Runtime.Host
             });
         }
 
+        private void AssignParameterId(IDevice device,
+                                       ModelDevice modelDevice)
+        {
+            foreach (var modelParameter in modelDevice.Parameters)
+            {
+                _logger.LogParameterIdUpdated(modelDevice.Id,
+                                              modelParameter.Id,
+                                              modelParameter.Name);
+
+                device.Parameters.FirstOrDefault(_ => _.Name == modelParameter.Name)?.AssignId(modelParameter.Id);
+            }
+        }
+
         private async Task ExecuteRepositoryOperationAsync(Func<IRepository, Task> operation)
         {
             try
@@ -518,6 +513,59 @@ namespace Shaos.Services.Runtime.Host
                 _logger.LogUnhandledException(ex);
 
                 throw;
+            }
+        }
+
+        private async Task ProcessExistingDevicesAsync(IEnumerable<IDevice> devices,
+                                                       PlugInInstance plugInInstance)
+        {
+            foreach (var (device, modelDevice) in from device in devices
+                                                  from modelDevice in plugInInstance.Devices
+                                                  where modelDevice.Name == device.Name
+                                                  select (device, modelDevice))
+            {
+                _logger.LogDeviceIdUpdated(plugInInstance.Id,
+                                           modelDevice.Id,
+                                           modelDevice.Name);
+
+                device.AssignId(modelDevice.Id);
+
+                AssignParameterId(device, modelDevice);
+            }
+        }
+
+        private async Task ProcessNewDevicesAsync(IRepository repository,
+                                                  IEnumerable<IDevice> devices,
+                                                  PlugInInstance plugInInstance)
+        {
+            List<Tuple<IDevice, ModelDevice>> createdDevices = [];
+
+            foreach(var (device, modelDevice) in from device in devices
+                                                 where !(
+                                                 from modelDevice in plugInInstance.Devices
+                                                 select modelDevice.Name
+                                                 ).Contains(device.Name)
+                                                 select (device, device.ToModel()))
+            {
+                modelDevice.PlugInInstanceId = plugInInstance.Id;
+                await repository.AddAsync(modelDevice);
+                _logger.LogDeviceCreated(plugInInstance.Id, device.Name);
+                createdDevices.Add(new Tuple<IDevice, ModelDevice>(device, modelDevice));
+            }
+
+            if (createdDevices.Count > 0)
+            {
+                await repository.SaveChangesAsync();
+
+                foreach (var created in createdDevices)
+                {
+                    var device = created.Item1;
+                    var modelDevice = created.Item2;
+
+                    device.AssignId(modelDevice.Id);
+
+                    AssignParameterId(device, modelDevice);
+                }
             }
         }
 

@@ -48,6 +48,8 @@ namespace Shaos.Services.UnitTests.Runtime.Host
 {
     public class RuntimeDeviceUpdateHandlerTests : BaseServiceTests
     {
+        private const string ParameterName = "parameter-name";
+
         private readonly Mock<IQueue<BaseParameterUpdatedEvent>> _mockEventQueue;
         private readonly Mock<IServiceProvider> _mockServiceProvider;
         private readonly Mock<IServiceScope> _mockServiceScope;
@@ -101,7 +103,56 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         }
 
         [Fact]
-        public async Task TestCreateDevicesAsync()
+        public async Task TestCreateDevicesExistingDeviceAsync()
+        {
+            SetupServiceScopeFactory();
+
+            var modelParameter = new ModelBoolParameter()
+            {
+                Id = 10,
+                Name = ParameterName
+            };
+
+            var modelDevice = new ModelDevice()
+            {
+                Id = 20,
+                Name = "name",
+                Parameters = [modelParameter]
+            };
+
+            PlugInInstance plugInInstance = new()
+            {
+                Description = "description",
+                Name = "Name",
+                Devices = [modelDevice]
+            };
+
+            MockRepository
+                .Setup(_ => _.GetByIdAsync<PlugInInstance>(It.IsAny<int>(),
+                                                           It.IsAny<bool>(),
+                                                           It.IsAny<List<string>>(),
+                                                           It.IsAny<CancellationToken>()))
+                .ReturnsAsync(plugInInstance);
+
+            SdkBoolParameter parameter = new(false,
+                                             ParameterName,
+                                             "units",
+                                             ParameterType.Level);
+
+            var device = new SdkDevice("name",
+                                       [parameter]);
+
+            await _runtimeDeviceUpdateHandler.CreateDevicesAsync(1,
+                                                                 [device]);
+
+            Assert.Equal(modelDevice.Id, device.Id);
+            Assert.Equal(modelParameter.Id, parameter.Id);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task TestCreateDevicesNewDeviceAsync()
         {
             SetupServiceScopeFactory();
 
@@ -251,37 +302,6 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         }
 
         [Fact]
-        public async Task TestSaveAndPublishParameterAsyncUInt()
-        {
-            SetupServiceScopeFactory();
-
-            ModelUIntParameter parameter = new ModelUIntParameter()
-            {
-                Name = "name",
-                Units = string.Empty
-            };
-
-            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelUIntParameter, bool>>>(),
-                                                               It.IsAny<bool>(),
-                                                               It.IsAny<List<string>>(),
-                                                               It.IsAny<CancellationToken>()))
-                .ReturnsAsync(parameter);
-
-            await _runtimeDeviceUpdateHandler.SaveAndPublishParameterAsync(1,
-                                                                           10u,
-                                                                           true,
-                                                                           DateTime.UtcNow,
-                                                                           TestContext.Current.CancellationToken);
-
-            Assert.Single(parameter.Values);
-
-            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
-
-            _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<uint>>(),
-                                                       It.IsAny<CancellationToken>()));
-        }
-
-        [Fact]
         public async Task TestSaveAndPublishParameterAsyncString()
         {
             SetupServiceScopeFactory();
@@ -309,6 +329,37 @@ namespace Shaos.Services.UnitTests.Runtime.Host
             MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
 
             _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<string>>(),
+                                                       It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async Task TestSaveAndPublishParameterAsyncUInt()
+        {
+            SetupServiceScopeFactory();
+
+            ModelUIntParameter parameter = new ModelUIntParameter()
+            {
+                Name = "name",
+                Units = string.Empty
+            };
+
+            MockRepository.Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelUIntParameter, bool>>>(),
+                                                               It.IsAny<bool>(),
+                                                               It.IsAny<List<string>>(),
+                                                               It.IsAny<CancellationToken>()))
+                .ReturnsAsync(parameter);
+
+            await _runtimeDeviceUpdateHandler.SaveAndPublishParameterAsync(1,
+                                                                           10u,
+                                                                           true,
+                                                                           DateTime.UtcNow,
+                                                                           TestContext.Current.CancellationToken);
+
+            Assert.Single(parameter.Values);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()));
+
+            _mockEventQueue.Verify(_ => _.EnqueueAsync(It.IsAny<ParameterUpdatedEvent<uint>>(),
                                                        It.IsAny<CancellationToken>()));
         }
 
