@@ -26,7 +26,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shaos.Repository;
 using Shaos.Repository.Models;
-using Shaos.Repository.Models.Devices;
 using Shaos.Sdk.Devices;
 using Shaos.Sdk.Devices.Parameters;
 using Shaos.Services.Eventing;
@@ -88,31 +87,9 @@ namespace Shaos.Services.Runtime.Host
                     ProcessExistingDeviceParameters(parameters,
                                                     modelDevice);
 
-                    await ProcessNewDeviceParametersAsync(repository, modelDevice, parameters);
-
-                    //List<Tuple<IBaseParameter, ModelBaseParameter>> createdParameters = [];
-
-                    //foreach (var (parameter, modelParameter) in from parameter in parameters
-                    //                                            where !modelDevice.Parameters.Any(_ => _.Id == parameter.Id)
-                    //                                            let modelParameter = parameter.ToModel()!
-                    //                                            select (parameter, modelParameter))
-                    //{
-                    //    modelParameter.DeviceId = modelDevice.Id;
-                    //    await repository.AddAsync(modelParameter!);
-                    //    _logger.LogDeviceParameterCreated(id,
-                    //                                      modelDevice.Name,
-                    //                                      modelParameter.Id,
-                    //                                      modelParameter.Name);
-
-                    //    createdParameters.Add(new Tuple<IBaseParameter, ModelBaseParameter>(parameter, modelParameter));
-                    //}
-
-                    //await repository.SaveChangesAsync();
-
-                    //foreach (var created in createdParameters)
-                    //{
-                    //    created.Item1.AssignId(created.Item2.Id);
-                    //}
+                    await ProcessNewDeviceParametersAsync(repository,
+                                                          modelDevice,
+                                                          parameters);
                 }
                 else
                 {
