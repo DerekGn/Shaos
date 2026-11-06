@@ -72,7 +72,41 @@ namespace Shaos.Services.UnitTests.Runtime.Host
         }
 
         [Fact]
-        public async Task TestCreateDeviceParametersAsync()
+        public async Task TestCreateDeviceParametersExistingAsync()
+        {
+            SetupServiceScopeFactory();
+
+            var modelParameter = new ModelBoolParameter()
+            {
+                Name = ParameterName
+            };
+
+            var modelDevice = new ModelDevice()
+            {
+                Name = "test",
+                Parameters = [ modelParameter ]
+            };
+
+            MockRepository
+                .Setup(_ => _.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ModelDevice, bool>>>(),
+                                                     It.IsAny<bool>(),
+                                                     It.IsAny<List<string>>(),
+                                                     It.IsAny<CancellationToken>()))
+                .ReturnsAsync(modelDevice);
+
+            SdkBoolParameter parameter = new(false,
+                                             ParameterName,
+                                             "units",
+                                             ParameterType.Level);
+
+            await _runtimeDeviceUpdateHandler.CreateDeviceParametersAsync(1,
+                                                                          [parameter]);
+
+            MockRepository.Verify(_ => _.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task TestCreateDeviceParametersNewAsync()
         {
             SetupServiceScopeFactory();
 
