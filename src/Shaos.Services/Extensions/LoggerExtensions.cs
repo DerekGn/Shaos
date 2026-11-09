@@ -154,7 +154,7 @@ namespace Shaos.Services.Extensions
                                                                          string name);
 
         [LoggerMessage(Level = LogLevel.Debug,
-            Message = "Created Device [{id}] Name: [{name}]")]
+            Message = "Created Device Id: [{id}] Name: [{name}]")]
         public static partial void LogDeviceCreated(this ILogger logger,
                                                     int id,
                                                     string name);
@@ -171,6 +171,13 @@ namespace Shaos.Services.Extensions
             Message = "Deleting Device Id: [{id}]")]
         public static partial void LogDeviceDelete(this ILogger logger,
                                                    int id);
+
+        [LoggerMessage(Level = LogLevel.Debug,
+                            Message = "Updated PlugInInstance: [{id}] Device Id: [{deviceId}] Name: [{name}]")]
+        public static partial void LogDeviceIdUpdated(this ILogger logger,
+                                                      int id,
+                                                      int deviceId,
+                                                      string name);
 
         [LoggerMessage(Level = LogLevel.Debug,
             Message = "Created Device: [{id}] Name: [{deviceName}] Parameter: [{parameterId}] Name: [{parameterName}]")]
@@ -328,6 +335,12 @@ namespace Shaos.Services.Extensions
         public static partial void LogParameterDelete(this ILogger logger,
                                                       int id);
 
+        [LoggerMessage(Level = LogLevel.Debug,
+            Message = "Updated Device: [{id}] Parameter Id: [{parameterId}] Name: [{parameterName}]")]
+        public static partial void LogParameterIdUpdated(this ILogger logger,
+                                                         int id,
+                                                         int parameterId,
+                                                         string parameterName);
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "Parameter Id: [{Id}] Not Found")]
         public static partial void LogParameterNotFound(this ILogger logger,

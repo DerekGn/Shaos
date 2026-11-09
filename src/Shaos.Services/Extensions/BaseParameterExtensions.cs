@@ -93,7 +93,6 @@ namespace Shaos.Services.Extensions
                     result = new BoolParameter(boolParameter.Value,
                                                parameter.Name,
                                                parameter.Units,
-                                               parameter.ReferenceId,
                                                parameter.ParameterType);
                     break;
                 case ModelFloatParameter floatParameter:
@@ -103,7 +102,6 @@ namespace Shaos.Services.Extensions
                                                 floatParameter.Step,
                                                 parameter.Name,
                                                 parameter.Units,
-                                                parameter.ReferenceId,
                                                 parameter.ParameterType);
                     break;
                 case ModelIntParameter intParameter:
@@ -113,14 +111,12 @@ namespace Shaos.Services.Extensions
                                               intParameter.Step,
                                               parameter.Name,
                                               parameter.Units,
-                                              parameter.ReferenceId,
                                               parameter.ParameterType);
                     break;
                 case ModelStringParameter stringParameter:
                     result = new StringParameter(stringParameter.Value,
                                                  parameter.Name,
                                                  parameter.Units,
-                                                 parameter.ReferenceId,
                                                  parameter.ParameterType);
                     break;
                 case ModelUIntParameter uintParameter:
@@ -130,7 +126,6 @@ namespace Shaos.Services.Extensions
                                                uintParameter.Step,
                                                parameter.Name,
                                                parameter.Units,
-                                               parameter.ReferenceId,
                                                parameter.ParameterType);
                     break;
             }

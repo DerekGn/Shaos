@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services;
@@ -39,7 +38,9 @@ namespace Shaos.Pages.PlugIns
         private readonly IRepository _repository;
 
         public DeleteModel(IRepository repository,
-                           IPlugInService plugInService)
+                           IPlugInService plugInService,
+                           ILogger<DeleteModel> logger)
+            : base(logger)
         {
             _repository = repository;
             _plugInService = plugInService;

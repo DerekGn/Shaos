@@ -37,7 +37,9 @@ namespace Shaos.Pages.System.Dashboard
     [Authorize]
     public class EditModel : DashboardItemPageModel
     {
-        public EditModel(IRepository repository) : base(repository) { }
+        public EditModel(IRepository repository,
+                         ILogger<EditModel> logger)
+            : base(repository, logger) { }
 
         [BindProperty]
         public DashboardItemModel Item { get; set; } = default!;
@@ -50,7 +52,7 @@ namespace Shaos.Pages.System.Dashboard
                 return NotFound();
             }
 
-            var dashboardItem =  await Repository.GetFirstOrDefaultAsync<DashboardItem>(_ => _.Id == id,
+            var dashboardItem = await Repository.GetFirstOrDefaultAsync<DashboardItem>(_ => _.Id == id,
                                                                                         includeProperties: [nameof(DashboardItem.Parameter)],
                                                                                         cancellationToken: cancellationToken);
             if (dashboardItem == null)
@@ -95,8 +97,7 @@ namespace Shaos.Pages.System.Dashboard
                 }
                 catch (DuplicateEntityException)
                 {
-                    ModelState.AddModelError(string.Empty,
-                                             $"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
+                    AlertError($"Dashboard Item already exists. Label: [{Item.Label}] Name: [{parameter.Name}]");
 
                     return Page();
                 }

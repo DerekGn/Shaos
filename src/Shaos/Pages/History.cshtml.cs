@@ -28,7 +28,8 @@ namespace Shaos.Pages
 {
     public class HistoryModel : BaseHistoryModel
     {
-        public HistoryModel(IRepository repository) : base(repository)
+        public HistoryModel(IRepository repository,
+                            ILogger<HistoryModel> logger) : base(repository, logger)
         {
         }
     }

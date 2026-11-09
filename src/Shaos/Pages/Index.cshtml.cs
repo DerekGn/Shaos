@@ -23,29 +23,118 @@
 */
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
+using Shaos.Services.Exceptions;
+using Shaos.Services.Parameters;
 
 namespace Shaos.Pages
 {
     [Authorize]
-    public class IndexModel : PageModel
+    public class IndexModel : BasePageModel
     {
+        private readonly IParameterService _parameterService;
         private readonly IRepository _repository;
 
-        public IndexModel(IRepository repository)
+        public IndexModel(IRepository repository,
+                          ILogger<IndexModel> logger,
+                          IParameterService parameterService) : base(logger)
         {
             _repository = repository;
+            _parameterService = parameterService;
         }
 
         public IList<DashboardItem> Items { get; set; } = default!;
 
         public async Task OnGetAsync(CancellationToken cancellationToken = default)
         {
+            await LoadItemsAsync(cancellationToken);
+        }
+
+        public async Task OnPostWriteBooleanAsync(int id,
+                                                  bool value,
+                                                  CancellationToken cancellationToken = default)
+        {
+            await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
+            }, cancellationToken);
+        }
+
+        public async Task OnPostWriteFloatAsync(int id,
+                                                float value,
+                                                CancellationToken cancellationToken = default)
+        {
+            await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
+            }, cancellationToken);
+        }
+
+        public async Task OnPostWriteIntegerAsync(int id,
+                                                  int value,
+                                                  CancellationToken cancellationToken = default)
+        {
+            await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
+            }, cancellationToken);
+        }
+
+        public async Task OnPostWriteUnsignedIntegerAsync(int id,
+                                                          uint value,
+                                                          CancellationToken cancellationToken = default)
+        {
+            await ExecuteParameterWriteAsync(async () =>
+            {
+                await _parameterService.WriteParameterAsync(id,
+                                                            value,
+                                                            cancellationToken);
+            }, cancellationToken);
+        }
+
+        private async Task ExecuteParameterWriteAsync(Func<Task> update,
+                                                      CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await LoadItemsAsync(cancellationToken);
+
+                await update();
+            }
+            catch (ParameterInvalidTypeException exception)
+            {
+                AlertError(exception.Message);
+            }
+            catch (ParameterNotFoundException exception)
+            {
+                AlertError(exception.Message);
+            }
+            catch (ParameterNotWritableException exception)
+            {
+                AlertError(exception.Message);
+            }
+            catch (ParameterPlugInNotStartedException exception)
+            {
+                AlertError(exception.Message);
+            }
+            catch (PersistedParameterNotFoundException exception)
+            {
+                AlertError(exception.Message);
+            }
+        }
+
+        private async Task LoadItemsAsync(CancellationToken cancellationToken)
+        {
             Items = await _repository
-                .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
-                                         cancellationToken: cancellationToken);
+                            .GetAsync<DashboardItem>(includeProperties: [nameof(DashboardItem.Parameter)],
+                                                     cancellationToken: cancellationToken);
         }
     }
 }

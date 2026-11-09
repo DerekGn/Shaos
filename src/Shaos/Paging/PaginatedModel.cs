@@ -33,6 +33,10 @@ namespace Shaos.Paging
         public const string NameDescending = "name_desc";
         public const string IdentifierDescending = "id_desc";
 
+        public PaginatedModel(ILogger<BasePageModel> logger) : base(logger)
+        {
+        }
+
         [BindProperty]
         public string CurrentFilter { get; set; } = string.Empty;
 

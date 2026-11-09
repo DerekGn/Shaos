@@ -32,6 +32,17 @@ namespace Shaos.Pages
     {
         private protected readonly IRepository Repository;
 
+        protected BaseDateRangePageModel(IRepository repository, ILogger<BaseDateRangePageModel> logger) : base(logger)
+        {
+            var offsetUtcNow = DateTimeOffset
+                .UtcNow
+                .Truncate(TimeSpan.FromHours(1));
+
+            StartDateTime = offsetUtcNow.Subtract(TimeSpan.FromHours(24));
+            EndDateTime = offsetUtcNow;
+            Repository = repository;
+        }
+
         [BindProperty]
         public int DeviceId { get; set; }
 
@@ -43,16 +54,5 @@ namespace Shaos.Pages
 
         [BindProperty]
         public DateTimeOffset StartDateTime { get; set; }
-
-        protected BaseDateRangePageModel(IRepository repository)
-        {
-            var offsetUtcNow = DateTimeOffset
-                .UtcNow
-                .Truncate(TimeSpan.FromHours(1));
-
-            StartDateTime = offsetUtcNow.Subtract(TimeSpan.FromHours(24));
-            EndDateTime = offsetUtcNow;
-            Repository = repository;
-        }
     }
 }

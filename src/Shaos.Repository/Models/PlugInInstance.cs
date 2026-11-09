@@ -52,7 +52,7 @@ namespace Shaos.Repository.Models
         /// <summary>
         /// The set of <see cref="Device"/> instance created by this <see cref="PlugInInstance"/>
         /// </summary>
-        public List<Device> Devices { get; } = [];
+        public List<Device> Devices { get; set; } = [];
 
         /// <summary>
         /// Indicates if the <see cref="PlugInInstance"/> is enabled

@@ -41,6 +41,7 @@ using Shaos.Services.Eventing.Parameter;
 using Shaos.Services.Extensions;
 using Shaos.Services.IO;
 using Shaos.Services.Logging;
+using Shaos.Services.Parameters;
 using Shaos.Services.Processing;
 using Shaos.Services.Runtime;
 using Shaos.Services.Runtime.Host;
@@ -158,6 +159,7 @@ namespace Shaos
             builder.Services.AddScoped<IInstanceHostService, InstanceHostService>();
             builder.Services.AddScoped<ILoggingConfiguration>((serviceprovider) => loggingConfiguration);
             builder.Services.AddScoped<ILoggingConfigurationService, LoggingConfigurationService>();
+            builder.Services.AddScoped<IParameterService, ParameterService>();
             builder.Services.AddScoped<IPlugInBuilder, PlugInBuilder>();
             builder.Services.AddScoped<IPlugInService, PlugInService>();
             builder.Services.AddScoped<IRepository, ShaosRepository>();

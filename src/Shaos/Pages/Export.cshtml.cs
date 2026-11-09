@@ -28,7 +28,8 @@ namespace Shaos.Pages
 {
     public class ExportModel : BaseExportPageModel
     {
-        public ExportModel(IRepository repository) : base(repository)
+        public ExportModel(IRepository repository,
+                           ILogger<ExportModel> logger) : base(repository, logger)
         {
         }
     }

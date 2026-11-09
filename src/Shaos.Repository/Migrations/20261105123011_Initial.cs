@@ -105,7 +105,6 @@ namespace Shaos.Repository.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     PlugInInstanceId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ReferenceId = table.Column<string>(type: "TEXT", maxLength: 40, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -130,7 +129,6 @@ namespace Shaos.Repository.Migrations
                     DeviceId = table.Column<int>(type: "INTEGER", nullable: true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     ParameterType = table.Column<int>(type: "INTEGER", nullable: true),
-                    ReferenceId = table.Column<string>(type: "TEXT", maxLength: 40, nullable: true),
                     TimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Units = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),

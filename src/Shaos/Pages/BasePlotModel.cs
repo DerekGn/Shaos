@@ -37,7 +37,8 @@ namespace Shaos.Pages
         private readonly IRepository _repository;
 
         protected BasePlotModel(IRepository repository,
-                                IOptions<PlotOptions> options)
+                                ILogger<BasePlotModel> logger,
+                                IOptions<PlotOptions> options) : base(logger)
         {
             _repository = repository;
             _options = options;

@@ -24,7 +24,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shaos.Repository;
 using Shaos.Repository.Models;
 using Shaos.Services.Logging;
@@ -38,7 +37,9 @@ namespace Shaos.Pages.System.Logging
         private readonly IRepository _repository;
 
         public OverrideModel(ILoggingConfiguration loggingConfiguration,
+                             ILogger<OverrideModel> logger,
                              IRepository repository)
+            : base(logger)
         {
             _loggingConfiguration = loggingConfiguration;
             _repository = repository;

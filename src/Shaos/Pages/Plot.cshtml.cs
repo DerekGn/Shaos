@@ -33,7 +33,8 @@ namespace Shaos.Pages
     public class PlotModel : BasePlotModel
     {
         public PlotModel(IRepository repository,
-                         IOptions<PlotOptions> options) : base(repository, options)
+                         ILogger<PlotModel> logger,
+                         IOptions<PlotOptions> options) : base(repository, logger, options)
         {
         }
     }
