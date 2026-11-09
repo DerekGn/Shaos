@@ -203,22 +203,27 @@ namespace Shaos.Test.PlugIn
 
         private async Task WriteBoolAsync(int id, bool value)
         {
+            _logger.LogInformation("boolean written");
         }
 
         private async Task WriteFloatAsync(int id, float value)
         {
+            _logger.LogInformation("float written");
         }
 
         private async Task WriteIntAsync(int id, int value)
         {
+            _logger.LogInformation("Int written");
         }
 
         private async Task WriteStringAsync(int id, string value)
         {
+            _logger.LogInformation("string written");
         }
 
         private async Task WriteUIntAsync(int id, uint value)
         {
+            _logger.LogInformation("uint written");
         }
     }
 }
