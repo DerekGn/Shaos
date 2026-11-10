@@ -20,6 +20,11 @@
       "provider": "unpkg",
       "library": "chartjs-adapter-moment@1.0.1",
       "destination": "wwwroot/lib/chartjs-adapter-moment/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "smoothie@1.36.1",
+      "destination": "wwwroot/lib/smoothie/"
     }
   ]
 }
