@@ -24,6 +24,9 @@
 
 namespace Shaos.Graphing
 {
+    /// <summary>
+    /// The graph settings options
+    /// </summary>
     public class GraphSettings
     {
         /// <summary>
@@ -37,13 +40,16 @@ namespace Shaos.Graphing
         public int Id { get; set; }
 
         /// <summary>
+        /// The interpolation to apply to the graph
+        /// </summary>
+        /// <remarks>
+        /// Defaults to <see cref="Interpolation.Bezier"/>
+        /// </remarks>
+        public Interpolation Interpolation { get; set; } = Interpolation.Bezier;
+
+        /// <summary>
         /// The parameter plot label
         /// </summary>
         public string Label { get; set; } = string.Empty;
-
-        /// <summary>
-        /// The interpolation to apply to the graph
-        /// </summary>
-        public Interpolation Interpolation { get; set; }
     }
 }

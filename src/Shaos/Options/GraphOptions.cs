@@ -29,5 +29,19 @@ namespace Shaos.Options
     /// </summary>
     public class GraphOptions
     {
+        /// <summary>
+        /// The grid settings
+        /// </summary>
+        public GridSettings GridSettings { get; set; } = new GridSettings();
+
+        /// <summary>
+        /// The label settings
+        /// </summary>
+        public LabelSettings LabelSettings { get; set; } = new LabelSettings();
+
+        /// <summary>
+        /// The title settings
+        /// </summary>
+        public TitleSettings TitleSettings { get; set; } = new TitleSettings();
     }
 }

@@ -34,7 +34,6 @@ namespace Shaos.Pages
 {
     public abstract class BasePlotModel : BasePageModel
     {
-        private readonly IOptions<GraphOptions> _options;
         private readonly IRepository _repository;
 
         protected BasePlotModel(IRepository repository,
@@ -42,9 +41,18 @@ namespace Shaos.Pages
                                 IOptions<GraphOptions> options) : base(logger)
         {
             _repository = repository;
-            _options = options;
+            Options = options.Value;
         }
 
+        /// <summary>
+        /// The <see cref="GraphOptions"/>
+        /// </summary>
+        [BindProperty]
+        public GraphOptions Options { get; set; }
+
+        /// <summary>
+        /// The <see cref="GraphSettings"/>
+        /// </summary>
         [BindProperty]
         public GraphSettings Settings { get; set; }
 
@@ -63,7 +71,8 @@ namespace Shaos.Pages
                     {
                         DeviceId = deviceId,
                         Id = id,
-                        Label = parameter.Name
+                        Label = parameter.Name,
+                        Interpolation = MapInterpolation(parameter)
                     };
                 }
                 catch (ParameterPlotNotSupportedException)
@@ -75,6 +84,17 @@ namespace Shaos.Pages
             {
                 AlertError($"Parameter Id [{id}] was not found.");
             }
+        }
+
+        private static Interpolation MapInterpolation(BaseParameter parameter)
+        {
+            var type = parameter.GetType();
+
+            return type switch
+            {
+                Type _ when type == typeof(BoolParameter) => Interpolation.Step,
+                _ => Interpolation.Bezier,
+            };
         }
     }
 }

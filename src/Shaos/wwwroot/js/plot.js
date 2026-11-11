@@ -1,10 +1,39 @@
 ﻿"use strict";
 
+const options = JSON.parse(document.getElementById('options').innerHTML);
 const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const eventSource = new EventSource('/api/v1/parameter-events/' + settings.id);
 const context = document.getElementById('chart');
 const smoothie = new SmoothieChart(
     {
+        interpolation: settings.interpolation.toLowerCase(),
+        grid:
+        {
+            fillStyle: options.gridSettings.fillColour,
+            lineWidth: options.gridSettings.lineWidth,
+            strokeStyle: options.gridSettings.lineColour,
+            verticalSections: options.gridSettings.verticalSections,
+            borderVisible: options.gridSettings.borderVisible
+        },
+        labels:
+        {
+            disabled: options.labelSettings.disabled,
+            fillStyle: options.labelSettings.colour,
+            fontSize: options.labelSettings.fontSize,
+            fontFamily: options.labelSettings.fontFamily,
+            precision: options.labelSettings.precision,
+            showIntermediateLabels: options.labelSettings.showIntermediateLabels,
+            intermediateLabelSameAxis: options.labelSettings.intermediateLabelSameAxis
+        },
+        // title:
+        // {
+        //     text: settings.label,                   // the text to display on the left side of the chart
+        //     fillStyle: '#ffffff',                   // colour for text
+        //     fontSize: 10,
+        //     fontFamily: 'sans-serif',
+        //     verticalAlign: 'top'                    // one of 'top', 'middle', or 'bottom'
+        // },
+
         // //minValue: 0,                                 // specify to clamp the lower y-axis to a given value
         // //maxValue: 1,                                  // specify to clamp the upper y-axis to a given value
         // maxValueScale: 1.1,                             // allows proportional padding to be added above the chart. for 10% padding, specify 1.1.
