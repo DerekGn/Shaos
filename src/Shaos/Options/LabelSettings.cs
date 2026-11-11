@@ -65,6 +65,6 @@ namespace Shaos.Options
         /// <summary>
         /// Show intermediate labels
         /// </summary>
-        public bool ShowIntermediateLabels { get; set; } = false;
+        public bool ShowIntermediateLabels { get; set; } = true;
     }
 }
