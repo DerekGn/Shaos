@@ -6,11 +6,12 @@
 <hr />
 
 <div class="container-fluid">
-    <canvas id="chartCanvas"></canvas>
+    <canvas id="chart" style="width:100%;height:100%"></canvas>
 </div>
 
 <a asp-page="/Parameters/Index" asp-route-id="@Model.Settings.DeviceId" class="btn btn-sm btn-primary">Back</a>
 
 <script id="settings" type="application/json">@Json.Serialize(Model.Settings)</script>
 
+<script src="~/lib/smoothie/smoothie.js"></script>
 <script src="~/js/plot.js"></script>

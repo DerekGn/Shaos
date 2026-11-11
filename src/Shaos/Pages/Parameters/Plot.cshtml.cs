@@ -34,7 +34,7 @@ namespace Shaos.Pages.Parameters
     {
         public PlotModel(IRepository repository,
                          ILogger<PlotModel> logger,
-                         IOptions<PlotOptions> options) : base(repository, logger, options)
+                         IOptions<GraphOptions> options) : base(repository, logger, options)
         {
         }
     }

@@ -22,16 +22,28 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Options
+namespace Shaos.Graphing
 {
-    /// <summary>
-    /// The options for plot of parameter data
-    /// </summary>
-    public class PlotOptions
+    public class GraphSettings
     {
         /// <summary>
-        /// The total plot duration
+        /// The identifier of the device
         /// </summary>
-        public int Duration { get; set; } = 20000;
+        public int DeviceId { get; set; }
+
+        /// <summary>
+        /// The identifier of the device parameter identifier
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// The parameter plot label
+        /// </summary>
+        public string Label { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The interpolation to apply to the graph
+        /// </summary>
+        public Interpolation Interpolation { get; set; }
     }
 }

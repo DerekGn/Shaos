@@ -191,7 +191,7 @@ namespace Shaos
             builder.Services.AddMemoryCache();
 
             builder.Services.Configure<FileStoreOptions>(builder.Configuration.GetSection(nameof(FileStoreOptions)));
-            builder.Services.Configure<PlotOptions>(builder.Configuration.GetSection(nameof(PlotOptions)));
+            builder.Services.Configure<GraphOptions>(builder.Configuration.GetSection(nameof(GraphOptions)));
 
             var app = builder.Build();
 

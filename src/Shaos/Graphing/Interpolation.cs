@@ -22,28 +22,12 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Pages
+namespace Shaos.Graphing
 {
-    public class PlotSettings
+    public enum Interpolation
     {
-        /// <summary>
-        /// The identifier of the device
-        /// </summary>
-        public int DeviceId { get; set; }
-
-        /// <summary>
-        /// The total plot duration
-        /// </summary>
-        public int Duration { get; set; } = 20000;
-
-        /// <summary>
-        /// The identifier of the device parameter identifier
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// The parameter plot label
-        /// </summary>
-        public string Label { get; set; } = string.Empty;
+        Bezier,
+        Linear,
+        Step
     }
 }
