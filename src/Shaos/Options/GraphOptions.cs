@@ -40,8 +40,18 @@ namespace Shaos.Options
         public LabelSettings LabelSettings { get; set; } = new LabelSettings();
 
         /// <summary>
+        /// The time series settings
+        /// </summary>
+        public TimeSeriesSettings TimeSeriesSettings { get; set; } = new TimeSeriesSettings();
+
+        /// <summary>
         /// The title settings
         /// </summary>
         public TitleSettings TitleSettings { get; set; } = new TitleSettings();
+
+        /// <summary>
+        /// The tool tip settings
+        /// </summary>
+        public ToolTipSettings ToolTipSettings { get; set; } = new ToolTipSettings();
     }
 }

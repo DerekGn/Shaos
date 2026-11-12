@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Options
 {
     /// <summary>
@@ -29,5 +31,25 @@ namespace Shaos.Options
     /// </summary>
     public class TitleSettings
     {
+        /// <summary>
+        /// The alignment of the title
+        /// </summary>
+        public TitleAlignment Alignment { get; set; } = TitleAlignment.Middle;
+
+        /// <summary>
+        /// The title colour
+        /// </summary>
+        public string Colour { get; set; } = "rgba(0, 0, 128, 1)";
+
+        /// <summary>
+        /// The font family for the title
+        /// </summary>
+        public string FontFamily { get; set; } = "sans-serif";
+
+        /// <summary>
+        /// The title font size
+        /// </summary>
+        [Range(1, 20)]
+        public int FontSize { get; set; } = 20;
     }
 }

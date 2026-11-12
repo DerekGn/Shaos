@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Shaos.Options
 {
     /// <summary>
@@ -47,6 +49,7 @@ namespace Shaos.Options
         /// <summary>
         /// The pixel width of grid lines
         /// </summary>
+        [Range(1, 10)]
         public int LineWidth { get; set; } = 1;
 
         /// <summary>

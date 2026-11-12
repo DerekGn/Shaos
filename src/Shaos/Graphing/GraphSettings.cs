@@ -51,5 +51,10 @@ namespace Shaos.Graphing
         /// The parameter plot label
         /// </summary>
         public string Label { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The label for the time series data
+        /// </summary>
+        public string TimeSeriesLabel { get; set; } = string.Empty;
     }
 }

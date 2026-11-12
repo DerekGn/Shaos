@@ -39,7 +39,7 @@ namespace Shaos.Options
         /// <summary>
         /// Enables/disables labels showing the min/max values
         /// </summary>
-        public bool Disabled { get; set; } = true;
+        public bool Disabled { get; set; } = false;
 
         /// <summary>
         /// The font family for the label
