@@ -9,7 +9,6 @@ var data = [];
 const graph = new Dygraph(container, data,
     {
         drawPoints: true,
-        showRoller: true,
         stepPlot: true,
         fillGraph: true,
         valueRange: [0.0, 1],
@@ -71,9 +70,7 @@ window.onload = function () {
 
         data.push([new Date(timestamp), value]);
 
-        if (data.length > 200) {
-            data.shift();
-        }
+        shiftData(data, 200);
 
         graph.updateOptions({ 'file': data });
     }
