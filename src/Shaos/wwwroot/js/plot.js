@@ -2,33 +2,19 @@
 
 const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const eventSource = new EventSource('/api/v1/parameter-events/' + settings.id);
-const ctx = document.getElementById('chartCanvas').getContext('2d');
-const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        datasets: [{
-            fill: true,
-            label: settings.label,
-            data: [],
-            tension: 0.1
-        }]
-    },
-    options: {
-        scales: {
-            x: {
-                type: 'realtime',
-                delay: 0,
-                duration: settings.duration
-            },
-            y: {
-                ticks: {
-                    suggestedMin: 0,
-                    suggestedMax: 50
-                }
-            }
-        }
-    }
-});
+const container = document.getElementById('container')
+
+var data = [];
+
+const graph = new Dygraph(container, data,
+    {
+        drawPoints: true,
+        showRoller: true,
+        stepPlot: true,
+        fillGraph: true,
+        valueRange: [0.0, 1],
+        labels: ['Time', 'State']
+    });
 
 window.onload = function () {
 
@@ -37,7 +23,7 @@ window.onload = function () {
 
         const parameter = JSON.parse(event.data);
 
-        plotParameterValue(parameter.value, parameter.timestamp);
+        plotParameterValue(parameter.value ? 1 : 0, parameter.timestamp);
     });
 
     eventSource.addEventListener('parameter-updated-event-float', (event) => {
@@ -82,15 +68,13 @@ window.onload = function () {
     };
 
     function plotParameterValue(value, timestamp) {
-        let dateValue = moment(timestamp).subtract(5, 'seconds');
 
-        chart.data.datasets[0].data.push({
-            x: timestamp,
-            y: value
-        });
+        data.push([new Date(timestamp), value]);
 
-        chart.update({
-            preservation: true
-        });
+        if (data.length > 200) {
+            data.shift();
+        }
+
+        graph.updateOptions({ 'file': data });
     }
 }
