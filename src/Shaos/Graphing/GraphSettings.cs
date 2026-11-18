@@ -27,26 +27,36 @@ namespace Shaos.Graphing
     /// <summary>
     /// The graph settings
     /// </summary>
-    public class GraphSettings
+    public record GraphSettings
     {
         /// <summary>
         /// The identifier of the device
         /// </summary>
-        public int DeviceId { get; set; }
+        public int DeviceId { get; init; }
 
         /// <summary>
         /// The total plot duration
         /// </summary>
-        public int Duration { get; set; } = 20000;
+        public int Duration { get; init; } = 20000;
 
         /// <summary>
         /// The identifier of the device parameter identifier
         /// </summary>
-        public int Id { get; set; }
+        public int Id { get; init; }
 
         /// <summary>
         /// The parameter plot label
         /// </summary>
-        public string Label { get; set; } = string.Empty;
+        public string Label { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Determines if the graph plot should be stepped.
+        /// </summary>
+        public bool StepPlot { get; init; } = false;
+
+        /// <summary>
+        /// The graph range values
+        /// </summary>
+        public RangeSettings? Range { get; init; }
     }
 }

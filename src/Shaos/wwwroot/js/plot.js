@@ -5,18 +5,22 @@ const eventSource = new EventSource('/api/v1/parameter-events/' + settings.id);
 const container = document.getElementById('container')
 
 var data = [];
+var range = null;
+
+if (settings.range != null) {
+    range = [settings.range.minimum, settings.range.maximum];
+}
 
 const graph = new Dygraph(container, data,
     {
         drawPoints: true,
-        stepPlot: true,
+        stepPlot: settings.stepPlot,
         fillGraph: true,
-        valueRange: [0.0, 1],
-        labels: ['Time', 'State']
+        valueRange: range,
+        labels: ['Time', 'State'],
     });
 
 window.onload = function () {
-
     eventSource.addEventListener('parameter-updated-event-bool', (event) => {
         console.debug('parameter-updated-event-bool');
 
@@ -67,7 +71,6 @@ window.onload = function () {
     };
 
     function plotParameterValue(value, timestamp) {
-
         data.push([new Date(timestamp), value]);
 
         shiftData(data, 200);

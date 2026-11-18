@@ -64,7 +64,9 @@ namespace Shaos.Pages
                         DeviceId = deviceId,
                         Duration = _options.Value.Duration,
                         Id = id,
-                        Label = parameter.Name
+                        Label = parameter.Name,
+                        StepPlot = parameter.GetType() == typeof(BoolParameter),
+                        Range = MapRange(parameter)
                     };
                 }
                 catch (ParameterPlotNotSupportedException)
@@ -75,6 +77,28 @@ namespace Shaos.Pages
             else
             {
                 AlertError($"Parameter Id [{id}] was not found.");
+            }
+        }
+
+        private static RangeSettings? MapRange(BaseParameter parameter)
+        {
+            var type = parameter.GetType();
+
+            switch (type)
+            {
+                case Type _ when type == typeof(BoolParameter):
+                    return new RangeSettings() { Minimum = 0, Maximum = 1 };
+                case Type _ when type == typeof(FloatParameter):
+                    var floatParameter = (FloatParameter)parameter;
+                    return new RangeSettings() { Minimum = floatParameter.Min, Maximum = floatParameter.Max };
+                case Type _ when type == typeof(IntParameter):
+                    var intParameter = (IntParameter)parameter;
+                    return new RangeSettings() { Minimum = intParameter.Min, Maximum = intParameter.Max };
+                case Type _ when type == typeof(UIntParameter):
+                    var uintParameter = (UIntParameter)parameter;
+                    return new RangeSettings() { Minimum = uintParameter.Min, Maximum = uintParameter.Max };
+                default:
+                    return null;
             }
         }
     }
