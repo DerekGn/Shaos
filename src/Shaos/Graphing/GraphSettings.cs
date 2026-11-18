@@ -22,9 +22,12 @@
 * SOFTWARE.
 */
 
-namespace Shaos.Pages
+namespace Shaos.Graphing
 {
-    public class PlotSettings
+    /// <summary>
+    /// The graph settings
+    /// </summary>
+    public class GraphSettings
     {
         /// <summary>
         /// The identifier of the device
