@@ -24,7 +24,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Shaos.Exceptions;
+using Shaos.Extensions;
+using Shaos.Graphing;
 using Shaos.Options;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices.Parameters;
@@ -45,7 +46,7 @@ namespace Shaos.Pages
         }
 
         [BindProperty]
-        public PlotSettings Settings { get; set; }
+        public GraphSettings Settings { get; set; }
 
         public async Task OnGetAsync(int id,
                                      int deviceId,
@@ -56,20 +57,8 @@ namespace Shaos.Pages
 
             if (parameter != null)
             {
-                try
-                {
-                    Settings = new PlotSettings()
-                    {
-                        DeviceId = deviceId,
-                        Duration = _options.Value.Duration,
-                        Id = id,
-                        Label = parameter.Name
-                    };
-                }
-                catch (ParameterPlotNotSupportedException)
-                {
-                    AlertWarning($"Parameter Id [{id}] does not support plotting.");
-                }
+                Settings = parameter.ToSettings(deviceId,
+                                                _options.Value.Duration);
             }
             else
             {

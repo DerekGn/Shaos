@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+using Microsoft.Extensions.Options;
+using Shaos.Options;
 using Shaos.Repository;
 
 namespace Shaos.Pages
@@ -29,7 +31,8 @@ namespace Shaos.Pages
     public class HistoryModel : BaseHistoryModel
     {
         public HistoryModel(IRepository repository,
-                            ILogger<HistoryModel> logger) : base(repository, logger)
+                            ILogger<HistoryModel> logger,
+                            IOptions<PlotOptions> options) : base(repository, options, logger)
         {
         }
     }

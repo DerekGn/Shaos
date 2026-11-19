@@ -42,3 +42,7 @@ button:not(.collapsed) .collapse-icon {
     border-radius: 0.5rem;
     padding: 1rem;
 }
+
+#container {
+    height: 400px;
+}

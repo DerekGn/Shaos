@@ -2,42 +2,26 @@
 
 const settings = JSON.parse(document.getElementById('settings').innerHTML);
 const eventSource = new EventSource('/api/v1/parameter-events/' + settings.id);
-const ctx = document.getElementById('chartCanvas').getContext('2d');
-const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        datasets: [{
-            fill: true,
-            label: settings.label,
-            data: [],
-            tension: 0.1
-        }]
-    },
-    options: {
-        scales: {
-            x: {
-                type: 'realtime',
-                delay: 0,
-                duration: settings.duration
-            },
-            y: {
-                ticks: {
-                    suggestedMin: 0,
-                    suggestedMax: 50
-                }
-            }
-        }
-    }
-});
+const container = document.getElementById('container')
+
+var data = [];
+
+const graph = new Dygraph(container, data,
+    {
+        drawPoints: true,
+        stepPlot: settings.stepPlot,
+        fillGraph: true,
+        valueRange: settings.range,
+        labels: ['Time', 'State'],
+    });
 
 window.onload = function () {
-
     eventSource.addEventListener('parameter-updated-event-bool', (event) => {
         console.debug('parameter-updated-event-bool');
 
         const parameter = JSON.parse(event.data);
 
-        plotParameterValue(parameter.value, parameter.timestamp);
+        plotParameterValue(parameter.value ? 1 : 0, parameter.timestamp);
     });
 
     eventSource.addEventListener('parameter-updated-event-float', (event) => {
@@ -82,15 +66,10 @@ window.onload = function () {
     };
 
     function plotParameterValue(value, timestamp) {
-        let dateValue = moment(timestamp).subtract(5, 'seconds');
+        data.push([new Date(timestamp), value]);
 
-        chart.data.datasets[0].data.push({
-            x: timestamp,
-            y: value
-        });
+        shiftData(data, 200);
 
-        chart.update({
-            preservation: true
-        });
+        graph.updateOptions({ 'file': data });
     }
 }

@@ -6,15 +6,15 @@
 <hr />
 
 <div class="container-fluid">
-    <canvas id="chartCanvas"></canvas>
+    <div id="container"></div>
 </div>
 
 <a asp-page="/Index" class="btn btn-sm btn-primary">Back</a>
 
 <script id="settings" type="application/json">@Json.Serialize(Model.Settings)</script>
 
-<script src="~/lib/chart.js/dist/chart.umd.js"></script>
-<script src="~/lib/moment.js/moment.min.js"></script>
-<script src="~/lib/chartjs-adapter-moment/dist/chartjs-adapter-moment.js"></script>
-<script src="~/lib/chartjs-plugin-streaming/dist/chartjs-plugin-streaming.js"></script>
+<script src="~/lib/dygraphs/dist/dygraph.min.js"></script>
+<script src="~/js/common.js"></script>
 <script src="~/js/plot.js"></script>
+
+<link rel="stylesheet" type="text/css" src="~/dygraphs/dist/dygraph.css" />
