@@ -1,38 +1,35 @@
 ﻿"use strict";
 
-function isEmptyOrWhitespace(str) {
-    return typeof str !== 'string' || str.trim().length === 0;
+const historyData = JSON.parse(document.getElementById('history').innerHTML);
+const settings = JSON.parse(document.getElementById('settings').innerHTML);
+const container = document.getElementById('container');
+
+var formattedData = formatHistoryValues(historyData.values);
+
+const graph = new Dygraph(container, formattedData,
+    {
+        drawPoints: true,
+        stepPlot: settings.stepPlot,
+        fillGraph: true,
+        valueRange: settings.range,
+        labels: ['Time', 'Value']
+    });
+
+function formatHistoryValues(data) {
+    let formattedData = [];
+
+    for (let point of data) {
+        formattedData.push([new Date(point.timeStamp), formatHistoryValue(point.value)])
+    }
+
+    return formattedData;
 }
 
-const json = document.getElementById('history').innerHTML;
-let historyData = JSON.parse(json);
-
-const ctx = document.getElementById('chartCanvas').getContext('2d');
-const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: historyData.Values.map(x => x.TimeStamp),
-        datasets: [{
-            data: historyData.Values.map(x => x.Value),
-            label: historyData.Label
-        }]
-    },
-    options: {
-        scales: {
-            x: {
-                type: 'time',
-                time: {
-                    displayFormats: {
-                        day: 'MMM DD, YYYY'
-                    }
-                }
-            },
-            y: {
-                title: {
-                    display: !isEmptyOrWhitespace(historyData.Units),
-                    text: historyData.Units
-                }
-            }
-        }
+function formatHistoryValue(value) {
+    if (typeof value == "boolean") {
+        console.debug("is boolean");
+        return value ? 1 : 0;
+    } else {
+        return value;
     }
-});
+}

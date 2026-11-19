@@ -24,7 +24,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Shaos.Exceptions;
+using Shaos.Extensions;
 using Shaos.Graphing;
 using Shaos.Options;
 using Shaos.Repository;
@@ -57,48 +57,12 @@ namespace Shaos.Pages
 
             if (parameter != null)
             {
-                try
-                {
-                    Settings = new GraphSettings()
-                    {
-                        DeviceId = deviceId,
-                        Duration = _options.Value.Duration,
-                        Id = id,
-                        Label = parameter.Name,
-                        StepPlot = parameter.GetType() == typeof(BoolParameter),
-                        Range = MapRange(parameter)
-                    };
-                }
-                catch (ParameterPlotNotSupportedException)
-                {
-                    AlertWarning($"Parameter Id [{id}] does not support plotting.");
-                }
+                Settings = parameter.ToSettings(deviceId,
+                                                _options.Value.Duration);
             }
             else
             {
                 AlertError($"Parameter Id [{id}] was not found.");
-            }
-        }
-
-        private static RangeSettings? MapRange(BaseParameter parameter)
-        {
-            var type = parameter.GetType();
-
-            switch (type)
-            {
-                case Type _ when type == typeof(BoolParameter):
-                    return new RangeSettings() { Minimum = 0, Maximum = 1 };
-                case Type _ when type == typeof(FloatParameter):
-                    var floatParameter = (FloatParameter)parameter;
-                    return new RangeSettings() { Minimum = floatParameter.Min, Maximum = floatParameter.Max };
-                case Type _ when type == typeof(IntParameter):
-                    var intParameter = (IntParameter)parameter;
-                    return new RangeSettings() { Minimum = intParameter.Min, Maximum = intParameter.Max };
-                case Type _ when type == typeof(UIntParameter):
-                    var uintParameter = (UIntParameter)parameter;
-                    return new RangeSettings() { Minimum = uintParameter.Min, Maximum = uintParameter.Max };
-                default:
-                    return null;
             }
         }
     }

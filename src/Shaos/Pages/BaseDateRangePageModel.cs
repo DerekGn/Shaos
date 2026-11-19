@@ -32,7 +32,8 @@ namespace Shaos.Pages
     {
         private protected readonly IRepository Repository;
 
-        protected BaseDateRangePageModel(IRepository repository, ILogger<BaseDateRangePageModel> logger) : base(logger)
+        protected BaseDateRangePageModel(IRepository repository,
+                                         ILogger<BaseDateRangePageModel> logger) : base(logger)
         {
             var offsetUtcNow = DateTimeOffset
                 .UtcNow

@@ -5,18 +5,13 @@ const eventSource = new EventSource('/api/v1/parameter-events/' + settings.id);
 const container = document.getElementById('container')
 
 var data = [];
-var range = null;
-
-if (settings.range != null) {
-    range = [settings.range.minimum, settings.range.maximum];
-}
 
 const graph = new Dygraph(container, data,
     {
         drawPoints: true,
         stepPlot: settings.stepPlot,
         fillGraph: true,
-        valueRange: range,
+        valueRange: settings.range,
         labels: ['Time', 'State'],
     });
 

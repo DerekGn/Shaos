@@ -22,22 +22,34 @@
 * SOFTWARE.
 */
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Shaos.Extensions;
+using Shaos.Graphing;
+using Shaos.Options;
 using Shaos.Pages.Parameters.Types;
 using Shaos.Repository;
 using Shaos.Repository.Models.Devices.Parameters;
-using System.Text.Json;
 
 namespace Shaos.Pages
 {
     public abstract class BaseHistoryModel : BaseDateRangePageModel
     {
         public const string ViewDataKey = "history";
+        protected IOptions<PlotOptions> Options;
 
         protected BaseHistoryModel(IRepository repository,
+                                   IOptions<PlotOptions> options,
                                    ILogger<BaseHistoryModel> logger) : base(repository, logger)
         {
+            Options = options;
         }
+
+        [BindProperty]
+        public ParameterHistory History { get; set; }
+
+        [BindProperty]
+        public GraphSettings Settings { get; set; }
 
         public async Task OnGetAsync(int id,
                                      int deviceId,
@@ -45,8 +57,8 @@ namespace Shaos.Pages
         {
             Id = id;
             DeviceId = deviceId;
-            ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
-                                                                       cancellationToken);
+            History = await QueryParameterValueDataAsync(id,
+                                                         cancellationToken);
         }
 
         public async Task OnPostApplyAsync(int id,
@@ -55,11 +67,11 @@ namespace Shaos.Pages
         {
             Id = id;
             DeviceId = deviceId;
-            ViewData[ViewDataKey] = await QueryParameterValueDataAsync(id,
-                                                                       cancellationToken);
+            History = await QueryParameterValueDataAsync(id,
+                                                         cancellationToken);
         }
 
-        private async Task<string> QueryParameterValueDataAsync(int parameterId,
+        private async Task<ParameterHistory> QueryParameterValueDataAsync(int parameterId,
                                                                 CancellationToken cancellationToken)
         {
             ParameterHistory? parameterHistory = new();
@@ -70,6 +82,9 @@ namespace Shaos.Pages
 
             if (parameter is not null)
             {
+                Settings = parameter.ToSettings(DeviceId,
+                                                Options.Value.Duration);
+
                 var values = await Repository.GetEnumerableAsync<BaseParameterValue>(_ => _.ParameterId == parameterId && (_.TimeStamp >= StartDateTime.UtcDateTime && _.TimeStamp <= EndDateTime.UtcDateTime),
                                                                                      cancellationToken: cancellationToken)
                                                                                      .Select(_ => _.ToModel())
@@ -86,7 +101,7 @@ namespace Shaos.Pages
                 AlertError($"Parameter Id [{parameterId}] was not found");
             }
 
-            return JsonSerializer.Serialize(parameterHistory);
+            return parameterHistory;
         }
     }
 }
